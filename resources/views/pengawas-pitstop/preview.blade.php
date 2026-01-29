@@ -287,7 +287,7 @@
                                 </table>
                             </div>
 
-                            <h4>B. ALAT SUPPORT</h4>
+                            {{-- <h4>B. ALAT SUPPORT</h4> --}}
 
                             <div class="table-scroll-x">
                                 <table class="data_table alat-support-table">
