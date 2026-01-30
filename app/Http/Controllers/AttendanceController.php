@@ -56,6 +56,7 @@ class AttendanceController extends Controller
                     'confidence_score' => $row['confidence_score'] ?? null,
                     'created_at'       => $row['created_at'] ?? now(),
                     'updated_at'       => now(),
+                    'statusenabled'       => true,
                     'food_category'    => 'basic',
                     'position'         => 'Mess SIMS',
                 ]);
