@@ -23,7 +23,7 @@ class AttendanceController extends Controller
         $inserted = 0;
         $skipped  = 0;
 
-        DB::beginTransaction();
+        DB::connection('kantin')->beginTransaction();
 
         try {
             foreach ($data as $row) {
