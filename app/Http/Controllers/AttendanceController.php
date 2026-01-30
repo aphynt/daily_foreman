@@ -64,7 +64,7 @@ class AttendanceController extends Controller
                 $inserted++;
             }
 
-            DB::commit();
+            DB::connection('kantin')->commit();
 
             return response()->json([
                 'message'  => 'Data berhasil dikirim',
@@ -73,7 +73,7 @@ class AttendanceController extends Controller
             ], 200);
 
         } catch (\Throwable $e) {
-            DB::rollBack();
+            DB::connection('kantin')->rollBack();
 
             Log::error('Receive Attendance API Error', [
                 'error' => $e->getMessage()
