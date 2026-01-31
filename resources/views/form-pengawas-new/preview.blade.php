@@ -522,7 +522,7 @@
                             <a href="#" onclick="window.history.back()" class="action-btn action-secondary">
                                 Kembali
                             </a>
-                            @if (Auth::user()->role == 'ADMIN' || Auth::user()->id == $data['daily']->foreman_id)
+                            @if (Auth::user()->role == 'ADMIN' || Auth::user()->id == $data['daily']->pic)
                             <a href="#" class="action-btn action-danger" data-bs-toggle="modal" data-bs-target="#deleteLaporanKerja{{ $data['daily']->uuid }}">
                                 Hapus
                             </a>
