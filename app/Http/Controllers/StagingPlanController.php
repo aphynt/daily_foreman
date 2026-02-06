@@ -20,15 +20,15 @@ class StagingPlanController extends Controller
     public function index(Request $request)
     {
 
-        session(['requestTimeLaporanKerjaOBCoal' => $request->all()]);
+        session(['requestTimeStagingPlan' => $request->all()]);
         $time = new DateTime();
         $filterShift = $request->shift ?? 'Semua';
         $filterPit = $request->pit ?? 5;
 
         if (empty($request->startStagingPlan) || empty($request->endStagingPlan)) {
-            $time = new DateTime();
-            $start = new DateTime($time->format('Y-m-d'));
-            $end   = new DateTime($time->format('Y-m-d'));
+            $today = new DateTime();
+            $start = (clone $today)->modify('-1 day');
+            $end   = $today;
         } else {
             $start = new DateTime($request->startStagingPlan);
             $end   = new DateTime($request->endStagingPlan);

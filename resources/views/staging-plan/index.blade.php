@@ -170,14 +170,20 @@ document.addEventListener("DOMContentLoaded", function () {
     const endInput   = document.getElementById("endStagingPlan");
 
     const today = new Date();
-    const formattedDate = `${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}/${today.getFullYear()}`;
+
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    function formatDate(d) {
+        return `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}/${d.getFullYear()}`;
+    }
 
     if (startInput && !startInput.value) {
-        startInput.value = formattedDate;
+        startInput.value = formatDate(yesterday);
     }
 
     if (endInput && !endInput.value) {
-        endInput.value = formattedDate;
+        endInput.value = formatDate(today);
     }
 });
 </script>

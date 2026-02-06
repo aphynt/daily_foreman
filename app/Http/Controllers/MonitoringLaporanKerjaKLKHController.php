@@ -599,13 +599,75 @@ class MonitoringLaporanKerjaKLKHController extends Controller
         ->where('rs.bulan', DB::raw('MONTH(dr.created_at)'))
         ->whereBetween(DB::raw('CONVERT(varchar, dr.tanggal_dasar, 120)'), [$startTimeFormatted, $endTimeFormatted]);
 
-        
+        $jobPending = DB::table('JOB_PENDING as jp')
+        ->leftJoin('users as us', 'jp.pic', '=', 'us.id')
+        ->leftJoin('REF_SHIFT as sh', 'jp.shift_id', '=', 'sh.id')
+        ->leftJoin('REF_ROSTER_KERJA as rs', 'us.nik', '=', 'rs.nik')
+        ->select(
+            'jp.id',
+            'jp.uuid',
+            'jp.date as tanggal_pelaporan',
+            'us.name as pic',
+            'us.nik as nik_pic',
+            'jp.date as tanggal_pembuatan',
+            DB::raw('NULL as jam_pelaporan'),
+            'jp.statusenabled',
+            'jp.lokasi as pit',
+            'sh.keterangan as shift',
+            'rs.unit_kerja',
+            'us.role',
+            DB::raw("
+                CASE
+                    WHEN DAY(jp.date) = 1 THEN rs.[1]
+                    WHEN DAY(jp.date) = 2 THEN rs.[2]
+                    WHEN DAY(jp.date) = 3 THEN rs.[3]
+                    WHEN DAY(jp.date) = 4 THEN rs.[4]
+                    WHEN DAY(jp.date) = 5 THEN rs.[5]
+                    WHEN DAY(jp.date) = 6 THEN rs.[6]
+                    WHEN DAY(jp.date) = 7 THEN rs.[7]
+                    WHEN DAY(jp.date) = 8 THEN rs.[8]
+                    WHEN DAY(jp.date) = 9 THEN rs.[9]
+                    WHEN DAY(jp.date) = 10 THEN rs.[10]
+                    WHEN DAY(jp.date) = 11 THEN rs.[11]
+                    WHEN DAY(jp.date) = 12 THEN rs.[12]
+                    WHEN DAY(jp.date) = 13 THEN rs.[13]
+                    WHEN DAY(jp.date) = 14 THEN rs.[14]
+                    WHEN DAY(jp.date) = 15 THEN rs.[15]
+                    WHEN DAY(jp.date) = 16 THEN rs.[16]
+                    WHEN DAY(jp.date) = 17 THEN rs.[17]
+                    WHEN DAY(jp.date) = 18 THEN rs.[18]
+                    WHEN DAY(jp.date) = 19 THEN rs.[19]
+                    WHEN DAY(jp.date) = 20 THEN rs.[20]
+                    WHEN DAY(jp.date) = 21 THEN rs.[21]
+                    WHEN DAY(jp.date) = 22 THEN rs.[22]
+                    WHEN DAY(jp.date) = 23 THEN rs.[23]
+                    WHEN DAY(jp.date) = 24 THEN rs.[24]
+                    WHEN DAY(jp.date) = 25 THEN rs.[25]
+                    WHEN DAY(jp.date) = 26 THEN rs.[26]
+                    WHEN DAY(jp.date) = 27 THEN rs.[27]
+                    WHEN DAY(jp.date) = 28 THEN rs.[28]
+                    WHEN DAY(jp.date) = 29 THEN rs.[29]
+                    WHEN DAY(jp.date) = 30 THEN rs.[30]
+                    WHEN DAY(jp.date) = 31 THEN rs.[31]
+                    ELSE NULL
+                END as roster_kerja
+            "),
+            DB::raw("'Job Pending' as jenis_laporan"),
+            DB::raw("'Job Pending' as source_table")
+        )
+        ->where('jp.statusenabled', true)
+        // ->where('jp.is_jpaft', false)
+        ->where('rs.tahun', DB::raw('YEAR(jp.created_at)'))
+        ->where('rs.bulan', DB::raw('MONTH(jp.created_at)'))
+        ->whereBetween(DB::raw('CONVERT(varchar, jp.date, 120)'), [$startTimeFormatted, $endTimeFormatted]);
 
-        // dd($daily->get());
+
+
+        // dd($jobPending->get());
 
         //Gabung Table
         $combinedQuery = $loading->unionAll($haulroad)->unionAll($disposal)->unionAll($lumpur)
-        ->unionAll($ogs)->unionAll($batubara)->unionAll($simpangempat)->unionAll($daily);
+        ->unionAll($ogs)->unionAll($batubara)->unionAll($simpangempat)->unionAll($daily)->unionAll($jobPending);
 
 
         // $combinedQuery = $combinedQuery->get()->groupBy('source_table');

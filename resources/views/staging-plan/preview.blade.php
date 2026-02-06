@@ -37,11 +37,9 @@
     @endif
         <div class="col-xl-12 col-md-6">
             <div class="card">
-                <div class="card-body">
-                    <div style="height:90vh">
+                <div style="height:90vh">
                         <iframe id="pdfViewer" width="100%" height="100%" style="border:0" allowfullscreen></iframe>
                     </div>
-                </div>
             </div>
         </div>
     </div>

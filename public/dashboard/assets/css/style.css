@@ -54,6 +54,7 @@ output {
     --bs-breakpoint-lg: 992px;
     --bs-breakpoint-xl: 1200px;
     --bs-breakpoint-xxl: 1400px
+    --bs-border-radius: 5px;
 }
 
 [data-pc-theme_contrast=true] {
@@ -183,7 +184,7 @@ body {
     --bs-border-style: solid;
     --bs-border-color: #e7eaee;
     --bs-border-color-translucent: rgba(0, 0, 0, 0.175);
-    --bs-border-radius: 8px;
+    --bs-border-radius: 5px;
     --bs-border-radius-sm: 6px;
     --bs-border-radius-lg: 10px;
     --bs-border-radius-xl: 1rem;
@@ -2454,7 +2455,7 @@ progress {
     background-color: #fff;
     background-clip: padding-box;
     border: 1px solid #bec8d0;
-    border-radius: 8px;
+    border-radius: var(--bs-border-radius);
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out
 }
 
@@ -2680,7 +2681,7 @@ textarea.form-control-lg {
     background-position: right .75rem center;
     background-size: 16px 12px;
     border: 1px solid #bec8d0;
-    border-radius: 8px;
+    border-radius: var(--bs-border-radius);
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out
 }
 
@@ -3659,7 +3660,7 @@ textarea.is-invalid.datatable-input {
     --bs-btn-bg: transparent;
     --bs-btn-border-width: 1px;
     --bs-btn-border-color: transparent;
-    --bs-btn-border-radius: 5px;
+    --bs-btn-border-radius: var(--bs-border-radius);;
     --bs-btn-hover-border-color: transparent;
     --bs-btn-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 1px rgba(0, 0, 0, 0.075);
     --bs-btn-disabled-opacity: 0.65;
@@ -5285,7 +5286,7 @@ fieldset:disabled .introjs-tooltip .introjs-button {
     --bs-card-title-spacer-y: 0.5rem;
     --bs-card-border-width: 1px;
     --bs-card-border-color: #e7eaee;
-    --bs-card-border-radius: 12px;
+    --bs-card-border-radius: 5px;
     --bs-card-box-shadow: 0px 8px 24px rgba(27, 46, 94, 0.08);
     --bs-card-inner-border-radius: calc(12px - 1px);
     --bs-card-cap-padding-y: 25px;
