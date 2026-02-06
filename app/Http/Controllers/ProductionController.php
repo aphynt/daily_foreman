@@ -157,11 +157,11 @@ class ProductionController extends Controller
         }
 
 
-        $staging = StagingPlan::where('statusenabled', true)
-        // ->where('shift_id', $shiftIdAktif)
-        ->whereDate('start_date', '<=', $startDateRef)
-        ->whereDate('end_date', '>=', $endDateRef)
-        ->first();
+        // $staging = StagingPlan::where('statusenabled', true)
+        // // ->where('shift_id', $shiftIdAktif)
+        // ->whereDate('start_date', '<=', $startDateRef)
+        // ->whereDate('end_date', '>=', $endDateRef)
+        // ->first();
 
         $actual = array_sum(array_map(fn($x) => (float) $x->PRODUCTION, $dataArray));
         // $plan   = array_sum(array_map(fn($x) => (float) $x->PLAN_PRODUCTION, $dataArray));
@@ -184,7 +184,6 @@ class ProductionController extends Controller
             'actual' => $actual,
             'plan'   => $plan,
             'waktu'  => $waktu,
-            'staging'  => $staging,
         ];
 
         // dd($data);
@@ -370,11 +369,11 @@ class ProductionController extends Controller
         }
 
 
-        $staging = StagingPlan::where('statusenabled', true)
-        // ->where('shift_id', $shiftIdAktif)
-        ->whereDate('start_date', '<=', $startDateRef)
-        ->whereDate('end_date', '>=', $endDateRef)
-        ->first();
+        // $staging = StagingPlan::where('statusenabled', true)
+        // // ->where('shift_id', $shiftIdAktif)
+        // ->whereDate('start_date', '<=', $startDateRef)
+        // ->whereDate('end_date', '>=', $endDateRef)
+        // ->first();
 
         // =========================================================
         // GABUNG & OLAH PER EX (tetap seperti punya Anda)
@@ -493,7 +492,7 @@ class ProductionController extends Controller
             'actual' => $actual,
             'plan'   => $plan,
             'waktu'  => $waktu,
-            'staging'  => $staging,
+            // 'staging'  => $staging,
         ];
 
         // dd($data);

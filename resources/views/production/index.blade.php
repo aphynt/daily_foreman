@@ -107,7 +107,7 @@
                         </div>
                     </div>
                 </div>
-                @if($data['staging'])
+                {{-- @if($data['staging'])
                 <div class="card mb-3">
                     <div class="card-body">
                         <div class="card-header align-items-center justify-content-between">
@@ -119,7 +119,7 @@
                         </a>
                     </div>
                 </div>
-                @endif
+                @endif --}}
             </div>
 
             <div class="col-xl-6 col-md-6">
