@@ -168,7 +168,7 @@
                         ];
 
                         const excludedRoles = [
-                            'ADMIN', 'MANAGER',
+                            'ADMIN', 'MANAGEMENT',
                             'SUPERINTENDENT', 'SUPERINTENDENT SAFETY',
                             'SUPERVISOR SAFETY', 'FOREMAN SAFETY'
                         ];

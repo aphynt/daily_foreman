@@ -263,7 +263,7 @@ class FormPengawasController extends Controller
 
 
         $daily = $daily->where(function($query) {
-            if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGER'])) {
+            if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
                 $query->where('dr.nik_foreman', Auth::user()->nik)
                   ->orWhere('dr.nik_supervisor', Auth::user()->nik)
                   ->orWhere('dr.nik_superintendent', Auth::user()->nik);

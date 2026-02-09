@@ -77,7 +77,7 @@
 
             @else
 
-                {{-- BLOK LAPORAN (MANAGER / ADMIN sebelumnya) --}}
+                {{-- BLOK LAPORAN (MANAGEMENT / ADMIN sebelumnya) --}}
                 @if (canAccess('form-pengawas-new.show'))
                 <div class="col-4 col-md-4 col-xxl-4">
                     <a href="{{ route('form-pengawas-new.show') }}" class="text-decoration-none">

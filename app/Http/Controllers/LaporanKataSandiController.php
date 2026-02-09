@@ -101,7 +101,7 @@ class LaporanKataSandiController extends Controller
 
 
         $kataSandi = $kataSandi->where(function($query) {
-            if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGER'])) {
+            if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
                 $query->where('us.nik', Auth::user()->nik);
             }
         });

@@ -283,7 +283,7 @@ class PengawasPitstopController extends Controller
 
 
         $daily = $daily->where(function($query) {
-            if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGER'])) {
+            if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
                 $query->where('pr.nik_foreman', Auth::user()->nik)
                   ->orWhere('pr.nik_supervisor', Auth::user()->nik);
                 //   ->orWhere('pr.nik_superintendent', Auth::user()->nik);

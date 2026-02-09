@@ -182,7 +182,7 @@
                     render: function(data, type, row) {
                         if (!row) return '';
 
-                        if (['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT', 'MANAGER'].includes(userRole) && row.ferivikasi_pengawas == false) {
+                        if (['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT', 'MANAGEMENT'].includes(userRole) && row.ferivikasi_pengawas == false) {
                             let currentUserRole = userRole?.toUpperCase();
 
                             let jabatanPengawas = row.JABATAN?.toUpperCase();
@@ -205,13 +205,13 @@
                                             allowedToVerify = ['SUPERINTENDENT'].includes(currentUserRole);
                                             break;
                                         case 'SUPERINTENDENT':
-                                            allowedToVerify = ['MANAGER'].includes(currentUserRole);
+                                            allowedToVerify = ['MANAGEMENT'].includes(currentUserRole);
                                             break;
                                         case 'PJS. SUPERINTENDENT':
-                                            allowedToVerify = ['MANAGER'].includes(currentUserRole);
+                                            allowedToVerify = ['MANAGEMENT'].includes(currentUserRole);
                                             break;
-                                        case 'ASISTEN MANAGER':
-                                            allowedToVerify = ['MANAGER'].includes(currentUserRole);
+                                        case 'ASISTEN MANAGEMENT':
+                                            allowedToVerify = ['MANAGEMENT'].includes(currentUserRole);
                                             break;
                                         default:
                                             // Selain OPERATOR dan role spesifik, bisa diverifikasi oleh FOREMAN, SUPERVISOR, atau SUPERINTENDENT

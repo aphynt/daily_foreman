@@ -27,7 +27,7 @@
                                     </div>
                                 </form>
                             </div>
-                            {{-- @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGER']))
+                            {{-- @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT']))
                                 <div class="col-sm-12 col-md-2 mb-2 text-md-end">
                                     <a href="{{ route('form-pengawas-new.bundlepdf') }}" target="_blank"><span class="badge bg-primary" style="font-size:14px"><i class="fas fa-download"></i> Bundle PDF</span></a>
                                 </div>

@@ -287,7 +287,7 @@ class FormPengawasSAPController extends Controller
         ->whereBetween(DB::raw('CONVERT(varchar, sr.created_at, 23)'), [$startTimeFormatted, $endTimeFormatted])
         ->where('sr.statusenabled', true);
         $report = $report->where(function($query) {
-            if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGER'])) {
+            if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
                 $query->where('sr.foreman_id', Auth::user()->id);
             }
         });

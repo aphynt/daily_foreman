@@ -402,7 +402,7 @@ class P2HController extends Controller
         ->whereNotNull('p2h.VERIFIED_FOREMAN')
         ->where('p2h.STATUSENABLED', true);
         // $data = $data->where(function($query) {
-        //     if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGER'])) {
+        //     if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
         //         $query->where('p2h.VERIFIED_FOREMAN', Auth::user()->nik)
         //           ->orWhere('p2h.VERIFIED_SUPERVISOR', Auth::user()->nik)
         //           ->orWhere('p2h.VERIFIED_SUPERINTENDENT', Auth::user()->nik)
@@ -985,7 +985,7 @@ class P2HController extends Controller
     public function detail_post(Request $request)
     {
         // dd($request->all());
-         if (in_array(Auth::user()->role, ['ADMIN', 'MANAGER'])) {
+         if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
             return redirect()->back()->with('info', 'Maaf, verifikasi hanya dapat dilakukan oleh pengawas!');
         }
 

@@ -218,7 +218,7 @@ $grand_total_ritasi_2023 = 0;
                     </div>
                 </div>
 
-                @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGER']))
+                @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT']))
                 <div class="card">
                     <div class="card-body">
                         <div class="dt-responsive table-responsive">

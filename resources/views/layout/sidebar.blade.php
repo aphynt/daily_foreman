@@ -275,7 +275,7 @@
 
 
 
-                {{-- ADMIN / MANAGER --}}
+                {{-- ADMIN / MANAGEMENT --}}
                 @if (canAccess('rosterkerja'))
                 <li class="pc-item"><a href="{{ route('rosterkerja') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/project.png" alt="NT"></span><span class="pc-mtext">Roster Kerja</span></a></li>
                 @endif
