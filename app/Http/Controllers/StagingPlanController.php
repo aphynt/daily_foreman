@@ -24,16 +24,17 @@ class StagingPlanController extends Controller
         $filterShift = $request->shift ?? 'Semua';
         $filterPit = $request->pit ?? 5;
 
+        // 1. SET TANGGAL (Default Hari Ini)
         if (empty($request->startStagingPlan) || empty($request->endStagingPlan)) {
             $today = new DateTime();
             $start = clone $today;
             $end   = clone $today;
-
         } else {
             $start = new DateTime($request->startStagingPlan);
             $end   = new DateTime($request->endStagingPlan);
         }
 
+        // Format tanggal saja (Y-m-d)
         $startTimeFormatted = $start->format('Y-m-d');
         $endTimeFormatted   = $end->format('Y-m-d');
 
@@ -51,7 +52,10 @@ class StagingPlanController extends Controller
             )
             ->where('sp.statusenabled', true);
 
-        $stagingQuery->whereBetween('sp.start_date', [$startTimeFormatted, $endTimeFormatted]);
+        $stagingQuery->where(function($q) use ($startTimeFormatted, $endTimeFormatted) {
+            $q->where('sp.start_date', '<=', $endTimeFormatted)
+            ->where('sp.end_date', '>=', $startTimeFormatted);
+        });
 
         if ($filterShift != 'Semua') {
             $stagingQuery->where('sp.shift_id', $filterShift);
