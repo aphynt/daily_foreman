@@ -24,23 +24,16 @@ class StagingPlanController extends Controller
         $filterShift = $request->shift ?? 'Semua';
         $filterPit = $request->pit ?? 5;
 
-        // 1. LOGIKA TANGGAL (Hanya Date, Tanpa Jam)
         if (empty($request->startStagingPlan) || empty($request->endStagingPlan)) {
-            // Default: Tampilkan data HARI INI saja
             $today = new DateTime();
             $start = clone $today;
             $end   = clone $today;
 
-            // Opsional: Jika kamu ingin defaultnya menampilkan range 2 hari (Hari ini & Besok):
-            // $end = (clone $today)->modify('+1 day');
         } else {
-            // Manual Filter dari User
             $start = new DateTime($request->startStagingPlan);
             $end   = new DateTime($request->endStagingPlan);
         }
 
-        // PENTING: Gunakan format 'Y-m-d' saja (Tanpa H:i:s)
-        // Agar pencarian murni berdasarkan tanggal kalender.
         $startTimeFormatted = $start->format('Y-m-d');
         $endTimeFormatted   = $end->format('Y-m-d');
 
@@ -58,15 +51,7 @@ class StagingPlanController extends Controller
             )
             ->where('sp.statusenabled', true);
 
-        // 2. PERBAIKAN QUERY FILTER
-        // Kita filter berdasarkan 'start_date' saja.
-        // Logika: "Tampilkan Plan yang dimulai pada tanggal X s/d Y"
         $stagingQuery->whereBetween('sp.start_date', [$startTimeFormatted, $endTimeFormatted]);
-
-        /* CATATAN:
-        Saya menghapus logika 'orWhereBetween(end_date)' karena itulah yang bikin data tanggal lain ikut muncul.
-        Untuk laporan harian, biasanya kita cukup melihat kapan plan itu DIMULAI.
-        */
 
         if ($filterShift != 'Semua') {
             $stagingQuery->where('sp.shift_id', $filterShift);
