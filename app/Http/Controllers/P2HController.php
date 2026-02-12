@@ -193,158 +193,66 @@ class P2HController extends Controller
 
     public function api(Request $request)
     {
-        $start = new DateTime($request->tanggalP2H);
-        $tanggalP2H = $start->format('Y-m-d');
+        $limit = $request->input('length', 10);
+        $offset = $request->input('start', 0);
 
-        $offset = $request->input('start', 0);   // Offset
-        $length = $request->input('length', 10); // Default 10 items
-        $draw = $request->input('draw');
 
-        $verifikator = DB::table('OPR_CHECKLISTP2H as p2h')
-                ->leftJoin('focus.dbo.PRS_PERSONAL as gl', 'p2h.VERIFIED_FOREMAN', '=', 'gl.NRP')
-                ->leftJoin('focus.dbo.PRS_PERSONAL as spv', 'p2h.VERIFIED_SUPERVISOR', '=', 'spv.NRP')
-                ->leftJoin('focus.dbo.PRS_PERSONAL as mec', 'p2h.VERIFIED_MEKANIK', '=', 'mec.NRP')
-                ->select(
-                    'p2h.VHC_ID',
-                    'p2h.OPR_SHIFTNO',
-                    'p2h.OPR_REPORTTIME',
-                    'p2h.VERIFIED_MEKANIK',
-                    'mec.PERSONALNAME as NAMAMEKANIK',
-                    'p2h.VERIFIED_FOREMAN',
-                    'gl.PERSONALNAME as NAMAFOREMAN',
-                    'p2h.VERIFIED_SUPERVISOR',
-                    'spv.PERSONALNAME as NAMASUPERVISOR',
-                    'p2h.VERIFIED_SUPERINTENDENT',
-                )->get();
+        $pageNumber = 1;
+        $pageSize = $limit;
 
-        $supportQuery = DB::table('FOCUS.dbo.OPR_OPRCHECKLIST as A')
-            ->select(
-                'A.ID',
-                DB::raw("FORMAT(A.OPR_REPORTTIME, 'yyyy-MM-dd HH:mm:ss') as OPR_REPORTTIME"),
-                'A.OPR_SHIFTDATE',
-                'A.OPR_SHIFTNO',
-                'B.SHIFTDESC as OPR_SHIFTDESC',
-                'A.OPR_NRP',
-                'D.PERSONALNAME',
-                'A.VHC_ID',
-                'A.MTR_HOURMETER',
-                DB::raw('COALESCE(C.VAL_NOTOK, 0) as VAL_NOTOK'),
-                'p2h.VERIFIED_MEKANIK',
-                'mec.PERSONALNAME as NAMAMEKANIK',
-                'p2h.VERIFIED_FOREMAN',
-                'gl.PERSONALNAME as NAMAFOREMAN',
-                'p2h.VERIFIED_SUPERVISOR',
-                'spv.PERSONALNAME as NAMASUPERVISOR'
-            )
-            ->leftJoin('FOCUS.dbo.FLT_SHIFT as B', 'A.OPR_SHIFTNO', '=', 'B.SHIFTNO')
-            ->leftJoin('FOCUS.dbo.PRS_PERSONAL as D', 'A.OPR_NRP', '=', 'D.NRP')
-            ->leftJoin(DB::raw('(
-                SELECT VHC_ID, OPR_REPORTTIME, COUNT(*) AS VAL_NOTOK
-                FROM FOCUS.dbo.OPR_OPRCHECKLISTITEM
-                WHERE CHECKLISTVAL = 0
-                GROUP BY VHC_ID, OPR_REPORTTIME
-            ) as C'), function($join) {
-                $join->on('C.VHC_ID', '=', 'A.VHC_ID')
-                    ->on('C.OPR_REPORTTIME', '=', 'A.OPR_REPORTTIME');
-            })
-            ->leftJoin('OPR_CHECKLISTP2H as p2h', function($join) {
-                $join->on('A.VHC_ID', '=', 'p2h.VHC_ID')
-                    ->on('A.OPR_REPORTTIME', '=', 'p2h.OPR_REPORTTIME');
-            })
-            ->leftJoin('focus.dbo.PRS_PERSONAL as mec', 'p2h.VERIFIED_MEKANIK', '=', 'mec.NRP')
-            ->leftJoin('focus.dbo.PRS_PERSONAL as gl', 'p2h.VERIFIED_FOREMAN', '=', 'gl.NRP')
-            ->leftJoin('focus.dbo.PRS_PERSONAL as spv', 'p2h.VERIFIED_SUPERVISOR', '=', 'spv.NRP');
-            if (in_array(Auth::user()->role, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK'])) {
-            $supportQuery->where('VAL_NOTOK', '>=', '1');
+        if ($limit != -1 && $limit != 0) {
+            $pageNumber = ($offset / $limit) + 1;
+        } elseif ($limit == -1) {
+
+            $pageNumber = 1;
+            $pageSize = 100000;
         }
 
-        // Optional: filter berdasarkan kata kunci pencarian
-        if ($request->search['value']) {
-            $searchValue = '%' . $request->search['value'] . '%';
-            $columnsToSearch = ['A.OPR_NRP', 'D.PERSONALNAME', 'A.VHC_ID'];
-
-            $supportQuery->where(function($query) use ($columnsToSearch, $searchValue) {
-                foreach ($columnsToSearch as $column) {
-                    $query->orWhere($column, 'like', $searchValue);
-                }
-            });
-        }
-
-        // Filter shift jika ada
-        if (in_array($request->shift, ['Pagi', 'Malam'])) {
-            $supportQuery->where('A.OPR_SHIFTNO', $request->shiftP2H);
-        }
-
-        // Filter tanggal jika ada
+        $shiftDate = null;
         if (!empty($request->tanggalP2H)) {
-            $supportQuery->where('A.OPR_SHIFTDATE', $tanggalP2H);
+            try {
+                $dateObj = new DateTime($request->tanggalP2H);
+                $shiftDate = $dateObj->format('Y-m-d');
+            } catch (\Exception $e) {
+                $shiftDate = null;
+            }
         }
 
-        // Filter kategori jika ada
-        if (in_array($request->cluster, ['EX', 'HD', 'MG', 'BD'])) {
-            $supportQuery->whereRaw("LEFT(A.VHC_ID, 2) = ?", [$request->cluster]);
+        $searchValue = $request->search['value'] ?? null;
+
+        $shiftNo = null;
+        if (!empty($request->shift) && in_array($request->shift, ['Pagi', 'Malam'])) {
+            $shiftNo = $request->shiftP2H;
         }
 
-        if(in_array(Auth::user()->role, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK']) and Auth::user()->section == 'WHEEL') {
-            $supportQuery->where(function($query) {
-                $query->where('A.VHC_ID', 'like', 'MG%')
-                    ->orWhere('A.VHC_ID', 'like', 'HD%');
-            });
-        }elseif(in_array(Auth::user()->role, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK']) and in_array(Auth::user()->section, ['TRACK EXCA'])) {
-            $supportQuery->where(function($query) {
-                $query->where('A.VHC_ID', 'like', 'EX%');
-            });
-        }elseif(in_array(Auth::user()->role, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK']) and in_array(Auth::user()->section, ['TRACK DOZER'])) {
-            $supportQuery->where(function($query) {
-                $query->where('A.VHC_ID', 'like', 'BD%');
-            });
+        $cluster = in_array($request->cluster, ['EX', 'HD', 'MG', 'BD']) ? $request->cluster : null;
+
+
+        $userRoleList = ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK'];
+        $isForeman = in_array(Auth::user()->role, $userRoleList) ? 1 : 0;
+
+        $userSection = null;
+        if ($isForeman) {
+            $userSection = Auth::user()->section;
         }
+        $results = DB::select('EXEC APP_GET_P2H ?, ?, ?, ?, ?, ?, ?, ?', [
+            $pageNumber,
+            $pageSize,
+            $searchValue,
+            $shiftNo,
+            $shiftDate,
+            $cluster,
+            $userSection,
+            $isForeman
+        ]);
 
-        //menampilkan hanya P2H yang diatas 0, dengan role sbb
+        $totalRecords = count($results) > 0 ? $results[0]->TotalCount : 0;
 
-
-
-        // Hanya ambil data yang sudah diverifikasi oleh foreman atau supervisor
-        // $supportQuery->where(function($query) {
-        //     $query->whereNotNull('p2h.VERIFIED_FOREMAN')
-        //           ->orWhereNotNull('p2h.VERIFIED_SUPERVISOR');
-        // });
-
-        // Hitung total hasil filter
-        $filteredRecords = $supportQuery->count();
-
-        // Ambil data dengan urutan dan paginasi
-        $supportQuery = $supportQuery
-            ->orderByDesc('VAL_NOTOK')
-
-            ->orderBy('A.VHC_ID')
-            ->orderBy('A.OPR_REPORTTIME')
-            ->offset($offset)
-            ->limit($length)
-            ->get();
-
-        // return $supportQuery;
-
-
-
-
-        // $supportQuery->whereNotExists(function ($query) use ($verifikator) {
-        //     $query->select(DB::raw(1))
-        //         ->from('OPR_CHECKLISTP2H as p2h')
-        //         ->whereColumn('p2h.VHC_ID', 'A.VHC_ID')
-        //         ->whereColumn('p2h.OPR_SHIFTNO', 'A.OPR_SHIFTNO')
-        //         ->whereDate('p2h.OPR_REPORTTIME', DB::raw("CAST(A.OPR_SHIFTDATE AS DATE)"));
-        // });
-
-
-        // Ambil data untuk halaman saat ini
-
-        // Return JSON response
         return response()->json([
-            'draw' => $draw,
-            'recordsTotal' => $filteredRecords,
-            'recordsFiltered' => $filteredRecords,
-            'data' => $supportQuery,
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords,
+            'data' => $results
         ]);
     }
 

@@ -164,28 +164,32 @@
         });
     }
 })();
+    document.addEventListener("DOMContentLoaded", function () {
+        const startInput = document.getElementById("startStagingPlan");
+        const endInput   = document.getElementById("endStagingPlan");
 
-document.addEventListener("DOMContentLoaded", function () {
-    const startInput = document.getElementById("startStagingPlan");
-    const endInput   = document.getElementById("endStagingPlan");
+        const today = new Date();
 
-    const today = new Date();
+        function formatDate(d) {
+            // Format MM/DD/YYYY (Sesuaikan jika input date kamu butuh YYYY-MM-DD)
+            const year  = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day   = String(d.getDate()).padStart(2, '0');
 
-    const yesterday = new Date();
-    yesterday.setDate(today.getDate() - 1);
+            return `${month}/${day}/${year}`;
+        }
 
-    function formatDate(d) {
-        return `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}/${d.getFullYear()}`;
-    }
+        // Default Start: HARI INI
+        if (startInput && !startInput.value) {
+            startInput.value = formatDate(today);
+        }
 
-    if (startInput && !startInput.value) {
-        startInput.value = formatDate(yesterday);
-    }
-
-    if (endInput && !endInput.value) {
-        endInput.value = formatDate(today);
-    }
-});
+        // Default End: HARI INI JUGA
+        // (Supaya defaultnya cuma tampil data hari ini, tidak bocor ke besok)
+        if (endInput && !endInput.value) {
+            endInput.value = formatDate(today);
+        }
+    });
 </script>
 
 <script>

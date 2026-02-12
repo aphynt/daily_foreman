@@ -19,21 +19,28 @@ class StagingPlanController extends Controller
     //
     public function index(Request $request)
     {
-
         session(['requestTimeStagingPlan' => $request->all()]);
-        $time = new DateTime();
+
         $filterShift = $request->shift ?? 'Semua';
         $filterPit = $request->pit ?? 5;
 
+        // 1. LOGIKA TANGGAL (Hanya Date, Tanpa Jam)
         if (empty($request->startStagingPlan) || empty($request->endStagingPlan)) {
+            // Default: Tampilkan data HARI INI saja
             $today = new DateTime();
-            $start = (clone $today)->modify('-1 day');
-            $end   = $today;
+            $start = clone $today;
+            $end   = clone $today;
+
+            // Opsional: Jika kamu ingin defaultnya menampilkan range 2 hari (Hari ini & Besok):
+            // $end = (clone $today)->modify('+1 day');
         } else {
+            // Manual Filter dari User
             $start = new DateTime($request->startStagingPlan);
             $end   = new DateTime($request->endStagingPlan);
         }
 
+        // PENTING: Gunakan format 'Y-m-d' saja (Tanpa H:i:s)
+        // Agar pencarian murni berdasarkan tanggal kalender.
         $startTimeFormatted = $start->format('Y-m-d');
         $endTimeFormatted   = $end->format('Y-m-d');
 
@@ -45,25 +52,21 @@ class StagingPlanController extends Controller
             ->leftJoin('REF_SHIFT as sh', 'sp.shift_id', '=', 'sh.id')
             ->leftJoin('REF_AREA_STAGING_PLAN as ar', 'sp.pit_id', '=', 'ar.id')
             ->select(
-                'sp.id',
-                'sp.uuid',
-                'sp.statusenabled',
-                'sp.pic',
-                'us.name as nama_pic',
-                'sh.keterangan as shift',
-                'ar.keterangan as pit',
-                'sp.start_date',
-                'sp.end_date'
+                'sp.id', 'sp.uuid', 'sp.statusenabled', 'sp.pic',
+                'us.name as nama_pic', 'sh.keterangan as shift',
+                'ar.keterangan as pit', 'sp.start_date', 'sp.end_date'
             )
-            ->where('sp.statusenabled', true)
-            ->where(function ($query) use ($startTimeFormatted, $endTimeFormatted) {
-                $query->whereBetween('sp.start_date', [$startTimeFormatted, $endTimeFormatted])
-                    ->orWhereBetween('sp.end_date', [$startTimeFormatted, $endTimeFormatted])
-                    ->orWhere(function ($q) use ($startTimeFormatted, $endTimeFormatted) {
-                        $q->where('sp.start_date', '<=', $startTimeFormatted)
-                            ->where('sp.end_date', '>=', $endTimeFormatted);
-                    });
-            });
+            ->where('sp.statusenabled', true);
+
+        // 2. PERBAIKAN QUERY FILTER
+        // Kita filter berdasarkan 'start_date' saja.
+        // Logika: "Tampilkan Plan yang dimulai pada tanggal X s/d Y"
+        $stagingQuery->whereBetween('sp.start_date', [$startTimeFormatted, $endTimeFormatted]);
+
+        /* CATATAN:
+        Saya menghapus logika 'orWhereBetween(end_date)' karena itulah yang bikin data tanggal lain ikut muncul.
+        Untuk laporan harian, biasanya kita cukup melihat kapan plan itu DIMULAI.
+        */
 
         if ($filterShift != 'Semua') {
             $stagingQuery->where('sp.shift_id', $filterShift);
