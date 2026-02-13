@@ -90,6 +90,7 @@ $grand_total_ritasi_2023 = 0;
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-body">
+                        <h5>Monitoring Payload</h5>
                         <div class="dt-responsive table-responsive">
                             <table id="cbtn-selectors" class="table table-striped table-hover table-bordered nowrap">
                                 <thead style="text-align: center; vertical-align: middle;">
@@ -152,7 +153,7 @@ $grand_total_ritasi_2023 = 0;
                         </div>
                     </div>
                 </div>
-                <div class="card">
+                {{-- <div class="card">
                     <div class="card-body">
                         <div class="dt-responsive table-responsive">
                             <h5>Monitoring Unit Khusus</h5>
@@ -203,7 +204,6 @@ $grand_total_ritasi_2023 = 0;
                                     @endforeach
                                 </tbody>
                                 <tfoot style="background-color:moccasin">
-                                    {{-- @dd($count_a_khusus) --}}
                                     <tr>
                                         <td>%</td>
                                         <td style="text-align: center">{{ $sum_2_khusus != 0 ? round($total_LESS_THAN_100_khusus / $sum_2_khusus, 2 ) * 100 : 0 }}</td>
@@ -273,10 +273,8 @@ $grand_total_ritasi_2023 = 0;
                                             <td style="text-align: center">{{ number_format(round($p2023->MAX_PAYLOAD, 1), 0, ',', '.') }}</td>
                                         </tr>
                                     @endforeach
-                                    {{-- @dd($total_LESS_THAN_100_2023) --}}
                                 </tbody>
                                 <tfoot style="background-color:moccasin">
-                                    {{-- @dd($sum_2) --}}
                                     <tr>
                                         <td>%</td>
                                         <td style="text-align: center">{{ $sum_2_2023 != 0 ? round($total_LESS_THAN_100_2023 / $sum_2_2023, 2 ) * 100 : 0 }}</td>
@@ -291,7 +289,7 @@ $grand_total_ritasi_2023 = 0;
                         </div>
                     </div>
                 </div>
-                @endif
+                @endif --}}
             </div>
         </div>
 
@@ -324,6 +322,7 @@ $grand_total_ritasi_2023 = 0;
     // [ Column Selectors ]
     $('#cbtn-selectors').DataTable({
         dom: 'Bfrtip',
+        pageLength:20,
         buttons: [{
                 extend: 'copyHtml5',
                 exportOptions: {

@@ -96,19 +96,13 @@ class PayloadRitationController extends Controller
             $endDate = $time->modify('+1 day')->format('Y-m-d');
         }
 
-        $data = DB::select('SET NOCOUNT ON;EXEC FOCUS_REPORTING.dbo.RPT_REALTIME_PAYLOAD_RITATION');
-
-        $resume = Ritation::select('LOD_LOADERID', 'RIT_TONNAGE')
-        ->where('OPR_SHIFTNO', $shift)
-        ->whereBetween('OPR_SHIFTDATE', [$startDate, $endDate])
-        ->get();
-        $resume = $resume->groupBy('LOD_LOADERID');
-
-        $data = collect($data);
+        $data = collect(DB::select('SET NOCOUNT ON;EXEC FOCUS_REPORTING.dbo.RPT_REALTIME_PAYLOAD_RITATION'));
 
         $data = $data->filter(function ($item) {
             return !empty($item->ASG_LOADERID);
         });
+
+        // dd($data);
 
         $grouped = $data->groupBy('ASG_LOADERID')->sortBy('ASG_LOADERID')->map(function ($group) {
             return $group->reduce(function ($carry, $item) use ($group) {
@@ -139,7 +133,9 @@ class PayloadRitationController extends Controller
             });
         });
 
+        // dd($grouped);
 
-        return view('payloadritation.exa_new', compact('grouped', 'resume'));
+
+        return view('payloadritation.exa_new', compact('grouped'));
     }
 }

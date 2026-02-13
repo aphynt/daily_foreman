@@ -83,12 +83,12 @@ class MonitoringPayloadController extends Controller
         $vhcIds = 'HD629, HD630, HD632, HD633, HD635, HD639, HD6406, HD6408, HD1150, HD1152, HD1155';
         $shift = '';
 
-        $payload_2023 = DB::select('SET NOCOUNT ON; EXEC DAILY.dbo.GET_PAYLOAD_2023_2024 @StartDate = ?, @EndDate = ?, @VHC_IDs = ?, @Shift = ?', [$startDate, $endDate, $vhcIds, $shift]);
+        // $payload_2023 = DB::select('SET NOCOUNT ON; EXEC DAILY.dbo.GET_PAYLOAD_2023_2024 @StartDate = ?, @EndDate = ?, @VHC_IDs = ?, @Shift = ?', [$startDate, $endDate, $vhcIds, $shift]);
 
         $data = [
             'payload' => $payload,
             'payload_khusus' => $payload_khusus,
-            'payload_2023' => $payload_2023,
+            // 'payload_2023' => $payload_2023,
             'unit' => $unit,
         ];
         // dd($data);

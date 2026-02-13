@@ -47,6 +47,7 @@
     $totalRitToday = 0;
     $totalRitLast3Hour = 0;
     $countPayloadShift = 0;
+    $totalPayloadShift110 = 0;
 @endphp
 
 <section class="pc-container">
@@ -83,10 +84,14 @@
                             <table id="dom-jqry" class="table table-striped table-hover table-bordered nowrap">
                                 <thead style="text-align: center; vertical-align: middle;background-color:aquamarine">
                                     <tr>
-                                        <th>No</th>
-                                        <th>Fleet</th>
-                                        <th style="text-align: center;">Payload</th>
-                                        <th style="text-align: center;">Ritation</th>
+                                        <th rowspan="2">No</th>
+                                        <th rowspan="2">Fleet</th>
+                                        <th colspan="2" style="text-align: center;">Payload</th>
+                                        <th rowspan="2" style="text-align: center;">Ritation</th>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align: center;">Average</th>
+                                        <th style="text-align: center;">> 120</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -95,16 +100,15 @@
                                             <td style="text-align: center;font-size: 14px;">{{ $loop->iteration }}</td>
                                             <td style="font-size: 14px;">{{ $dt['ASG_LOADERID'] }}</td>
                                             <td style="text-align: center;font-size: 14px;">{{ number_format($dt['PAYLOAD_SHIFT'], 0) }}</td>
+                                            <td style="text-align: center;font-size: 14px;">{{ number_format($dt['PAYLOAD_MORE120'], 0) }}</td>
                                             <td style="text-align: center;font-size: 14px;">{{ number_format($dt['RIT_SHIFT'], 0) }}</td>
                                         </tr>
                                         @php
-                                            // Menghitung total PAYLOAD_SHIFT yang lebih besar dari 0
                                             if ($dt['PAYLOAD_SHIFT'] > 0) {
                                                 $totalPayloadShiftAve += $dt['PAYLOAD_SHIFT'];
-                                                $countPayloadShift++; // Menambah hitungan untuk yang bukan 0
+                                                $countPayloadShift++;
                                             }
-
-                                            // Menghitung total RIT_SHIFT (tidak ada pengecekan nilai 0)
+                                            $totalPayloadShift110 += $dt['PAYLOAD_MORE120'];
                                             $totalRitShiftAve += $dt['RIT_SHIFT'];
                                         @endphp
                                     @endforeach
@@ -114,7 +118,6 @@
                                     <tr>
                                         <td colspan="2" style="text-align: center; font-weight: bold;font-size: 14px;">Total</td>
                                         <td style="text-align: center;font-size: 14px;">
-                                            {{-- Menghitung rata-rata untuk PAYLOAD_SHIFT hanya jika ada nilai yang valid (lebih besar dari 0) --}}
                                             @if ($countPayloadShift > 0)
                                                 {{ number_format($totalPayloadShiftAve / $countPayloadShift, 0) }}
                                             @else
@@ -122,7 +125,9 @@
                                             @endif
                                         </td>
                                         <td style="text-align: center;font-size: 14px;">
-                                            {{-- Menampilkan total RIT_SHIFT (tidak ada rata-rata untuk RIT_SHIFT) --}}
+                                                {{ $totalPayloadShift110 }}
+                                        </td>
+                                        <td style="text-align: center;font-size: 14px;">
                                             {{ number_format($totalRitShiftAve, 0) }}
                                         </td>
                                     </tr>
