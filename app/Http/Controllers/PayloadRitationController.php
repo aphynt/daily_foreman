@@ -96,7 +96,7 @@ class PayloadRitationController extends Controller
             $endDate = $time->modify('+1 day')->format('Y-m-d');
         }
 
-        $data = collect(DB::select('SET NOCOUNT ON;EXEC FOCUS_REPORTING.dbo.RPT_REALTIME_PAYLOAD_RITATION'));
+        $data = collect(DB::select('SET NOCOUNT ON;EXEC FOCUS_REPORTING.dbo.RPT_REALTIME_PAYLOAD_RITATION_NEW'));
 
         $data = $data->filter(function ($item) {
             return !empty($item->ASG_LOADERID);
