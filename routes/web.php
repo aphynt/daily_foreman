@@ -1,57 +1,67 @@
 <?php
 
-use App\Http\Controllers\AlatSupportController;
+use App\Http\Controllers\Produksi\AlatSupportController;
+use App\Http\Controllers\Produksi\BBCatatanPengawasController;
+use App\Http\Controllers\Produksi\BBLoadingPointController;
+use App\Http\Controllers\Produksi\BBUnitSupportController;
+use App\Http\Controllers\Produksi\CatatanPengawasController;
+use App\Http\Controllers\Produksi\FormPengawasBatuBaraController;
+use App\Http\Controllers\Produksi\FormPengawasController;
+use App\Http\Controllers\Produksi\FormPengawasNewController;
+use App\Http\Controllers\Produksi\FormPengawasSAPController;
+use App\Http\Controllers\Produksi\FrontLoadingController;
+use App\Http\Controllers\Produksi\JobPendingController;
+use App\Http\Controllers\Produksi\KKHController;
+use App\Http\Controllers\Produksi\KLKHBatuBaraController;
+use App\Http\Controllers\Produksi\KLKHDisposalController;
+use App\Http\Controllers\Produksi\KLKHHaulRoadController;
+use App\Http\Controllers\Produksi\KLKHLoadingPointController;
+use App\Http\Controllers\Produksi\KLKHLumpurController;
+use App\Http\Controllers\Produksi\KLKHOGSController;
+use App\Http\Controllers\Produksi\KLKHSimpangEmpatController;
+use App\Http\Controllers\Produksi\LaporanKataSandiController;
+use App\Http\Controllers\Produksi\MonitoringLaporanKerjaKLKHController;
+use App\Http\Controllers\Produksi\MonitoringPayloadController;
+use App\Http\Controllers\Produksi\P2HController;
+use App\Http\Controllers\Produksi\PayloadRitationController;
+use App\Http\Controllers\Produksi\PengawasPitstopController;
+use App\Http\Controllers\Produksi\PengawasProduksiPitstopController;
+use App\Http\Controllers\Produksi\ProductionController;
+use App\Http\Controllers\Produksi\RosterKerjaController;
+use App\Http\Controllers\Produksi\SOPProduksiController;
+use App\Http\Controllers\Produksi\VerifikasiKLKHController;
+
+use App\Http\Controllers\Engineering\StagingPlanController;
+
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BBCatatanPengawasController;
-use App\Http\Controllers\BBLoadingPointController;
-use App\Http\Controllers\BBUnitSupportController;
-use App\Http\Controllers\CatatanPengawasController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\FormPengawasBatuBaraController;
-use App\Http\Controllers\FormPengawasController;
-use App\Http\Controllers\FormPengawasNewController;
-use App\Http\Controllers\FormPengawasOldController;
-use App\Http\Controllers\FormPengawasPitstopController;
-use App\Http\Controllers\FormPengawasSAPController;
-use App\Http\Controllers\FrontLoadingController;
-use App\Http\Controllers\JobPendingController;
-use App\Http\Controllers\KKHController;
-use App\Http\Controllers\KLKHBatuBaraController;
-use App\Http\Controllers\KLKHDisposalController;
-use App\Http\Controllers\KLKHHaulRoadController;
-use App\Http\Controllers\KLKHLoadingPointController;
-use App\Http\Controllers\KLKHLumpurController;
-use App\Http\Controllers\KLKHOGSController;
-use App\Http\Controllers\KLKHSimpangEmpatController;
-use App\Http\Controllers\LaporanKataSandi;
-use App\Http\Controllers\LaporanKataSandiController;
+use App\Http\Controllers\HazardReportController;
 use App\Http\Controllers\LogController;
-use App\Http\Controllers\MonitoringLaporanKerjaKLKHController;
-use App\Http\Controllers\MonitoringPayloadController;
+use App\Http\Controllers\MappingRouteController;
 use App\Http\Controllers\OprAssigntmentController;
-use App\Http\Controllers\P2HController;
-use App\Http\Controllers\PayloadRitationController;
-use App\Http\Controllers\PengawasPitstopController;
-use App\Http\Controllers\PengawasProduksiPitstopController;
-use App\Http\Controllers\ProductionController;
+
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\Produksi\JobPendingProduksiController;
+use App\Http\Controllers\Produksi\RosterKerjaProduksiController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\RosterKerjaController;
-use App\Http\Controllers\SOPProduksiController;
-use App\Http\Controllers\StagingPlanController;
+use App\Http\Controllers\ReferenceController;
+use App\Http\Controllers\Safety\ERTController;
+use App\Http\Controllers\Safety\PatrolController;
+use App\Http\Controllers\Safety\InspeksiDisposalController;
+use App\Http\Controllers\Safety\InspeksiJalanTambangController;
+use App\Http\Controllers\Safety\InspeksiOGSController;
+use App\Http\Controllers\Safety\InspeksiSlurryPumpController;
+use App\Http\Controllers\Safety\InspeksiFrontLoadingController;
+use App\Http\Controllers\Safety\JobPendingSafetyController;
+use App\Http\Controllers\Safety\RosterKerjaSafetyController;
+use App\Http\Controllers\Safety\SOPSafetyController;
+use App\Http\Controllers\SAPController;
+use App\Http\Controllers\SOPController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifiedController;
-use App\Http\Controllers\VerifikasiKLKHBatubaraController;
-use App\Http\Controllers\VerifikasiKLKHController;
-use App\Http\Controllers\VerifikasiKLKHDisposalController;
-use App\Http\Controllers\VerifikasiKLKHHaulRoadController;
-use App\Http\Controllers\VerifikasiKLKHLoadingPointController;
-use App\Http\Controllers\VerifikasiKLKHLumpurController;
-use App\Http\Controllers\VerifikasiKLKHOGSController;
-use App\Http\Controllers\VerifikasiKLKHSimpangEmpatController;
-use App\Http\Controllers\VerifikasiLaporanKerja;
-use App\Http\Controllers\VerifikasiLaporanKerjaController;
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\isAdmin;
+use App\Models\SOP;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Request;
@@ -59,18 +69,17 @@ use Illuminate\Support\Facades\Response;
 use App\Models\StagingPlan;
 use Illuminate\Support\Facades\Http;
 
-// Route::get('/', function () {
-//     return redirect()->route('dashboard.index');
+
+// Route::get('/dashboards/index', function () {
+//     return redirect('/');
 // });
-Route::get('/dashboards/index', function () {
-    return redirect('/');
-});
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index')->middleware('auth');
 
 
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login/post', [AuthController::class, 'login_post'])->name('login.post');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/logout-session', [AuthController::class,'logout_session'])->name('session.logout');
 
 //Payload & Ritation API
 Route::get('/payloadritation/api', [PayloadRitationController::class, 'api'])->name('payloadritation.api');
@@ -91,39 +100,9 @@ Route::group(['middleware' => ['auth']], function(){
 
     Route::get('/operator/{nik}', [FormPengawasController::class, 'getOperatorByNIK']);
 
-    Route::get('/production/index', [ProductionController::class, 'index'])->name('production.index');
-    Route::get('/production/ex/index', [ProductionController::class, 'ex'])->name('production.ex');
+    Route::get('/production/index', [ProductionController::class, 'index'])->name('production.index')->middleware('canAccess');
+    Route::get('/production/ex/index', [ProductionController::class, 'ex'])->name('production.ex')->middleware('canAccess');
 
-    //Form Pengawas Lama
-    // Route::get('/form-pengawas-old/show', [FormPengawasOldController::class, 'show'])->name('form-pengawas-old.show');
-    // Route::get('/form-pengawas-old/index', [FormPengawasOldController::class, 'index'])->name('form-pengawas-old.index')->middleware('canAccess');
-    // Route::get('/form-pengawas-old/download/{uuid}', [FormPengawasOldController::class, 'download'])->name('form-pengawas-old.download');
-    // Route::get('/form-pengawas-old/bundlepdf', [FormPengawasOldController::class, 'bundlepdf'])->name('form-pengawas-old.bundlepdf');
-    // Route::get('/form-pengawas-old/download/pdf/{uuid}', [FormPengawasOldController::class, 'pdf'])->name('form-pengawas-old.pdf');
-    // Route::get('/form-pengawas-old/preview/{uuid}', [FormPengawasOldController::class, 'preview'])->name('form-pengawas-old.preview');
-    // Route::get('/form-pengawas-old/delete/{uuid}', [FormPengawasOldController::class, 'delete'])->name('form-pengawas-old.delete');
-    // Route::post('/form-pengawas-old/post', [FormPengawasOldController::class, 'post'])->name('form-pengawas-old.post');
-    // Route::post('/form-pengawas-old/auto-save', [FormPengawasOldController::class, 'autoSave'])->name('form-pengawas-old.auto-save');
-
-    //Verifikasi Form Pengawas
-    // Route::get('/form-pengawas/verified/all/{uuid}', [FormPengawasController::class, 'verifiedAll'])->name('form-pengawas.verified.all');
-    // Route::get('/form-pengawas/verified/foreman/{uuid}', [FormPengawasController::class, 'verifiedForeman'])->name('form-pengawas.verified.foreman');
-    // Route::get('/form-pengawas/verified/supervisor/{uuid}', [FormPengawasController::class, 'verifiedSupervisor'])->name('form-pengawas.verified.supervisor');
-    // Route::get('/form-pengawas/verified/superintendent/{uuid}', [FormPengawasController::class, 'verifiedSuperintendent'])->name('form-pengawas.verified.superintendent');
-
-    //Form Pengawas
-    //Route::get('/form-pengawas/search-users', [FormPengawasController::class, 'users'])->name('cariUsers');
-    // Route::get('/form-pengawas/show', [FormPengawasController::class, 'show'])->name('form-pengawas.show');
-    // Route::get('/form-pengawas/index', [FormPengawasController::class, 'index'])->name('form-pengawas.index');
-
-    // Route::get('/form-pengawas/download/{uuid}', [FormPengawasController::class, 'download'])->name('form-pengawas.download');
-    // Route::get('/form-pengawas/preview/{uuid}', [FormPengawasController::class, 'preview'])->name('form-pengawas.preview');
-    // Route::post('/form-pengawas/post', [FormPengawasController::class, 'post'])->name('form-pengawas.post');
-    // Route::post('/form-pengawas/auto-save', [FormPengawasController::class, 'autoSave'])->name('form-pengawas.auto-save');
-
-    Route::get('/form-pengawas/index', function () {
-        return redirect()->route('form-pengawas-new.index');
-    });
 
     //Form Pengawas Baru
     Route::get('/form-pengawas-new/search-users', [FormPengawasNewController::class, 'users'])->name('cariUsers');
@@ -194,6 +173,15 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/form-pengawas-sap/rincian/{uuid}', [FormPengawasSAPController::class, 'rincian'])->name('form-pengawas-sap.rincian');
     Route::post('/form-pengawas-sap/update/{uuid}', [FormPengawasSAPController::class, 'update'])->name('form-pengawas-sap.update');
 
+    //Hazard Report
+    Route::get('/hazard-report/index', [HazardReportController::class, 'index'])->name('hazard-report.index')->middleware('canAccess');
+    Route::get('/hazard-report/insert', [HazardReportController::class, 'insert'])->name('hazard-report.insert')->middleware('canAccess');
+    Route::post('/hazard-report/post', [HazardReportController::class, 'post'])->name('hazard-report.post');
+    Route::get('/hazard-report/review/{uuid}', [HazardReportController::class, 'review'])->name('hazard-report.review');
+    Route::get('/hazard-report/delete/{uuid}', [HazardReportController::class, 'delete'])->name('hazard-report.delete');
+    Route::post('/hazard-report/close', [HazardReportController::class, 'closeHazard'])->name('hazard-report.close');
+    Route::post('/hazard-report/verifySCC', [HazardReportController::class, 'verifySCC'])->name('hazard-report.verify.scc');
+
     //Laporan Kata Sandi
     Route::get('/laporan-kata-sandi/index', [LaporanKataSandiController::class, 'index'])->name('laporan-kata-sandi.index');
     Route::post('/laporan-kata-sandi/post', [LaporanKataSandiController::class, 'post'])->name('laporan-kata-sandi.post');
@@ -203,6 +191,40 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/laporan-kata-sandi/cetak/{uuid}', [LaporanKataSandiController::class, 'cetak'])->name('laporan-kata-sandi.cetak');
     Route::get('/laporan-kata-sandi/pdf/{uuid}', [LaporanKataSandiController::class, 'pdf'])->name('laporan-kata-sandi.pdf');
     Route::get('/laporan-kata-sandi/jamMonitor', [LaporanKataSandiController::class, 'jamMonitor'])->name('laporan-kata-sandi.jamMonitor');
+
+    //Form Laporan Safety ERT
+    Route::get('/ert/show', [ERTController::class, 'show'])->name('ert.show')->middleware('canAccess');
+    Route::get('/ert/index', [ERTController::class, 'index'])->name('ert.index')->middleware('canAccess');
+    Route::post('/ert/post', [ERTController::class, 'post'])->name('ert.post');
+    Route::post('/save-draft-ert', [ERTController::class, 'saveAsDraft'])->name('ert.saveAsDraft');
+    Route::get('/ert/preview/{uuid}', [ERTController::class, 'preview'])->name('ert.preview');
+    Route::get('/ert/delete/{uuid}', [ERTController::class, 'delete'])->name('ert.delete');
+    Route::get('/ert/verified/petugas/{uuid}', [ERTController::class, 'verifiedPetugas'])->name('ert.verified.petugas');
+    Route::get('/ert/verified/penerima/{uuid}', [ERTController::class, 'verifiedPenerima'])->name('ert.verified.penerima');
+    Route::get('/ert/verified/superintendent/{uuid}', [ERTController::class, 'verifiedSuperintendent'])->name('ert.verified.superintendent');
+    Route::get('/ert/download/pdf/{uuid}', [ERTController::class, 'pdf'])->name('ert.pdf');
+    Route::get('/ert/download/{uuid}', [ERTController::class, 'download'])->name('ert.download');
+    Route::get('/ert/bundlepdf', [ERTController::class, 'bundlepdf'])->name('ert.bundlepdf');
+    Route::delete('/delete-ert-subKegiatan/{id}', [ERTController::class, 'destroySubKegiatan']);
+    Route::delete('/delete-ert-temuanTindakLanjut/{id}', [ERTController::class, 'destroyTemuanTindakLanjut']);
+    Route::delete('/delete-ert-jobPending/{id}', [ERTController::class, 'destroyJobPending']);
+
+    //Form Laporan Safety Patrol
+    Route::get('/patrol/show', [PatrolController::class, 'show'])->name('patrol.show')->middleware('canAccess');
+    Route::get('/patrol/index', [PatrolController::class, 'index'])->name('patrol.index')->middleware('canAccess');
+    Route::post('/patrol/post', [PatrolController::class, 'post'])->name('patrol.post');
+    Route::post('/save-draft-patrol', [PatrolController::class, 'saveAsDraft'])->name('patrol.saveAsDraft');
+    Route::get('/patrol/preview/{uuid}', [PatrolController::class, 'preview'])->name('patrol.preview');
+    Route::get('/patrol/delete/{uuid}', [PatrolController::class, 'delete'])->name('patrol.delete');
+    Route::get('/patrol/verified/petugas/{uuid}', [PatrolController::class, 'verifiedPetugas'])->name('patrol.verified.petugas');
+    Route::get('/patrol/verified/penerima/{uuid}', [PatrolController::class, 'verifiedPenerima'])->name('patrol.verified.penerima');
+    Route::get('/patrol/verified/superintendent/{uuid}', [PatrolController::class, 'verifiedSuperintendent'])->name('patrol.verified.superintendent');
+    Route::get('/patrol/download/pdf/{uuid}', [PatrolController::class, 'pdf'])->name('patrol.pdf');
+    Route::get('/patrol/download/{uuid}', [PatrolController::class, 'download'])->name('patrol.download');
+    Route::get('/patrol/bundlepdf', [PatrolController::class, 'bundlepdf'])->name('patrol.bundlepdf');
+    Route::delete('/delete-patrol-subKegiatan/{id}', [PatrolController::class, 'destroySubKegiatan']);
+    Route::delete('/delete-patrol-temuanTindakLanjut/{id}', [PatrolController::class, 'destroyTemuanTindakLanjut']);
+    Route::delete('/delete-patrol-jobPending/{id}', [PatrolController::class, 'destroyJobPending']);
 
     //Front Loading
     Route::get('/front-loading/index', [FrontLoadingController::class, 'index'])->name('front-loading.index');
@@ -222,25 +244,38 @@ Route::group(['middleware' => ['auth']], function(){
     Route::delete('/alat-support/{id}', [AlatSupportController::class, 'destroy']);
     Route::delete('/delete-support/{id}', [AlatSupportController::class, 'destroy']);
 
-    //SOP Produksi
-    Route::get('/sop/production/perawatanPenimbunanJalan', [SOPProduksiController::class, 'perawatanPenimbunanJalan'])->name('sop.perawatanPenimbunanJalan');
-    Route::get('/sop/production/coalGetting', [SOPProduksiController::class, 'coalGetting'])->name('sop.coalGetting');
-    Route::get('/sop/production/penimbunanMaterialKolamLumpurBullDozer', [SOPProduksiController::class, 'penimbunanMaterialKolamLumpurBullDozer'])->name('sop.penimbunanMaterialKolamLumpurBullDozer');
-    Route::get('/sop/production/pemuatanPengangkutanLumpur', [SOPProduksiController::class, 'pemuatanPengangkutanLumpur'])->name('sop.pemuatanPengangkutanLumpur');
-    Route::get('/sop/production/kegiatanSlippery', [SOPProduksiController::class, 'kegiatanSlippery'])->name('sop.kegiatanSlippery');
-    Route::get('/sop/production/pengoperasianEXDigger', [SOPProduksiController::class, 'pengoperasianEXDigger'])->name('sop.pengoperasianEXDigger');
-    Route::get('/sop/production/pengoperasianLampuTambang', [SOPProduksiController::class, 'pengoperasianLampuTambang'])->name('sop.pengoperasianLampuTambang');
-    Route::get('/sop/production/landClearing', [SOPProduksiController::class, 'landClearing'])->name('sop.landClearing');
-    Route::get('/sop/production/pengecekanPerbaikanWeakpoint', [SOPProduksiController::class, 'pengecekanPerbaikanWeakpoint'])->name('sop.pengecekanPerbaikanWeakpoint');
-    Route::get('/sop/production/topSoil', [SOPProduksiController::class, 'topSoil'])->name('sop.topSoil');
-    Route::get('/sop/production/optimalisasiGantiShift', [SOPProduksiController::class, 'optimalisasiGantiShift'])->name('sop.optimalisasiGantiShift');
-    Route::get('/sop/production/penangananUnitHDAmblas', [SOPProduksiController::class, 'penangananUnitHDAmblas'])->name('sop.penangananUnitHDAmblas');
-    Route::get('/sop/production/piketJagaTambang', [SOPProduksiController::class, 'piketJagaTambang'])->name('sop.piketJagaTambang');
-    Route::get('/sop/production/kegiatanHaulRoad', [SOPProduksiController::class, 'kegiatanHaulRoad'])->name('sop.kegiatanHaulRoad');
-    Route::get('/sop/production/kegiatanDropCut', [SOPProduksiController::class, 'kegiatanDropCut'])->name('sop.kegiatanDropCut');
-    Route::get('/sop/production/pengelolaanWasteDump', [SOPProduksiController::class, 'pengelolaanWasteDump'])->name('sop.pengelolaanWasteDump');
-    Route::get('/sop/production/dumpingAreaWasteDump', [SOPProduksiController::class, 'dumpingAreaWasteDump'])->name('sop.dumpingAreaWasteDump');
-    Route::get('/sop/production/perbaikanTanggulJalan', [SOPProduksiController::class, 'perbaikanTanggulJalan'])->name('sop.perbaikanTanggulJalan');
+    //SOP
+    Route::get('/sop/index', [SOPController::class, 'index'])->name('sop.index');
+    Route::get('/sop/preview/{uuid}', [SOPController::class, 'preview'])->name('sop.preview');
+    Route::get('/sop/{uuid}', function ($uuid) {
+
+        $data = SOP::where('uuid', $uuid)
+            ->where('statusenabled', true)
+            ->firstOrFail();
+
+        $pdfUrl = $data->url;
+
+        $response = Http::withOptions([
+            'verify' => false,
+            'timeout' => 30,
+        ])->get($pdfUrl);
+
+        if (!$response->ok()) {
+            abort(404);
+        }
+
+       $contentType = $response->header('Content-Type');
+        return Response::make(
+            $response->body(),
+            200,
+            [
+                'Content-Type'         => $contentType,
+                'Content-Disposition' => 'inline',
+            ]
+        );
+
+    })->name('sop.show');
+
 
     Route::get('/files/{name}', function ($name) {
         $path = public_path('sop/' . $name);  // sesuaikan lokasi Anda
@@ -263,6 +298,10 @@ Route::group(['middleware' => ['auth']], function(){
     //BB Catatan Pengawas
     Route::get('/batu-bara/catatan-pengawas/index', [BBCatatanPengawasController::class, 'index'])->name('bb.catatan-pengawas.index');
     Route::delete('/batu-bara/delete/catatan-pengawas/{id}', [BBCatatanPengawasController::class, 'destroy'])->name('bb.catatan-pengawas.destroy');
+
+    //SAP
+    Route::get('/sap/index', [SAPController::class, 'index'])->name('sap.index');
+    Route::get('/sap/show', [SAPController::class, 'show'])->name('sap.show');
 
     //KLKH Loading Point
     Route::get('/klkh/loading-point', [KLKHLoadingPointController::class, 'index'])->name('klkh.loading-point');
@@ -362,6 +401,56 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/klkh/simpangempat/verified/supervisor/{uuid}', [KLKHSimpangEmpatController::class, 'verifiedSupervisor'])->name('klkh.simpangempat.verified.supervisor');
     Route::post('/klkh/simpangempat/verified/superintendent/{uuid}', [KLKHSimpangEmpatController::class, 'verifiedSuperintendent'])->name('klkh.simpangempat.verified.superintendent');
 
+    //Inspeksi Tambang - Jalan Tambang
+    Route::get('/inspeksi/jalantambang', [InspeksiJalanTambangController::class, 'index'])->name('inspeksi.jalantambang');
+    Route::get('/inspeksi/jalantambang/insert', [InspeksiJalanTambangController::class, 'insert'])->name('inspeksi.jalantambang.insert')->middleware('canAccess');
+    Route::post('/inspeksi/jalantambang/post', [InspeksiJalanTambangController::class, 'post'])->name('inspeksi.jalantambang.post');
+    Route::get('/inspeksi/jalantambang/delete/{id}', [InspeksiJalanTambangController::class, 'delete'])->name('inspeksi.jalantambang.delete');
+    Route::get('/inspeksi/jalantambang/preview/{uuid}', [InspeksiJalanTambangController::class, 'preview'])->name('inspeksi.jalantambang.preview');
+    Route::get('/inspeksi/jalantambang/bundlepdf', [InspeksiJalanTambangController::class, 'bundlepdf'])->name('inspeksi.jalantambang.bundlepdf');
+    Route::get('/inspeksi/jalantambang/cetak/{uuid}', [InspeksiJalanTambangController::class, 'cetak'])->name('inspeksi.jalantambang.cetak');
+    Route::get('/inspeksi/jalantambang/download/{uuid}', [InspeksiJalanTambangController::class, 'download'])->name('inspeksi.jalantambang.download');
+
+    //Inspeksi Tambang - Disposal
+    Route::get('/inspeksi/disposal', [InspeksiDisposalController::class, 'index'])->name('inspeksi.disposal');
+    Route::get('/inspeksi/disposal/insert', [InspeksiDisposalController::class, 'insert'])->name('inspeksi.disposal.insert')->middleware('canAccess');
+    Route::post('/inspeksi/disposal/post', [InspeksiDisposalController::class, 'post'])->name('inspeksi.disposal.post');
+    Route::get('/inspeksi/disposal/delete/{id}', [InspeksiDisposalController::class, 'delete'])->name('inspeksi.disposal.delete');
+    Route::get('/inspeksi/disposal/preview/{uuid}', [InspeksiDisposalController::class, 'preview'])->name('inspeksi.disposal.preview');
+    Route::get('/inspeksi/disposal/bundlepdf', [InspeksiDisposalController::class, 'bundlepdf'])->name('inspeksi.disposal.bundlepdf');
+    Route::get('/inspeksi/disposal/cetak/{uuid}', [InspeksiDisposalController::class, 'cetak'])->name('inspeksi.disposal.cetak');
+    Route::get('/inspeksi/disposal/download/{uuid}', [InspeksiDisposalController::class, 'download'])->name('inspeksi.disposal.download');
+
+    //Inspeksi Tambang - OGS
+    Route::get('/inspeksi/ogs', [InspeksiOGSController::class, 'index'])->name('inspeksi.ogs');
+    Route::get('/inspeksi/ogs/insert', [InspeksiOGSController::class, 'insert'])->name('inspeksi.ogs.insert')->middleware('canAccess');
+    Route::post('/inspeksi/ogs/post', [InspeksiOGSController::class, 'post'])->name('inspeksi.ogs.post');
+    Route::get('/inspeksi/ogs/delete/{id}', [InspeksiOGSController::class, 'delete'])->name('inspeksi.ogs.delete');
+    Route::get('/inspeksi/ogs/preview/{uuid}', [InspeksiOGSController::class, 'preview'])->name('inspeksi.ogs.preview');
+    Route::get('/inspeksi/ogs/bundlepdf', [InspeksiOGSController::class, 'bundlepdf'])->name('inspeksi.ogs.bundlepdf');
+    Route::get('/inspeksi/ogs/cetak/{uuid}', [InspeksiOGSController::class, 'cetak'])->name('inspeksi.ogs.cetak');
+    Route::get('/inspeksi/ogs/download/{uuid}', [InspeksiOGSController::class, 'download'])->name('inspeksi.ogs.download');
+
+    //Inspeksi Slurry Pump
+    Route::get('/inspeksi/slurrypump', [InspeksiSlurryPumpController::class, 'index'])->name('inspeksi.slurrypump');
+    Route::get('/inspeksi/slurrypump/insert', [InspeksiSlurryPumpController::class, 'insert'])->name('inspeksi.slurrypump.insert')->middleware('canAccess');
+    Route::post('/inspeksi/slurrypump/post', [InspeksiSlurryPumpController::class, 'post'])->name('inspeksi.slurrypump.post');
+    Route::get('/inspeksi/slurrypump/delete/{id}', [InspeksiSlurryPumpController::class, 'delete'])->name('inspeksi.slurrypump.delete');
+    Route::get('/inspeksi/slurrypump/preview/{uuid}', [InspeksiSlurryPumpController::class, 'preview'])->name('inspeksi.slurrypump.preview');
+    Route::get('/inspeksi/slurrypump/bundlepdf', [InspeksiSlurryPumpController::class, 'bundlepdf'])->name('inspeksi.slurrypump.bundlepdf');
+    Route::get('/inspeksi/slurrypump/cetak/{uuid}', [InspeksiSlurryPumpController::class, 'cetak'])->name('inspeksi.slurrypump.cetak');
+    Route::get('/inspeksi/slurrypump/download/{uuid}', [InspeksiSlurryPumpController::class, 'download'])->name('inspeksi.slurrypump.download');
+
+    //Inspeksi Tambang - Front Loading
+    Route::get('/inspeksi/frontloading', [InspeksiFrontLoadingController::class, 'index'])->name('inspeksi.frontloading');
+    Route::get('/inspeksi/frontloading/insert', [InspeksiFrontLoadingController::class, 'insert'])->name('inspeksi.frontloading.insert')->middleware('canAccess');
+    Route::post('/inspeksi/frontloading/post', [InspeksiFrontLoadingController::class, 'post'])->name('inspeksi.frontloading.post');
+    Route::get('/inspeksi/frontloading/delete/{id}', [InspeksiFrontLoadingController::class, 'delete'])->name('inspeksi.frontloading.delete');
+    Route::get('/inspeksi/frontloading/preview/{uuid}', [InspeksiFrontLoadingController::class, 'preview'])->name('inspeksi.frontloading.preview');
+    Route::get('/inspeksi/frontloading/bundlepdf', [InspeksiFrontLoadingController::class, 'bundlepdf'])->name('inspeksi.frontloading.bundlepdf');
+    Route::get('/inspeksi/frontloading/cetak/{uuid}', [InspeksiFrontLoadingController::class, 'cetak'])->name('inspeksi.frontloading.cetak');
+    Route::get('/inspeksi/frontloading/download/{uuid}', [InspeksiFrontLoadingController::class, 'download'])->name('inspeksi.frontloading.download');
+
     //Paylaod & Ritation
     Route::get('/payloadritation/all', [PayloadRitationController::class, 'index'])->name('payloadritation.index');
     Route::get('/payloadritation/exa', [PayloadRitationController::class, 'exa_new'])->name('payloadritation.exa');
@@ -369,44 +458,26 @@ Route::group(['middleware' => ['auth']], function(){
     // Profile
     Route::post('/profile/change-password', [ProfileController::class, 'changePassword'])->name('profile.change-password');
 
-    //Verifikasi Laporan Kerja
-    Route::get('/verifikasi/laporan-kerja', [VerifikasiLaporanKerjaController::class, 'index'])->name('verifikasi.laporankerja');
-
     //Verifikasi Semua KLKH
     Route::get('/verifikasi/klkh', [VerifikasiKLKHController::class, 'index'])->name('verifikasi.klkh');
     Route::get('/verifikasi/klkh/preview/{uuid}', [VerifikasiKLKHController::class, 'preview'])->name('verifikasi.klkh.preview');
     Route::get('/verifikasi/klkh/all', [VerifikasiKLKHController::class, 'all'])->name('verifikasi.klkh.all');
 
-    //Verifikasi KLKH Loading Point
-    Route::get('/verifikasi/klkh/loading-point', [VerifikasiKLKHLoadingPointController::class, 'index'])->name('verifikasi.klkh.loadingpoint');
-    Route::get('/verifikasi/klkh/loading-point/all', [VerifikasiKLKHLoadingPointController::class, 'all'])->name('verifikasi.klkh.loadingpoint.all');
-
-    //Verifikasi KLKH Haul Road
-    Route::get('/verifikasi/klkh/haul-road', [VerifikasiKLKHHaulRoadController::class, 'index'])->name('verifikasi.klkh.haulroad');
-
-    //Verifikasi KLKH Disposal/Dumping Point
-    Route::get('/verifikasi/klkh/disposal', [VerifikasiKLKHDisposalController::class, 'index'])->name('verifikasi.klkh.disposal');
-
-    //Verifikasi KLKH Dumping di Lumpur
-    Route::get('/verifikasi/klkh/lumpur', [VerifikasiKLKHLumpurController::class, 'index'])->name('verifikasi.klkh.lumpur');
-
-    //Verifikasi KLKH OGS
-    Route::get('/verifikasi/klkh/ogs', [VerifikasiKLKHOGSController::class, 'index'])->name('verifikasi.klkh.ogs');
-
-    //Verifikasi KLKH Batu Bara
-    Route::get('/verifikasi/klkh/batu-bara', [VerifikasiKLKHBatubaraController::class, 'index'])->name('verifikasi.klkh.batubara');
-
-    //Verifikasi KLKH Intersection/Simpang Empat
-    Route::get('/verifikasi/klkh/simpang-empat', [VerifikasiKLKHSimpangEmpatController::class, 'index'])->name('verifikasi.klkh.simpangempat');
 
     //Monitoring Laporan Kerja & KLKH
     Route::get('/monitoring-laporan-kerja-klkh', [MonitoringLaporanKerjaKLKHController::class, 'index'])->name('monitoringlaporankerjaklkh');
 
-    //Roster Kerja
-    Route::get('/roster-kerja', [RosterKerjaController::class, 'index'])->name('rosterkerja');
-    Route::post('/roster-kerja/import', [RosterKerjaController::class, 'import'])->name('rosterkerja.import');
-    Route::get('/roster-kerja/export', [RosterKerjaController::class, 'export'])->name('rosterkerja.export');
-    Route::get('/roster-kerja/templateExcel', [RosterKerjaController::class, 'templateExcel'])->name('rosterkerja.templateExcel');
+    //Roster Kerja Produksi
+    Route::get('/roster-kerja/produksi', [RosterKerjaProduksiController::class, 'index'])->name('rosterkerja.produksi');
+    Route::post('/roster-kerja/produksi/import', [RosterKerjaProduksiController::class, 'import'])->name('rosterkerja.produksi.import');
+    Route::get('/roster-kerja/produksi/export', [RosterKerjaProduksiController::class, 'export'])->name('rosterkerja.produksi.export');
+    Route::get('/roster-kerja/produksi/templateExcel', [RosterKerjaProduksiController::class, 'templateExcel'])->name('rosterkerja.produksi.templateExcel');
+
+    //Roster Kerja Safety
+    Route::get('/roster-kerja/safety', [RosterKerjaSafetyController::class, 'index'])->name('rosterkerja.safety');
+    Route::post('/roster-kerja/safety/import', [RosterKerjaSafetyController::class, 'import'])->name('rosterkerja.safety.import');
+    Route::get('/roster-kerja/safety/export', [RosterKerjaSafetyController::class, 'export'])->name('rosterkerja.safety.export');
+    Route::get('/roster-kerja/safety/templateExcel', [RosterKerjaSafetyController::class, 'templateExcel'])->name('rosterkerja.safety.templateExcel');
 
     //Monitoring Payload
     Route::get('/monitoring-payload', [MonitoringPayloadController::class, 'index'])->name('monitoringpayload');
@@ -434,25 +505,38 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/safety/p2h/download/{uuid}', [P2HController::class, 'download'])->name('p2h.download');
 
     //KKH
-    Route::get('/kkh/all', [KKHController::class, 'all'])->name('kkh.all');
+    Route::get('/kkh/all', [KKHController::class, 'all'])->name('kkh.all')->middleware('canAccess');
     Route::get('/kkh/all/api', [KKHController::class, 'all_api'])->name('kkh.all_api');
     Route::get('/kkh/all/name', [KKHController::class, 'all_name'])->name('kkh.all_name');
-    Route::get('/kkh/name', [KKHController::class, 'name'])->name('kkh.name');
+    Route::get('/kkh/name', [KKHController::class, 'name'])->name('kkh.name')->middleware('canAccess');
     Route::post('/kkh/verifikasi', [KKHController::class, 'verifikasi'])->name('kkh.verifikasi');
     Route::get('/kkh/download', [KKHController::class, 'download'])->name('kkh.download');
 
-    //Job Pending
-    Route::get('/job-pending', [JobPendingController::class, 'index'])->name('jobpending')->middleware('canAccess');
-    Route::get('/job-pending/insert', [JobPendingController::class, 'insert'])->name('jobpending.insert')->middleware('canAccess');
-    Route::post('/job-pending/post', [JobPendingController::class, 'post'])->name('jobpending.post');
-    Route::post('/job-pending/catatanPenerima/{uuid}', [JobPendingController::class, 'catatanPenerima'])->name('jobpending.catatanPenerima');
-    Route::get('/job-pending/show/{uuid}', [JobPendingController::class, 'show'])->name('jobpending.show');
-    Route::get('/job-pending/cetak/{uuid}', [JobPendingController::class, 'cetak'])->name('jobpending.cetak');
-    Route::get('/job-pending/download/{uuid}', [JobPendingController::class, 'download'])->name('jobpending.download');
-    Route::get('/job-pending/verifikasi/{uuid}', [JobPendingController::class, 'verifikasi'])->name('jobpending.verifikasi');
-    Route::get('/job-pending/detail', [JobPendingController::class, 'detail'])->name('jobpending.detail')->middleware('canAccess');
-    Route::get('/job-pending/apiDetail', [JobPendingController::class, 'apiDetail'])->name('jobpending.apiDetail');
-    Route::get('/job-pending/excelDetail', [JobPendingController::class, 'excelDetail'])->name('jobpending.excelDetail');
+    //Job Pending Produksi
+    Route::get('/job-pending/produksi', [JobPendingProduksiController::class, 'index'])->name('jobpending.produksi')->middleware('canAccess');
+    Route::get('/job-pending/produksi/insert', [JobPendingProduksiController::class, 'insert'])->name('jobpending.produksi.insert')->middleware('canAccess');
+    Route::post('/job-pending/produksi/post', [JobPendingProduksiController::class, 'post'])->name('jobpending.produksi.post');
+    Route::post('/job-pending/produksi/catatanPenerima/{uuid}', [JobPendingProduksiController::class, 'catatanPenerima'])->name('jobpending.produksi.catatanPenerima');
+    Route::get('/job-pending/produksi/show/{uuid}', [JobPendingProduksiController::class, 'show'])->name('jobpending.produksi.show');
+    Route::get('/job-pending/produksi/cetak/{uuid}', [JobPendingProduksiController::class, 'cetak'])->name('jobpending.produksi.cetak');
+    Route::get('/job-pending/produksi/download/{uuid}', [JobPendingProduksiController::class, 'download'])->name('jobpending.produksi.download');
+    Route::get('/job-pending/produksi/verifikasi/{uuid}', [JobPendingProduksiController::class, 'verifikasi'])->name('jobpending.produksi.verifikasi');
+    Route::get('/job-pending/produksi/detail', [JobPendingProduksiController::class, 'detail'])->name('jobpending.produksi.detail')->middleware('canAccess');
+    Route::get('/job-pending/produksi/apiDetail', [JobPendingProduksiController::class, 'apiDetail'])->name('jobpending.produksi.apiDetail');
+    Route::get('/job-pending/produksi/excelDetail', [JobPendingProduksiController::class, 'excelDetail'])->name('jobpending.produksi.excelDetail');
+
+    //Job Pending Safety
+    Route::get('/job-pending/safety', [JobPendingSafetyController::class, 'index'])->name('jobpending.safety')->middleware('canAccess');
+    Route::get('/job-pending/safety/insert', [JobPendingSafetyController::class, 'insert'])->name('jobpending.safety.insert')->middleware('canAccess');
+    Route::post('/job-pending/safety/post', [JobPendingSafetyController::class, 'post'])->name('jobpending.safety.post');
+    Route::post('/job-pending/safety/catatanPenerima/{uuid}', [JobPendingSafetyController::class, 'catatanPenerima'])->name('jobpending.safety.catatanPenerima');
+    Route::get('/job-pending/safety/show/{uuid}', [JobPendingSafetyController::class, 'show'])->name('jobpending.safety.show');
+    Route::get('/job-pending/safety/cetak/{uuid}', [JobPendingSafetyController::class, 'cetak'])->name('jobpending.safety.cetak');
+    Route::get('/job-pending/safety/download/{uuid}', [JobPendingSafetyController::class, 'download'])->name('jobpending.safety.download');
+    Route::get('/job-pending/safety/verifikasi/{uuid}', [JobPendingSafetyController::class, 'verifikasi'])->name('jobpending.safety.verifikasi');
+    Route::get('/job-pending/safety/detail', [JobPendingSafetyController::class, 'detail'])->name('jobpending.safety.detail')->middleware('canAccess');
+    Route::get('/job-pending/safety/apiDetail', [JobPendingSafetyController::class, 'apiDetail'])->name('jobpending.safety.apiDetail');
+    Route::get('/job-pending/safety/excelDetail', [JobPendingSafetyController::class, 'excelDetail'])->name('jobpending.safety.excelDetail');
 
     //Staging Plan
     Route::get('/staging-plan', [StagingPlanController::class, 'index'])->name('stagingplan')->middleware('canAccess');
@@ -477,12 +561,12 @@ Route::group(['middleware' => ['auth']], function(){
             abort(404);
         }
 
-        // Kembalikan sebagai PDF inline
+       $contentType = $response->header('Content-Type');
         return Response::make(
             $response->body(),
             200,
             [
-                'Content-Type'         => 'application/pdf',
+                'Content-Type'         => $contentType,
                 'Content-Disposition' => 'inline',
             ]
         );
@@ -491,6 +575,19 @@ Route::group(['middleware' => ['auth']], function(){
 
     // Log
     Route::get('/log/index', [LogController::class, 'index'])->name('log.index')->middleware('canAccess');
+
+    //Permisision
+    Route::get('/permission', [PermissionController::class, 'index'])->name('permission.index');
+    Route::post('/permission/save-role', [PermissionController::class, 'saveRole'])->name('permission.saveRole');
+    Route::post('/permission/save-dept', [PermissionController::class, 'saveDept'])->name('permission.saveDept');
+
+    //Reference Config
+    Route::get('/reference', [ReferenceController::class, 'index'])->name('reference.index')->middleware('canAccess');
+    Route::post('/reference/insert', [ReferenceController::class, 'insert'])->name('reference.insert');
+    Route::post('/reference/update/{id}', [ReferenceController::class, 'update'])->name('reference.update');
+
+    //Profile
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
 });
 Route::get('/verified/{encodedNik}', [VerifiedController::class, 'index'])->name('verified.index');
 

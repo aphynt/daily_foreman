@@ -41,7 +41,7 @@ class LogController extends Controller
             (object)['jenis' => 'Alat Support'],
         ]);
 
-        $log = DB::table('HIS_LOG as lg')->leftJoin('users as us', 'lg.nama_user', 'us.id')
+        $log = DB::table('his_log as lg')->leftJoin('users as us', 'lg.nama_user', 'us.id')
         ->select(
             'lg.tanggal_loging',
             'lg.jenis_loging',

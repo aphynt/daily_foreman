@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class KLKHBatuBara extends Model
 {
     //
-    protected $table = 'klkh_batubara_t';
+    protected $table = 'prd_klkh_batubara';
 
     protected $guarded = [];
 }

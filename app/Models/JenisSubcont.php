@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class JenisSubcont extends Model
 {
     //
-    protected $table = 'REF_SUBCONT_JENIS_SUPPORT';
+    protected $table = 'prd_ref_subcont_jenis_support';
 
     protected $guarded = [];
 }

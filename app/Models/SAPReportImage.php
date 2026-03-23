@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class SAPReportImage extends Model
 {
     //
-    protected $table = 'SAP_REPORT_IMAGE';
+    protected $table = 'prd_sap_report_image';
 
     protected $guarded = [];
 }

@@ -105,7 +105,7 @@
                                             </td>
                                             @if (in_array(Auth::user()->role, ['ADMIN', 'PIT CONTROL']))
                                             <td class="d-flex">
-                                                <a href="{{ route('jobpending.show', $stg->uuid) }}" class="text-danger me-1" style="font-size:16px;" data-bs-toggle="modal" data-bs-target="#deleteStagingPlan{{ $stg->uuid }}"
+                                                <a href="#" class="text-danger me-1" style="font-size:16px;" data-bs-toggle="modal" data-bs-target="#deleteStagingPlan{{ $stg->uuid }}"
                                                     title="Hapus"> <i class="fas fa-trash-alt"></i>
                                                 </a>
                                             </td>

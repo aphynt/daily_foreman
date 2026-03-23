@@ -33,8 +33,9 @@ class AttendanceController extends Controller
                 }
 
                 $exists = DB::connection('kantin')->table('KANTIN_MESS.dbo.attendance_logs')
-                    ->where('id', $row['id'])
-                    ->exists();
+                ->where('nik', $row['nik'])
+                ->where('attendance_time', $row['attendance_time'])
+                ->exists();
 
                 if ($exists) {
                     $skipped++;
@@ -59,6 +60,8 @@ class AttendanceController extends Controller
                     'statusenabled'       => 1,
                     'food_category'    => $row['food_category'] ?? 1,
                     'position'         => $row['position'] ?? 'Mess SIMS',
+                    'is_real_face'     => $row['is_real_face'] ?? null,
+                    'photo_path'       => $row['photo_path'] ?? null,
                 ]);
 
                 $inserted++;

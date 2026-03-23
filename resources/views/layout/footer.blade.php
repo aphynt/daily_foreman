@@ -2,8 +2,13 @@
     <div class="footer-wrapper container-fluid">
         <div class="row mt-3">
             <div class="col my-1">
-                <p style="font-size: 8pt" class="m-0">Copyright &copy; by <a href="https://www.ptsims.co.id/"
-                        target="_blank">IT-FMS</a></p>
+                <p class="m-0 text-muted" style="font-size: 9pt;">
+                    © 2024 All Rights Reserved •
+                    Developed  by
+                    <a href="https://ahmadfadillah.my.id/" target="_blank" class="fw-semibold text-decoration-none">
+                        IT
+                    </a>
+                </p>
             </div>
             <div class="col-auto my-1">
                 <ul class="list-inline footer-link mb-0">

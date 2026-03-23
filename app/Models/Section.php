@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Section extends Model
 {
     //
-    protected $table = 'REF_SECTION';
+    protected $table = 'prd_ref_section';
 
     protected $guarded = [];
 }

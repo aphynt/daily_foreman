@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class SAPReport extends Model
 {
     //
-    protected $table = 'SAP_REPORT';
+    protected $table = 'prd_sap_report';
 
     protected $guarded = [];
 }

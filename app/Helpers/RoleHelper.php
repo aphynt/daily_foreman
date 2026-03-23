@@ -8,12 +8,21 @@ if (! function_exists('canAccess')) {
         $user = Auth::user();
         if (! $user || ! $user->roleRel) return false;
 
-        $routes = $user->roleRel->allowed_routes ?? [];
+        $roleRoutes = $user->roleRel->allowed_routes ?? [];
+        if (is_string($roleRoutes)) {
+            $roleRoutes = json_decode($roleRoutes, true) ?? [];
+        }
 
-        if (in_array('*', $routes)) {
+        if (in_array('*', $roleRoutes)) {
             return true;
         }
 
-        return in_array($routeName, $routes);
+        $deptRoutes = $user->departemenRel->menu_routes ?? [];
+        if (is_string($deptRoutes)) {
+            $deptRoutes = json_decode($deptRoutes, true) ?? [];
+        }
+
+        return in_array($routeName, $roleRoutes) || in_array($routeName, $deptRoutes);
     }
+
 }

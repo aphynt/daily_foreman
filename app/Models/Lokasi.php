@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Lokasi extends Model
 {
     //
-    protected $table = 'REF_LOKASI';
+    protected $table = 'prd_ref_lokasi';
 
     protected $guarded = [];
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -57,5 +58,14 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login')->with('success', 'Anda telah berhasil keluar');
+    }
+
+    public function logout_session(Request $request)
+    {
+        DB::table('sessions')
+            ->where('id', $request->session_id)
+            ->delete();
+
+        return back();
     }
 }

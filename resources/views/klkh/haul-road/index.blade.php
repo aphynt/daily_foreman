@@ -15,42 +15,57 @@
                         </ul>
                     </div>
                     <div class="col-12">
-                        <div class="mb-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                        <div class="mb-3 d-flex flex-wrap flex-md-nowrap align-items-center justify-content-between gap-2">
 
-                            {{-- KIRI : FILTER --}}
-                            <form action="" method="get" class="d-flex align-items-center gap-2">
-                                <div class="input-group input-group-sm" id="pc-datepicker-9">
-                                    <input type="text" class="form-control" placeholder="Start date"
-                                        name="rangeStart" style="max-width:200px" id="range-start">
-                                    <span class="input-group-text">s/d</span>
-                                    <input type="text" class="form-control" placeholder="End date"
-                                        name="rangeEnd" style="max-width:200px" id="range-end">
-                                </div>
-                                <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
-                            </form>
+                            {{-- FILTER TANGGAL --}}
+                            <div class="d-flex align-items-center">
+                                <form action="" method="get">
+                                    <div class="input-group input-group-sm" id="pc-datepicker-9">
+                                        <input type="text" class="form-control form-control-sm"
+                                            placeholder="Start date" name="rangeStart"
+                                            style="max-width: 200px;" id="range-start">
 
-                            {{-- KANAN : ACTION --}}
-                            <div class="d-flex align-items-center gap-2">
+                                        <span class="input-group-text">s/d</span>
 
-                                {{-- FOREMAN & SUPERVISOR : input --}}
+                                        <input type="text" class="form-control form-control-sm"
+                                            placeholder="End date" name="rangeEnd"
+                                            style="max-width: 200px;" id="range-end">
+
+                                        <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            {{-- ACTION BUTTON --}}
+                            <div class="d-flex flex-wrap gap-2">
+
+                                {{-- Kembali --}}
+                                <a href="{{ url()->previous() }}">
+                                    <span class="badge bg-secondary px-3 py-2" style="font-size:14px">
+                                        <i class="fas fa-arrow-left"></i> Kembali
+                                    </span>
+                                </a>
+
+                                {{-- FOREMAN & SUPERVISOR --}}
                                 @if (canAccess('klkh.haul-road.insert'))
-                                    <a href="{{ route('klkh.haul-road.insert') }}" class="text-decoration-none">
-                                        <span class="badge bg-success" style="font-size:14px">
+                                    <a href="{{ route('klkh.haul-road.insert') }}">
+                                        <span class="badge bg-success px-3 py-2" style="font-size:14px">
                                             <i class="fas fa-plus"></i> Isi KLKH Haul Road
                                         </span>
                                     </a>
                                 @endif
 
-                                {{-- ADMIN & MANAGEMENT : download --}}
+                                {{-- ADMIN & MANAGEMENT --}}
                                 @if (canAccess('klkh.haul-road.bundlepdf'))
-                                    <a href="{{ route('klkh.haul-road.bundlepdf') }}" target="_blank" class="text-decoration-none">
-                                        <span class="badge bg-primary" style="font-size:14px">
+                                    <a href="{{ route('klkh.haul-road.bundlepdf') }}" target="_blank">
+                                        <span class="badge bg-primary px-3 py-2" style="font-size:14px">
                                             <i class="fas fa-download"></i> Bundle PDF
                                         </span>
                                     </a>
                                 @endif
 
                             </div>
+
                         </div>
 
                     </div>

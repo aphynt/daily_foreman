@@ -8,19 +8,27 @@
 
 <head>
     <title>{{ $title }} - {{ config('app.name') }}</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="manifest" href="{{ asset('manifest.json') }}">
-    <meta name="theme-color" content="#001831">
 
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description"
-        content="Digitalisasi laporan foreman untuk efisiensi alur proses dan peningkatan akurasi data">
-    <meta name="keywords" content="Laporan Harian Pengawas">
-    <meta name="author" content="FMS - PT. SIMS JAYA KALTIM">
-    <link rel="icon" href="{{ asset('dashboard/assets') }}/images/icon.png" type="image/x-icon">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Digitalisasi laporan foreman untuk efisiensi alur proses dan peningkatan akurasi data">
+
+    <link rel="icon" href="{{ asset('dashboard/assets/images/icon512.png') }}">
+
+    <!-- OPEN GRAPH (WA / FB / TELEGRAM) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ $title }} - {{ config('app.name') }}">
+    <meta property="og:description" content="Digitalisasi laporan foreman untuk efisiensi alur proses dan peningkatan akurasi data">
+    <meta property="og:image" content="{{ asset('dashboard/assets') }}/images/icon512.png">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="{{ config('app.name') }}">
+
+    <!-- TWITTER CARD (optional tapi bagus) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $title }} - {{ config('app.name') }}">
+    <meta name="twitter:description" content="Digitalisasi laporan foreman untuk efisiensi alur proses dan peningkatan akurasi data">
+    <meta name="twitter:image" content="{{ asset('dashboard/assets') }}/images/icon512.png">
     <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/css/plugins/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/css/plugins/buttons.bootstrap5.min.css">
     <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/css/plugins/dropzone.min.css">
@@ -67,15 +75,10 @@
     <style>
         hr {
             border: none;
-            /* Menghapus border default */
             height: 2px;
-            /* Menentukan ketebalan garis */
             background-color: #011b32;
-            /* Menambahkan warna latar belakang */
             margin: 20px 0;
-            /* Menambahkan jarak vertikal di atas dan bawah garis */
         }
-        /* Menghapus tanda panah datatables */
         .dt-column-order {
             display: none;
         }

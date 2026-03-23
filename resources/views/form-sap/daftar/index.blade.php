@@ -3,7 +3,6 @@
 @include('layout.header')
 
 <style>
-    /* Default: Untuk layar lebih besar dari 768px */
     .mode-desktop {
         display: block;
     }
@@ -11,7 +10,6 @@
         display: none;
     }
 
-    /* Untuk layar lebih kecil atau sama dengan 768px */
     @media (max-width: 768px) {
         .mode-desktop {
             display: none;
@@ -190,7 +188,6 @@
 
 @include('layout.footer')
 <script>
-    // range picker
     (function () {
         const datepicker_range = new DateRangePicker(document.querySelector('#pc-datepicker-10'), {
             buttonClass: 'btn'
@@ -199,15 +196,14 @@
 
 </script>
 <script>
-    // [ HTML5 Export Buttons ]
     $('#basic-btn').DataTable({
         dom: 'Bfrtip',
         buttons: ['copy', 'csv', 'excel', 'print']
     });
 
-    // [ Column Selectors ]
     $('#cbtn-selectors').DataTable({
         dom: 'Bfrtip',
+        pageLength: 25,
         buttons: [{
                 extend: 'copyHtml5',
                 exportOptions: {
@@ -222,21 +218,19 @@
             },
             {
                 extend: 'pdfHtml5',
-                orientation: 'landscape', // Set orientation menjadi landscape
-                pageSize: 'A4', // Ukuran halaman (opsional, default A4)
+                orientation: 'landscape',
+                pageSize: 'A4',
                 exportOptions: {
                     columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
                 },
                 customize: function (doc) {
-                    // Menyesuaikan margin atau pengaturan tambahan
-                    doc.content[1].margin = [10, 10, 10, 10]; // Atur margin [kiri, atas, kanan, bawah]
+                    doc.content[1].margin = [10, 10, 10, 10];
                 }
             },
             'colvis'
         ]
     });
 
-    // [ Excel - Cell Background ]
     $('#excel-bg').DataTable({
         dom: 'Bfrtip',
         buttons: [{

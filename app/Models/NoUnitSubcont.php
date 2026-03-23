@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class NoUnitSubcont extends Model
 {
     //
-    protected $table = 'REF_SUBCONT_UNIT';
+    protected $table = 'prd_ref_subcont_unit';
 
     protected $guarded = [];
 }

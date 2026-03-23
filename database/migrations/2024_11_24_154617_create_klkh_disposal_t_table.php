@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('klkh_disposal_t', function (Blueprint $table) {
+        Schema::create('prd_klkh_disposal', function (Blueprint $table) {
             $table->id();
             $table->string('uuid')->index();
             $table->foreignId('pic')->constrained('users');
@@ -82,6 +82,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('klkh_disposal_t');
+        Schema::dropIfExists('prd_klkh_disposal');
     }
 };

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class PengawasSubcont extends Model
 {
     //
-    protected $table = 'REF_SUBCONT_PENGAWAS';
+    protected $table = 'prd_ref_subcont_foreman';
 
     protected $guarded = [];
 }

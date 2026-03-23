@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class BBDailyReport extends Model
 {
     //
-    protected $table = 'BB_DAILY_REPORT';
+    protected $table = 'prd_coal_foreman_daily_report';
 
     protected $guarded = [];
 }

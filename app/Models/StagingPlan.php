@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class StagingPlan extends Model
 {
     //
-    protected $table = 'STAGING_PLAN';
+    protected $table = 'eng_staging_plan';
 
     protected $guarded = [];
 }

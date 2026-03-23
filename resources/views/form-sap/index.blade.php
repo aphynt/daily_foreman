@@ -1,4 +1,4 @@
-@include('layout.head', ['title' => 'Laporan Harian Pengawas Batu Bara'])
+@include('layout.head', ['title' => 'Inspeksi PICA'])
 @include('layout.sidebar')
 @include('layout.header')
 <style>
@@ -63,7 +63,7 @@
         <div class="row">
             <div class="col-md-10 col-xxl-9 mb-4">
                 <div class="col-sm-12 col-md-6 col-xxl-4 justify-content-center">
-                    <h3>Inspeksi</h3>
+                    <h3>Inspeksi PICA</h3>
                 </div>
             </div>
         </div>

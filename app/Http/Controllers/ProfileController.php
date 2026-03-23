@@ -6,11 +6,28 @@ use App\Models\Log;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
     //
+    public function index()
+    {
+
+        $poka =  DB::connection('kkh')->table('db_payroll.dbo.tbl_data_hr as hr')
+        ->leftJoin('db_payroll.dbo.tm_departemen as dp', 'hr.Id_Departemen', '=', 'dp.ID_Departemen')
+        // ->select('hr.Nik as NIK', 'hr.Nama as NAMA')
+        ->where('hr.Nik', Auth::user()->nik)->first();
+
+        $sessions = DB::table('sessions')
+        ->where('user_id', Auth::user()->id)
+        ->orderBy('last_activity', 'desc')
+        ->get();
+
+        return view('profile.index', compact('sessions', 'poka'));
+    }
+
     public function changePassword(Request $request)
     {
         try {
@@ -45,7 +62,7 @@ class ProfileController extends Controller
             $request->session()->regenerateToken();
             return redirect()->route('login')->with('success', 'Password telah diubah, silakan login kembali');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('info', 'Maaf, terjadi kesalahan');
+            return redirect()->back()->with('info', 'Maaf, terjadi kesalahan\n', $th->getMessage());
         }
     }
 }

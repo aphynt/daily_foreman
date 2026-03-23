@@ -23,7 +23,7 @@ class RosterKerjaExport implements FromCollection
 
     public function collection()
     {
-        $roster = DB::table('REF_ROSTER_KERJA as rs')
+        $roster = DB::table('prd_ref_roster_kerja as rs')
         ->leftJoin('focus.dbo.PRS_PERSONAL as gl', 'rs.nik', '=', 'gl.NRP')
         ->leftJoin('focus.dbo.PRS_TITLE as title', 'gl.ROLETYPE', '=', 'title.PTL_ID')
         ->select(

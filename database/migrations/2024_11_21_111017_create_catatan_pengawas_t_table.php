@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('catatan_pengawas_t', function (Blueprint $table) {
+        Schema::create('prd_daily_foreman_note', function (Blueprint $table) {
             $table->id();
             $table->string('uuid')->index();
             $table->string('daily_report_uuid')->index();
-            $table->foreignId('daily_report_id')->constrained('daily_report_t');
+            $table->foreignId('daily_report_id')->constrained('prd_daily_foreman_daily_report');
             $table->boolean('statusenabled')->default(1);
             $table->time('jam_start')->nullable();
             $table->time('jam_stop')->nullable();
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('catatan_pengawas_t');
+        Schema::dropIfExists('prd_daily_foreman_note');
     }
 };

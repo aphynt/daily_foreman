@@ -120,13 +120,13 @@
             @endif
 
             {{-- MENU UMUM --}}
-            @if (canAccess('jobpending'))
+            @if (canAccess('jobpending.produksi'))
             <div class="col-4 col-md-4 col-xxl-4">
-                <a href="{{ route('jobpending') }}" class="text-decoration-none">
+                <a href="{{ route('jobpending.produksi') }}" class="text-decoration-none">
                     <div class="card mb-3">
                         <div class="card-body text-center" style="padding-left:2px; padding-right:2px;">
                             <img class="img-fluid card-img-top" src="{{ asset('dashboard/assets') }}/images/widget/job-creation.png" style="max-width: 20px">
-                            <h6 class="card-title" style="font-size:11px">Job Pending</h6>
+                            <h6 class="card-title" style="font-size:11px">Job Pending Produksi</h6>
                         </div>
                     </div>
                 </a>

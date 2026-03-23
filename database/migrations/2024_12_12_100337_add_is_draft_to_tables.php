@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $tables = ['daily_report_t', 'front_loading_t', 'alat_support_t', 'catatan_pengawas_t'];
+        $tables = ['prd_daily_foreman_daily_report', 'prd_daily_foreman_front_loading', 'prd_daily_foreman_alat_support', 'prd_daily_foreman_note'];
         foreach($tables as $table){
             Schema::table($table, function (Blueprint $table) {
                 $table->boolean('is_draft')->default(0);
@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        $tables = ['daily_report_t', 'front_loading_t', 'alat_support_t', 'catatan_pengawas_t'];
+        $tables = ['prd_daily_foreman_daily_report', 'prd_daily_foreman_front_loading', 'prd_daily_foreman_alat_support', 'prd_daily_foreman_note'];
 
         foreach ($tables as $table) {
             Schema::table($table, function (Blueprint $table) {

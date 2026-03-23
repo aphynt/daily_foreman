@@ -13,12 +13,25 @@ use Ramsey\Uuid\Uuid;
 class UserController extends Controller
 {
     //
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->search;
 
-        $user = User::whereNotIn('role', ['ADMIN', 'PUBLIC'])->get();
+        $user = User::whereNotIn('role', ['ADMIN', 'PUBLIC'])
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('nik', 'like', '%' . $search . '%')
+                    ->orWhere('role', 'like', '%' . $search . '%');
+                });
+            })
+            ->orderBy('name', 'asc')
+            ->paginate(15)
+            ->withQueryString();
+
         $role = Role::all();
-        return view('user.index', compact('user', 'role'));
+
+        return view('user.index', compact('user', 'role', 'search'));
     }
 
     public function resetPassword($id)

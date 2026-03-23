@@ -118,15 +118,14 @@
 
 </script>
 <script>
-    // [ HTML5 Export Buttons ]
     $('#basic-btn').DataTable({
         dom: 'Bfrtip',
         buttons: ['copy', 'csv', 'excel', 'print']
     });
 
-    // [ Column Selectors ]
     $('#cbtn-selectors').DataTable({
         dom: 'Bfrtip',
+        pageLength:25,
         buttons: [{
                 extend: 'copyHtml5',
                 exportOptions: {
@@ -141,21 +140,19 @@
             },
             {
                 extend: 'pdfHtml5',
-                orientation: 'landscape', // Set orientation menjadi landscape
-                pageSize: 'A3', // Ukuran halaman (opsional, default A4)
+                orientation: 'landscape',
+                pageSize: 'A3',
                 exportOptions: {
                     columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
                 },
                 customize: function (doc) {
-                    // Menyesuaikan margin atau pengaturan tambahan
-                    doc.content[1].margin = [10, 10, 10, 10]; // Atur margin [kiri, atas, kanan, bawah]
+                    doc.content[1].margin = [10, 10, 10, 10];
                 }
             },
             'colvis'
         ]
     });
 
-    // [ Excel - Cell Background ]
     $('#excel-bg').DataTable({
         dom: 'Bfrtip',
         buttons: [{
@@ -171,7 +168,6 @@
         }]
     });
 
-    // [ Custom File (JSON) ]
     $('#pdf-json').DataTable({
         dom: 'Bfrtip',
         buttons: [{

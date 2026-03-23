@@ -29,6 +29,7 @@ class User extends Authenticatable
         'password',
         'uuid',
         'role_id',
+        'departemen_id',
     ];
 
     /**
@@ -56,6 +57,45 @@ class User extends Authenticatable
 
     public function roleRel()
     {
-        return $this->belongsTo(\App\Models\Role::class, 'role_id');
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+
+
+    public function departemenRel()
+    {
+        return $this->belongsTo(Departemen::class, 'departemen_id');
+    }
+
+    public function allowedRoutes()
+    {
+        // ADMIN bypass semua
+        if ($this->roleRel?->name === 'ADMIN') {
+            return ['*'];
+        }
+
+        $roleRoutes = $this->roleRel->allowed_routes ?? [];
+        $deptRoutes = $this->departemenRel->menu_routes ?? [];
+
+        // ambil irisan role + departemen
+        return array_values(array_intersect($roleRoutes, $deptRoutes));
+    }
+
+    public function canAccess($routeName)
+    {
+        $allowed = $this->allowedRoutes();
+
+        return in_array('*', $allowed) || in_array($routeName, $allowed);
+    }
+
+    public function hasRoleId(array|int $roles): bool
+    {
+        $roles = (array) $roles;
+        return in_array($this->role_id, $roles);
+    }
+
+    public function inDepartemenId(array|int $departemen): bool
+    {
+        $departemen = (array) $departemen;
+        return in_array($this->departemen_id, $departemen);
     }
 }

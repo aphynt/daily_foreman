@@ -8,7 +8,7 @@ use Ramsey\Uuid\Uuid;
 class KLKHHaulRoad extends Model
 {
     //
-    protected $table = 'klkh_haulroad_t';
+    protected $table = 'prd_klkh_haulroad';
 
     protected $guarded = [];
 

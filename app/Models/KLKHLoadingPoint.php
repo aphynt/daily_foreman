@@ -8,7 +8,7 @@ use Ramsey\Uuid\Uuid;
 class KLKHLoadingPoint extends Model
 {
     //
-    protected $table = 'klkh_loadingpoint_t';
+    protected $table = 'prd_klkh_loadingpoint';
 
     protected $guarded = [];
 

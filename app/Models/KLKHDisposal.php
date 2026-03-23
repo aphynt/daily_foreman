@@ -8,7 +8,7 @@ use Ramsey\Uuid\Uuid;
 class KLKHDisposal extends Model
 {
     //
-    protected $table = 'klkh_disposal_t';
+    protected $table = 'prd_klkh_disposal';
 
     protected $guarded = [];
 

@@ -1,14 +1,13 @@
 <nav class="pc-sidebar">
     <div class="navbar-wrapper">
-        <div class="m-header"><a href="#" class="b-brand text-primary">
-                <img src="{{ asset('dashboard/assets') }}/images/icon.png" class="img-fluid" width="100px" alt="logo">
-                <span class="badge bg-light-success rounded-pill ms-2 theme-version">{{ config('app.name') }}</span></a></div>
+        <div class="m-header justify-content-center"><a href="#" class="b-brand text-primary">
+                <span class="badge bg-light-success rounded-pill ms-2 theme-version fs-4">{{ config('app.name') }}</span></a></div>
         <div class="navbar-content">
             <a style="color:#001932;" data-bs-toggle="collapse" href="#pc_sidebar_userlink">
                 <div class="card pc-user-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
-                            <div class="flex-shrink-0"><img src="{{ asset('dashboard/assets') }}/images/user/avatar-1.png"
+                            <div class="flex-shrink-0"><img src="{{ Auth::user()->avatar ? asset('storage/avatar/'.Auth::user()->avatar) : asset('dashboard/assets') }}/images/user/avatar-1.png"
                                     alt="user-image" class="user-avtar wid-45 rounded-circle"></div>
                             <div class="flex-grow-1 ms-3 me-2">
                                 <h6 class="mb-0" style="font-size: 12px">{{ Auth::user()->name }}</h6>
@@ -21,7 +20,7 @@
                         <div class="collapse pc-user-links" id="pc_sidebar_userlink">
                             <div class="pt-3">
                                 <a href="#!" data-bs-toggle="modal" data-bs-target="#changePassword"><svg class="pc-icon text-muted me-2"> <use xlink:href="#custom-share-bold"></use> </svg> <span>Ganti Password</span></a>
-                                <a href="#!"><i class="ti ti-settings"></i><span>Profil</span></a>
+                                <a href="{{ route('profile.index') }}"><i class="ti ti-settings"></i><span>Profil</span></a>
                                 <a href="{{ route('logout') }}"><i class="ti ti-power"></i><span>Logout</span></a>
                             </div>
                         </div>
@@ -111,53 +110,14 @@
                 </li>
                 @endif
 
-                {{-- SOP PRODUKSI --}}
-                @if (
-                    canAccess('sop.kegiatanDropCut') ||
-                    canAccess('sop.kegiatanHaulRoad') ||
-                    canAccess('sop.pengoperasianEXDigger') ||
-                    canAccess('sop.pengoperasianLampuTambang') ||
-                    canAccess('sop.pengelolaanWasteDump') ||
-                    canAccess('sop.landClearing') ||
-                    canAccess('sop.topSoil') ||
-                    canAccess('sop.pengecekanPerbaikanWeakpoint') ||
-                    canAccess('sop.penangananUnitHDAmblas') ||
-                    canAccess('sop.perawatanPenimbunanJalan') ||
-                    canAccess('sop.dumpingAreaWasteDump') ||
-                    canAccess('sop.piketJagaTambang') ||
-                    canAccess('sop.optimalisasiGantiShift') ||
-                    canAccess('sop.perbaikanTanggulJalan') ||
-                    canAccess('sop.coalGetting') ||
-                    canAccess('sop.penimbunanMaterialKolamLumpurBullDozer') ||
-                    canAccess('sop.pemuatanPengangkutanLumpur') ||
-                    canAccess('sop.kegiatanSlippery')
-                )
-                <li class="pc-item pc-hasmenu">
-                    <a href="#!" class="pc-link"><span class="pc-micon">
-                        <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/sop.png" alt="DS"> </span><span class="pc-mtext">SOP Produksi</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span> <span class="pc-badge">18</span>
-                    </a>
-                    <ul class="pc-submenu">
-                        @if (canAccess('sop.kegiatanDropCut'))<li class="pc-item"><a class="pc-link" href="{{ route('sop.kegiatanDropCut') }}">01. Kegiatan Drop Cut</a></li>@endif
-                        @if (canAccess('sop.kegiatanHaulRoad'))<li class="pc-item"><a class="pc-link" href="{{ route('sop.kegiatanHaulRoad') }}">02. Kegiatan Haul Road</a></li>@endif
-                        @if (canAccess('sop.pengoperasianEXDigger'))<li class="pc-item"><a class="pc-link" href="{{ route('sop.pengoperasianEXDigger') }}">04. Pengoperasian Excavator Digger</a></li>@endif
-                        @if (canAccess('sop.pengoperasianLampuTambang'))<li class="pc-item"><a class="pc-link" href="{{ route('sop.pengoperasianLampuTambang') }}">09. Pengoperasian Lampu Tambang</a></li>@endif
-                        @if (canAccess('sop.pengelolaanWasteDump'))<li class="pc-item"><a class="pc-link" href="{{ route('sop.pengelolaanWasteDump') }}">10. Pengelolaan Waste Dump</a></li>@endif
-                        @if (canAccess('sop.landClearing'))<li class="pc-item"><a class="pc-link" href="{{ route('sop.landClearing') }}">11. Land Clearing</a></li>@endif
-                        @if (canAccess('sop.topSoil'))<li class="pc-item"><a class="pc-link" href="{{ route('sop.topSoil') }}">12. Top Soil</a></li>@endif
-                        @if (canAccess('sop.pengecekanPerbaikanWeakpoint'))<li class="pc-item"><a class="pc-link" href="{{ route('sop.pengecekanPerbaikanWeakpoint') }}">21. Pengecekan dan Perbaikan Weakpoint</a></li>@endif
-                        @if (canAccess('sop.penangananUnitHDAmblas'))<li class="pc-item"><a class="pc-link" href="{{ route('sop.penangananUnitHDAmblas') }}">25. Penanganan Unit HD Amblas Di Tambang</a></li>@endif
-                        @if (canAccess('sop.perawatanPenimbunanJalan'))<li class="pc-item"><a class="pc-link" href="{{ route('sop.perawatanPenimbunanJalan') }}">30. Perawatan dan Penimbunan Jalan</a></li>@endif
-                        @if (canAccess('sop.dumpingAreaWasteDump'))<li class="pc-item"><a class="pc-link" href="{{ route('sop.dumpingAreaWasteDump') }}">31. Dumping di Area Waste Dump</a></li>@endif
-                        @if (canAccess('sop.piketJagaTambang'))<li class="pc-item"><a class="pc-link" href="{{ route('sop.piketJagaTambang') }}">33. Piket Jaga Tambang</a></li>@endif
-                        @if (canAccess('sop.optimalisasiGantiShift'))<li class="pc-item"><a class="pc-link" href="{{ route('sop.optimalisasiGantiShift') }}">36. Optimalisasi Ganti Shift</a></li>@endif
-                        @if (canAccess('sop.perbaikanTanggulJalan'))<li class="pc-item"><a class="pc-link" href="{{ route('sop.perbaikanTanggulJalan') }}">43. Perbaikan Tanggul Jalan</a></li>@endif
-                        @if (canAccess('sop.coalGetting'))<li class="pc-item"><a class="pc-link" href="{{ route('sop.coalGetting') }}">47. Coal Getting</a></li>@endif
-                        @if (canAccess('sop.penimbunanMaterialKolamLumpurBullDozer'))<li class="pc-item"><a class="pc-link" href="{{ route('sop.penimbunanMaterialKolamLumpurBullDozer') }}">51. Penimbunan Material di Kolam Lumpur dengan Bull Dozer</a></li>@endif
-                        @if (canAccess('sop.pemuatanPengangkutanLumpur'))<li class="pc-item"><a class="pc-link" href="{{ route('sop.pemuatanPengangkutanLumpur') }}">52. Pemuatan dan Pengangkutan Lumpur</a></li>@endif
-                        @if (canAccess('sop.kegiatanSlippery'))<li class="pc-item"><a class="pc-link" href="{{ route('sop.kegiatanSlippery') }}">53. Kegiatan Slippery</a></li>@endif
-                    </ul>
-                </li>
+                @if (canAccess('sop.index'))
+                <li class="pc-item"><a href="{{ route('sop.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/sop.png" alt="NT"></span><span class="pc-mtext">SOP</span></a></li>
                 @endif
+
+                @if (canAccess('hazard-report.index'))
+                <li class="pc-item"><a href="{{ route('hazard-report.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/hazard.png" alt="NT"></span><span class="pc-mtext">Hazard Report</span></a></li>
+                @endif
+
                 <li class="pc-item pc-caption"><label>Laporan Harian</label></li>
                 {{-- LAPORAN HARIAN --}}
                 @if (
@@ -165,8 +125,11 @@
                     canAccess('form-pengawas-batubara.show') ||
                     canAccess('form-pengawas-sap.show') ||
                     canAccess('laporan-kata-sandi.show') ||
-                    canAccess('jobpending.detail') ||
-                    canAccess('p2h.show')
+                    canAccess('jobpending.produksi.detail') ||
+                    canAccess('jobpending.safety.detail') ||
+                    canAccess('p2h.show') ||
+                    canAccess('ert.show') ||
+                    canAccess('patrol.show')
                 )
 
                 <li class="pc-item pc-hasmenu">
@@ -178,8 +141,11 @@
                         @if (canAccess('form-pengawas-batubara.show'))<li class="pc-item"><a class="pc-link" href="{{ route('form-pengawas-batubara.show') }}">Pengawas Coal</a></li>@endif
                         @if (canAccess('form-pengawas-sap.show'))<li class="pc-item"><a class="pc-link" href="{{ route('form-pengawas-sap.show') }}">Laporan Inspeksi</a></li>@endif
                         @if (canAccess('laporan-kata-sandi.show'))<li class="pc-item"><a class="pc-link" href="{{ route('laporan-kata-sandi.show') }}">Laporan Kata Sandi</a></li>@endif
-                        @if (canAccess('jobpending.detail'))<li class="pc-item"><a class="pc-link" href="{{ route('jobpending.detail') }}">Laporan Job Pending</a></li>@endif
+                        @if (canAccess('jobpending.produksi.detail'))<li class="pc-item"><a class="pc-link" href="{{ route('jobpending.produksi.detail') }}">Laporan Job Pending Produksi</a></li>@endif
+                        {{-- @if (canAccess('jobpending.safety.detail'))<li class="pc-item"><a class="pc-link" href="{{ route('jobpending.safety.detail') }}">Laporan Job Pending Safety</a></li>@endif --}}
                         @if (canAccess('p2h.show'))<li class="pc-item"><a class="pc-link" href="{{ route('p2h.show') }}">Laporan P2H</a></li>@endif
+                        @if (canAccess('ert.show'))<li class="pc-item"><a class="pc-link" href="{{ route('ert.show') }}">Laporan Safety ERT</a></li>@endif
+                        @if (canAccess('patrol.show'))<li class="pc-item"><a class="pc-link" href="{{ route('patrol.show') }}">Laporan Safety Patrol</a></li>@endif
                     </ul>
                 </li>
                 @endif
@@ -189,53 +155,39 @@
                     canAccess('form-pengawas-new.index') ||
                     canAccess('form-pengawas-batubara.index') ||
                     canAccess('pengawas-pitstop.index') ||
-                    canAccess('laporan-kata-sandi.index')
+                    canAccess('laporan-kata-sandi.index') ||
+                    canAccess('ert.index') ||
+                    canAccess('patrol.index')
                 )
                 <li class="pc-item pc-hasmenu">
                     <a href="#!" class="pc-link"><span class="pc-micon">
-                        <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/pencil.png" alt="DS"> </span><span class="pc-mtext">Form Laporan Kerja</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span> <span class="pc-badge">4</span>
+                        <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/pencil.png" alt="DS"> </span><span class="pc-mtext">Form Laporan Kerja</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
                     </a>
                     <ul class="pc-submenu">
                         @if (canAccess('form-pengawas-new.index'))<li class="pc-item"><a class="pc-link" href="{{ route('form-pengawas-new.index') }}">Pengawas Produksi</a></li>@endif
                         @if (canAccess('form-pengawas-batubara.index'))<li class="pc-item"><a class="pc-link" href="{{ route('form-pengawas-batubara.index') }}">Pengawas Batu Bara</a></li>@endif
                         @if (canAccess('pengawas-pitstop.index'))<li class="pc-item"><a class="pc-link" href="{{ route('pengawas-pitstop.index') }}">Pengawas Pitstop</a></li>@endif
                         @if (canAccess('laporan-kata-sandi.index'))<li class="pc-item"><a class="pc-link" href="{{ route('laporan-kata-sandi.index') }}">Laporan Kata Sandi</a></li>@endif
+                        @if (canAccess('ert.index'))<li class="pc-item"><a class="pc-link" href="{{ route('ert.index') }}">Emergency Response Team</a></li>@endif
+                        @if (canAccess('patrol.index'))<li class="pc-item"><a class="pc-link" href="{{ route('patrol.index') }}">Patrol</a></li>@endif
                     </ul>
                 </li>
                 @endif
 
-                {{-- FORM SAP --}}
-                @if (
-                    canAccess('form-pengawas-sap.index') ||
-                    canAccess('klkh.loading-point') ||
-                    canAccess('klkh.haul-road') ||
-                    canAccess('klkh.disposal') ||
-                    canAccess('klkh.lumpur') ||
-                    canAccess('klkh.ogs') ||
-                    canAccess('klkh.batubara') ||
-                    canAccess('klkh.simpangempat')
-                )
-                <li class="pc-item pc-hasmenu">
-                    <a href="#!" class="pc-link"><span class="pc-micon">
-                        <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/to-do-list.png" alt="DS"> </span><span class="pc-mtext">Form SAP</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span> <span class="pc-badge">8</span>
-                    </a>
-                    <ul class="pc-submenu">
-                        @if (canAccess('form-pengawas-sap.index'))<li class="pc-item"><a class="pc-link" href="{{ route('form-pengawas-sap.index') }}">Inspeksi</a></li>@endif
-                        @if (canAccess('klkh.loading-point'))<li class="pc-item"><a class="pc-link" href="{{ route('klkh.loading-point') }}">KLKH Loading Point</a></li>@endif
-                        @if (canAccess('klkh.haul-road'))<li class="pc-item"><a class="pc-link" href="{{ route('klkh.haul-road') }}">KLKH Haul Road</a></li>@endif
-                        @if (canAccess('klkh.disposal'))<li class="pc-item"><a class="pc-link" href="{{ route('klkh.disposal') }}">KLKH Disposal/Dumping Point</a></li>@endif
-                        @if (canAccess('klkh.lumpur'))<li class="pc-item"><a class="pc-link" href="{{ route('klkh.lumpur') }}">KLKH Dumping di Kolam Air/Lumpur</a></li>@endif
-                        @if (canAccess('klkh.ogs'))<li class="pc-item"><a class="pc-link" href="{{ route('klkh.ogs') }}">KLKH OGS</a></li>@endif
-                        @if (canAccess('klkh.batubara'))<li class="pc-item"><a class="pc-link" href="{{ route('klkh.batubara') }}">KLKH Batu Bara</a></li>@endif
-                        @if (canAccess('klkh.simpangempat'))<li class="pc-item"><a class="pc-link" href="{{ route('klkh.simpangempat') }}">KLKH Intersection (Simpang Empat)</a></li>@endif
-                    </ul>
-                </li>
+                @if (canAccess('sap.index'))
+                <li class="pc-item"><a href="{{ route('sap.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/to-do-list.png" alt="NT"></span><span class="pc-mtext">Form SAP</span></a></li>
                 @endif
+
+
 
                 {{-- JOB PENDING --}}
-                @if (canAccess('jobpending'))
-                <li class="pc-item"><a href="{{ route('jobpending') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/job-creation.png" alt="NT"></span><span class="pc-mtext">Job Pending</span></a></li>
+                @if (canAccess('jobpending.produksi'))
+                <li class="pc-item"><a href="{{ route('jobpending.produksi') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/job-creation.png" alt="NT"></span><span class="pc-mtext">Job Pending Produksi</span></a></li>
                 @endif
+
+                {{-- @if (canAccess('jobpending.safety'))
+                <li class="pc-item"><a href="{{ route('jobpending.safety') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/job-creation.png" alt="NT"></span><span class="pc-mtext">Job Pending Safety</span></a></li>
+                @endif --}}
 
                 <li class="pc-item pc-caption"><label>Kesiapan & Verifikasi</label></li>
 
@@ -264,7 +216,7 @@
                 @if (canAccess('kkh.all') || canAccess('kkh.name'))
                 <li class="pc-item pc-hasmenu">
                     <a href="#!" class="pc-link"><span class="pc-micon">
-                        <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/ergonomic.png" alt="DS"> </span><span class="pc-mtext">KKH Produksi</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span> <span class="pc-badge">2</span>
+                        <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/ergonomic.png" alt="DS"> </span><span class="pc-mtext">KKH</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span> <span class="pc-badge">2</span>
                     </a>
                     <ul class="pc-submenu">
                         @if (canAccess('kkh.all'))<li class="pc-item"><a class="pc-link" href="{{ route('kkh.all') }}">Seleksi per Tanggal</a></li>@endif
@@ -276,22 +228,33 @@
 
 
                 {{-- ADMIN / MANAGEMENT --}}
-                @if (canAccess('rosterkerja'))
-                <li class="pc-item"><a href="{{ route('rosterkerja') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/project.png" alt="NT"></span><span class="pc-mtext">Roster Kerja</span></a></li>
+                @if (canAccess('rosterkerja.produksi'))
+                <li class="pc-item"><a href="{{ route('rosterkerja.produksi') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/project.png" alt="NT"></span><span class="pc-mtext">Roster Kerja Produksi</span></a></li>
                 @endif
+
+                @if (canAccess('rosterkerja.safety'))
+                <li class="pc-item"><a href="{{ route('rosterkerja.safety') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/project.png" alt="NT"></span><span class="pc-mtext">Roster Kerja Safety</span></a></li>
+                @endif
+
                 @if (canAccess('monitoringlaporankerjaklkh'))
-                <li class="pc-item"><a href="{{ route('monitoringlaporankerjaklkh') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/spyware.png" alt="NT"></span><span class="pc-mtext">Monitoring LK & KLKH</span></a></li>
+                <li class="pc-item"><a href="{{ route('monitoringlaporankerjaklkh') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/spyware.png" alt="NT"></span><span class="pc-mtext">Monitoring Laporan Kerja</span></a></li>
                 @endif
 
                 {{-- CONFIG --}}
                 @if (canAccess('user.index') || canAccess('log.index'))
                 <li class="pc-item pc-caption"><label>Configuration</label></li>
+                @endif
                 @if (canAccess('user.index'))
                 <li class="pc-item"><a href="{{ route('user.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/user.png" alt="NT"></span><span class="pc-mtext">Users</span></a></li>
                 @endif
+                @if (canAccess('permission.index'))
+                <li class="pc-item"><a href="{{ route('permission.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/user.png" alt="NT"></span><span class="pc-mtext">Permission Route</span></a></li>
+                @endif
+                @if (canAccess('reference.index'))
+                <li class="pc-item"><a href="{{ route('reference.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/user.png" alt="NT"></span><span class="pc-mtext">Reference</span></a></li>
+                @endif
                 @if (canAccess('log.index'))
                 <li class="pc-item"><a href="{{ route('log.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/log.png" alt="NT"></span><span class="pc-mtext">Logging User</span></a></li>
-                @endif
                 @endif
             </ul>
         </div>

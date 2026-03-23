@@ -77,7 +77,6 @@
                                     </tr>
                                 </thead>
                                 <tbody id="tableBody">
-                                    <!-- Data dari API akan ditambahkan di sini -->
                                 </tbody>
                             </table>
                             @foreach($support as $item)
@@ -93,7 +92,6 @@
 
 @include('layout.footer')
 <script>
-    // range picker
     (function () {
         const datepicker_range = new DateRangePicker(document.querySelector('#pc-datepicker-6'), {
             buttonClass: 'btn'
@@ -105,14 +103,12 @@
     $(document).ready(function() {
         var userRole = "{{ Auth::user()->role }}";
         var table = $('#alatSupport').DataTable({
-
             processing: true,
-            serverSide: true,  // Untuk menggunakan server-side processing
+            serverSide: true,
             ajax: {
-                url: '{{ route('alat-support.api') }}',  // URL API Anda
-                method: 'GET',  // Gunakan GET atau POST sesuai dengan implementasi Anda
+                url: '{{ route('alat-support.api') }}',
+                method: 'GET',
                 data: function(d) {
-                    // Kirimkan parameter tambahan jika diperlukan (misalnya tanggal)
                     var rangeStart = $('#range-start').val();
                     var rangeEnd = $('#range-end').val();
                     d.rangeStart = rangeStart;
@@ -159,7 +155,6 @@
                 {
                     data: 'aksi',
                     render: function(data, type, row) {
-                        // Hanya tampilkan tombol edit jika peran pengguna adalah Admin
                         if (userRole === 'ADMIN') {
                             var modalId = "editAlatSupport" + row.id + row.uuid;
                             var editUrl = "/alat-support/update/" + row.uuid;
@@ -172,20 +167,18 @@
                                 ${generateModal(row, editUrl)}
                             `;
                         } else {
-                            // Jika bukan admin, tampilkan empty atau string kosong
                             return '-';
                         }
                     }
                 }
             ],
-            "order": [[0, "desc"]],  // Default sort by first column
-            "pageLength": 15,  // Jumlah baris per halaman
-            "lengthMenu": [10, 15, 25, 50],  // Pilihan jumlah baris per halaman
+            "order": [[0, "desc"]],
+            "pageLength": 15,
+            "lengthMenu": [10, 15, 25, 50],
         });
 
-        // Event listener untuk tombol refresh
         $('#refreshButton').click(function() {
-            table.ajax.reload();  // Reload data dengan AJAX
+            table.ajax.reload();
         });
     });
     function generateModal(row, editUrl) {

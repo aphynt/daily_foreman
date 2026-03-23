@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class PitstopReportDesc extends Model
 {
     //
-    protected $table = 'PITSTOP_REPORT_DESC';
+    protected $table = 'prd_pitstop_report_list';
 
     protected $guarded = [];
 }

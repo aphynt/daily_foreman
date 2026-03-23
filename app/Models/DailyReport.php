@@ -11,7 +11,7 @@ class DailyReport extends Model
 {
     use HasDraft;
     //
-    protected $table = 'daily_report_t';
+    protected $table = 'prd_daily_foreman_daily_report';
 
     protected $fillable = [
         'statusenabled',

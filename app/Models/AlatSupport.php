@@ -10,7 +10,7 @@ class AlatSupport extends Model
 {
 
     use HasDraft;
-    protected $table = 'alat_support_t';
+    protected $table = 'prd_daily_foreman_alat_support';
 
     protected $fillable = [
         'statusenabled',

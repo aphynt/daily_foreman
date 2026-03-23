@@ -127,12 +127,12 @@ class AlatSupportExport implements FromCollection, WithEvents, WithHeadings, Wit
 
     public function collection()
     {
-        $support = DB::table('alat_support_t as al')
-            ->leftJoin('daily_report_t as dr', 'al.daily_report_id', '=', 'dr.id')
-            ->leftJoin('REF_SHIFT as sh', 'dr.shift_dasar_id', '=', 'sh.id')
-            ->leftJoin('REF_SHIFT as sh2', 'al.shift_operator_id', '=', 'sh2.id')
-            ->leftJoin('REF_AREA as ar', 'dr.area_id', '=', 'ar.id')
-            ->leftJoin('REF_LOKASI as lok', 'dr.lokasi_id', '=', 'lok.id')
+        $support = DB::table('prd_daily_foreman_alat_support as al')
+            ->leftJoin('prd_daily_foreman_daily_report as dr', 'al.daily_report_id', '=', 'dr.id')
+            ->leftJoin('ref_shift as sh', 'dr.shift_dasar_id', '=', 'sh.id')
+            ->leftJoin('ref_shift as sh2', 'al.shift_operator_id', '=', 'sh2.id')
+            ->leftJoin('ref_region as ar', 'dr.area_id', '=', 'ar.id')
+            ->leftJoin('prd_ref_lokasi as lok', 'dr.lokasi_id', '=', 'lok.id')
             // ->leftJoin('users as us', 'dr.foreman_id', '=', 'us.id')
             ->leftJoin('focus.dbo.PRS_PERSONAL as gl', 'dr.nik_foreman', '=', 'gl.NRP')
             ->leftJoin('focus.dbo.PRS_PERSONAL as spv', 'dr.nik_supervisor', '=', 'spv.NRP')

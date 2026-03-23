@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KKH - {{ $kkh->first()->NAMA_PENGISI }}</title>
+    <title>KKH - {{ $identitas->Nama }}</title>
     <style>
         @page {
             size: A4 landscape;
@@ -101,30 +101,30 @@
 
             <tr style="border-top:1px solid #000; border-left:1px solid #000; border-right:1px solid #000">
                 <td style="border:none;text-align=left" colspan="2">Perusahaan</td>
-                <td style="border:none;text-align=left" colspan="">: {{ $kkh->first()->PERUSAHAAN }}</td>
+                <td style="border:none;text-align=left" colspan="">: {{ $identitas->Perusahaan }}</td>
                 <td style="border:none; padding-left:70px;" rowspan="6" colspan="11"><h1>
         KESIAPAN KERJA HARIAN (KKH)
         </h1></td>
             </tr>
             <tr style="border-left:1px solid #000; border-right:1px solid #000">
                 <td style="border:none;text-align=left" colspan="2">Nama</td>
-                <td style="border:none;text-align=left" colspan="">: {{ $kkh->first()->NAMA_PENGISI }}</td>
+                <td style="border:none;text-align=left" colspan="">: {{ $identitas->Nama }}</td>
             </tr>
             <tr style="border-left:1px solid #000; border-right:1px solid #000">
                 <td style="border:none;text-align=left" colspan="2">NIK</td>
-                <td rowspan="" colspan="2" style="border:none;">: {{ $kkh->first()->NIK_PENGISI }}</td>
+                <td rowspan="" colspan="2" style="border:none;">: {{ $identitas->Nik }}</td>
             </tr>
             <tr style="border-left:1px solid #000; border-right:1px solid #000">
                 <td style="border:none;text-align=left" colspan="2">Departemen</td>
-                <td style="border:none;text-align=left" colspan="">: {{ $kkh->first()->DEPARTEMEN }}</td>
+                <td style="border:none;text-align=left" colspan="">: {{ $identitas->Departemen }}</td>
             </tr>
             <tr style="border-left:1px solid #000; border-right:1px solid #000">
                 <td style="border:none;text-align=left" colspan="2">Jabatan</td>
-                <td style="border:none;text-align=left" colspan="">: {{ $kkh->first()->JABATAN }}</td>
+                <td style="border:none;text-align=left" colspan="">: {{ $identitas->Jabatan }}</td>
             </tr>
             <tr style="border-left:1px solid #000; border-right:1px solid #000">
                 <td style="border:none;text-align=left" colspan="2">Siklus Kerja</td>
-                <td style="border:none;text-align=left" colspan="6">:  {{ $kkh->first()->SIKLUS_KERJA }}</td>
+                <td style="border:none;text-align=left" colspan="6">:  {{ $identitas->Shift }}</td>
             </tr>
             <!-- </table>
     <table>
@@ -149,10 +149,28 @@
             </tr>
 
             @foreach ($kkh as $item)
-                <tr>
+                <tr
+                    @if(($item->DATA_KOSONG ?? false) && !in_array($item->ID_ABSEN ?? '', ['OFF','CT', 'M']))
+                        style="background-color:#ffcccc;"
+                    @elseif(($item->DATA_KOSONG ?? false) && in_array($item->ID_ABSEN ?? '', ['OFF','CT', 'M']))
+                        style="background-color:#fff3a6;"
+                    @endif
+                    >
                     <td rowspan="2" style="text-align: center;">{{ $loop->iteration }}</td>
-                    <td rowspan="2" style="text-align: left;padding-left:5px;">{{ \Carbon\Carbon::parse($item->TANGGAL_DIBUAT)->locale('id')->isoFormat('dddd, D MMMM YYYY') }}</td>
-                    <td rowspan="2" style="text-align: center;">{{ $item->JAM_PULANG }}</td>
+                    <td rowspan="2" style="text-align: left;padding-left:5px;">
+                    @if($item->TANGGAL_DIBUAT != '-' && $item->TANGGAL_DIBUAT != null)
+                        {{ \Carbon\Carbon::parse($item->TANGGAL_DIBUAT)->locale('id')->isoFormat('dddd, D MMMM YYYY') }}
+                    @else
+                        {{ \Carbon\Carbon::parse($item->tgl)->locale('id')->isoFormat('dddd, D MMMM YYYY') }}
+                    @endif
+                    </td>
+                    <td rowspan="2" style="text-align: center;">
+                    @if(in_array($item->ID_ABSEN ?? '', ['OFF','CT', 'M']))
+                        {{ $item->ID_ABSEN }}
+                    @else
+                        {{ $item->JAM_PULANG }}
+                    @endif
+                    </td>
                     <td rowspan="2" style="text-align: center;">{{ $item->JAM_TIDUR }}</td>
                     <td rowspan="2" style="text-align: center;">{{ $item->JAM_BANGUN }}</td>
                     <td rowspan="2" style="text-align: center;">{{ $item->TOTAL_TIDUR }} Jam</td>

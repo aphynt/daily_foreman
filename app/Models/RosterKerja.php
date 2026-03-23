@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class RosterKerja extends Model
 {
     //
-    protected $table = 'REF_ROSTER_KERJA';
+    protected $table = 'prd_ref_roster_kerja';
 
     protected $fillable = [
             'uuid',

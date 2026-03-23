@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Area extends Model
 {
     //
-    protected $table = 'REF_AREA';
+    protected $table = 'ref_region';
 
     protected $guarded = [];
 }

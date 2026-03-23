@@ -9,7 +9,7 @@ use Ramsey\Uuid\Uuid;
 class CatatanPengawas extends Model
 {
     use HasDraft;
-    protected $table = 'catatan_pengawas_t';
+    protected $table = 'prd_daily_foreman_note';
 
     protected $fillable = [
         'statusenabled',

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('daily_report_t', function (Blueprint $table) {
+        Schema::create('prd_daily_foreman_daily_report', function (Blueprint $table) {
             $table->id();
             $table->string('uuid')->index();
             $table->foreignId('foreman_id')->constrained('users');
@@ -40,6 +40,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('daily_report_t');
+        Schema::dropIfExists('prd_daily_foreman_daily_report');
     }
 };

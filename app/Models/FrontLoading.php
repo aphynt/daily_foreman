@@ -10,7 +10,7 @@ class FrontLoading extends Model
 {
     use HasDraft;
     //
-    protected $table = 'front_loading_t';
+    protected $table = 'prd_daily_foreman_front_loading';
 
     protected $fillable = [
         'statusenabled',

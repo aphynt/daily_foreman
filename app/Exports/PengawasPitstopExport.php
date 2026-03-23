@@ -164,11 +164,11 @@ class PengawasPitstopExport implements FromCollection, WithEvents, WithHeadings,
 
     public function collection()
     {
-        $dailyDesc = DB::table('PITSTOP_REPORT_DESC as prd')
-            ->leftJoin('PITSTOP_REPORT as pr', 'prd.report_id', '=', 'pr.id')
+        $dailyDesc = DB::table('prd_pitstop_report_list as prd')
+            ->leftJoin('prd_pitstop_report as pr', 'prd.report_id', '=', 'pr.id')
             ->leftJoin('focus.dbo.FLT_VEHICLE as vhc', 'prd.no_unit', '=', 'vhc.VHC_ID')
-            ->leftJoin('REF_SHIFT as sh', 'pr.shift_id', '=', 'sh.id')
-            ->leftJoin('REF_AREA as ar', 'pr.area_id', '=', 'ar.id')
+            ->leftJoin('ref_shift as sh', 'pr.shift_id', '=', 'sh.id')
+            ->leftJoin('ref_region as ar', 'pr.area_id', '=', 'ar.id')
             ->leftJoin('users as us', 'pr.foreman_id', '=', 'us.id')
             ->select(
                 'pr.date as tanggal',

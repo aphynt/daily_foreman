@@ -15,38 +15,57 @@
                         </ul>
                     </div>
                     <div class="col-12">
-                        <div class="mb-3 row d-flex align-items-center">
-                            <div class="col-sm-12 col-md-10 mb-2">
+                        <div class="mb-3 d-flex flex-wrap flex-md-nowrap align-items-center justify-content-between gap-2">
+
+                            {{-- FILTER TANGGAL --}}
+                            <div class="d-flex align-items-center">
                                 <form action="" method="get">
-                                    <div class="input-group" id="pc-datepicker-8">
-                                        <input type="text" class="form-control form-control-sm" placeholder="Start date" name="rangeStart" style="max-width: 200px;" id="range-start">
+                                    <div class="input-group input-group-sm" id="pc-datepicker-8">
+                                        <input type="text" class="form-control form-control-sm"
+                                            placeholder="Start date" name="rangeStart"
+                                            style="max-width: 200px;" id="range-start">
+
                                         <span class="input-group-text">s/d</span>
-                                        <input type="text" class="form-control form-control-sm" placeholder="End date" name="rangeEnd" style="max-width: 200px;" id="range-end">
+
+                                        <input type="text" class="form-control form-control-sm"
+                                            placeholder="End date" name="rangeEnd"
+                                            style="max-width: 200px;" id="range-end">
+
                                         <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
                                     </div>
                                 </form>
                             </div>
-                            {{-- FOREMAN & SUPERVISOR : boleh input --}}
-                            @if (canAccess('klkh.loading-point.insert'))
-                                <div class="col-sm-12 col-md-2 mb-2 text-md-end">
+
+                            {{-- ACTION BUTTON --}}
+                            <div class="d-flex flex-wrap gap-2">
+
+                                {{-- Kembali --}}
+                                <a href="{{ url()->previous() }}">
+                                    <span class="badge bg-secondary px-3 py-2" style="font-size:14px">
+                                        <i class="fas fa-arrow-left"></i> Kembali
+                                    </span>
+                                </a>
+
+                                {{-- FOREMAN & SUPERVISOR --}}
+                                @if (canAccess('klkh.loading-point.insert'))
                                     <a href="{{ route('klkh.loading-point.insert') }}">
-                                        <span class="badge bg-success" style="font-size:14px">
+                                        <span class="badge bg-success px-3 py-2" style="font-size:14px">
                                             <i class="fas fa-plus"></i> Isi KLKH Loading Point
                                         </span>
                                     </a>
-                                </div>
-                            @endif
+                                @endif
 
-                            {{-- ADMIN & MANAGEMENT : boleh download --}}
-                            @if (canAccess('klkh.loading-point.bundlepdf'))
-                                <div class="col-sm-12 col-md-2 mb-2 text-md-end">
+                                {{-- ADMIN & MANAGEMENT --}}
+                                @if (canAccess('klkh.loading-point.bundlepdf'))
                                     <a href="{{ route('klkh.loading-point.bundlepdf') }}" target="_blank">
-                                        <span class="badge bg-primary" style="font-size:14px">
+                                        <span class="badge bg-primary px-3 py-2" style="font-size:14px">
                                             <i class="fas fa-download"></i> Bundle PDF
                                         </span>
                                     </a>
-                                </div>
-                            @endif
+                                @endif
+
+                            </div>
+
                         </div>
                     </div>
 

@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 
 class CanAccess
@@ -14,11 +13,15 @@ class CanAccess
         $routeName = $request->route()?->getName();
 
         if (!$routeName) {
-            abort(403, 'Route tidak memiliki nama.');
+            return $next($request);
+        }
+
+        if (!Auth::check()) {
+            return redirect()->route('login');
         }
 
         if (!canAccess($routeName)) {
-            return redirect()->route('dashboard.index')->with('info', 'Anda tidak diizinkan untuk mengakses halaman ini');
+            return redirect()->route('dashboard.index')->with('info', 'Anda tidak diizinkan mengakses halaman ini');
         }
 
         return $next($request);

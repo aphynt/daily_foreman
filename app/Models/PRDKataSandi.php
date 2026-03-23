@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class PRDKataSandi extends Model
 {
     //
-    protected $table = 'PRD_KATASANDI';
+    protected $table = 'prd_katasandi';
 
     protected $guarded = [];
 }

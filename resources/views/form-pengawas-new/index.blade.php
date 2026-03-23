@@ -55,6 +55,24 @@
             overflow-wrap: break-word;
         }
 
+        #accordionSupport .table th,
+        #accordionSupport .table td {
+            word-break: break-word;
+            white-space: normal !important;
+            padding: 8px 6px !important;
+            vertical-align: middle;
+            font-size: 12px;
+        }
+
+        #accordionCatatan .table th,
+        #accordionCatatan .table td {
+            word-break: break-word;
+            white-space: normal !important;
+            padding: 8px 6px !important;
+            vertical-align: middle;
+            font-size: 12px;
+        }
+
     }
 </style>
 

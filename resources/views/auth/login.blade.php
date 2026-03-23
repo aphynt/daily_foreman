@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Login - Daily Foreman</title>
+    <title>Login - {{ config('app.name') }}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes">
@@ -322,7 +322,7 @@
                             </a>
                         </div>
                         {{-- <div class="saprator my-3"><span></span></div> --}}
-                        <h4 class="text-center f-w-500 mb-3">Login - Laporan Harian Pengawas</h4>
+                        <h4 class="text-center f-w-500 mb-3">Login - {{ config('app.name') }}</h4>
 
                         <!-- Login alerts would go here -->
 
@@ -330,11 +330,11 @@
                             @csrf
                             <div class="mb-3">
                                 <label for="floatingInput" class="form-label">NIK</label>
-                                <input type="text" class="form-control" id="floatingInput" placeholder="Masukkan NIK Anda" name="nik" required>
+                                <input type="text" class="form-control" id="floatingInput" placeholder="Masukkan NIK anda..." name="nik" oninput="this.value = this.value.toUpperCase()" required>
                             </div>
                             <div class="mb-3">
                                 <label for="floatingInput1" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="floatingInput1" placeholder="Masukkan Password Anda" name="password" required>
+                                <input type="password" class="form-control" id="floatingInput1" placeholder="Masukkan Password anda..." name="password" required>
                             </div>
                             <div class="d-flex mt-1 justify-content-between align-items-center">
                                 <div class="form-check">

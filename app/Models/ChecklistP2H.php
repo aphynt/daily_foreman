@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ChecklistP2H extends Model
 {
     //
-    protected $table = 'OPR_CHECKLISTP2H';
+    protected $table = 'prd_opr_checklistp2h';
 
     protected $guarded = [];
 }

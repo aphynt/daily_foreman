@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class KLKHSimpangEmpat extends Model
 {
     //
-    protected $table = 'klkh_simpangempat_t';
+    protected $table = 'prd_klkh_simpangempat';
 
     protected $guarded = [];
 }

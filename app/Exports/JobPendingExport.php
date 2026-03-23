@@ -135,11 +135,11 @@ class JobPendingExport implements FromCollection, WithEvents, WithHeadings, With
     public function collection()
     {
 
-        $dataQuery = DB::table('JOB_PENDING as jp')
-        ->leftJoin('JOB_PENDING_DESC as jd', 'jp.uuid', '=', 'jd.uuid_job')
+        $dataQuery = DB::table('prd_job_pending as jp')
+        ->leftJoin('prd_job_pending_list as jd', 'jp.uuid', '=', 'jd.uuid_job')
             ->leftJoin('users as us', 'jp.pic', '=', 'us.id')
-            ->leftJoin('REF_SHIFT as sh', 'jp.shift_id', 'sh.id')
-            ->leftJoin('REF_SECTION as sec', 'jp.section_id', 'sec.id')
+            ->leftJoin('ref_shift as sh', 'jp.shift_id', 'sh.id')
+            ->leftJoin('prd_ref_section as sec', 'jp.section_id', 'sec.id')
             ->leftJoin('focus.dbo.PRS_PERSONAL as db', 'jp.dibuat', '=', 'db.NRP')
             ->leftJoin('focus.dbo.PRS_PERSONAL as dt', 'jp.diterima', '=', 'dt.NRP')
             ->select(

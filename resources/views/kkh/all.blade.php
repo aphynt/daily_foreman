@@ -15,11 +15,11 @@
                     </div>
                     <div class="col-12">
                         <div class="mb-3 row">
-                            <div class="col-6 col-md-3 mb-2">
+                            <div class="col-6 col-md-2 mb-2">
                                 <label for="tanggalKKH">Tanggal</label>
                                 <input type="text" id="tanggalKKH" class="form-control" name="tanggalKKH">
                             </div>
-                            <div class="col-6 col-md-3 mb-2">
+                            <div class="col-6 col-md-2 mb-2">
                                 <label for="shift">Shift</label>
                                 <select class="form-select" name="shift" id="shift">
                                     <option value="Semua">Semua</option>
@@ -27,7 +27,16 @@
                                     <option value="Malam">Malam</option>
                                 </select>
                             </div>
-                            <div class="col-12 col-md-3 mb-2">
+                            <div class="col-6 col-md-2 mb-2">
+                                <label for="departemen">Departemen</label>
+                                <select class="form-select" name="departemen" id="departemen">
+                                    <option value="Semua">Semua</option>
+                                    @foreach ($dep as $d)
+                                        <option value="{{ $d->ID_Departemen }}">{{ $d->Departemen }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-2 mb-2">
                                 <label for="cluster">Kategori Operasional</label>
                                 <select class="form-select" name="cluster" id="cluster">
                                     <option value="Semua">Semua</option>
@@ -130,6 +139,8 @@
                     d.cluster = cluster;
                     var shift = $('#shift').val();
                     d.shift = shift;
+                    var departemen = $('#departemen').val();
+                    d.departemen = departemen;
                     delete d.columns;
                     // delete d.search;
                     delete d.order;
@@ -180,55 +191,19 @@
                 {
                     data: null,
                     render: function(data, type, row) {
-                        if (!row) return '';
 
-                        if (['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT', 'MANAGEMENT'].includes(userRole) && row.ferivikasi_pengawas == false) {
-                            let currentUserRole = userRole?.toUpperCase();
+                        if (row.CAN_VERIFY) {
 
-                            let jabatanPengawas = row.JABATAN?.toUpperCase();
-                            let isOperator = jabatanPengawas === 'OPERATOR';
-                            let allowedToVerify = false;
+                            return `
+                                <button class="btn-verifikasi badge w-100"
+                                    data-id="${row.id}"
+                                    style="font-size:14px;background-color:#001932;color:white;">
+                                    Verifikasi
+                                </button>
+                            `;
 
-                            // Cegah verifikasi diri sendiri
-                            if (jabatanPengawas !== currentUserRole) {
-                                // Kasus jika pengawas adalah OPERATOR
-                                if (isOperator) {
-                                    allowedToVerify = ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'].includes(currentUserRole);
-                                } else {
-                                    // Aturan berjenjang berdasarkan peran pengawas
-                                    switch (jabatanPengawas) {
-
-                                        case 'FOREMAN':
-                                            allowedToVerify = ['SUPERVISOR', 'SUPERINTENDENT'].includes(currentUserRole);
-                                            break;
-                                        case 'SUPERVISOR':
-                                            allowedToVerify = ['SUPERINTENDENT'].includes(currentUserRole);
-                                            break;
-                                        case 'SUPERINTENDENT':
-                                            allowedToVerify = ['MANAGEMENT'].includes(currentUserRole);
-                                            break;
-                                        case 'PJS. SUPERINTENDENT':
-                                            allowedToVerify = ['MANAGEMENT'].includes(currentUserRole);
-                                            break;
-                                        case 'ASISTEN MANAGEMENT':
-                                            allowedToVerify = ['MANAGEMENT'].includes(currentUserRole);
-                                            break;
-                                        default:
-                                            // Selain OPERATOR dan role spesifik, bisa diverifikasi oleh FOREMAN, SUPERVISOR, atau SUPERINTENDENT
-                                            allowedToVerify = ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'].includes(currentUserRole);
-                                    }
-                                }
-                            }
-
-                            if (allowedToVerify) {
-                                let editUrl = "{{ route('kkh.verifikasi') }}" + "?rowID=" + encodeURIComponent(row.id);
-                                return `
-                                    <button class="btn-verifikasi badge w-100" data-id="${row.id}" style="font-size:14px;background-color:#001932;color:white;">
-                                        Verifikasi
-                                    </button>
-                                `;
-                            }
                         }
+
                         return '';
                     }
                 }

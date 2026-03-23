@@ -32,7 +32,8 @@
         },
         "files": [
             "app/Helpers/QrHelper.php",
-            "app/Helpers/RoleHelper.php"
+            "app/Helpers/RoleHelper.php",
+            "app/Helpers/ConfigHelper.php"
         ]
     },
     "autoload-dev": {

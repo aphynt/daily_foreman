@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('front_loading_t', function (Blueprint $table) {
+        Schema::create('prd_daily_foreman_front_loading', function (Blueprint $table) {
             $table->id();
             $table->string('uuid')->index();
             $table->string('daily_report_uuid')->index();
-            $table->foreignId('daily_report_id')->constrained('daily_report_t');
+            $table->foreignId('daily_report_id')->constrained('prd_daily_foreman_daily_report');
             $table->boolean('statusenabled')->default(1);
             $table->string('nomor_unit')->nullable();
             $table->string('siang')->nullable();
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('front_loading_t');
+        Schema::dropIfExists('prd_daily_foreman_front_loading');
     }
 };
