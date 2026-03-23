@@ -227,9 +227,9 @@ class ProductionController extends Controller
 
         } else {
 
-            $rawAktif = DB::select(
+            $rawAktif =  DB::connection('focus_reporting')->select(
                 'SET NOCOUNT ON;
-                EXEC FOCUS_REPORTING.dbo.APP_GET_PRODUCTION_TODAY_AND_LAST_SHIFT
+                EXEC dbo.APP_GET_PRODUCTION_TODAY_AND_LAST_SHIFT
                 @shift = ?',
                 ['Malam']
             );
