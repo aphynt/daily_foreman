@@ -86,25 +86,37 @@ class KLKHLoadingPointController extends Controller
         //     $baseQuery->orWhere('pic', Auth::user()->id);
         // }
 
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        $roleBypass = getConfigArrayById(1);
-        $roleBypassAdminManagement = getConfigArrayById(5);
+        // /** @var \App\Models\User $user */
+        // $user = Auth::user();
+        // $roleBypass = getConfigArrayById(1);
+        // $roleBypassAdminManagement = getConfigArrayById(5);
 
-        if (!$user->hasRoleId($roleBypassAdminManagement)) {
-            if (
-                $user->hasRoleId($roleBypass) ||
-                $user->inDepartemenId([8])
-            ) {
-                $baseQuery->where('pic', $user->id);
-            }
+        // if (!$user->hasRoleId($roleBypassAdminManagement)) {
+        //     if (
+        //         $user->hasRoleId($roleBypass) ||
+        //         $user->inDepartemenId([8])
+        //     ) {
+        //         $baseQuery->where('pic', $user->id);
+        //     }
 
-            $baseQuery->where(function($query) use ($user) {
-                $query->where('lp.foreman', $user->nik)
-                    ->orWhere('lp.supervisor', $user->nik)
-                    ->orWhere('lp.superintendent', $user->nik);
-            });
+        //     $baseQuery->where(function($query) use ($user) {
+        //         $query->where('lp.foreman', $user->nik)
+        //             ->orWhere('lp.supervisor', $user->nik)
+        //             ->orWhere('lp.superintendent', $user->nik);
+        //     });
+        // }
+
+        // $loading = $baseQuery->get();
+
+        if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'])) {
+            $baseQuery->orWhere('pic', Auth::user()->id);
         }
+
+        $baseQuery = $baseQuery->where(function($query) {
+            $query->where('lp.foreman', Auth::user()->nik)
+                  ->orWhere('lp.supervisor', Auth::user()->nik)
+                  ->orWhere('lp.superintendent', Auth::user()->nik);
+        });
 
         $loading = $baseQuery->get();
 

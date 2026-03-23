@@ -86,25 +86,37 @@ class KLKHSimpangEmpatController extends Controller
         //     $baseQuery->orWhere('pic', Auth::user()->id);
         // }
 
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        $roleBypass = getConfigArrayById(1);
-        $roleBypassAdminManagement = getConfigArrayById(5);
+        // /** @var \App\Models\User $user */
+        // $user = Auth::user();
+        // $roleBypass = getConfigArrayById(1);
+        // $roleBypassAdminManagement = getConfigArrayById(5);
 
-        if (!$user->hasRoleId($roleBypassAdminManagement)) {
-            if (
-                $user->hasRoleId($roleBypass) ||
-                $user->inDepartemenId([8])
-            ) {
-                $baseQuery->where('pic', $user->id);
-            }
+        // if (!$user->hasRoleId($roleBypassAdminManagement)) {
+        //     if (
+        //         $user->hasRoleId($roleBypass) ||
+        //         $user->inDepartemenId([8])
+        //     ) {
+        //         $baseQuery->where('pic', $user->id);
+        //     }
 
-            $baseQuery->where(function($query) use ($user) {
-                $query->where('se.foreman', $user->nik)
-                    ->orWhere('se.supervisor', $user->nik)
-                    ->orWhere('se.superintendent', $user->nik);
-            });
+        //     $baseQuery->where(function($query) use ($user) {
+        //         $query->where('se.foreman', $user->nik)
+        //             ->orWhere('se.supervisor', $user->nik)
+        //             ->orWhere('se.superintendent', $user->nik);
+        //     });
+        // }
+
+        // $simpang = $baseQuery->get();
+
+        if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'])) {
+            $baseQuery->orWhere('pic', Auth::user()->id);
         }
+
+        $baseQuery = $baseQuery->where(function($query) {
+            $query->where('se.foreman', Auth::user()->nik)
+                  ->orWhere('se.supervisor', Auth::user()->nik)
+                  ->orWhere('se.superintendent', Auth::user()->nik);
+        });
 
         $simpang = $baseQuery->get();
 

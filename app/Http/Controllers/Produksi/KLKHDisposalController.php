@@ -86,25 +86,37 @@ class KLKHDisposalController extends Controller
         //     $baseQuery->orWhere('pic', Auth::user()->id);
         // }
 
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        $roleBypass = getConfigArrayById(1);
-        $roleBypassAdminManagement = getConfigArrayById(5);
+        // /** @var \App\Models\User $user */
+        // $user = Auth::user();
+        // $roleBypass = getConfigArrayById(1);
+        // $roleBypassAdminManagement = getConfigArrayById(5);
 
-        if (!$user->hasRoleId($roleBypassAdminManagement)) {
-            if (
-                $user->hasRoleId($roleBypass) ||
-                $user->inDepartemenId([8])
-            ) {
-                $baseQuery->where('pic', $user->id);
-            }
+        // if (!$user->hasRoleId($roleBypassAdminManagement)) {
+        //     if (
+        //         $user->hasRoleId($roleBypass) ||
+        //         $user->inDepartemenId([8])
+        //     ) {
+        //         $baseQuery->where('pic', $user->id);
+        //     }
 
-            $baseQuery->where(function($query) use ($user) {
-                $query->where('dp.foreman', $user->nik)
-                    ->orWhere('dp.supervisor', $user->nik)
-                    ->orWhere('dp.superintendent', $user->nik);
-            });
+        //     $baseQuery->where(function($query) use ($user) {
+        //         $query->where('dp.foreman', $user->nik)
+        //             ->orWhere('dp.supervisor', $user->nik)
+        //             ->orWhere('dp.superintendent', $user->nik);
+        //     });
+        // }
+
+        // $disposal = $baseQuery->get();
+
+        if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'])) {
+            $baseQuery->orWhere('pic', Auth::user()->id);
         }
+
+        $baseQuery = $baseQuery->where(function($query) {
+            $query->where('dp.foreman', Auth::user()->nik)
+                  ->orWhere('dp.supervisor', Auth::user()->nik)
+                  ->orWhere('dp.superintendent', Auth::user()->nik);
+        });
 
         $disposal = $baseQuery->get();
 
