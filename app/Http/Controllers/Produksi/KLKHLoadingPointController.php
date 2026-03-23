@@ -504,23 +504,15 @@ class KLKHLoadingPointController extends Controller
                 'superintendent' => $data['superintendent'] ?? null,
             ];
 
-            /** @var \App\Models\User $user */
-            $user = Auth::user();
-
-            $roleSupervisor = getConfigArrayById(4) ?? [];
-            $roleForeman    = getConfigArrayById(6) ?? [];
-
-            // Role SUPERVISOR
-            if ($user->hasRoleId($roleSupervisor)) {
-                $dataToInsert['supervisor']          = $user->nik;
-                $dataToInsert['verified_supervisor'] = $user->nik;
+            if (Auth::user()->role == 'SUPERVISOR') {
+                $dataToInsert['supervisor'] = Auth::user()->nik;
+                $dataToInsert['verified_supervisor'] = Auth::user()->nik;
             }
 
-            // Role FOREMAN
-            if ($user->hasRoleId($roleForeman)) {
-                $dataToInsert['supervisor']       = $data['supervisor'] ?? null;
-                $dataToInsert['foreman']          = $user->nik;
-                $dataToInsert['verified_foreman'] = $user->nik;
+            if (Auth::user()->role == 'FOREMAN') {
+                $dataToInsert['supervisor'] = $data['supervisor'] ?? null;
+                $dataToInsert['foreman'] = Auth::user()->nik;
+                $dataToInsert['verified_foreman'] = Auth::user()->nik;
             }
 
             KLKHLoadingPoint::create($dataToInsert);
