@@ -333,22 +333,33 @@ class FormPengawasNewController extends Controller
                 'finished_at' => $finished_at,
             ];
 
-            /** @var \App\Models\User $user */
-            $user = Auth::user();
+            // /** @var \App\Models\User $user */
+            // $user = Auth::user();
 
-            $roleSupervisor = getConfigArrayById(4) ?? [];
-            $roleForeman    = getConfigArrayById(6) ?? [];
+            // $roleSupervisor = getConfigArrayById(4) ?? [];
+            // $roleForeman    = getConfigArrayById(6) ?? [];
 
-            if ($user->hasRoleId($roleSupervisor)) {
-                $data['nik_supervisor']      = $user->nik;
-                $data['nama_supervisor']     = $user->name;
-                $data['verified_supervisor'] = $user->nik;
+            // if ($user->hasRoleId($roleSupervisor)) {
+            //     $data['nik_supervisor']      = $user->nik;
+            //     $data['nama_supervisor']     = $user->name;
+            //     $data['verified_supervisor'] = $user->nik;
+            // }
+
+            // if ($user->hasRoleId($roleForeman)) {
+            //     $data['nik_foreman']      = $user->nik;
+            //     $data['nama_foreman']     = $user->name;
+            //     $data['verified_foreman'] = $user->nik;
+            // }
+            if (Auth::user()->role === 'SUPERVISOR') {
+                $data['nik_supervisor'] = Auth::user()->nik;
+                $data['nama_supervisor'] = Auth::user()->name;
+                $data['verified_supervisor'] = Auth::user()->nik;
             }
 
-            if ($user->hasRoleId($roleForeman)) {
-                $data['nik_foreman']      = $user->nik;
-                $data['nama_foreman']     = $user->name;
-                $data['verified_foreman'] = $user->nik;
+            if (Auth::user()->role === 'FOREMAN') {
+                $data['nik_foreman'] = Auth::user()->nik;
+                $data['nama_foreman'] = Auth::user()->name;
+                $data['verified_foreman'] = Auth::user()->nik;
             }
 
             // Gunakan updateOrCreate untuk menghindari duplikasi
