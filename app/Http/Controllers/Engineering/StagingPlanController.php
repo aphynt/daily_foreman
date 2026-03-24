@@ -138,10 +138,10 @@ class StagingPlanController extends Controller
 
     public function preview($uuid)
     {
-        $data = DB::table('STAGING_PLAN as sp')
+        $data = DB::table('eng_staging_plan as sp')
             ->leftJoin('users as us', 'sp.pic', '=', 'us.id')
-            ->leftJoin('REF_SHIFT as sh', 'sp.shift_id', '=', 'sh.id')
-            ->leftJoin('REF_AREA_STAGING_PLAN as ar', 'sp.pit_id', '=', 'ar.id')
+            ->leftJoin('ref_shift as sh', 'sp.shift_id', '=', 'sh.id')
+            ->leftJoin('ref_region_staging_plan as ar', 'sp.pit_id', '=', 'ar.id')
             ->select(
                 'sp.id',
                 'sp.uuid',
