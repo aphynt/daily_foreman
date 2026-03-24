@@ -241,7 +241,7 @@ class JobPendingProduksiController extends Controller
             // Http::get($url);
 
             DB::commit();
-            return redirect()->route('jobpending')->with('success', 'Job Pending berhasil dikirim');
+            return redirect()->route('jobpending.produksi')->with('success', 'Job Pending berhasil dikirim');
         } catch (\Throwable $th) {
             DB::rollBack();
             return redirect()->back()->with('info', $th->getMessage());

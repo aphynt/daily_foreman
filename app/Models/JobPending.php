@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class JobPending extends Model
 {
     //
-    protected $table = 'JOB_PENDING';
+    protected $table = 'prd_job_pending';
 
     protected $guarded = [];
 }
