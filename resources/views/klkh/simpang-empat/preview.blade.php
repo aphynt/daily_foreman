@@ -355,7 +355,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.simpangempat.verified.foreman') &&
                                     Auth::user()->nik == $se->foreman &&
                                     $se->verified_foreman == null
                                 )
@@ -365,7 +364,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.simpangempat.verified.supervisor') &&
                                     Auth::user()->nik == $se->supervisor &&
                                     $se->verified_supervisor == null
                                 )
@@ -375,7 +373,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.simpangempat.verified.superintendent') &&
                                     Auth::user()->nik == $se->superintendent &&
                                     $se->verified_superintendent == null
                                 )

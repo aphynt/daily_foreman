@@ -325,7 +325,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.disposal.verified.foreman') &&
                                     Auth::user()->nik == $dp->foreman &&
                                     $dp->verified_foreman == null
                                 )
@@ -335,7 +334,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.disposal.verified.supervisor') &&
                                     Auth::user()->nik == $dp->supervisor &&
                                     $dp->verified_supervisor == null
                                 )
@@ -345,7 +343,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.disposal.verified.superintendent') &&
                                     Auth::user()->nik == $dp->superintendent &&
                                     $dp->verified_superintendent == null
                                 )

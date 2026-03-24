@@ -251,7 +251,7 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.loading-point.verified.foreman') &&
+
                                     Auth::user()->nik == $ld->foreman &&
                                     $ld->verified_foreman == null
                                 )
@@ -261,7 +261,7 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.loading-point.verified.supervisor') &&
+
                                     Auth::user()->nik == $ld->supervisor &&
                                     $ld->verified_supervisor == null
                                 )
@@ -271,7 +271,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.loading-point.verified.superintendent') &&
                                     Auth::user()->nik == $ld->superintendent &&
                                     $ld->verified_superintendent == null
                                 )

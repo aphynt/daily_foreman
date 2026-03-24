@@ -285,7 +285,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.haul-road.verified.foreman') &&
                                     Auth::user()->nik == $hr->foreman &&
                                     $hr->verified_foreman == null
                                 )
@@ -295,7 +294,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.haul-road.verified.supervisor') &&
                                     Auth::user()->nik == $hr->supervisor &&
                                     $hr->verified_supervisor == null
                                 )
@@ -305,7 +303,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.haul-road.verified.superintendent') &&
                                     Auth::user()->nik == $hr->superintendent &&
                                     $hr->verified_superintendent == null
                                 )

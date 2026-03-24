@@ -348,7 +348,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.ogs.verified.foreman') &&
                                     Auth::user()->nik == $ogs->foreman &&
                                     $ogs->verified_foreman == null
                                 )
@@ -358,7 +357,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.ogs.verified.supervisor') &&
                                     Auth::user()->nik == $ogs->supervisor &&
                                     $ogs->verified_supervisor == null
                                 )
@@ -368,7 +366,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.ogs.verified.superintendent') &&
                                     Auth::user()->nik == $ogs->superintendent &&
                                     $ogs->verified_superintendent == null
                                 )

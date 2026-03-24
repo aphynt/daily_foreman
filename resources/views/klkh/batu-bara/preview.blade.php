@@ -362,7 +362,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.batubara.verified.foreman') &&
                                     Auth::user()->nik == $bb->foreman &&
                                     $bb->verified_foreman == null
                                 )
@@ -372,7 +371,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.batubara.verified.supervisor') &&
                                     Auth::user()->nik == $bb->supervisor &&
                                     $bb->verified_supervisor == null
                                 )
@@ -382,7 +380,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.batubara.verified.superintendent') &&
                                     Auth::user()->nik == $bb->superintendent &&
                                     $bb->verified_superintendent == null
                                 )

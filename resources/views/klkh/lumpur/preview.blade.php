@@ -409,7 +409,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.lumpur.verified.foreman') &&
                                     Auth::user()->nik == $lpr->foreman &&
                                     $lpr->verified_foreman == null
                                 )
@@ -419,7 +418,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.lumpur.verified.supervisor') &&
                                     Auth::user()->nik == $lpr->supervisor &&
                                     $lpr->verified_supervisor == null
                                 )
@@ -429,7 +427,6 @@
                                 @endif
 
                                 @if(
-                                    canAccess('klkh.lumpur.verified.superintendent') &&
                                     Auth::user()->nik == $lpr->superintendent &&
                                     $lpr->verified_superintendent == null
                                 )
