@@ -10,12 +10,33 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
+use DateTime;
 
 class HazardReportController extends Controller
 {
     //
-    public function index()
+    public function index(Request $request)
     {
+
+        session(['requestTimeHazardReport' => $request->all()]);
+
+        if (empty($request->rangeStart) || empty($request->rangeEnd)){
+            $time = new DateTime();
+            $startDate = $time->format('Y-m-d');
+            $endDate = $time->format('Y-m-d');
+
+            $start = new DateTime("$startDate");
+            $end = new DateTime("$endDate");
+
+        }else{
+            $start = new DateTime("$request->rangeStart");
+            $end = new DateTime("$request->rangeEnd");
+        }
+
+
+        $startTimeFormatted = $start->format('Y-m-d');
+        $endTimeFormatted = $end->format('Y-m-d');
+
         $hazard = DB::table('se_hazard_report as hz')
         ->leftJoin('users as us1', 'hz.pic', 'us1.id')
         ->leftJoin('users as us2', 'hz.pelapor', 'us2.nik')
@@ -49,6 +70,7 @@ class HazardReportController extends Controller
             'hz.created_at',
             'hz.verified_scc',
         )
+        ->whereBetween(DB::raw('CONVERT(varchar, hz.tanggal_pelaporan, 23)'), [$startTimeFormatted, $endTimeFormatted])
         ->where('hz.statusenabled', true)->get();
         return view('safety.hazard-report.index', compact('hazard'));
     }
