@@ -61,7 +61,7 @@ return [
             'host'     => '10.10.2.6',
             'username' => env('SFTP_USERNAME'),
             'password' => env('SFTP_PASSWORD'),
-            'root'     => '/C:/wamp64/www/FMSDaily/storage/app/public',
+            'root'     => '/C:/wamp64/www/daily_foreman/storage/app/public',
             'timeout'  => 30,
         ],
 
