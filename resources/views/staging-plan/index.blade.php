@@ -56,7 +56,7 @@
                             </div>
 
                             <!-- Tombol buat job pending -->
-                            @if (in_array(Auth::user()->role, ['ADMIN', 'PIT CONTROL']))
+                            @if (canAccess('stagingplan.insert'))
                             <div class="col-12 col-md-2 mb-2 d-flex align-items-end">
                                 <a href="{{ route('stagingplan.insert') }}" class="btn btn-success w-100" style="padding-top:10px;padding-bottom:10px;" data-bs-toggle="modal" data-bs-target="#tambahStagingPlan">
                                     <i class="fas fa-plus"></i> Tambah
