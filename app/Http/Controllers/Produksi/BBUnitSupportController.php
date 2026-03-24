@@ -65,17 +65,17 @@ class BBUnitSupportController extends Controller
         ->where('dr.statusenabled', true)
         ->whereBetween(DB::raw("CONVERT(varchar, dr.tanggal_dasar, 23)"), [$startTimeFormatted, $endTimeFormatted]);
 
-        // if (Auth::user()->role !== 'ADMIN') {
-        //     $support->where('dr.foreman_id', Auth::user()->id);
-        // }
-
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        $roleBypass = getConfigArrayById(2);
-
-        if (! $user->hasRoleId($roleBypass)) {
-            $support->where('dr.foreman_id', $user->id);
+        if (Auth::user()->role !== 'ADMIN') {
+            $support->where('dr.foreman_id', Auth::user()->id);
         }
+
+        // /** @var \App\Models\User $user */
+        // $user = Auth::user();
+        // $roleBypass = getConfigArrayById(2);
+
+        // if (! $user->hasRoleId($roleBypass)) {
+        //     $support->where('dr.foreman_id', $user->id);
+        // }
 
         $support = $support->get();
         // dd($support);

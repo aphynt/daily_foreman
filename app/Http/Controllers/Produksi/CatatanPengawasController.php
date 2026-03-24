@@ -59,17 +59,17 @@ class CatatanPengawasController extends Controller
         ->where('cp.statusenabled', true)
         ->where('dr.statusenabled', true)
         ->whereBetween('tanggal_dasar', [$startTimeFormatted, $endTimeFormatted]);
-        // if (Auth::user()->role !== 'ADMIN') {
-        //     $note->where('dr.foreman_id', Auth::user()->id);
-        // }
-
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        $roleBypass = getConfigArrayById(2);
-
-        if (! $user->hasRoleId($roleBypass)) {
-            $note->where('dr.foreman_id', $user->id);
+        if (Auth::user()->role !== 'ADMIN') {
+            $note->where('dr.foreman_id', Auth::user()->id);
         }
+
+        // /** @var \App\Models\User $user */
+        // $user = Auth::user();
+        // $roleBypass = getConfigArrayById(2);
+
+        // if (! $user->hasRoleId($roleBypass)) {
+        //     $note->where('dr.foreman_id', $user->id);
+        // }
 
         $note = $note->get();
 

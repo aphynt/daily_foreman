@@ -68,17 +68,17 @@ class FrontLoadingController extends Controller
         ->where('dr.statusenabled', true)
         ->where('fl.statusenabled', true)
         ->whereBetween('tanggal_dasar', [$startTimeFormatted, $endTimeFormatted]);
-        // if (Auth::user()->role !== 'ADMIN') {
-        //     $front->where('dr.foreman_id', Auth::user()->id);
-        // }
-
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        $roleAdmin = getConfigArrayById(2) ?? [];
-
-        if (! $user->hasRoleId($roleAdmin)) {
-            $front->where('dr.foreman_id', $user->id);
+        if (Auth::user()->role !== 'ADMIN') {
+            $front->where('dr.foreman_id', Auth::user()->id);
         }
+
+        // /** @var \App\Models\User $user */
+        // $user = Auth::user();
+        // $roleAdmin = getConfigArrayById(2) ?? [];
+
+        // if (! $user->hasRoleId($roleAdmin)) {
+        //     $front->where('dr.foreman_id', $user->id);
+        // }
 
         $front = $front->get()
     ->flatMap(function ($item) {

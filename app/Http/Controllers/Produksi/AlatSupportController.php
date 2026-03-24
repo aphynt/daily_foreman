@@ -76,18 +76,18 @@ class AlatSupportController extends Controller
         )
         ->where('al.statusenabled', true)
         ->where('dr.statusenabled', true)
-        ->whereBetween('tanggal_dasar', [$startTimeFormatted, $endTimeFormatted]);
-        // if (Auth::user()->role !== 'ADMIN') {
-        //     $support->where('dr.foreman_id', Auth::user()->id);
-        // }
-
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        $roleBypass = getConfigArrayById(2);
-
-        if (! $user->hasRoleId($roleBypass)) {
-            $support->where('dr.foreman_id', $user->id);
+        ->whereBetween('dr.tanggal_dasar', [$startTimeFormatted, $endTimeFormatted]);
+        if (Auth::user()->role !== 'ADMIN') {
+            $support->where('dr.foreman_id', Auth::user()->id);
         }
+
+        // /** @var \App\Models\User $user */
+        // $user = Auth::user();
+        // $roleBypass = getConfigArrayById(2);
+
+        // if (! $user->hasRoleId($roleBypass)) {
+        //     $support->where('dr.foreman_id', $user->id);
+        // }
 
         $support = $support->get();
 
@@ -202,17 +202,17 @@ class AlatSupportController extends Controller
                     }
                 });
             }
-            // if (Auth::user()->role !== 'ADMIN') {
-            //     $supportQuery->where('dr.foreman_id', Auth::user()->id);
-            // }
-
-            /** @var \App\Models\User $user */
-            $user = Auth::user();
-            $roleBypass = getConfigArrayById(2);
-
-            if (! $user->hasRoleId($roleBypass)) {
-                $supportQuery->where('dr.foreman_id', $user->id);
+            if (Auth::user()->role !== 'ADMIN') {
+                $supportQuery->where('dr.foreman_id', Auth::user()->id);
             }
+
+            // /** @var \App\Models\User $user */
+            // $user = Auth::user();
+            // $roleBypass = getConfigArrayById(2);
+
+            // if (! $user->hasRoleId($roleBypass)) {
+            //     $supportQuery->where('dr.foreman_id', $user->id);
+            // }
         $filteredRecords = $supportQuery->count();
         $support = $supportQuery->skip($start)->take($length)->get();
 

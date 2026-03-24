@@ -994,7 +994,7 @@ class PengawasPitstopController extends Controller
 
         $dailyDesc = DB::table('prd_pitstop_report_list as prd')
             ->leftJoin('prd_pitstop_report as pr', 'prd.report_id', '=', 'pr.id')
-            ->leftJoin('focus.focus.focus.focus.dbo.FLT_VEHICLE as vhc', 'prd.no_unit', '=', 'vhc.VHC_ID')
+            ->leftJoin('focus.focus.dbo.FLT_VEHICLE as vhc', 'prd.no_unit', '=', 'vhc.VHC_ID')
             ->leftJoin('ref_shift as sh', 'pr.shift_id', '=', 'sh.id')
             ->leftJoin('ref_region as ar', 'pr.area_id', '=', 'ar.id')
             ->leftJoin('users as us', 'pr.foreman_id', '=', 'us.id')
