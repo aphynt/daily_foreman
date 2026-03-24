@@ -161,6 +161,7 @@ class FormPengawasNewController extends Controller
                 'role as JABATAN'
             )
             ->whereIn('role_id', $roleSupervisor)
+            ->where('departemen_id', 8)
             ->where('id', '!=', 95)
             ->where('statusenabled', true)
             ->get();
@@ -173,6 +174,7 @@ class FormPengawasNewController extends Controller
                 'role as JABATAN'
             )
             ->whereIn('role_id', $roleSuperintendent)
+            ->where('departemen_id', 8)
             ->whereNotIn('id', [95, 96])
             ->where('statusenabled', true)
             ->get();
