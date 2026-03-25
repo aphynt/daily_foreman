@@ -460,7 +460,7 @@ class KLKHLoadingPointController extends Controller
         $superintendent = Personal::whereIn('ROLETYPE', [3, 4])
         ->select('*', DB::raw("CASE WHEN ROLETYPE = 3 THEN 'SUPERVISOR' WHEN ROLETYPE = 4 THEN 'SUPERINTENDENT' ELSE 'UNKNOWN' END as JABATAN "))
         ->orderBy(DB::raw("CASE WHEN ROLETYPE = 3 THEN 1 WHEN ROLETYPE = 4 THEN 2 ELSE 3 END "))->get();
-        $pit = Area::where('statusenabled', true)->get();
+        $pit = Area::where('statusenabled', true)->where('group', 'production')->get();
         $shift = Shift::where('statusenabled', true)->get();
 
         $users = [

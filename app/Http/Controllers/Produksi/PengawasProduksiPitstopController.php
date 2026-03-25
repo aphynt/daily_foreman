@@ -131,9 +131,9 @@ class PengawasProduksiPitstopController extends Controller
 
             $coal = $coal->where(function($query) {
             if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
-                $query->where('dr.nik_foreman', Auth::user()->nik)
-                    ->orWhere('dr.nik_supervisor', Auth::user()->nik)
-                    ->orWhere('dr.nik_superintendent', Auth::user()->nik);
+                $query->where('pr.nik_foreman', Auth::user()->nik)
+                    ->orWhere('pr.nik_supervisor', Auth::user()->nik)
+                    ->orWhere('pr.nik_superintendent', Auth::user()->nik);
             }
         });
 

@@ -84,7 +84,7 @@ class PengawasPitstopController extends Controller
             ->where('statusenabled', true)
             ->get();
         $shift = Shift::where('statusenabled', true)->get();
-        $area = Area::where('statusenabled', true)->get();
+        $area = Area::where('statusenabled', true)->where('group', 'production')->get();
         $operator = Personal::select('ID', 'NRP', 'USERNAME', 'PERSONALNAME', 'EPIGONIUSERNAME', 'ROLETYPE', 'SYS_CREATEDBY', 'SYS_UPDATEDBY')->where('ROLETYPE', 0)->get();
 
         $data = [

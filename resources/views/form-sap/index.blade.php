@@ -76,7 +76,7 @@
                             <!-- Lokasi -->
                             <div class="mb-3">
                                 <label for="shift" class="form-label">Shift:</label>
-                                <select class="form-select" id="shift" name="shift" required>
+                                <select class="form-select" id="shift" name="shift" data-trigger required>
                                     @foreach ($shift as $sh)
                                         <option value="{{ $sh->id }}">{{ $sh->keterangan }}</option>
                                     @endforeach
@@ -85,7 +85,7 @@
 
                             <div class="mb-3">
                                 <label for="area" class="form-label">Area:</label>
-                                <select class="form-select" id="area" name="area" required>
+                                <select class="form-select" id="area" name="area" data-trigger required>
                                     @foreach ($area as $ar)
                                         <option value="{{ $ar->id }}">{{ $ar->keterangan }}</option>
                                     @endforeach

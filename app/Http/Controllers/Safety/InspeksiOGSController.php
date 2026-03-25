@@ -109,7 +109,7 @@ class InspeksiOGSController extends Controller
 
     public function insert()
     {
-        $pit = Area::where('statusenabled', true)->get();
+        $pit = Area::where('statusenabled', true)->where('group', 'production')->get();
         $penanggungjawab = Personal::whereIn('ROLETYPE', [2, 3, 4])->orderBy('PERSONALNAME')->get();
         $inspektor = User::whereIn('departemen_id', [9])->orderBy('name')->get();
 

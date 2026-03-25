@@ -180,7 +180,7 @@ class FormPengawasNewController extends Controller
             ->get();
 
         $lokasi = Lokasi::where('statusenabled', true)->get();
-        $area = Area::where('statusenabled', true)->get();
+        $area = Area::where('statusenabled', true)->where('group', 'production')->get();
         $shift = Shift::where('statusenabled', true)->get();
 
 
