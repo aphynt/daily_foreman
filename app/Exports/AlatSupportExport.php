@@ -134,9 +134,9 @@ class AlatSupportExport implements FromCollection, WithEvents, WithHeadings, Wit
             ->leftJoin('ref_region as ar', 'dr.area_id', '=', 'ar.id')
             ->leftJoin('prd_ref_lokasi as lok', 'dr.lokasi_id', '=', 'lok.id')
             // ->leftJoin('users as us', 'dr.foreman_id', '=', 'us.id')
-            ->leftJoin('focus.dbo.PRS_PERSONAL as gl', 'dr.nik_foreman', '=', 'gl.NRP')
-            ->leftJoin('focus.dbo.PRS_PERSONAL as spv', 'dr.nik_supervisor', '=', 'spv.NRP')
-            ->leftJoin('focus.dbo.PRS_PERSONAL as spt', 'dr.nik_superintendent', '=', 'spt.NRP')
+            ->leftJoin('focus.focus.dbo.PRS_PERSONAL as gl', 'dr.nik_foreman', '=', 'gl.NRP')
+            ->leftJoin('focus.focus.dbo.PRS_PERSONAL as spv', 'dr.nik_supervisor', '=', 'spv.NRP')
+            ->leftJoin('focus.focus.dbo.PRS_PERSONAL as spt', 'dr.nik_superintendent', '=', 'spt.NRP')
             ->select(
                 'dr.tanggal_dasar as tanggal_pelaporan',
                 'sh.keterangan as shift',
