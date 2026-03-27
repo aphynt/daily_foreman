@@ -41,17 +41,31 @@ class P2HController extends Controller
 
     public function api_monitoring(Request $request)
     {
-        DB::statement('SET ANSI_NULLS ON');
-        DB::statement('SET ANSI_WARNINGS ON');
-
         $start = new DateTime($request->tanggalP2H);
         $tanggalP2H = $start->format('Y-m-d');
 
-        $offset = $request->input('start', 0);
-        $length = $request->input('length', 10);
+        $offset = $request->input('start', 0);   // Offset
+        $length = $request->input('length', 10); // Default 10 items
         $draw = $request->input('draw');
 
-        $supportQuery = DB::table('focus.focus.dbo.OPR_OPRCHECKLIST as A')
+        $verifikator = DB::table('OPR_CHECKLISTP2H as p2h')
+                ->leftJoin('focus.dbo.PRS_PERSONAL as gl', 'p2h.VERIFIED_FOREMAN', '=', 'gl.NRP')
+                ->leftJoin('focus.dbo.PRS_PERSONAL as spv', 'p2h.VERIFIED_SUPERVISOR', '=', 'spv.NRP')
+                ->leftJoin('focus.dbo.PRS_PERSONAL as mec', 'p2h.VERIFIED_MEKANIK', '=', 'mec.NRP')
+                ->select(
+                    'p2h.VHC_ID',
+                    'p2h.OPR_SHIFTNO',
+                    'p2h.OPR_REPORTTIME',
+                    'p2h.VERIFIED_MEKANIK',
+                    'mec.PERSONALNAME as NAMAMEKANIK',
+                    'p2h.VERIFIED_FOREMAN',
+                    'gl.PERSONALNAME as NAMAFOREMAN',
+                    'p2h.VERIFIED_SUPERVISOR',
+                    'spv.PERSONALNAME as NAMASUPERVISOR',
+                    'p2h.VERIFIED_SUPERINTENDENT',
+                )->get();
+
+        $supportQuery = DB::connection('focus')->table('FOCUS.dbo.OPR_OPRCHECKLIST as A')
             ->select(
                 'A.ID',
                 DB::raw("FORMAT(A.OPR_REPORTTIME, 'yyyy-MM-dd HH:mm:ss') as OPR_REPORTTIME"),
@@ -70,37 +84,29 @@ class P2HController extends Controller
                 'p2h.VERIFIED_SUPERVISOR',
                 'spv.PERSONALNAME as NAMASUPERVISOR'
             )
-            ->leftJoin('focus.focus.dbo.FLT_SHIFT as B', 'A.OPR_SHIFTNO', '=', 'B.SHIFTNO')
-            ->leftJoin('focus.focus.dbo.PRS_PERSONAL as D', 'A.OPR_NRP', '=', 'D.NRP')
+            ->leftJoin('FOCUS.dbo.FLT_SHIFT as B', 'A.OPR_SHIFTNO', '=', 'B.SHIFTNO')
+            ->leftJoin('FOCUS.dbo.PRS_PERSONAL as D', 'A.OPR_NRP', '=', 'D.NRP')
             ->leftJoin(DB::raw('(
                 SELECT VHC_ID, OPR_REPORTTIME, COUNT(*) AS VAL_NOTOK
-                FROM focus.focus.dbo.OPR_OPRCHECKLISTITEM
+                FROM FOCUS.dbo.OPR_OPRCHECKLISTITEM
                 WHERE CHECKLISTVAL = 0
                 GROUP BY VHC_ID, OPR_REPORTTIME
             ) as C'), function($join) {
                 $join->on('C.VHC_ID', '=', 'A.VHC_ID')
                     ->on('C.OPR_REPORTTIME', '=', 'A.OPR_REPORTTIME');
             })
-            ->leftJoin('prd_opr_checklistp2h as p2h', function($join) {
+            ->leftJoin('OPR_CHECKLISTP2H as p2h', function($join) {
                 $join->on('A.VHC_ID', '=', 'p2h.VHC_ID')
                     ->on('A.OPR_REPORTTIME', '=', 'p2h.OPR_REPORTTIME');
             })
-            ->leftJoin('focus.focus.dbo.PRS_PERSONAL as mec', 'p2h.VERIFIED_MEKANIK', '=', 'mec.NRP')
-            ->leftJoin('focus.focus.dbo.PRS_PERSONAL as gl', 'p2h.VERIFIED_FOREMAN', '=', 'gl.NRP')
-            ->leftJoin('focus.focus.dbo.PRS_PERSONAL as spv', 'p2h.VERIFIED_SUPERVISOR', '=', 'spv.NRP');
-        //     if (in_array(Auth::user()->role, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK'])) {
-        //     $supportQuery->where('VAL_NOTOK', '>=', '1');
-        // }
+            ->leftJoin('focus.dbo.PRS_PERSONAL as mec', 'p2h.VERIFIED_MEKANIK', '=', 'mec.NRP')
+            ->leftJoin('focus.dbo.PRS_PERSONAL as gl', 'p2h.VERIFIED_FOREMAN', '=', 'gl.NRP')
+            ->leftJoin('focus.dbo.PRS_PERSONAL as spv', 'p2h.VERIFIED_SUPERVISOR', '=', 'spv.NRP');
+            if (in_array(Auth::user()->role, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK'])) {
+            $supportQuery->where('VAL_NOTOK', '>=', '1');
+        }
 
-            /** @var \App\Models\User $user */
-            $user = Auth::user();
-
-            $roleMekanik = getConfigArrayById(7) ?? [];
-
-            if ($user->hasRoleId($roleMekanik)) {
-                $supportQuery->where('VAL_NOTOK', '>=', 1);
-            }
-
+        // Optional: filter berdasarkan kata kunci pencarian
         if ($request->search['value']) {
             $searchValue = '%' . $request->search['value'] . '%';
             $columnsToSearch = ['A.OPR_NRP', 'D.PERSONALNAME', 'A.VHC_ID'];
@@ -112,48 +118,46 @@ class P2HController extends Controller
             });
         }
 
+        // Filter shift jika ada
         if (!empty($request->shiftP2H)) {
             $supportQuery->where('A.OPR_SHIFTNO', $request->shiftP2H);
         }
 
+        // Filter tanggal jika ada
         if (!empty($request->tanggalP2H)) {
             $supportQuery->where('A.OPR_SHIFTDATE', $tanggalP2H);
         }
 
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-
-        $roleMekanik = getConfigArrayById(7) ?? [];
-
-        if ($user->hasRoleId($roleMekanik) && $user->section === 'WHEEL') {
-
-            $supportQuery->where(function ($query) {
+        if(in_array(Auth::user()->role, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK']) and Auth::user()->section == 'WHEEL') {
+            $supportQuery->where(function($query) {
                 $query->where('A.VHC_ID', 'like', 'MG%')
                     ->orWhere('A.VHC_ID', 'like', 'HD%');
             });
-
-        } elseif ($user->hasRoleId($roleMekanik) && $user->section === 'TRACK EXCA') {
-
-            $supportQuery->where(function ($query) {
+        }elseif(in_array(Auth::user()->role, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK']) and in_array(Auth::user()->section, ['TRACK EXCA'])) {
+            $supportQuery->where(function($query) {
                 $query->where('A.VHC_ID', 'like', 'EX%');
             });
-
-        } elseif ($user->hasRoleId($roleMekanik) && $user->section === 'TRACK DOZER') {
-
-            $supportQuery->where(function ($query) {
+        }elseif(in_array(Auth::user()->role, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK']) and in_array(Auth::user()->section, ['TRACK DOZER'])) {
+            $supportQuery->where(function($query) {
                 $query->where('A.VHC_ID', 'like', 'BD%');
             });
-
         }
 
+        //menampilkan hanya P2H yang diatas 0, dengan role sbb
+
+
+
+        // Hanya ambil data yang sudah diverifikasi oleh foreman atau supervisor
         $supportQuery->where(function($query) {
             $query->whereNotNull('p2h.VERIFIED_FOREMAN')
                   ->orWhereNotNull('p2h.VERIFIED_SUPERVISOR')
                   ->orWhereNotNull('VAL_NOTOK', '>=', '1');
         });
 
+        // Hitung total hasil filter
         $filteredRecords = $supportQuery->count();
 
+        // Ambil data dengan urutan dan paginasi
         $supportQuery = $supportQuery
             ->orderByDesc('VAL_NOTOK')
 
@@ -163,6 +167,23 @@ class P2HController extends Controller
             ->limit($length)
             ->get();
 
+        // return $supportQuery;
+
+
+
+
+        // $supportQuery->whereNotExists(function ($query) use ($verifikator) {
+        //     $query->select(DB::raw(1))
+        //         ->from('OPR_CHECKLISTP2H as p2h')
+        //         ->whereColumn('p2h.VHC_ID', 'A.VHC_ID')
+        //         ->whereColumn('p2h.OPR_SHIFTNO', 'A.OPR_SHIFTNO')
+        //         ->whereDate('p2h.OPR_REPORTTIME', DB::raw("CAST(A.OPR_SHIFTDATE AS DATE)"));
+        // });
+
+
+        // Ambil data untuk halaman saat ini
+
+        // Return JSON response
         return response()->json([
             'draw' => $draw,
             'recordsTotal' => $filteredRecords,
@@ -208,19 +229,13 @@ class P2HController extends Controller
         $cluster = in_array($request->cluster, ['EX', 'HD', 'MG', 'BD']) ? $request->cluster : null;
 
 
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-
-        $roleMekanik = getConfigArrayById(7) ?? [];
-
-        $isForeman = $user->hasRoleId($roleMekanik) ? 1 : 0;
+        $userRoleList = ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK'];
+        $isForeman = in_array(Auth::user()->role, $userRoleList) ? 1 : 0;
 
         $userSection = null;
-
         if ($isForeman) {
-            $userSection = $user->section;
+            $userSection = Auth::user()->section;
         }
-
         $results = DB::select('EXEC APP_GET_P2H ?, ?, ?, ?, ?, ?, ?, ?', [
             $pageNumber,
             $pageSize,
@@ -320,7 +335,7 @@ class P2HController extends Controller
         DB::beginTransaction(); //  Mulai transaksi
 
         try {
-            $detail = DB::table('focus.focus.dbo.OPR_OPRCHECKLISTITEM as A')
+            $detail = DB::connection('focus')->table('FOCUS.dbo.OPR_OPRCHECKLISTITEM as A')
                 ->select(
                     'A.ID',
                     'A.CHECKLISTGROUPID',
@@ -333,12 +348,12 @@ class P2HController extends Controller
                     'A.OPR_SHIFTNO',
                     'A.VHC_ID',
                 )
-                ->leftJoin('focus.focus.dbo.FLT_EQUCHECKLISTITEM as B', function($join) {
+                ->leftJoin('FOCUS.dbo.FLT_EQUCHECKLISTITEM as B', function($join) {
                     $join->on('A.EQU_TYPEID', '=', 'B.EQU_TYPEID')
                         ->on('A.CHECKLISTGROUPID', '=', 'B.CHECKLISTGROUPID')
                         ->on('A.CHECKLISTITEMID', '=', 'B.CHECKLISTITEMID');
                 })
-                ->leftJoin('focus.focus.dbo.FLT_EQUCHECKLISTGROUP as C', function($join) {
+                ->leftJoin('FOCUS.dbo.FLT_EQUCHECKLISTGROUP as C', function($join) {
                     $join->on('A.EQU_TYPEID', '=', 'C.EQU_TYPEID')
                         ->on('A.CHECKLISTGROUPID', '=', 'C.CHECKLISTGROUPID');
                 })
@@ -359,31 +374,25 @@ class P2HController extends Controller
                 ->where('OPR_REPORTTIME', $first->OPR_REPORTTIME)
                 ->first();
 
-            /** @var \App\Models\User $user */
-            $user = Auth::user();
-
-            $roleForeman        = getConfigArrayById(6) ?? [];
-            $roleSupervisor     = getConfigArrayById(4) ?? [];
-            $roleSuperintendent = getConfigArrayById(8) ?? [];
-
-            $updateData =
-                $user->hasRoleId($roleForeman) ? [
-                    'VERIFIED_FOREMAN'     => $user->nik,
+            // Tentukan siapa yang memverifikasi
+            $updateData = match (Auth::user()->role) {
+                'FOREMAN' => [
+                    'VERIFIED_FOREMAN' => Auth::user()->nik,
                     'DATEVERIFIED_FOREMAN' => now(),
-                ] :
-
-                ($user->hasRoleId($roleSupervisor) ? [
-                    'VERIFIED_SUPERVISOR'     => $user->nik,
+                ],
+                'SUPERVISOR' => [
+                    'VERIFIED_SUPERVISOR' => Auth::user()->nik,
                     'DATEVERIFIED_SUPERVISOR' => now(),
-                ] :
-
-                ($user->hasRoleId($roleSuperintendent) ? [
-                    'VERIFIED_SUPERINTENDENT'     => $user->nik,
+                ],
+                'SUPERINTENDENT' => [
+                    'VERIFIED_SUPERINTENDENT' => Auth::user()->nik,
                     'DATEVERIFIED_SUPERINTENDENT' => now(),
-                ] : [
-                    'VERIFIED_MEKANIK'     => $user->nik,
+                ],
+                default => [
+                    'VERIFIED_MEKANIK' => Auth::user()->nik,
                     'DATEVERIFIED_MEKANIK' => now(),
-                ]));
+                ],
+            };
 
             if ($checkdataP2H) {
                 $checkdataP2H->update($updateData);
@@ -430,10 +439,7 @@ class P2HController extends Controller
 
     public function detail_monitoring(Request $request)
     {
-        DB::statement('SET ANSI_NULLS ON');
-        DB::statement('SET ANSI_WARNINGS ON');
-
-       $detail = DB::table('focus.focus.dbo.OPR_OPRCHECKLISTITEM as A')
+       $detail = DB::table('FOCUS.dbo.OPR_OPRCHECKLISTITEM as A')
         ->select(
             'A.ID',
             'A.CHECKLISTGROUPID',
@@ -447,12 +453,12 @@ class P2HController extends Controller
             'A.OPR_SHIFTNO',
             'A.VHC_ID',
         )
-        ->leftJoin('focus.focus.dbo.FLT_EQUCHECKLISTITEM as B', function($join) {
+        ->leftJoin('FOCUS.dbo.FLT_EQUCHECKLISTITEM as B', function($join) {
             $join->on('A.EQU_TYPEID', '=', 'B.EQU_TYPEID')
                 ->on('A.CHECKLISTGROUPID', '=', 'B.CHECKLISTGROUPID')
                 ->on('A.CHECKLISTITEMID', '=', 'B.CHECKLISTITEMID');
         })
-        ->leftJoin('focus.focus.dbo.FLT_EQUCHECKLISTGROUP as C', function($join) {
+        ->leftJoin('FOCUS.dbo.FLT_EQUCHECKLISTGROUP as C', function($join) {
             $join->on('A.EQU_TYPEID', '=', 'C.EQU_TYPEID')
                 ->on('A.CHECKLISTGROUPID', '=', 'C.CHECKLISTGROUPID');
         })
@@ -463,7 +469,13 @@ class P2HController extends Controller
         ->get()
         ->unique('CHECKLISTITEMDESCRIPTION');
 
+        // dd($detail);
+
+
+
         $jumlahAATerisi = $detail->filter(function ($item) {
+            // return $item->CHECKLISTVAL == 0 && $item->CHECKLISTGROUPID == 'AA';
+            //Kode A atau AA harus muncul
             return $item->CHECKLISTVAL == 0 && ($item->CHECKLISTGROUPID == 'AA' || $item->CHECKLISTGROUPID == 'A');
         })->count();
 
@@ -480,8 +492,8 @@ class P2HController extends Controller
             if($checkdataP2H->VERIFIED_MEKANIK != null){
                 $verifikasiMekanik = true;
 
-                $detailP2H = DB::table('prd_opr_checklistp2h as p2h')
-                ->leftJoin('prd_opr_checklistp2h_list as ph', 'p2h.UUID', '=', 'ph.UUID_OPR_CHECKLISTP2H')
+                $detailP2H = DB::table('OPR_CHECKLISTP2H as p2h')
+                ->leftJoin('OPR_CHECKLISTP2H_DETAIL as ph', 'p2h.UUID', '=', 'ph.UUID_OPR_CHECKLISTP2H')
                 ->select(
                     'ph.GROUPID as CHECKLISTGROUPID',
                     'ph.GROUPID as CHECKLISTGROUPDESCRIPTION',
@@ -499,6 +511,7 @@ class P2HController extends Controller
                     )
                 ->where('UUID_OPR_CHECKLISTP2H', $checkdataP2H->UUID)->where('p2h.STATUSENABLED', true)->get();
 
+                                // Langkah 1: Normalisasi struktur $detailP2H agar fieldnya sepadan dengan $detail
                 $normalizedDetailP2H = $detailP2H->map(function ($item) {
                     return (object)[
                         'ID' => null,
@@ -519,6 +532,7 @@ class P2HController extends Controller
                     ];
                 });
 
+                // Langkah 2: Tambahkan flag 'SOURCE' ke $detail untuk penanda asal data
                 $normalizedDetail = $detail->map(function ($item) {
                     return (object)[
                     'ID' => $item->ID,
@@ -528,7 +542,7 @@ class P2HController extends Controller
                     'CHECKLISTNOTES' => $item->CHECKLISTNOTES,
                     'CHECKLISTVAL' => $item->CHECKLISTVAL,
                     'VAL' => $item->VAL,
-                    'CATATAN_MEKANIK' => null,
+                    'CATATAN_MEKANIK' => null,  // Ditambahkan manual karena tidak ada di query
                     'KBJ' => null,
                     'JAWABAN' => null,
                     'OPR_REPORTTIME' => $item->OPR_REPORTTIME,
@@ -539,6 +553,7 @@ class P2HController extends Controller
                 ];
                 });
 
+                // Langkah 3: Gabungkan dengan key unik berdasarkan field penting
                 $keyFn = fn($item) => implode('|', [
                     $item->CHECKLISTGROUPID,
                     $item->CHECKLISTITEMDESCRIPTION,
@@ -546,8 +561,10 @@ class P2HController extends Controller
                     $item->OPR_REPORTTIME
                 ]);
 
+                // Step 4: Buat collection awal dari $detailP2H
                 $combined = $normalizedDetailP2H->keyBy($keyFn);
 
+                // Step 5: Tambahkan dari $detail jika belum ada
                 $normalizedDetail->each(function ($item) use (&$combined, $keyFn) {
                     $key = $keyFn($item);
                     if (! $combined->has($key)) {
@@ -608,7 +625,7 @@ class P2HController extends Controller
 
     public function detail(Request $request)
     {
-       $detail = DB::table('focus.focus.dbo.OPR_OPRCHECKLISTITEM as A')
+       $detail = DB::connection('focus')->table('FOCUS.dbo.OPR_OPRCHECKLISTITEM as A')
         ->select(
             'A.ID',
             'A.CHECKLISTGROUPID',
@@ -622,12 +639,12 @@ class P2HController extends Controller
             'A.OPR_SHIFTNO',
             'A.VHC_ID',
         )
-        ->leftJoin('focus.focus.dbo.FLT_EQUCHECKLISTITEM as B', function($join) {
+        ->leftJoin('FOCUS.dbo.FLT_EQUCHECKLISTITEM as B', function($join) {
             $join->on('A.EQU_TYPEID', '=', 'B.EQU_TYPEID')
                 ->on('A.CHECKLISTGROUPID', '=', 'B.CHECKLISTGROUPID')
                 ->on('A.CHECKLISTITEMID', '=', 'B.CHECKLISTITEMID');
         })
-        ->leftJoin('focus.focus.dbo.FLT_EQUCHECKLISTGROUP as C', function($join) {
+        ->leftJoin('FOCUS.dbo.FLT_EQUCHECKLISTGROUP as C', function($join) {
             $join->on('A.EQU_TYPEID', '=', 'C.EQU_TYPEID')
                 ->on('A.CHECKLISTGROUPID', '=', 'C.CHECKLISTGROUPID');
         })
@@ -642,6 +659,8 @@ class P2HController extends Controller
 
 
         $jumlahAATerisi = $detail->filter(function ($item) {
+            // return $item->CHECKLISTVAL == 0 && $item->CHECKLISTGROUPID == 'AA';
+            //Kode A atau AA harus muncul
             return $item->CHECKLISTVAL == 0 && ($item->CHECKLISTGROUPID == 'AA' || $item->CHECKLISTGROUPID == 'A');
         })->count();
 
@@ -677,6 +696,7 @@ class P2HController extends Controller
                     )
                 ->where('UUID_OPR_CHECKLISTP2H', $checkdataP2H->UUID)->where('p2h.STATUSENABLED', true)->get();
 
+                                // Langkah 1: Normalisasi struktur $detailP2H agar fieldnya sepadan dengan $detail
                 $normalizedDetailP2H = $detailP2H->map(function ($item) {
                     return (object)[
                         'ID' => null,
@@ -697,6 +717,7 @@ class P2HController extends Controller
                     ];
                 });
 
+                // Langkah 2: Tambahkan flag 'SOURCE' ke $detail untuk penanda asal data
                 $normalizedDetail = $detail->map(function ($item) {
                     return (object)[
                     'ID' => $item->ID,
@@ -706,7 +727,7 @@ class P2HController extends Controller
                     'CHECKLISTNOTES' => $item->CHECKLISTNOTES,
                     'CHECKLISTVAL' => $item->CHECKLISTVAL,
                     'VAL' => $item->VAL,
-                    'CATATAN_MEKANIK' => null,
+                    'CATATAN_MEKANIK' => null,  // Ditambahkan manual karena tidak ada di query
                     'KBJ' => null,
                     'JAWABAN' => null,
                     'OPR_REPORTTIME' => $item->OPR_REPORTTIME,
@@ -717,6 +738,7 @@ class P2HController extends Controller
                 ];
                 });
 
+                // Langkah 3: Gabungkan dengan key unik berdasarkan field penting
                 $keyFn = fn($item) => implode('|', [
                     $item->CHECKLISTGROUPID,
                     $item->CHECKLISTITEMDESCRIPTION,
@@ -724,8 +746,10 @@ class P2HController extends Controller
                     $item->OPR_REPORTTIME
                 ]);
 
+                // Step 4: Buat collection awal dari $detailP2H
                 $combined = $normalizedDetailP2H->keyBy($keyFn);
 
+                // Step 5: Tambahkan dari $detail jika belum ada
                 $normalizedDetail->each(function ($item) use (&$combined, $keyFn) {
                     $key = $keyFn($item);
                     if (! $combined->has($key)) {
@@ -758,6 +782,10 @@ class P2HController extends Controller
                 'DATEVERIFIED_OPERATOR' => $detail->first()->OPR_REPORTTIME,
             ]);
         }
+        // dd($detail);
+
+        // dd($verifikasiMekanik);
+
         if(substr($detail->first()->VHC_ID, 0, 2) == 'EX'){
             return view('safety.p2h.detail.ex', compact('detail', 'jumlahAATerisi', 'verifikasiMekanik', 'detailP2H', 'checkdataP2H'));
 
@@ -866,13 +894,9 @@ class P2HController extends Controller
 
     public function detail_post(Request $request)
     {
-         /** @var \App\Models\User $user */
-        $user = Auth::user();
-        $roleAdminManagement = getConfigArrayById(5) ?? [];
-
-        if ($user->hasRoleId($roleAdminManagement)) {
-            return redirect()->back()
-                ->with('info', 'Maaf, verifikasi hanya dapat dilakukan oleh pengawas!');
+        // dd($request->all());
+         if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
+            return redirect()->back()->with('info', 'Maaf, verifikasi hanya dapat dilakukan oleh pengawas!');
         }
 
         $vhcId = $request->VHC_ID;
@@ -902,7 +926,7 @@ class P2HController extends Controller
                         'ITEMDESCRIPTION' => $descriptions[$i],
                     ],
                     [
-                        'UUID' => (string) Uuid::uuid4()->toString(),
+                        'UUID' => (string) Uuid::uuid4()->toString(), // <-- Tambahkan UUID
                         'VALUE' => $values[$i],
                         'NOTES' => $notes[$i],
                         'KBJ' => $kbjs[$i] ?? null,
@@ -910,44 +934,30 @@ class P2HController extends Controller
                         'JAWABAN' => $jawabans[$i] ?? null,
                         'CREATED_BY' => Auth::user()->id,
                         'STATUSENABLED' => true,
-                        'UPDATED_AT' => now(),
+                        'UPDATED_AT' => now(), // kalau pakai timestamps
                     ]
                 );
             }
         $updateData = [];
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-
-        $roleForeman        = getConfigArrayById(6) ?? [];
-        $roleSupervisor     = getConfigArrayById(4) ?? [];
-        $roleSuperintendent = getConfigArrayById(8) ?? [];
-
-        if ($user->hasRoleId($roleForeman)) {
-
+        if (Auth::user()->role == 'FOREMAN') {
             $updateData = [
-                'VERIFIED_FOREMAN'      => $user->nik,
-                'DATEVERIFIED_FOREMAN'  => Carbon::now(),
+                'VERIFIED_FOREMAN' => Auth::user()->nik,
+                'DATEVERIFIED_FOREMAN' => Carbon::now(),
             ];
-
-        } elseif ($user->hasRoleId($roleSupervisor)) {
-
+        } elseif (Auth::user()->role == 'SUPERVISOR') {
             $updateData = [
-                'VERIFIED_SUPERVISOR'      => $user->nik,
-                'DATEVERIFIED_SUPERVISOR'  => Carbon::now(),
+                'VERIFIED_SUPERVISOR' => Auth::user()->nik,
+                'DATEVERIFIED_SUPERVISOR' => Carbon::now(),
             ];
-
-        } elseif ($user->hasRoleId($roleSuperintendent)) {
-
+        } elseif (Auth::user()->role == 'SUPERINTENDENT') {
             $updateData = [
-                'VERIFIED_SUPERINTENDENT'      => $user->nik,
-                'DATEVERIFIED_SUPERINTENDENT'  => Carbon::now(),
+                'VERIFIED_SUPERINTENDENT' => Auth::user()->nik,
+                'DATEVERIFIED_SUPERINTENDENT' => Carbon::now(),
             ];
-
         } else {
-
             $updateData = [
-                'VERIFIED_MEKANIK'      => $user->nik,
-                'DATEVERIFIED_MEKANIK'  => Carbon::now(),
+                'VERIFIED_MEKANIK' => Auth::user()->nik,
+                'DATEVERIFIED_MEKANIK' => Carbon::now(),
             ];
         }
 

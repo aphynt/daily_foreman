@@ -256,6 +256,9 @@
                 @if (canAccess('log.index'))
                 <li class="pc-item"><a href="{{ route('log.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/log.png" alt="NT"></span><span class="pc-mtext">Logging User</span></a></li>
                 @endif
+                <li class="pc-item pc-caption"></li>
+                <li class="pc-item pc-caption"></li>
+                <li class="pc-item pc-caption"></li>
             </ul>
         </div>
     </div>

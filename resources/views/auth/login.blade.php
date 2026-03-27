@@ -25,25 +25,29 @@
             --white: #ffffff;
             --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             --border-radius: 8px;
-            --transition: all 0.3s ease;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: "Inter var", sans-serif;
+            font-family: Inter, system-ui, sans-serif;
         }
 
         body {
+            overscroll-behavior: none;
             background-color: #f5f7fb;
             color: var(--text-color);
             line-height: 1.6;
+        }
+        html, body {
+            height: 100%;
         }
 
         .auth-main {
             display: flex;
             min-height: 100vh;
+            min-height: 100dvh; /* FIX keyboard Android */
             align-items: center;
             justify-content: center;
             padding: 20px;
@@ -64,9 +68,19 @@
             background: var(--white);
             border: none;
             border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
             overflow: hidden;
-            transition: var(--transition);
+            transition: box-shadow 0.2s ease;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 15px;
+        }
+        .footer strong {
+            color: var(--primary);
         }
 
         .card:hover {
@@ -77,15 +91,29 @@
             padding: 40px;
         }
 
+        .badge {
+            background: #e6f0ff;
+            color: var(--secondary);
+            font-size: 12px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
         .text-center {
             text-align: center;
         }
 
         .logo-full {
-            max-width: 100%;
-            height: auto;
-            margin-bottom: 30px;
-            transition: var(--transition);
+            width: 300px;
         }
 
         .saprator {
@@ -130,14 +158,13 @@
         .form-control {
             width: 100%;
             padding: 12px 16px;
-            font-size: 15px;
+            font-size: 16px; /* penting! cegah zoom + lag */
             line-height: 1.5;
             color: var(--text-color);
             background-color: var(--white);
-            background-clip: padding-box;
             border: 1px solid #dfe7f1;
             border-radius: var(--border-radius);
-            transition: var(--transition);
+            transition: border-color 0.2s ease; /* jangan pakai all */
             height: 48px;
         }
 
@@ -246,6 +273,10 @@
 
         /* Responsive adjustments */
         @media (max-width: 767px) {
+
+            .auth-form {
+                animation: none; /* ini penting banget */
+            }
             .card-body {
                 padding: 30px 20px;
             }
@@ -314,27 +345,29 @@
     <div class="auth-main">
         <div class="auth-wrapper v1">
             <div class="auth-form">
-                <div class="card my-5">
-                    <div class="card-body">
-                        <div class="text-center">
+                <div class="text-center">
                             <a href="javascript:void(0);">
-                                <img src="{{ asset('dashboard/assets') }}/images/logo-full.png" alt="Company Logo" class="logo-full">
+                                <img src="{{ asset('dashboard/assets') }}/images/logo-full.png" alt="Company Logo" class="logo-full" >
                             </a>
                         </div>
-                        {{-- <div class="saprator my-3"><span></span></div> --}}
-                        <h4 class="text-center f-w-500 mb-3">Login - {{ config('app.name') }}</h4>
+                <div class="card my-5">
+                    <div class="card-body">
 
-                        <!-- Login alerts would go here -->
+                        {{-- <div class="saprator my-3"><span></span></div> --}}
+                        <div class="badge">
+                            🔐 Secure Login
+                        </div>
+                        <h4 class="text-center f-w-500 mb-3">Login - {{ config('app.name') }}</h4>
 
                         <form action="{{ route('login.post') }}" method="post">
                             @csrf
                             <div class="mb-3">
                                 <label for="floatingInput" class="form-label">NIK</label>
-                                <input type="text" class="form-control" id="floatingInput" placeholder="Masukkan NIK anda..." name="nik" oninput="this.value = this.value.toUpperCase()" required>
+                                <input type="text" class="form-control" id="floatingInput" placeholder="Masukkan NIK..." name="nik" oninput="this.value = this.value.toUpperCase()" required>
                             </div>
                             <div class="mb-3">
                                 <label for="floatingInput1" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="floatingInput1" placeholder="Masukkan Password anda..." name="password" required>
+                                <input type="password" class="form-control" id="floatingInput1" placeholder="Masukkan Password..." name="password" required>
                             </div>
                             <div class="d-flex mt-1 justify-content-between align-items-center">
                                 <div class="form-check">
@@ -347,8 +380,12 @@
                             </div>
                         </form>
                     </div>
+
                 </div>
             </div>
+            <div class="footer">
+            © 2025 <strong>PT. SIMS JAYA KALTIM</strong>
+        </div>
         </div>
     </div>
 

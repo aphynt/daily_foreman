@@ -52,6 +52,8 @@ use App\Http\Controllers\Safety\InspeksiJalanTambangController;
 use App\Http\Controllers\Safety\InspeksiOGSController;
 use App\Http\Controllers\Safety\InspeksiSlurryPumpController;
 use App\Http\Controllers\Safety\InspeksiFrontLoadingController;
+use App\Http\Controllers\Safety\InspeksiWorkshopController;
+use App\Http\Controllers\Safety\InspeksiWorksopController;
 use App\Http\Controllers\Safety\JobPendingSafetyController;
 use App\Http\Controllers\Safety\RosterKerjaSafetyController;
 use App\Http\Controllers\Safety\SOPSafetyController;
@@ -450,6 +452,16 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/inspeksi/frontloading/bundlepdf', [InspeksiFrontLoadingController::class, 'bundlepdf'])->name('inspeksi.frontloading.bundlepdf');
     Route::get('/inspeksi/frontloading/cetak/{uuid}', [InspeksiFrontLoadingController::class, 'cetak'])->name('inspeksi.frontloading.cetak');
     Route::get('/inspeksi/frontloading/download/{uuid}', [InspeksiFrontLoadingController::class, 'download'])->name('inspeksi.frontloading.download');
+
+    //Inspeksi Workshop
+    Route::get('/inspeksi/workshop', [InspeksiWorkshopController::class, 'index'])->name('inspeksi.workshop');
+    Route::get('/inspeksi/workshop/insert', [InspeksiWorkshopController::class, 'insert'])->name('inspeksi.workshop.insert')->middleware('canAccess');
+    Route::post('/inspeksi/workshop/post', [InspeksiWorkshopController::class, 'post'])->name('inspeksi.workshop.post');
+    Route::get('/inspeksi/workshop/delete/{id}', [InspeksiWorkshopController::class, 'delete'])->name('inspeksi.workshop.delete');
+    Route::get('/inspeksi/workshop/preview/{uuid}', [InspeksiWorkshopController::class, 'preview'])->name('inspeksi.workshop.preview');
+    Route::get('/inspeksi/workshop/bundlepdf', [InspeksiWorkshopController::class, 'bundlepdf'])->name('inspeksi.workshop.bundlepdf');
+    Route::get('/inspeksi/workshop/cetak/{uuid}', [InspeksiWorkshopController::class, 'cetak'])->name('inspeksi.workshop.cetak');
+    Route::get('/inspeksi/workshop/download/{uuid}', [InspeksiWorkshopController::class, 'download'])->name('inspeksi.workshop.download');
 
     //Paylaod & Ritation
     Route::get('/payloadritation/all', [PayloadRitationController::class, 'index'])->name('payloadritation.index');
