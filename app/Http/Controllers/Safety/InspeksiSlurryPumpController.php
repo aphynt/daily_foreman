@@ -80,26 +80,14 @@ class InspeksiSlurryPumpController extends Controller
         ->where('sp.statusenabled', true)
         ->whereBetween(DB::raw('CONVERT(varchar, sp.tanggal_inspeksi, 23)'), [$startTimeFormatted, $endTimeFormatted]);
 
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        $roleBypass = getConfigArrayById(1);
-        $roleBypassAdminManagement = getConfigArrayById(5);
-
-        if (!$user->hasRoleId($roleBypassAdminManagement)) {
-            if (
-                $user->hasRoleId($roleBypass) ||
-                $user->inDepartemenId([9])
-            ) {
-                $baseQuery->where(function ($q) use ($user) {
-                    $q->where('pic', $user->id);
-                });
-            }
-
-            $baseQuery = $baseQuery->where(function($query) {
-                $query->where('sp.penanggungjawab', Auth::user()->nik)
-                    ->orWhere('sp.inspektor1', Auth::user()->nik);
-            });
+        if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'])) {
+            $baseQuery->orWhere('pic', Auth::user()->id);
         }
+
+        $baseQuery = $baseQuery->where(function($query) {
+            $query->where('sp.penanggungjawab', Auth::user()->nik)
+                    ->orWhere('sp.inspektor1', Auth::user()->nik);
+        });
 
         $sp = $baseQuery->get();
 

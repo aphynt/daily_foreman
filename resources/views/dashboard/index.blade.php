@@ -213,7 +213,9 @@
             canAccess('inspeksi.disposal') ||
             canAccess('inspeksi.frontloading') ||
             canAccess('inspeksi.ogs') ||
-            canAccess('inspeksi.slurrypump')
+            canAccess('inspeksi.slurrypump') ||
+            canAccess('inspeksi.workshop') ||
+            canAccess('observasibank')
         )
         <div class="col-md-12">
             <div class="card">
@@ -236,6 +238,8 @@
                         @if (canAccess('inspeksi.frontloading'))<a href="{{ route('inspeksi.frontloading') }}" class="list-group-item">Inspeksi Tambang - Front Loading</a>@endif
                         @if (canAccess('inspeksi.ogs'))<a href="{{ route('inspeksi.ogs') }}" class="list-group-item">Inspeksi Area OGS</a>@endif
                         @if (canAccess('inspeksi.slurrypump'))<a href="{{ route('inspeksi.slurrypump') }}" class="list-group-item">Inspeksi Slurry Pump</a>@endif
+                        @if (canAccess('inspeksi.workshop'))<a href="{{ route('inspeksi.workshop') }}" class="list-group-item">Inspeksi Workshop</a>@endif
+                        @if (canAccess('observasibank'))<a href="{{ route('observasibank') }}" class="list-group-item">Observasi Bank</a>@endif
                     </div>
                 </div>
             </div>

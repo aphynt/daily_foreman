@@ -80,26 +80,14 @@ class InspeksiJalanTambangController extends Controller
         ->where('jt.statusenabled', true)
         ->whereBetween(DB::raw('CONVERT(varchar, jt.tanggal_inspeksi, 23)'), [$startTimeFormatted, $endTimeFormatted]);
 
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        $roleBypass = getConfigArrayById(1);
-        $roleBypassAdminManagement = getConfigArrayById(5);
-
-        if (!$user->hasRoleId($roleBypassAdminManagement)) {
-            if (
-                $user->hasRoleId($roleBypass) ||
-                $user->inDepartemenId([9])
-            ) {
-                $baseQuery->where(function ($q) use ($user) {
-                    $q->where('pic', $user->id);
-                });
-            }
-
-            $baseQuery = $baseQuery->where(function($query) {
-                $query->where('jt.penanggungjawab', Auth::user()->nik)
-                    ->orWhere('jt.inspektor1', Auth::user()->nik);
-            });
+        if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'])) {
+            $baseQuery->orWhere('pic', Auth::user()->id);
         }
+
+        $baseQuery = $baseQuery->where(function($query) {
+            $query->where('jt.penanggungjawab', Auth::user()->nik)
+                    ->orWhere('jt.inspektor1', Auth::user()->nik);
+        });
 
         $jt = $baseQuery->get();
 

@@ -80,26 +80,14 @@ class InspeksiWorkshopController extends Controller
         ->where('ws.statusenabled', true)
         ->whereBetween(DB::raw('CONVERT(varchar, ws.tanggal_inspeksi, 23)'), [$startTimeFormatted, $endTimeFormatted]);
 
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        $roleBypass = getConfigArrayById(1);
-        $roleBypassAdminManagement = getConfigArrayById(5);
-
-        if (!$user->hasRoleId($roleBypassAdminManagement)) {
-            if (
-                $user->hasRoleId($roleBypass) ||
-                $user->inDepartemenId([9])
-            ) {
-                $baseQuery->where(function ($q) use ($user) {
-                    $q->where('pic', $user->id);
-                });
-            }
-
-            $baseQuery = $baseQuery->where(function($query) {
-                $query->where('ws.penanggungjawab', Auth::user()->nik)
-                    ->orWhere('ws.inspektor1', Auth::user()->nik);
-            });
+       if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'])) {
+            $baseQuery->orWhere('pic', Auth::user()->id);
         }
+
+        $baseQuery = $baseQuery->where(function($query) {
+            $query->where('ws.penanggungjawab', Auth::user()->nik)
+                    ->orWhere('ws.inspektor1', Auth::user()->nik);
+        });
 
         $ws = $baseQuery->get();
 
