@@ -134,26 +134,41 @@ class PengawasPitstopController extends Controller
                 'catatan_pengawas' => $request->catatan_pengawas,
             ];
 
-            /** @var \App\Models\User $user */
-            $user = Auth::user();
+            // /** @var \App\Models\User $user */
+            // $user = Auth::user();
 
-            $roleSupervisor = getConfigArrayById(4) ?? [];
-            $roleForeman    = getConfigArrayById(6) ?? [];
+            // $roleSupervisor = getConfigArrayById(4) ?? [];
+            // $roleForeman    = getConfigArrayById(6) ?? [];
 
-            // Role SUPERVISOR
-            if ($user->hasRoleId($roleSupervisor)) {
-                $data['nik_supervisor']      = $user->nik;
-                $data['nama_supervisor']     = $user->name;
+            // // Role SUPERVISOR
+            // if ($user->hasRoleId($roleSupervisor)) {
+            //     $data['nik_supervisor']      = $user->nik;
+            //     $data['nama_supervisor']     = $user->name;
+            //     // $data['catatan_verified_supervisor'] = $request->catatan_pitstop;
+            //     $data['verified_supervisor'] = $user->nik;
+            // }
+
+            // // Role FOREMAN
+            // if ($user->hasRoleId($roleForeman)) {
+            //     $data['nik_foreman']      = $user->nik;
+            //     $data['nama_foreman']     = $user->name;
+            //     // $data['catatan_verified_foreman'] = $request->catatan_pitstop;
+            //     $data['verified_foreman'] = $user->nik;
+            // }
+
+            if (Auth::user()->role === 'SUPERVISOR') {
+                $data['nik_supervisor'] = Auth::user()->nik;
+                $data['nama_supervisor'] = Auth::user()->name;
                 // $data['catatan_verified_supervisor'] = $request->catatan_pitstop;
-                $data['verified_supervisor'] = $user->nik;
+                $data['verified_supervisor'] = Auth::user()->nik;
             }
 
             // Role FOREMAN
-            if ($user->hasRoleId($roleForeman)) {
-                $data['nik_foreman']      = $user->nik;
-                $data['nama_foreman']     = $user->name;
+            if (Auth::user()->role === 'FOREMAN') {
+                $data['nik_foreman'] = Auth::user()->nik;
+                $data['nama_foreman'] = Auth::user()->name;
                 // $data['catatan_verified_foreman'] = $request->catatan_pitstop;
-                $data['verified_foreman'] = $user->nik;
+                $data['verified_foreman'] = Auth::user()->nik;
             }
 
             // Simpan report utama
@@ -293,19 +308,27 @@ class PengawasPitstopController extends Controller
         ->where('pr.statusenabled', true);
 
 
-        /** @var \App\Models\User $user */
-            $user = Auth::user();
-            $roleBypass = getConfigArrayById(5) ?? [];
+        // /** @var \App\Models\User $user */
+        //     $user = Auth::user();
+        //     $roleBypass = getConfigArrayById(5) ?? [];
 
-            if (! $user->hasRoleId($roleBypass)) {
+        //     if (! $user->hasRoleId($roleBypass)) {
 
-                $daily->where(function ($query) use ($user) {
-                    $query->where('pr.nik_foreman', $user->nik)
-                        ->orWhere('pr.nik_supervisor', $user->nik);
-                    // ->orWhere('pr.nik_superintendent', $user->nik);
-                });
+        //         $daily->where(function ($query) use ($user) {
+        //             $query->where('pr.nik_foreman', $user->nik)
+        //                 ->orWhere('pr.nik_supervisor', $user->nik);
+        //             // ->orWhere('pr.nik_superintendent', $user->nik);
+        //         });
 
+        //     }
+
+        $daily = $daily->where(function($query) {
+            if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
+                $query->where('pr.nik_foreman', Auth::user()->nik)
+                  ->orWhere('pr.nik_supervisor', Auth::user()->nik);
+                //   ->orWhere('pr.nik_superintendent', Auth::user()->nik);
             }
+        });
 
         // if (Auth::user()->role == 'FOREMAN') {
         //     $daily->where('pr.nik_foreman', Auth::user()->nik);
@@ -908,12 +931,16 @@ class PengawasPitstopController extends Controller
         //     $dailyDesc->where('pr.nik_foreman', Auth::user()->nik);
         // }
 
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        $roleAdmin = getConfigArrayById(2) ?? [];
+        // /** @var \App\Models\User $user */
+        // $user = Auth::user();
+        // $roleAdmin = getConfigArrayById(2) ?? [];
 
-        if (! $user->hasRoleId($roleAdmin)) {
-            $dailyDesc->where('pr.nik_foreman', $user->nik);
+        // if (! $user->hasRoleId($roleAdmin)) {
+        //     $dailyDesc->where('pr.nik_foreman', $user->nik);
+        // }
+
+        if (Auth::user()->role !== 'ADMIN') {
+            $dailyDesc->where('pr.nik_foreman', Auth::user()->nik);
         }
 
         // ambil shift dari variabel global supaya bisa dipakai di closure

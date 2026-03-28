@@ -55,6 +55,7 @@ use App\Http\Controllers\Safety\InspeksiFrontLoadingController;
 use App\Http\Controllers\Safety\InspeksiWorkshopController;
 use App\Http\Controllers\Safety\InspeksiWorksopController;
 use App\Http\Controllers\Safety\JobPendingSafetyController;
+use App\Http\Controllers\Safety\ObservasiBankController;
 use App\Http\Controllers\Safety\RosterKerjaSafetyController;
 use App\Http\Controllers\Safety\SOPSafetyController;
 use App\Http\Controllers\SAPController;
@@ -462,6 +463,13 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/inspeksi/workshop/bundlepdf', [InspeksiWorkshopController::class, 'bundlepdf'])->name('inspeksi.workshop.bundlepdf');
     Route::get('/inspeksi/workshop/cetak/{uuid}', [InspeksiWorkshopController::class, 'cetak'])->name('inspeksi.workshop.cetak');
     Route::get('/inspeksi/workshop/download/{uuid}', [InspeksiWorkshopController::class, 'download'])->name('inspeksi.workshop.download');
+
+    //Observasi Bank
+    Route::get('/observasibank', [ObservasiBankController::class, 'index'])->name('observasibank');
+    Route::get('/observasibank/insert', [ObservasiBankController::class, 'insert'])->name('observasibank.insert')->middleware('canAccess');
+    Route::post('/observasibank/post', [ObservasiBankController::class, 'post'])->name('observasibank.post');
+    Route::get('/observasibank/delete/{id}', [ObservasiBankController::class, 'delete'])->name('observasibank.delete');
+    Route::get('/observasibank/preview/{uuid}', [ObservasiBankController::class, 'preview'])->name('observasibank.preview');
 
     //Paylaod & Ritation
     Route::get('/payloadritation/all', [PayloadRitationController::class, 'index'])->name('payloadritation.index');

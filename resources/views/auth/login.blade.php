@@ -12,6 +12,13 @@
     <meta name="keywords" content="Laporan Harian Pengawas">
     <meta name="author" content="FMS - PT. SIMS JAYA KALTIM">
     <link rel="icon" href="{{ asset('dashboard/assets') }}/images/icon.png" type="image/x-icon">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Dashboard - Daily Foreman">
+    <meta property="og:description" content="Digitalisasi laporan foreman untuk efisiensi alur proses dan peningkatan akurasi data">
+    <meta property="og:image" content="http://foreman.ptsims.co.id/dashboard/assets/images/icon512.png">
+    <meta property="og:url" content="http://foreman.ptsims.co.id">
+    <meta property="og:site_name" content="Daily Foreman">
     <!-- SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

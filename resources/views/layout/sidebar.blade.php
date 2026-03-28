@@ -11,7 +11,7 @@
                                     alt="user-image" class="user-avtar wid-45 rounded-circle"></div>
                             <div class="flex-grow-1 ms-3 me-2">
                                 <h6 class="mb-0" style="font-size: 12px">{{ Auth::user()->name }}</h6>
-                                <small>{{ Auth::user()->roleRel->name }}</small>
+                                <small>{{ Auth::user()->position }}</small>
                             </div><svg class="pc-icon">
                                     <use xlink:href="#custom-sort-outline"></use>
                                 </svg>
