@@ -22,13 +22,13 @@
                         </form>
                     </div>
 
-                    <div class="col-md-6 mb-2 text-md-end">
+                    {{-- <div class="col-md-6 mb-2 text-md-end">
                         <a href="#" data-bs-toggle="modal" data-bs-target="#insertUser">
                             <span class="badge bg-success" style="font-size: 16px">
                                 <i class="fas fa-plus"></i> Tambah User
                             </span>
                         </a>
-                    </div>
+                    </div> --}}
                 </div>
 
                 @include('user.modal.insert')
@@ -43,6 +43,8 @@
                                         <th>Nama</th>
                                         <th>NIK</th>
                                         <th>Role</th>
+                                        <th>Departemen</th>
+                                        <th>Position</th>
                                         <th>Status</th>
                                         <th width="25%">Aksi</th>
                                     </tr>
@@ -69,6 +71,8 @@
 
                                             <td class="fw-semibold">{{ $us->nik }}</td>
                                             <td class="fw-semibold">{{ $us->role }}</td>
+                                            <td class="fw-semibold">{{ $us->departemen }}</td>
+                                            <td class="fw-semibold">{{ $us->position }}</td>
                                             <td>
                                                 @if ($us->statusenabled)
                                                     <span class="badge bg-success">Aktif</span>

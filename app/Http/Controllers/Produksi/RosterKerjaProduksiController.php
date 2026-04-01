@@ -29,9 +29,8 @@ class RosterKerjaProduksiController extends Controller
 
 
         $roster = DB::table('prd_ref_roster_kerja as rs')
-        ->leftJoin('focus.focus.dbo.PRS_PERSONAL as gl', 'rs.nik', '=', 'gl.NRP')
-        ->leftJoin('focus.focus.dbo.PRS_TITLE as title', 'gl.ROLETYPE', '=', 'title.PTL_ID')
-        ->select('rs.*', 'gl.PERSONALNAME as nama', 'title.PTL_DESC as jabatan')
+        ->leftJoin('users as us', 'rs.nik', '=', 'us.nik')
+        ->select('rs.*', 'us.name as nama', 'us.position as jabatan')
         ->where('rs.statusenabled', true)
         ->whereRaw('CAST(rs.bulan AS INT) = ?', [$bulan])  // Pastikan bulan adalah numerik
         ->whereRaw('CAST(rs.tahun AS INT) = ?', [$tahun])

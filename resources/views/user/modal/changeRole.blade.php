@@ -19,9 +19,29 @@
                     <div class="mb-3">
                         <label>Pilih role</label>
                         <select class="form-select" name="role" required>
-                            <option value="{{ $us->role_id }}|{{ $us->role }}" selected disabled>{{ $us->role }}</option>
-                            @foreach ($role as $rl)
-                                <option value="{{ $rl->id }}|{{ $rl->name }}">{{ $rl->name }}</option>
+                            <option value="{{ $us->role }}" selected disabled>{{ $us->role }}</option>
+                            <option value="WORKER">WORKER</option>
+                            <option value="FOREMAN">FOREMAN</option>
+                            <option value="SUPERVISOR">SUPERVISOR</option>
+                            <option value="SUPERINTENDENT">SUPERINTENDENT</option>
+                            <option value="MANAGEMENT">MANAGEMENT</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Pilih Departemen</label>
+                        <select class="form-select" name="departemen_id" required>
+                            <option value="{{ $us->departemen_id }}" selected disabled>{{ $us->departemen }}</option>
+                            @foreach ($departemen as $dep)
+                                <option value="{{ $dep->id }}">{{ $dep->keterangan }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Pilih Posisi</label>
+                        <select class="form-select" name="position" required>
+                            <option value="{{ $us->position }}" selected disabled>{{ $us->position }}</option>
+                            @foreach ($position as $pos)
+                                <option value="{{ $pos->id }}|{{ $pos->name }}">{{ $pos->name }}</option>
                             @endforeach
                         </select>
                     </div>

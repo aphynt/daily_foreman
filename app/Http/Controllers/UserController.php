@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Departemen;
 use App\Models\Log;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Ramsey\Uuid\Uuid;
 
@@ -17,21 +19,35 @@ class UserController extends Controller
     {
         $search = $request->search;
 
-        $user = User::whereNotIn('role', ['ADMIN', 'PUBLIC'])
+        $user = DB::table('users as us')
+        ->leftJoin('ref_departemen as dep', 'us.departemen_id', 'dep.id')
+        ->select(
+            'us.id',
+            'us.role_id',
+            'us.name',
+            'us.nik',
+            'us.role',
+            'us.departemen_id',
+            'dep.keterangan as departemen',
+            'us.position',
+            'us.statusenabled'
+        )
+        ->whereNotIn('us.role', ['ADMIN', 'PUBLIC'])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('nik', 'like', '%' . $search . '%')
-                    ->orWhere('role', 'like', '%' . $search . '%');
+                    $q->where('us.name', 'like', '%' . $search . '%')
+                    ->orWhere('us.nik', 'like', '%' . $search . '%')
+                    ->orWhere('us.role', 'like', '%' . $search . '%');
                 });
             })
-            ->orderBy('name', 'asc')
+            ->orderBy('us.name', 'asc')
             ->paginate(15)
             ->withQueryString();
 
-        $role = Role::all();
+        $position = Role::all();
+        $departemen = Departemen::all();
 
-        return view('user.index', compact('user', 'role', 'search'));
+        return view('user.index', compact('user', 'position', 'departemen', 'search'));
     }
 
     public function resetPassword($id)
@@ -39,8 +55,9 @@ class UserController extends Controller
         $user = User::where('id', $id)->first();
         try {
             User::where('id', $id)->update([
-                'password' => Hash::make('12345'),
-                'updated_by' => Auth::user()->id,
+                'password'          => Hash::make('12345'),
+                'updated_by'        => Auth::user()->id,
+                'change_password'   => 0
             ]);
 
             Log::create([
@@ -61,16 +78,27 @@ class UserController extends Controller
     public function changeRole(Request $request, $id)
     {
         // dd($request->all());
-        if (!$request->filled('role')) {
-            return redirect()->back()->with('info', 'Silakan pilih role terlebih dahulu.');
+        $user = User::where('id', $id)->first();
+        if (!$request->filled('position')) {
+            return redirect()->back()->with('info', 'Silakan pilih posisi terlebih dahulu.');
         }
         try {
-            [$roleId, $roleName] = explode('|', $request->role);
+            [$roleId, $roleName] = explode('|', $request->position);
 
             User::where('id', $id)->update([
-                'role_id'       => (int) $roleId,
-                'role'          => $roleName,
-                'updated_by' => Auth::user()->id,
+                'role_id'           => (int) $roleId,
+                'role'              => $request->role,
+                'departemen_id'     => $request->departemen_id,
+                'position'          => $roleName,
+                'updated_by'        => Auth::user()->id,
+            ]);
+
+            Log::create([
+                'tanggal_loging' => now(),
+                'jenis_loging' => 'User',
+                'nama_user' => Auth::user()->id,
+                'nik' => Auth::user()->nik,
+                'keterangan' => 'Ganti role user dengan nama: '. $user->name . ', NIK: '. $user->nik . ', Role: '. $user->role . ', diganti oleh: '. Auth::user()->name,
             ]);
 
             return redirect()->back()->with('success', 'Ganti role berhasil');

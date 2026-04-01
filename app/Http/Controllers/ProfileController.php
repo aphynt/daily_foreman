@@ -47,6 +47,8 @@ class ProfileController extends Controller
             User::whereId(Auth::user()->id)->update([
                 'password' => Hash::make($request->password_baru),
                 'updated_by' => Auth::user()->id,
+                'change_password'   => 1
+
             ]);
 
             Log::create([
