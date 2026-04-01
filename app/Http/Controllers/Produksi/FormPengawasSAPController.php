@@ -287,22 +287,22 @@ class FormPengawasSAPController extends Controller
         )
         ->whereBetween(DB::raw('CONVERT(varchar, sr.created_at, 23)'), [$startTimeFormatted, $endTimeFormatted])
         ->where('sr.statusenabled', true);
-        // $report = $report->where(function($query) {
-        //     if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
-        //         $query->where('sr.foreman_id', Auth::user()->id);
-        //     }
-        // });
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        $roleBypass = getConfigArrayById(5) ?? [];
+        $report = $report->where(function($query) {
+            if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
+                $query->where('sr.foreman_id', Auth::user()->id);
+            }
+        });
+        // /** @var \App\Models\User $user */
+        // $user = Auth::user();
+        // $roleBypass = getConfigArrayById(5) ?? [];
 
-        if (! $user->hasRoleId($roleBypass)) {
+        // if (! $user->hasRoleId($roleBypass)) {
 
-            $report->where(function ($query) use ($user) {
-                $query->where('sr.foreman_id', $user->id);
-            });
+        //     $report->where(function ($query) use ($user) {
+        //         $query->where('sr.foreman_id', $user->id);
+        //     });
 
-        }
+        // }
         $report = $report->orderBy('created_at', 'DESC')->get();
 
         return view('form-sap.daftar.index', compact('report'));
