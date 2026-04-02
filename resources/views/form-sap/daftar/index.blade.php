@@ -81,6 +81,11 @@
                                     </div>
 
                                     <div class="mb-4">
+                                        <h5 class="fw-bold">Departemen</h5>
+                                        <p class="ms-3">{{ $item->departemen ? $item->departemen : "-" }}</p>
+                                    </div>
+
+                                    <div class="mb-4">
                                         <h5 class="fw-bold">Temuan KTA/TTA:</h5>
                                         <p class="ms-3">{{ $item->temuan ? $item->temuan : "-" }}</p>
                                     </div>
@@ -144,6 +149,7 @@
                                         <th>NIK</th>
                                         <th>Nama PIC</th>
                                         <th>Area</th>
+                                        <th>Departemen</th>
                                         <th>Temuan KTA/TTA</th>
                                         <th>Risiko</th>
                                         <th>Pengendalian</th>
@@ -162,6 +168,7 @@
                                         <td>{{ $item->nik_pic }}</td>
                                         <td>{{ $item->pic }}</td>
                                         <td>{{ $item->area }}</td>
+                                        <td>{{ $item->departemen }}</td>
                                         <td>{{ \Illuminate\Support\Str::limit($item->temuan, 20) }}</td>
                                         <td>{{ \Illuminate\Support\Str::limit($item->risiko, 20) }}</td>
                                         <td>{{ \Illuminate\Support\Str::limit($item->pengendalian, 20) }}</td>

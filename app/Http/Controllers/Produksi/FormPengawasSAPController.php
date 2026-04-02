@@ -269,6 +269,7 @@ class FormPengawasSAPController extends Controller
 
         $report = DB::table('prd_sap_report as sr')
         ->leftJoin('users as us', 'sr.foreman_id', 'us.id')
+        ->leftJoin('ref_departemen as dep', 'us.departemen_id', 'dep.id')
         ->leftJoin('ref_shift as sh', 'sr.shift', 'sh.id')
         ->leftJoin('ref_region as ar', 'sr.area', 'ar.id')
         ->select(
@@ -284,6 +285,7 @@ class FormPengawasSAPController extends Controller
             'sr.pengendalian',
             'sr.tindak_lanjut',
             'sr.is_finish',
+            'dep.keterangan as departemen',
         )
         ->whereBetween(DB::raw('CONVERT(varchar, sr.created_at, 23)'), [$startTimeFormatted, $endTimeFormatted])
         ->where('sr.statusenabled', true);

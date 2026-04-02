@@ -118,7 +118,7 @@ class FormPengawasBatuBaraController extends Controller
             ->get();
 
         $shift = Shift::where('statusenabled', true)->get();
-        $area = Area::where('statusenabled', true)->get();
+        $area = Area::where('group', 'production')->where('statusenabled', true)->get();
         $jenisSupport = JenisSubcont::where('statusenabled', true)->get();
         $subcontSupport = Subcont::where('statusenabled', true)->get();
         $noUnitSupport = NoUnitSubcont::where('statusenabled', true)->get();

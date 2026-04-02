@@ -36,6 +36,7 @@ use App\Http\Controllers\Engineering\StagingPlanController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HazardReportController;
+use App\Http\Controllers\InspeksiTidakTerencanaController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\MappingRouteController;
 use App\Http\Controllers\OprAssigntmentController;
@@ -463,6 +464,17 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/inspeksi/workshop/bundlepdf', [InspeksiWorkshopController::class, 'bundlepdf'])->name('inspeksi.workshop.bundlepdf');
     Route::get('/inspeksi/workshop/cetak/{uuid}', [InspeksiWorkshopController::class, 'cetak'])->name('inspeksi.workshop.cetak');
     Route::get('/inspeksi/workshop/download/{uuid}', [InspeksiWorkshopController::class, 'download'])->name('inspeksi.workshop.download');
+
+    //Inspeksi Workshop
+    Route::get('/inspeksi/tidakterencana', [InspeksiTidakTerencanaController::class, 'index'])->name('inspeksi.tidakterencana');
+    Route::get('/inspeksi/tidakterencana/operatorFocus/{unit}', [InspeksiTidakTerencanaController::class, 'operatorFocus'])->name('inspeksi.tidakterencana.operatorFocus');
+    Route::get('/inspeksi/tidakterencana/insert', [InspeksiTidakTerencanaController::class, 'insert'])->name('inspeksi.tidakterencana.insert')->middleware('canAccess');
+    Route::post('/inspeksi/tidakterencana/post', [InspeksiTidakTerencanaController::class, 'post'])->name('inspeksi.tidakterencana.post');
+    Route::get('/inspeksi/tidakterencana/delete/{id}', [InspeksiTidakTerencanaController::class, 'delete'])->name('inspeksi.tidakterencana.delete');
+    Route::get('/inspeksi/tidakterencana/preview/{uuid}', [InspeksiTidakTerencanaController::class, 'preview'])->name('inspeksi.tidakterencana.preview');
+    Route::get('/inspeksi/tidakterencana/bundlepdf', [InspeksiTidakTerencanaController::class, 'bundlepdf'])->name('inspeksi.tidakterencana.bundlepdf');
+    Route::get('/inspeksi/tidakterencana/cetak/{uuid}', [InspeksiTidakTerencanaController::class, 'cetak'])->name('inspeksi.tidakterencana.cetak');
+    Route::get('/inspeksi/tidakterencana/download/{uuid}', [InspeksiTidakTerencanaController::class, 'download'])->name('inspeksi.tidakterencana.download');
 
     //Observasi Bank
     Route::get('/observasibank', [ObservasiBankController::class, 'index'])->name('observasibank');

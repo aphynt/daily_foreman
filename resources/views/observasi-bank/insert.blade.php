@@ -686,7 +686,7 @@
                                     {{-- PATUGAS 1 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Petugas / Observer 1</label>
-                                        <select class="form-control form-control-sm" name="petugas1">
+                                        <select class="form-control form-control-sm" name="petugas1" data-trigger>
                                             <option value="" disabled selected></option>
                                             @foreach ($users['petugas'] as $petugas)
                                                 <option value="{{ $petugas->nik }}"
@@ -700,7 +700,7 @@
                                     {{-- PATUGAS 2 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Petugas / Observer 2</label>
-                                        <select class="form-control form-control-sm" name="petugas2">
+                                        <select class="form-control form-control-sm" name="petugas2" data-trigger>
                                             <option value="" disabled selected></option>
                                             @foreach ($users['petugas'] as $petugas)
                                                 <option value="{{ $petugas->nik }}"
@@ -714,7 +714,7 @@
                                     {{-- PATUGAS 3 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Petugas / Observer 3</label>
-                                        <select class="form-control form-control-sm" name="petugas3">
+                                        <select class="form-control form-control-sm" name="petugas3" data-trigger>
                                             <option value="" disabled selected></option>
                                             @foreach ($users['petugas'] as $petugas)
                                                 <option value="{{ $petugas->nik }}"
@@ -733,7 +733,7 @@
                                     {{-- PATUGAS 1 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Pekerja 1</label>
-                                        <select class="form-control form-control-sm" name="pekerja1">
+                                        <select class="form-control form-control-sm" name="pekerja1" data-trigger>
                                             <option value="" disabled selected></option>
                                             @foreach ($users['pekerja'] as $pekerja)
                                                 <option value="{{ $pekerja->nik }}"
@@ -747,7 +747,7 @@
                                     {{-- PATUGAS 2 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Pekerja 2</label>
-                                        <select class="form-control form-control-sm" name="pekerja2">
+                                        <select class="form-control form-control-sm" name="pekerja2" data-trigger>
                                             <option value="" disabled selected></option>
                                             @foreach ($users['pekerja'] as $pekerja)
                                                 <option value="{{ $pekerja->nik }}"
@@ -761,7 +761,7 @@
                                     {{-- PATUGAS 3 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Pekerja 3</label>
-                                        <select class="form-control form-control-sm" name="pekerja3">
+                                        <select class="form-control form-control-sm" name="pekerja3" data-trigger>
                                             <option value="" disabled selected></option>
                                             @foreach ($users['pekerja'] as $pekerja)
                                                 <option value="{{ $pekerja->nik }}"
@@ -778,7 +778,7 @@
                                     <h5>XII. Validasi Pengawas / Penanggung Jawab</h5>
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Pengawas</label>
-                                        <select class="form-control form-control-sm" name="pengawas1">
+                                        <select class="form-control form-control-sm" name="pengawas1" data-trigger>
                                             <option value="{{ Auth::user()->nik }}" selected>{{ Auth::user()->name }} ({{ Auth::user()->nik }})</option>
                                             @foreach ($users['pengawas'] as $pengawas)
                                                 <option value="{{ $pengawas->nik }}"

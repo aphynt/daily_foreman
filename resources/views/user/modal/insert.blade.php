@@ -20,9 +20,9 @@
                         <label>Role</label>
                         <select class="form-select" name="role" required>
                             <option selected disabled>Pilih role</option>
-                            @foreach ($role as $rl)
+                            {{-- @foreach ($role as $rl)
                                 <option value="{{ $rl->id }}|{{ $rl->name }}">{{ $rl->name }}</option>
-                            @endforeach
+                            @endforeach --}}
                         </select>
                     </div>
                 </div>
