@@ -733,43 +733,19 @@
                                     {{-- PATUGAS 1 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Pekerja 1</label>
-                                        <select class="form-control form-control-sm" name="pekerja1" data-trigger>
-                                            <option value="" disabled selected></option>
-                                            @foreach ($users['pekerja'] as $pekerja)
-                                                <option value="{{ $pekerja->nik }}"
-                                                    {{ old('pekerja1') == $pekerja->nik ? 'selected' : '' }}>
-                                                    {{ $pekerja->name }} ({{ $pekerja->nik }})
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <input type="text" class="form-control form-control-sm" name="pekerja1">
                                     </div>
 
                                     {{-- PATUGAS 2 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Pekerja 2</label>
-                                        <select class="form-control form-control-sm" name="pekerja2" data-trigger>
-                                            <option value="" disabled selected></option>
-                                            @foreach ($users['pekerja'] as $pekerja)
-                                                <option value="{{ $pekerja->nik }}"
-                                                    {{ old('pekerja2') == $pekerja->nik ? 'selected' : '' }}>
-                                                    {{ $pekerja->name }} ({{ $pekerja->nik }})
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <input type="text" class="form-control form-control-sm" name="pekerja2">
                                     </div>
 
                                     {{-- PATUGAS 3 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Pekerja 3</label>
-                                        <select class="form-control form-control-sm" name="pekerja3" data-trigger>
-                                            <option value="" disabled selected></option>
-                                            @foreach ($users['pekerja'] as $pekerja)
-                                                <option value="{{ $pekerja->nik }}"
-                                                    {{ old('pekerja3') == $pekerja->nik ? 'selected' : '' }}>
-                                                    {{ $pekerja->name }} ({{ $pekerja->nik }})
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <input type="text" class="form-control form-control-sm" name="pekerja3">
                                     </div>
 
                                 </div>

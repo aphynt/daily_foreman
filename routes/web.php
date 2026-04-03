@@ -543,6 +543,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/kkh/name', [KKHController::class, 'name'])->name('kkh.name')->middleware('canAccess');
     Route::post('/kkh/verifikasi', [KKHController::class, 'verifikasi'])->name('kkh.verifikasi');
     Route::get('/kkh/download', [KKHController::class, 'download'])->name('kkh.download');
+    Route::get('/kkh/dashboard', [KKHController::class, 'dashboard'])->name('kkh.dashboard');
 
     //Job Pending Produksi
     Route::get('/job-pending/produksi', [JobPendingProduksiController::class, 'index'])->name('jobpending.produksi')->middleware('canAccess');

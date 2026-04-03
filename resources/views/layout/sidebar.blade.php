@@ -71,7 +71,7 @@
                 )
                 <li class="pc-item pc-hasmenu">
                     <a href="#!" class="pc-link"><span class="pc-micon">
-                        <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/dashboard.png" alt="DS"> </span><span class="pc-mtext">Dashboard</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span> <span class="pc-badge">4</span>
+                        <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/dashboard.png" alt="DS"> </span><span class="pc-mtext">Dashboard</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
                     </a>
                     <ul class="pc-submenu">
                         <li class="pc-item pc-hasmenu"><a href="#!" class="pc-link">Produksi<span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
@@ -105,6 +105,9 @@
                         @endif
                         @if (canAccess('laporan-kata-sandi.jamMonitor'))
                         <li class="pc-item"><a class="pc-link" href="{{ route('laporan-kata-sandi.jamMonitor') }}">Kata Sandi</a></li>
+                        @endif
+                        @if (canAccess('kkh.dashboard'))
+                        <li class="pc-item"><a class="pc-link" href="{{ route('kkh.dashboard') }}">KKH</a></li>
                         @endif
                     </ul>
                 </li>
