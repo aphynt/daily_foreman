@@ -106,7 +106,7 @@
 </script>
 <script>
     $(document).ready(function () {
-        const userRole = "{{ Auth::user()->role }}";
+        const userRole = "{{ Auth::user()->position }}";
 
         const table = $('#dataP2H').DataTable({
             processing: true,

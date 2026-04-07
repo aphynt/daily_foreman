@@ -67,13 +67,19 @@
                     canAccess('bb.unit-support.index') ||
                     canAccess('bb.catatan-pengawas.index') ||
                     canAccess('pengawas-pitstop.operator') ||
-                    canAccess('laporan-kata-sandi.jamMonitor')
+                    canAccess('laporan-kata-sandi.jamMonitor') ||
+                    canAccess('kkh.dashboard')
                 )
                 <li class="pc-item pc-hasmenu">
                     <a href="#!" class="pc-link"><span class="pc-micon">
                         <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/dashboard.png" alt="DS"> </span><span class="pc-mtext">Dashboard</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
                     </a>
                     <ul class="pc-submenu">
+                        @if (
+                            canAccess('front-loading.index') ||
+                            canAccess('alat-support.index') ||
+                            canAccess('catatan-pengawas.index')
+                        )
                         <li class="pc-item pc-hasmenu"><a href="#!" class="pc-link">Produksi<span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
                             <ul class="pc-submenu">
                                 @if (canAccess('front-loading.index'))
@@ -87,6 +93,12 @@
                                 @endif
                             </ul>
                         </li>
+                        @endif
+                        @if (
+                            canAccess('bb.loading-point.index') ||
+                            canAccess('bb.unit-support.index') ||
+                            canAccess('bb.catatan-pengawas.index')
+                        )
                         <li class="pc-item pc-hasmenu"><a href="#!" class="pc-link">Batu Bara<span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
                             <ul class="pc-submenu">
                                 @if (canAccess('bb.loading-point.index'))
@@ -100,6 +112,7 @@
                                 @endif
                             </ul>
                         </li>
+                        @endif
                         @if (canAccess('pengawas-pitstop.operator'))
                         <li class="pc-item"><a class="pc-link" href="{{ route('pengawas-pitstop.operator') }}">Pitstop</a></li>
                         @endif

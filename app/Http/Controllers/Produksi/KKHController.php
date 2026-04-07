@@ -27,11 +27,31 @@ class KKHController extends Controller
 
     public function name()
     {
-        $userProduksi =  DB::connection('kkh')->table('db_payroll.dbo.tbl_data_hr as hr')
-        ->leftJoin('db_payroll.dbo.tm_departemen as dp', 'hr.Id_Departemen', '=', 'dp.ID_Departemen')
-        ->select('hr.Nik as NIK', 'hr.Nama as NAMA')
-        ->where('hr.Active', true)
-        ->get();
+        $user = DB::connection('daily_foreman')
+            ->table('users')
+            ->where('nik', Auth::user()->nik)
+            ->first();
+
+        $role = strtoupper(trim($user->role ?? ''));
+        $departemenId = (int) ($user->departemen_id ?? 0);
+
+        if ($role === 'SEPERVISOR') {
+            $role = 'SUPERVISOR';
+        }
+
+        $canSeeAll =
+            in_array($role, ['ADMIN', 'MANAGEMENT']) ||
+            (in_array($role, ['SUPERVISOR', 'SUPERINTENDENT']) && $departemenId === 9);
+
+        $userProduksi = DB::connection('kkh')
+            ->table('db_payroll.dbo.tbl_data_hr as hr')
+            ->leftJoin('db_payroll.dbo.tm_departemen as dp', 'hr.Id_Departemen', '=', 'dp.ID_Departemen')
+            ->select('hr.Nik as NIK', 'hr.Nama as NAMA')
+            ->where('hr.Active', true)
+            ->when(!$canSeeAll, function ($q) use ($departemenId) {
+                $q->whereRaw('CAST(hr.Id_Departemen AS INT) = ?', [$departemenId]);
+            })
+            ->get();
 
         return view('kkh.name', compact('userProduksi'));
     }
@@ -56,6 +76,7 @@ class KKHController extends Controller
                 'kkh.id',
                 'kkh.tgl',
                 'kkh.nik',
+                'dp.ID_Departemen',
                 DB::raw("FORMAT(kkh.tgl_input, 'yyyy-MM-dd HH:mm') as TANGGAL_DIBUAT"),
                 'hr.Nik as NIK_PENGISI',
                 'hr.Nama as NAMA_PENGISI',
@@ -149,11 +170,31 @@ class KKHController extends Controller
             $kkh->where('kkh.shift_kkh', $shift);
         }
 
-        if ($request->departemen != 'Semua') {
+        if ($request->filled('departemen') && $request->departemen !== 'Semua') {
             $kkh->where('dp.ID_Departemen', $request->departemen);
         }
 
         $cluster = $request->cluster;
+
+        $user = DB::connection('daily_foreman')
+            ->table('users')
+            ->where('nik', Auth::user()->nik)
+            ->first();
+
+        $role = strtoupper(trim($user->role ?? ''));
+        $departemenId = (int) ($user->departemen_id ?? 0);
+
+        if ($role === 'SEPERVISOR') {
+            $role = 'SUPERVISOR';
+        }
+
+        $canSeeAll =
+            in_array($role, ['ADMIN', 'MANAGEMENT']) ||
+            (in_array($role, ['SUPERVISOR', 'SUPERINTENDENT']) && $departemenId === 9);
+
+        if (!$canSeeAll) {
+            $kkh->whereRaw('CAST(hr.ID_Departemen AS INT) = ?', [$departemenId]);
+        }
 
         if ($cluster == 'HD' || $cluster == 'EX') {
             $niks = AssignmentOperator::where('CLASS', $cluster)->pluck('NIK');
@@ -248,156 +289,176 @@ class KKHController extends Controller
     public function all_name(Request $request)
     {
         $offset = $request->input('start', 0);
-$length = $request->input('length', 10);
-$draw = $request->input('draw');
+        $length = $request->input('length', 10);
+        $draw = $request->input('draw');
 
-$namaKKH = $request->namaKKH;
+        $namaKKH = $request->namaKKH;
 
-if (empty($request->rangeStart) || empty($request->rangeEnd)) {
-    $time = new DateTime();
-    $startDate = $time->format('Y-m-d');
-    $endDate = $time->format('Y-m-d');
+        if (empty($request->rangeStart) || empty($request->rangeEnd)) {
+            $time = new DateTime();
+            $startDate = $time->format('Y-m-d');
+            $endDate = $time->format('Y-m-d');
 
-    $start = new DateTime($startDate);
-    $end = new DateTime($endDate);
-} else {
-    $start = new DateTime($request->rangeStart);
-    $end = new DateTime($request->rangeEnd);
-}
-
-$startTimeFormatted = $start->format('Y-m-d');
-$endTimeFormatted = $end->format('Y-m-d');
-
-$kkh = DB::connection('kkh')->table('db_payroll.dbo.web_kkh as kkh')
-    ->leftJoin('db_payroll.dbo.tbl_data_hr as hr', 'kkh.nik', '=', 'hr.nik')
-    ->leftJoin('db_payroll.dbo.tbl_data_hr as hr2', 'kkh.nik_pengawas', '=', 'hr2.nik')
-    ->leftJoin('db_payroll.dbo.tm_departemen as dp', 'hr.Id_Departemen', '=', 'dp.ID_Departemen')
-    ->leftJoin('db_payroll.dbo.tm_perusahaan as pr', 'hr.ID_Perusahaan', '=', 'pr.ID_Perusahaan')
-    ->select(
-        'kkh.id',
-        'kkh.tgl',
-        'kkh.nik',
-        DB::raw("'-' as JABATAN"),
-        DB::raw("FORMAT(kkh.tgl_input, 'yyyy-MM-dd HH:mm') as TANGGAL_DIBUAT"),
-        'hr.Nik as NIK_PENGISI',
-        'hr.Nama as NAMA_PENGISI',
-        'kkh.shift_kkh as SHIFT',
-        DB::raw("
-            CASE
-                WHEN kkh.jam_pulang IS NULL OR LTRIM(RTRIM(kkh.jam_pulang)) = '' THEN '-'
-                ELSE
-                    RIGHT('0' + LEFT(kkh.jam_pulang, CHARINDEX(':', kkh.jam_pulang) - 1), 2)
-                    + ':' +
-                    RIGHT('0' + RIGHT(kkh.jam_pulang, LEN(kkh.jam_pulang) - CHARINDEX(':', kkh.jam_pulang)), 2)
-            END AS JAM_PULANG
-        "),
-        DB::raw("
-            CASE
-                WHEN kkh.jam_tidur IS NULL OR LTRIM(RTRIM(kkh.jam_tidur)) = '' THEN '-'
-                ELSE
-                    RIGHT('0' + LEFT(kkh.jam_tidur, CHARINDEX(':', kkh.jam_tidur) - 1), 2)
-                    + ':' +
-                    RIGHT('0' + RIGHT(kkh.jam_tidur, LEN(kkh.jam_tidur) - CHARINDEX(':', kkh.jam_tidur)), 2)
-            END AS JAM_TIDUR
-        "),
-        DB::raw("
-            CASE
-                WHEN kkh.jam_bangun IS NULL OR LTRIM(RTRIM(kkh.jam_bangun)) = '' THEN '-'
-                ELSE
-                    RIGHT('0' + LEFT(kkh.jam_bangun, CHARINDEX(':', kkh.jam_bangun) - 1), 2)
-                    + ':' +
-                    RIGHT('0' + RIGHT(kkh.jam_bangun, LEN(kkh.jam_bangun) - CHARINDEX(':', kkh.jam_bangun)), 2)
-            END AS JAM_BANGUN
-        "),
-        DB::raw("
-            STR(
-                ROUND(
-                    CASE
-                        WHEN DATEDIFF(MINUTE, kkh.jam_tidur, kkh.jam_bangun) < 0 THEN
-                            DATEDIFF(MINUTE, kkh.jam_tidur, DATEADD(DAY, 1, kkh.jam_bangun)) / 60.0
-                        ELSE
-                            DATEDIFF(MINUTE, kkh.jam_tidur, kkh.jam_bangun) / 60.0
-                    END, 1
-                ), 10, 1
-            ) AS TOTAL_TIDUR
-        "),
-        DB::raw("
-            CASE
-                WHEN kkh.jam_berangkat IS NULL OR LTRIM(RTRIM(kkh.jam_berangkat)) = '' THEN '-'
-                ELSE
-                    RIGHT('0' + LEFT(kkh.jam_berangkat, CHARINDEX(':', kkh.jam_berangkat) - 1), 2)
-                    + ':' +
-                    RIGHT('0' + RIGHT(kkh.jam_berangkat, LEN(kkh.jam_berangkat) - CHARINDEX(':', kkh.jam_berangkat)), 2)
-            END AS JAM_BERANGKAT
-        "),
-        'kkh.fit_or as FIT_BEKERJA',
-        DB::raw('UPPER(kkh.keluhan) as KELUHAN'),
-        'kkh.masalah_pribadi as MASALAH_PRIBADI',
-        'kkh.ferivikasi_pengawas',
-        'kkh.nik_pengawas as NIK_PENGAWAS',
-        'hr2.Nama as NAMA_PENGAWAS'
-    )
-    ->whereBetween('kkh.tgl', [$startTimeFormatted, $endTimeFormatted]);
-
-if ($request->search['value']) {
-    $searchValue = '%' . $request->search['value'] . '%';
-    $columnsToSearch = [
-        'hr.Nik',
-        'hr.Nama',
-        'kkh.shift_kkh',
-        'kkh.jam_pulang',
-        'kkh.jam_tidur',
-        'kkh.jam_bangun',
-        'kkh.jam_berangkat',
-        'kkh.fit_or',
-        'hr2.Nama'
-    ];
-
-    $kkh->where(function ($query) use ($columnsToSearch, $searchValue) {
-        foreach ($columnsToSearch as $column) {
-            $query->orWhere($column, 'like', $searchValue);
+            $start = new DateTime($startDate);
+            $end = new DateTime($endDate);
+        } else {
+            $start = new DateTime($request->rangeStart);
+            $end = new DateTime($request->rangeEnd);
         }
-    });
-}
 
-if (!empty($request->namaKKH)) {
-    $kkh->where('hr.Nik', $namaKKH);
-}
+        $startTimeFormatted = $start->format('Y-m-d');
+        $endTimeFormatted = $end->format('Y-m-d');
 
-$filteredRecords = $kkh->count();
+        $kkh = DB::connection('kkh')->table('db_payroll.dbo.web_kkh as kkh')
+            ->leftJoin('db_payroll.dbo.tbl_data_hr as hr', 'kkh.nik', '=', 'hr.nik')
+            ->leftJoin('db_payroll.dbo.tbl_data_hr as hr2', 'kkh.nik_pengawas', '=', 'hr2.nik')
+            ->leftJoin('db_payroll.dbo.tm_departemen as dp', 'hr.Id_Departemen', '=', 'dp.ID_Departemen')
+            ->leftJoin('db_payroll.dbo.tm_perusahaan as pr', 'hr.ID_Perusahaan', '=', 'pr.ID_Perusahaan')
+            ->select(
+                'kkh.id',
+                'kkh.tgl',
+                'kkh.nik',
+                DB::raw("'-' as JABATAN"),
+                DB::raw("FORMAT(kkh.tgl_input, 'yyyy-MM-dd HH:mm') as TANGGAL_DIBUAT"),
+                'hr.Nik as NIK_PENGISI',
+                'hr.Nama as NAMA_PENGISI',
+                'kkh.shift_kkh as SHIFT',
+                DB::raw("
+                    CASE
+                        WHEN kkh.jam_pulang IS NULL OR LTRIM(RTRIM(kkh.jam_pulang)) = '' THEN '-'
+                        ELSE
+                            RIGHT('0' + LEFT(kkh.jam_pulang, CHARINDEX(':', kkh.jam_pulang) - 1), 2)
+                            + ':' +
+                            RIGHT('0' + RIGHT(kkh.jam_pulang, LEN(kkh.jam_pulang) - CHARINDEX(':', kkh.jam_pulang)), 2)
+                    END AS JAM_PULANG
+                "),
+                DB::raw("
+                    CASE
+                        WHEN kkh.jam_tidur IS NULL OR LTRIM(RTRIM(kkh.jam_tidur)) = '' THEN '-'
+                        ELSE
+                            RIGHT('0' + LEFT(kkh.jam_tidur, CHARINDEX(':', kkh.jam_tidur) - 1), 2)
+                            + ':' +
+                            RIGHT('0' + RIGHT(kkh.jam_tidur, LEN(kkh.jam_tidur) - CHARINDEX(':', kkh.jam_tidur)), 2)
+                    END AS JAM_TIDUR
+                "),
+                DB::raw("
+                    CASE
+                        WHEN kkh.jam_bangun IS NULL OR LTRIM(RTRIM(kkh.jam_bangun)) = '' THEN '-'
+                        ELSE
+                            RIGHT('0' + LEFT(kkh.jam_bangun, CHARINDEX(':', kkh.jam_bangun) - 1), 2)
+                            + ':' +
+                            RIGHT('0' + RIGHT(kkh.jam_bangun, LEN(kkh.jam_bangun) - CHARINDEX(':', kkh.jam_bangun)), 2)
+                    END AS JAM_BANGUN
+                "),
+                DB::raw("
+                    STR(
+                        ROUND(
+                            CASE
+                                WHEN DATEDIFF(MINUTE, kkh.jam_tidur, kkh.jam_bangun) < 0 THEN
+                                    DATEDIFF(MINUTE, kkh.jam_tidur, DATEADD(DAY, 1, kkh.jam_bangun)) / 60.0
+                                ELSE
+                                    DATEDIFF(MINUTE, kkh.jam_tidur, kkh.jam_bangun) / 60.0
+                            END, 1
+                        ), 10, 1
+                    ) AS TOTAL_TIDUR
+                "),
+                DB::raw("
+                    CASE
+                        WHEN kkh.jam_berangkat IS NULL OR LTRIM(RTRIM(kkh.jam_berangkat)) = '' THEN '-'
+                        ELSE
+                            RIGHT('0' + LEFT(kkh.jam_berangkat, CHARINDEX(':', kkh.jam_berangkat) - 1), 2)
+                            + ':' +
+                            RIGHT('0' + RIGHT(kkh.jam_berangkat, LEN(kkh.jam_berangkat) - CHARINDEX(':', kkh.jam_berangkat)), 2)
+                    END AS JAM_BERANGKAT
+                "),
+                'kkh.fit_or as FIT_BEKERJA',
+                DB::raw('UPPER(kkh.keluhan) as KELUHAN'),
+                'kkh.masalah_pribadi as MASALAH_PRIBADI',
+                'kkh.ferivikasi_pengawas',
+                'kkh.nik_pengawas as NIK_PENGAWAS',
+                'hr2.Nama as NAMA_PENGAWAS'
+            )
+            ->whereBetween('kkh.tgl', [$startTimeFormatted, $endTimeFormatted]);
 
-$kkhRows = $kkh
-    ->orderBy('kkh.tgl')
-    ->offset($offset)
-    ->limit($length)
-    ->get();
+        if ($request->search['value']) {
+            $searchValue = '%' . $request->search['value'] . '%';
+            $columnsToSearch = [
+                'hr.Nik',
+                'hr.Nama',
+                'kkh.shift_kkh',
+                'kkh.jam_pulang',
+                'kkh.jam_tidur',
+                'kkh.jam_bangun',
+                'kkh.jam_berangkat',
+                'kkh.fit_or',
+                'hr2.Nama'
+            ];
 
-    $nikList = $kkhRows->pluck('NIK_PENGISI')
-    ->filter()
-    ->unique()
-    ->values()
-    ->toArray();
+            $kkh->where(function ($query) use ($columnsToSearch, $searchValue) {
+                foreach ($columnsToSearch as $column) {
+                    $query->orWhere($column, 'like', $searchValue);
+                }
+            });
+        }
 
-$userRoles = DB::connection('daily_foreman')
-    ->table('users')
-    ->whereIn('nik', $nikList)
-    ->select('nik', 'role')
-    ->get()
-    ->keyBy('nik');
+        if (!empty($request->namaKKH)) {
+            $kkh->where('hr.Nik', $namaKKH);
+        }
 
-    $kkhRows->transform(function ($row) use ($userRoles) {
-    $role = optional($userRoles->get($row->NIK_PENGISI))->role;
-    $row->JABATAN = strtoupper($role ?? '-');
+        $user = DB::connection('daily_foreman')
+            ->table('users')
+            ->where('nik', Auth::user()->nik)
+            ->first();
 
-    return $row;
-});
+        $role = strtoupper(trim($user->role ?? ''));
+        $departemenId = (int) ($user->departemen_id ?? 0);
 
-return response()->json([
-    'draw' => $draw,
-    'recordsTotal' => $filteredRecords,
-    'recordsFiltered' => $filteredRecords,
-    'data' => $kkhRows,
-]);
+        if ($role === 'SEPERVISOR') {
+            $role = 'SUPERVISOR';
+        }
+
+        $canSeeAll =
+            in_array($role, ['ADMIN', 'MANAGEMENT']) ||
+            (in_array($role, ['SUPERVISOR', 'SUPERINTENDENT']) && $departemenId === 9);
+
+        if (!$canSeeAll) {
+            $kkh->whereRaw('CAST(hr.ID_Departemen AS INT) = ?', [$departemenId]);
+        }
+
+        $filteredRecords = $kkh->count();
+
+        $kkhRows = $kkh
+            ->orderBy('kkh.tgl')
+            ->offset($offset)
+            ->limit($length)
+            ->get();
+
+            $nikList = $kkhRows->pluck('NIK_PENGISI')
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
+
+        $userRoles = DB::connection('daily_foreman')
+            ->table('users')
+            ->whereIn('nik', $nikList)
+            ->select('nik', 'role')
+            ->get()
+            ->keyBy('nik');
+
+            $kkhRows->transform(function ($row) use ($userRoles) {
+            $role = optional($userRoles->get($row->NIK_PENGISI))->role;
+            $row->JABATAN = strtoupper($role ?? '-');
+
+            return $row;
+        });
+
+        return response()->json([
+            'draw' => $draw,
+            'recordsTotal' => $filteredRecords,
+            'recordsFiltered' => $filteredRecords,
+            'data' => $kkhRows,
+        ]);
     }
 
     public function verifikasi(Request $request)
@@ -650,6 +711,22 @@ return response()->json([
     {
         $now = Carbon::now();
 
+        $user = DB::connection('daily_foreman')
+            ->table('users')
+            ->where('nik', Auth::user()->nik)
+            ->first();
+
+        $role = strtoupper(trim($user->role ?? ''));
+        $departemenId = (int) ($user->departemen_id ?? 0);
+
+        if ($role === 'SEPERVISOR') {
+            $role = 'SUPERVISOR';
+        }
+
+        $canSeeAll =
+            in_array($role, ['ADMIN', 'MANAGEMENT']) ||
+            (in_array($role, ['SUPERVISOR', 'SUPERINTENDENT']) && $departemenId === 9);
+
         $kkh = DB::connection('kkh')
             ->table('db_payroll.dbo.web_kkh as kkh')
             ->leftJoin('db_payroll.dbo.tbl_data_hr as hr', 'kkh.nik', '=', 'hr.nik')
@@ -722,9 +799,13 @@ return response()->json([
                 'hr2.Nama as NAMA_PENGAWAS'
             )
             ->whereNotIn('jb.Jabatan', ['Manager', 'Asisten Manager', 'Superintendent', 'Pjs. Superintendent'])
-            ->where('kkh.tgl', $now);
+            ->whereDate('kkh.tgl', $now)
+            ->when(!$canSeeAll, function ($q) use ($departemenId) {
+                $q->whereRaw('CAST(hr.Id_Departemen AS INT) = ?', [$departemenId]);
+            });
 
         $dataKKH = $kkh->get();
+
         $kkhBelumDiverifikasi = $dataKKH->where('ferivikasi_pengawas', '!=', 1);
         $kkhUnfit = $dataKKH->where('FIT_BEKERJA', '!=', 1);
         $kkhdibawah6Jam = $dataKKH->filter(function ($item) {

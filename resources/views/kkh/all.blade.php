@@ -27,15 +27,35 @@
                                     <option value="Malam">Malam</option>
                                 </select>
                             </div>
-                            <div class="col-6 col-md-2 mb-2">
-                                <label for="departemen">Departemen</label>
-                                <select class="form-select" name="departemen" id="departemen">
-                                    <option value="Semua">Semua</option>
-                                    @foreach ($dep as $d)
-                                        <option value="{{ $d->ID_Departemen }}">{{ $d->Departemen }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                            @php
+                                $user = DB::connection('daily_foreman')
+                                    ->table('users')
+                                    ->where('nik', Auth::user()->nik)
+                                    ->first();
+
+                                $role = strtoupper(trim($user->role ?? ''));
+                                $departemenId = (int) ($user->departemen_id ?? 0);
+
+                                if ($role === 'SEPERVISOR') {
+                                    $role = 'SUPERVISOR';
+                                }
+
+                                $canAccessDepartemenFilter =
+                                    in_array($role, ['ADMIN', 'MANAGEMENT']) ||
+                                    (in_array($role, ['SUPERVISOR', 'SUPERINTENDENT']) && $departemenId === 9);
+                            @endphp
+
+                            @if ($canAccessDepartemenFilter)
+                                <div class="col-6 col-md-2 mb-2">
+                                    <label for="departemen">Departemen</label>
+                                    <select class="form-select" name="departemen" id="departemen">
+                                        <option value="Semua">Semua</option>
+                                        @foreach ($dep as $d)
+                                            <option value="{{ $d->ID_Departemen }}">{{ $d->Departemen }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            @endif
                             <div class="col-6 col-md-2 mb-2">
                                 <label for="cluster">Kategori Operasional</label>
                                 <select class="form-select" name="cluster" id="cluster">
