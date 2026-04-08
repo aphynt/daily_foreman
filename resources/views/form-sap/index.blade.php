@@ -120,6 +120,16 @@
                                 </select>
                             </div>
 
+                            <div class="mb-3">
+                                <label for="pic" class="form-label">PIC:</label>
+                                <select class="form-select" id="pic" name="pic" data-trigger required>
+                                    <option value="{{ Auth::user()->nik }}" selected>{{ Auth::user()->name }}</option>
+                                    @foreach ($pic as $p)
+                                        <option value="{{ $p->nik }}">{{ $p->name }} ({{ $p->departemen }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             <hr>
 
                             <div class="mb-3">

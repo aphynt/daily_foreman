@@ -7,6 +7,7 @@ use App\Models\Area;
 use App\Models\SAPReport;
 use App\Models\SAPReportImage;
 use App\Models\Shift;
+use App\Models\User;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,9 +38,14 @@ class FormPengawasSAPController extends Controller
     //
     public function index()
     {
+        $pic = DB::table('users as us')
+        ->leftJoin('ref_departemen as dep', 'dep.id', 'us.departemen_id')
+        ->select('us.nik', 'us.name', 'dep.keterangan as departemen')
+        ->whereNotIn('us.role', ['ADMIN', 'MANAGEMENT'])
+        ->where('us.statusenabled', true)->get();
         $shift = Shift::where('statusenabled', true)->get();
         $area = Area::where('statusenabled', true)->get();
-        return view('form-sap.index', compact('area', 'shift'));
+        return view('form-sap.index', compact('area', 'shift', 'pic'));
     }
 
     public function post(Request $request)
@@ -80,6 +86,7 @@ class FormPengawasSAPController extends Controller
                 'tingkat_risiko'  => $request->tingkatRisiko,
                 'tindak_lanjut'  => $request->tindakLanjut,
                 'risiko'         => $request->risiko,
+                'pic'         => $request->pic,
                 'pengendalian'   => $request->pengendalian,
                 'file_temuan'    => $fileTemuan,
                 'file_tindakLanjut' => $fileTindakLanjut,
@@ -189,6 +196,7 @@ class FormPengawasSAPController extends Controller
     {
         $report = DB::table('prd_sap_report as sr')
         ->leftJoin('users as us', 'sr.foreman_id', 'us.id')
+        ->leftJoin('users as us2', 'sr.pic', 'us2.nik')
         ->leftJoin('ref_shift as sh', 'sr.shift', 'sh.id')
         ->leftJoin('ref_region as ar', 'sr.area', 'ar.id')
         ->select(
@@ -196,8 +204,10 @@ class FormPengawasSAPController extends Controller
             'sr.created_at',
             'sr.jam_kejadian',
             'sh.keterangan as shift',
-            'us.nik as nik_pic',
-            'us.name as pic',
+            'us.nik as nik_pembuat',
+            'us.name as pembuat',
+            'us2.nik as nik_pic',
+            'us2.name as pic',
             'ar.keterangan as area',
             'sr.temuan',
             'sr.risiko',

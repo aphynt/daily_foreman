@@ -217,6 +217,14 @@
                                 <label>Area</label>
                                 <input type="text" class="form-control" value="{{ $data['report']->area ? $data['report']->area : "-" }}" readonly>
                             </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Pembuat</label>
+                                <input type="text" class="form-control" value="{{ $data['report']->pembuat ? $data['report']->pembuat : "-" }}" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>PIC</label>
+                                <input type="text" class="form-control" value="{{ $data['report']->pic ? $data['report']->pic : "-" }}" readonly>
+                            </div>
                             <div class="mb-3">
                                 <label>Temuan KTA/TTA</label>
                                 <textarea type="text"  class="form-control" rows="5" readonly>{{ $data['report']->temuan ? $data['report']->temuan : "-" }}</textarea>

@@ -102,6 +102,13 @@
                                                value="{{ $data['report']->area ?: '-' }}"
                                                readonly>
                                     </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>PIC</label>
+                                        <input type="text"
+                                               class="form-control"
+                                               value="{{ $data['report']->pic ?: '-' }}"
+                                               readonly>
+                                    </div>
 
                                     <div class="mb-3">
                                         <label>Temuan KTA/TTA</label>
