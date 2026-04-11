@@ -12,13 +12,35 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
+use DateTime;
 
 class InspeksiTidakTerencanaController extends Controller
 {
     //
-    public function index()
+    public function index(Request $request)
     {
-        $data = InspeksiTidakTerencana::where('statusenabled', true)->get();
+        session(['requestTimeInspeksiTidakTerencana' => $request->all()]);
+
+        if (empty($request->rangeStart) || empty($request->rangeEnd)){
+            $time = new DateTime();
+            $startDate = $time->format('Y-m-d');
+            $endDate = $time->format('Y-m-d');
+
+            $start = new DateTime("$startDate");
+            $end = new DateTime("$endDate");
+
+        }else{
+            $start = new DateTime("$request->rangeStart");
+            $end = new DateTime("$request->rangeEnd");
+        }
+
+
+        $startTimeFormatted = $start->format('Y-m-d');
+        $endTimeFormatted = $end->format('Y-m-d');
+
+        $data = InspeksiTidakTerencana::where('statusenabled', true)
+        ->whereBetween(DB::raw('CONVERT(varchar, tanggal, 23)'), [$startTimeFormatted, $endTimeFormatted])
+        ->get();
         return view('inspeksi.tidak-terencana.index', compact('data'));
     }
 

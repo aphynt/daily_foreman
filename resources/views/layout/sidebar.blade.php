@@ -145,7 +145,9 @@
                     canAccess('jobpending.safety.detail') ||
                     canAccess('p2h.show') ||
                     canAccess('ert.show') ||
-                    canAccess('patrol.show')
+                    canAccess('patrol.show') ||
+                    canAccess('observasibank') ||
+                    canAccess('inspeksi.tidakterencana')
                 )
 
                 <li class="pc-item pc-hasmenu">
@@ -162,6 +164,8 @@
                         @if (canAccess('p2h.show'))<li class="pc-item"><a class="pc-link" href="{{ route('p2h.show') }}">Laporan P2H</a></li>@endif
                         @if (canAccess('ert.show'))<li class="pc-item"><a class="pc-link" href="{{ route('ert.show') }}">Laporan Safety ERT</a></li>@endif
                         @if (canAccess('patrol.show'))<li class="pc-item"><a class="pc-link" href="{{ route('patrol.show') }}">Laporan Safety Patrol</a></li>@endif
+                        @if (canAccess('observasibank'))<li class="pc-item"><a class="pc-link" href="{{ route('observasibank') }}">Laporan Observasi Bank</a></li>@endif
+                        @if (canAccess('inspeksi.tidakterencana'))<li class="pc-item"><a class="pc-link" href="{{ route('inspeksi.tidakterencana') }}">Laporan Inspeksi Tidak Terencana</a></li>@endif
                     </ul>
                 </li>
                 @endif

@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Safety;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\WhatsAppController;
 use App\Models\ERT;
 use App\Models\ERTJobPending;
 use App\Models\ERTSubKegiatan;
 use App\Models\ERTTemuanTindakLanjut;
 use App\Models\Log;
+use App\Models\RefConf;
 use App\Models\Shift;
 use App\Models\User;
 use Carbon\Carbon;
@@ -17,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 use DateTime;
+use Illuminate\Support\Facades\Log as FacadesLog;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -205,6 +208,31 @@ class ERTController extends Controller
             if($request->actionType == 'finish'){
                 $typeDraft = false;
                 $finished = Carbon::now();
+
+                $picName = Auth::user()->name;
+                $reportDate = $finished->format('d-m-Y H:i');
+                $shift = Shift::where('id', $request->shift_id)->value('keterangan');
+
+                // Kirim WhatsApp
+                $waController = new WhatsAppController();
+                $number = RefConf::where('id', 11)->value('value');
+
+                $message = <<<MSG
+                🔔 *Reminder Verifikasi Laporan Harian ERT*
+
+                PIC: $picName,
+
+                Terdapat laporan yang telah berhasil disubmit pada tanggal: $reportDate
+                Shift: $shift
+
+                Mohon bantuannya untuk melakukan pengecekan dan verifikasi laporan tersebut.
+
+                Terima kasih atas perhatian dan kerja samanya.
+                _Pesan ini dikirim secara otomatis. Mohon tidak membalas pesan ini._
+                MSG;
+
+                $waResult = $waController->sendMessage($number, $message);
+                FacadesLog::info('WA Send Result: ', $waResult);
             }
             $uuid = $request->uuid;
 

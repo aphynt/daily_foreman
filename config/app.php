@@ -53,6 +53,7 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    'senderwhatsapp' => env('SENDER_WHATSAPP'),
 
     /*
     |--------------------------------------------------------------------------

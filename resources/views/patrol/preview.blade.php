@@ -447,17 +447,17 @@
                         <div class="card-body p-3">
                             <div class="verifikasi-actions">
 
-                                {{-- @if ((Auth::user()->role == 'FOREMAN SAFETY' || Auth::user()->role == 'SUPERVISOR SAFETY') && $data['daily']->verified_penerima == null) --}}
+                                @if ((Auth::user()->role == 'FOREMAN' || Auth::user()->role == 'SUPERVISOR') && $data['daily']->verified_penerima == null)
                                     <a href="{{ route('patrol.verified.penerima', $data['daily']->uuid) }}" class="verifikasi-btn">
                                         Verifikasi Penerima
                                     </a>
-                                {{-- @endif --}}
+                                @endif
 
-                                {{-- @if (Auth::user()->role == 'SUPERINTENDENT SAFETY' && $data['daily']->verified_superintendent == null) --}}
+                                @if (Auth::user()->role == 'SUPERINTENDENT' && $data['daily']->verified_superintendent == null)
                                     <a href="{{ route('patrol.verified.superintendent', $data['daily']->uuid) }}" class="verifikasi-btn">
                                         Verifikasi Superintendent
                                     </a>
-                                {{-- @endif --}}
+                                @endif
 
                             </div>
 

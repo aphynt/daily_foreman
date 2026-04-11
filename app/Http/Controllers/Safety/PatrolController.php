@@ -18,6 +18,9 @@ use Carbon\Carbon;
 use App\Models\Log;
 use DateTimeImmutable;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Http\Controllers\WhatsAppController;
+use Illuminate\Support\Facades\Log as FacadesLog;
+use App\Models\RefConf;
 
 class PatrolController extends Controller
 {
@@ -204,6 +207,31 @@ class PatrolController extends Controller
             if($request->actionType == 'finish'){
                 $typeDraft = false;
                 $finished = Carbon::now();
+
+                $picName = Auth::user()->name;
+                $reportDate = $finished->format('d-m-Y H:i');
+                $shift = Shift::where('id', $request->shift_id)->value('keterangan');
+
+                // Kirim WhatsApp
+                $waController = new WhatsAppController();
+                $number = RefConf::where('id', 11)->value('value');
+
+                $message = <<<MSG
+                🔔 *Reminder Verifikasi Laporan Harian Safety Patrol*
+
+                PIC: $picName,
+
+                Terdapat laporan yang telah berhasil disubmit pada tanggal: $reportDate
+                Shift: $shift
+
+                Mohon bantuannya untuk melakukan pengecekan dan verifikasi laporan tersebut.
+
+                Terima kasih atas perhatian dan kerja samanya.
+                _Pesan ini dikirim secara otomatis. Mohon tidak membalas pesan ini._
+                MSG;
+
+                $waResult = $waController->sendMessage($number, $message);
+                FacadesLog::info('WA Send Result: ', $waResult);
             }
             $uuid = $request->uuid;
 
