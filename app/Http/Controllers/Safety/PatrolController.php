@@ -72,7 +72,7 @@ class PatrolController extends Controller
                     'status' => $item->status,
                     'keterangan' => $item->keterangan,
                     'existing_foto_kegiatan' => $item->foto_kegiatan,
-                    'existing_foto_kegiatan_url' => $item->foto_kegiatan ? asset('storage/' . $item->foto_kegiatan) : null,
+                    'existing_foto_kegiatan_url' => $item->foto_kegiatan ? asset($item->foto_kegiatan) : null,
                 ];
             })
             ->values();
@@ -85,7 +85,7 @@ class PatrolController extends Controller
                     'id' => $item->id,
                     'uuid' => $item->uuid,
                     'foto_temuan' => $item->foto_temuan,
-                    'foto_temuan_url' => $item->foto_temuan ? asset('storage/' . $item->foto_temuan) : null,
+                    'foto_temuan_url' => $item->foto_temuan ? asset($item->foto_temuan) : null,
                     'deskripsi_temuan' => $item->deskripsi_temuan,
                     'tindak_lanjut' => $item->tindak_lanjut,
                     'status' => $item->status ? $item->status : 'Close',
@@ -104,7 +104,7 @@ class PatrolController extends Controller
                     'prioritas' => $item->prioritas,
                     'instruksi_shift_berikutnya' => $item->instruksi_shift_berikutnya,
                     'existing_foto_pending' => $item->foto_pending,
-                    'existing_foto_pending_url' => $item->foto_pending ? asset('storage/' . $item->foto_pending) : null,
+                    'existing_foto_pending_url' => $item->foto_pending ? asset($item->foto_pending) : null,
                 ];
             })
             ->values();
@@ -262,11 +262,15 @@ class PatrolController extends Controller
                 $subKegiatan = json_decode($request->subKegiatan, true);
 
                 foreach ($subKegiatan as $value) {
+
                     $fotoKegiatanPath = $value['existing_foto_kegiatan'] ?? null;
 
                     if ($request->hasFile('kegiatan_files.' . $value['uuid'])) {
-                        $file = $request->file('kegiatan_files.' . $value['uuid']);
-                        $fotoKegiatanPath = $file->store('foto_kegiatan', 'public');
+                        $fileKegiatan = $request->file('kegiatan_files.' . $value['uuid']);
+                        $destinationPath = public_path('foto_kegiatan');
+                        $fileNameKegiatan = time() . '_' . $value['uuid'] . '_' . $fileKegiatan->getClientOriginalName();
+                        $fileKegiatan->move($destinationPath, $fileNameKegiatan);
+                        $fotoKegiatanPath = url('foto_kegiatan/' . $fileNameKegiatan);
                     }
 
                     PatrolSubKegiatan::updateOrCreate(
@@ -298,8 +302,13 @@ class PatrolController extends Controller
                     $fotoTemuanPath = $value['existing_foto_temuan'] ?? null;
 
                     if ($request->hasFile('temuan_files.' . $value['uuid'])) {
-                        $file = $request->file('temuan_files.' . $value['uuid']);
-                        $fotoTemuanPath = $file->store('foto_temuan', 'public');
+                        $fileTemuan = $request->file('temuan_files.' . $value['uuid']);
+                        $destinationPath = public_path('foto_temuan');
+                        $fileNameTemuan = time() . '_temuan_' . $value['uuid'] . '_' . $fileTemuan->getClientOriginalName();
+
+                        $fileTemuan->move($destinationPath, $fileNameTemuan);
+
+                        $fotoTemuanPath = url('foto_temuan/' . $fileNameTemuan);
                     }
 
                     PatrolTemuanTindakLanjut::updateOrCreate(
@@ -328,8 +337,13 @@ class PatrolController extends Controller
                     $fotoPendingPath = $value['existing_foto_pending'] ?? null;
 
                     if ($request->hasFile('job_pending_files.' . $value['uuid'])) {
-                        $file = $request->file('job_pending_files.' . $value['uuid']);
-                        $fotoPendingPath = $file->store('foto_pending', 'public');
+                        $filePending = $request->file('job_pending_files.' . $value['uuid']);
+                        $destinationPath = public_path('foto_pending');
+                        $fileNamePending = time() . '_pending_' . $value['uuid'] . '_' . $filePending->getClientOriginalName();
+
+                        $filePending->move($destinationPath, $fileNamePending);
+
+                        $fotoPendingPath = url('foto_pending/' . $fileNamePending);
                     }
                     PatrolJobPending::updateOrCreate(
                         [

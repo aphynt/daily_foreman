@@ -1205,19 +1205,19 @@
             lokasi.value = '';
         }
 
-        if (selectedValue === 'Lain-Lain') {
-            kategori.readOnly = true;
-            frekuensi.readOnly = false;
-            lokasi.readOnly = false;
+        // if (selectedValue === 'Lain-Lain') {
+        //     kategori.readOnly = true;
+        //     frekuensi.readOnly = false;
+        //     lokasi.readOnly = false;
 
-            kategori.value = 'Evaluasi';
-            frekuensi.value = '';
-            lokasi.value = '';
-        } else {
-            kategori.readOnly = true;
-            frekuensi.readOnly = true;
-            lokasi.readOnly = true;
-        }
+        //     kategori.value = 'Evaluasi';
+        //     frekuensi.value = '';
+        //     lokasi.value = '';
+        // } else {
+        //     kategori.readOnly = true;
+        //     frekuensi.readOnly = true;
+        //     lokasi.readOnly = true;
+        // }
     }
 
     document.getElementById('saveSubKegiatan').addEventListener('click', async function () {

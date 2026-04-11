@@ -56,17 +56,17 @@
 
                     <div class="mb-3">
                         <label for="kategori">Sub Kegiatan / Detail</label>
-                        <input class="form-control" id="kategori" name="kategori[]" rows="2" readonly>
+                        <input class="form-control" id="kategori" name="kategori[]" rows="2">
                     </div>
 
                     <div class="mb-3">
                         <label for="frekuensi">Waktu Pelaksanaan</label>
-                        <input class="form-control" id="frekuensi" name="frekuensi[]" rows="2" readonly>
+                        <input class="form-control" id="frekuensi" name="frekuensi[]" rows="2">
                     </div>
 
                     <div class="mb-3">
                         <label for="lokasi">Lokasi</label>
-                        <input class="form-control" id="lokasi" name="lokasi[]" rows="2" readonly>
+                        <input class="form-control" id="lokasi" name="lokasi[]" rows="2">
                     </div>
 
                     <div class="mb-3 d-flex align-items-center gap-3">
@@ -90,7 +90,7 @@
 
                     <div class="mb-3">
                         <label for="keterangan">Keterangan</label>
-                        <input class="form-control" id="keterangan" name="keterangan[]" rows="2">
+                        <textarea class="form-control" id="keterangan" name="keterangan[]" rows="3"></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="foto">Dokumentasi</label>
@@ -202,19 +202,19 @@
             lokasi.value = '';
         }
 
-        if (selectedValue === 'Lain-Lain') {
-            kategori.readOnly = true;
-            frekuensi.readOnly = false;
-            lokasi.readOnly = false;
+        // if (selectedValue === 'Lain-Lain') {
+        //     kategori.readOnly = true;
+        //     frekuensi.readOnly = false;
+        //     lokasi.readOnly = false;
 
-            kategori.value = 'Evaluasi';
-            frekuensi.value = '';
-            lokasi.value = '';
-        } else {
-            kategori.readOnly = true;
-            frekuensi.readOnly = true;
-            lokasi.readOnly = true;
-        }
+        //     kategori.value = 'Evaluasi';
+        //     frekuensi.value = '';
+        //     lokasi.value = '';
+        // } else {
+        //     // kategori.readOnly = true;
+        //     // frekuensi.readOnly = true;
+        //     // lokasi.readOnly = true;
+        // }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
