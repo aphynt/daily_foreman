@@ -825,6 +825,7 @@ class PengawasPitstopController extends Controller
             PitstopReport::where('id', $klkh->id)->update([
                 'verified_foreman' => (string)Auth::user()->nik,
                 'updated_by' => Auth::user()->id,
+                'verified_datetime_foreman' => Carbon::now(),
             ]);
 
             return redirect()->back()->with('success', 'Form/laporan berhasil diverifikasi');
@@ -842,6 +843,7 @@ class PengawasPitstopController extends Controller
             PitstopReport::where('id', $klkh->id)->update([
                 'verified_supervisor' => (string)Auth::user()->nik,
                 'updated_by' => Auth::user()->id,
+                'verified_datetime_supervisor' => Carbon::now(),
             ]);
 
             return redirect()->back()->with('success', 'Form/laporan berhasil diverifikasi');
@@ -859,6 +861,7 @@ class PengawasPitstopController extends Controller
             PitstopReport::where('id', $klkh->id)->update([
                 'verified_superintendent' => (string)Auth::user()->nik,
                 'updated_by' => Auth::user()->id,
+                'verified_datetime_superintendent' => Carbon::now(),
             ]);
 
             return redirect()->back()->with('success', 'Form/laporan berhasil diverifikasi');

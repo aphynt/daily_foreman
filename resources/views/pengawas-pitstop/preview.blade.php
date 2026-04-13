@@ -391,19 +391,19 @@
                                     <a href="{{ route('pengawas-pitstop.verified.superintendent', $data['daily']->uuid) }}" class="verifikasi-btn">Verifikasi Superintendent</a>
                                 @endif
                                  @if (Auth::user()->nik == $data['daily']->nik_foreman && $data['daily']->verified_foreman == null)
-                                    <a href="{{ route('form-pengawas-new.verified.foreman', $data['daily']->uuid) }}" class="verifikasi-btn">
+                                    <a href="{{ route('pengawas-pitstop.verified.foreman', $data['daily']->uuid) }}" class="verifikasi-btn">
                                         Verifikasi Foreman
                                     </a>
                                 @endif
 
                                 @if (Auth::user()->nik == $data['daily']->nik_supervisor && $data['daily']->verified_supervisor == null)
-                                    <a href="{{ route('form-pengawas-new.verified.supervisor', $data['daily']->uuid) }}" class="verifikasi-btn">
+                                    <a href="{{ route('pengawas-pitstop.verified.supervisor', $data['daily']->uuid) }}" class="verifikasi-btn">
                                         Verifikasi Supervisor
                                     </a>
                                 @endif
 
                                 @if (Auth::user()->nik == $data['daily']->nik_superintendent && $data['daily']->verified_superintendent == null)
-                                    <a href="{{ route('form-pengawas-new.verified.superintendent', $data['daily']->uuid) }}" class="verifikasi-btn">
+                                    <a href="{{ route('pengawas-pitstop.verified.superintendent', $data['daily']->uuid) }}" class="verifikasi-btn">
                                         Verifikasi Superintendent
                                     </a>
                                 @endif
