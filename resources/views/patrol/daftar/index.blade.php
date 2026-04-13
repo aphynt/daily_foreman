@@ -94,7 +94,7 @@
                                             </td>
                                             <td>
                                                 <a href="{{ route('patrol.preview', $item->uuid) }}"><span class="badge bg-success">Preview</span></a>
-                                                @if (Auth::user()->role == 'ADMIN')
+                                                @if (Auth::user()->role == 'ADMIN' || Auth::user()->nik == $item->nik_pic)
                                                     <a href="#"><span class="badge bg-danger" data-bs-toggle="modal" data-bs-target="#deleteLaporanKerjaPatrol{{ $item->uuid }}"><i class="fas fa-trash-alt"></i> Hapus</span></a>
                                                 @endif
                                             </td>

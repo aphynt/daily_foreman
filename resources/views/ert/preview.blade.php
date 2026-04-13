@@ -322,7 +322,7 @@
                                             <td style="white-space: normal;">
                                                 @if ($sub->foto_kegiatan)
                                                     <div style="margin-bottom: 5px;">
-                                                        <img src="{{ asset('storage/' . $sub->foto_kegiatan) }}"
+                                                        <img src="{{ asset($sub->foto_kegiatan) }}"
                                                             alt="foto"
                                                             style="max-width: 100px; height: auto; display: block; margin: auto;">
                                                     </div>
@@ -357,7 +357,7 @@
                                             <td style="white-space: normal;">
                                                 @if ($temuan->foto_temuan)
                                                     <div style="margin-bottom: 5px;">
-                                                        <img src="{{ asset('storage/' . $temuan->foto_temuan) }}"
+                                                        <img src="{{ asset($temuan->foto_temuan) }}"
                                                             alt="foto"
                                                             style="max-width: 100px; height: auto; display: block; margin: auto;">
                                                     </div>
@@ -395,7 +395,7 @@
                                             <td style="white-space: normal;">
                                                 @if ($pending->foto_pending)
                                                     <div style="margin-bottom: 5px;">
-                                                        <img src="{{ asset('storage/' . $pending->foto_pending) }}"
+                                                        <img src="{{ asset($pending->foto_pending) }}"
                                                             alt="foto"
                                                             style="max-width: 100px; height: auto; display: block; margin: auto;">
                                                     </div>

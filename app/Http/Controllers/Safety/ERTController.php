@@ -183,13 +183,13 @@ class ERTController extends Controller
         ->where('ert.statusenabled', true);
 
 
-        $daily = $daily->where(function($query) {
-            if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
-                $query->where('ert.nik_petugas', Auth::user()->nik)
-                  ->orWhere('ert.nik_penerima', Auth::user()->nik)
-                  ->orWhere('ert.nik_superintendent', Auth::user()->nik);
-            }
-        });
+        // $daily = $daily->where(function($query) {
+        //     if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
+        //         $query->where('ert.nik_petugas', Auth::user()->nik)
+        //           ->orWhere('ert.nik_penerima', Auth::user()->nik)
+        //           ->orWhere('ert.nik_superintendent', Auth::user()->nik);
+        //     }
+        // });
 
 
         $daily = $daily->get();

@@ -182,13 +182,13 @@ class PatrolController extends Controller
         ->where('patrol.statusenabled', true);
 
 
-        $daily = $daily->where(function($query) {
-            if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
-                $query->where('patrol.nik_petugas', Auth::user()->nik)
-                  ->orWhere('patrol.nik_penerima', Auth::user()->nik)
-                  ->orWhere('patrol.nik_superintendent', Auth::user()->nik);
-            }
-        });
+        // $daily = $daily->where(function($query) {
+        //     if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
+        //         $query->where('patrol.nik_petugas', Auth::user()->nik)
+        //           ->orWhere('patrol.nik_penerima', Auth::user()->nik)
+        //           ->orWhere('patrol.nik_superintendent', Auth::user()->nik);
+        //     }
+        // });
 
 
         $daily = $daily->get();
