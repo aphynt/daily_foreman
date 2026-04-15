@@ -91,8 +91,11 @@ class FormPengawasSAPController extends Controller
             $fileTindakLanjut2 = $saveFile('file_tindakLanjut2', 'storage/sap/file_tindakLanjut');
             $fileTindakLanjut3 = $saveFile('file_tindakLanjut3', 'storage/sap/file_tindakLanjut');
 
+            $tanggal_perbaikan = null;
+
             if ($fileTindakLanjut || $fileTindakLanjut2 || $fileTindakLanjut3) {
                 $finishing = true;
+                $tanggal_perbaikan = Carbon::now();
             }
 
             $report = SAPReport::create([
@@ -125,6 +128,7 @@ class FormPengawasSAPController extends Controller
                 'file_tindakLanjut3' => $fileTindakLanjut3,
 
                 'is_finish' => $finishing,
+                'tanggal_perbaikan' => $tanggal_perbaikan,
             ]);
 
             DB::commit();
@@ -339,6 +343,21 @@ class FormPengawasSAPController extends Controller
             'ar.keterangan as area',
             'sr.temuan',
             'sr.risiko',
+            'sr.level',
+            'sr.inspektor1',
+            'sr.inspektor2',
+            'sr.inspektor3',
+            'sr.inspektor4',
+            'sr.inspektor5',
+            'sr.file_temuan',
+            'sr.file_temuan2',
+            'sr.file_temuan3',
+            'sr.file_tindakLanjut',
+            'sr.file_tindakLanjut2',
+            'sr.file_tindakLanjut3',
+            'sr.tingkat_risiko',
+            'sr.due_date',
+            'sr.tanggal_perbaikan',
             'sr.pengendalian',
             'sr.tindak_lanjut',
             'sr.is_finish',

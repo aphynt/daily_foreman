@@ -1,26 +1,143 @@
-@include('layout.head', ['title' => 'Daftar Laporan Inspeksi'])
+@include('layout.head', ['title' => 'Daftar Laporan Inspeksi PICA'])
 @include('layout.sidebar')
 @include('layout.header')
 
 <style>
-    .mode-desktop {
+    #cbtn-selectors {
+        width: 100% !important;
+        table-layout: auto;
+        border-collapse: collapse;
+    }
+
+    #cbtn-selectors thead th,
+    #cbtn-selectors tbody td {
+        white-space: normal !important;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        vertical-align: middle;
+    }
+
+    #cbtn-selectors thead th {
+        text-align: center;
+        vertical-align: middle;
+        font-size: 13px;
+        line-height: 1.3;
+    }
+
+    #cbtn-selectors tbody td {
+        font-size: 13px;
+        line-height: 1.35;
+    }
+
+    #cbtn-selectors .text-cell {
+        white-space: normal !important;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+
+    #cbtn-selectors .text-center-cell {
+        text-align: center;
+    }
+
+    #cbtn-selectors .img-cell {
+        padding: 6px !important;
+    }
+
+    #cbtn-selectors .img-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        align-items: center;
+        justify-content: center;
+        max-width: 100%;
+    }
+
+    #cbtn-selectors .img-item {
+        width: 38px;
+        height: 38px;
+        flex: 0 0 38px;
+        border: 1px solid #dcdcdc;
+        border-radius: 4px;
+        background: #fff;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #cbtn-selectors .img-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
         display: block;
     }
-    .mode-hp {
-        display: none;
+
+    #cbtn-selectors .img-empty {
+        text-align: center;
+        color: #888;
+        font-size: 12px;
     }
 
-    @media (max-width: 768px) {
-        .mode-desktop {
-            display: none;
-        }
-        .mode-hp {
-            display: block;
-        }
+    #cbtn-selectors .status-badge {
+        display: inline-block;
+        min-width: 62px;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    #cbtn-selectors .status-open {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffe69c;
+    }
+
+    #cbtn-selectors .status-close {
+        background: #d1e7dd;
+        color: #0f5132;
+        border: 1px solid #badbcc;
+    }
+
+    #cbtn-selectors .aksi-cell {
+        white-space: nowrap !important;
+        text-align: center;
+    }
+
+    #cbtn-selectors .aksi-cell .badge {
+        margin: 2px;
+    }
+
+    table.dataTable td,
+    table.dataTable th {
+        white-space: normal !important;
+    }
+
+    .dataTables_wrapper .dt-buttons {
+        margin-bottom: 10px;
+    }
+
+    .dataTables_wrapper .dataTables_filter {
+        margin-bottom: 12px;
+    }
+
+    #pc-datepicker-10 .btn {
+        min-height: 38px;
+        line-height: 1.2;
+    }
+
+    #pc-datepicker-10 a.btn,
+    #pc-datepicker-10 button.btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    #pc-datepicker-10 .form-control {
+        min-height: 38px;
     }
 </style>
-
-
 
 <section class="pc-container">
     <div class="pc-content">
@@ -29,107 +146,50 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <ul class="breadcrumb">
-                            {{-- <li class="breadcrumb-item"><a href="javascript: void(0)">Home</a></li> --}}
-                            <li class="breadcrumb-item"><a href="javascript: void(0)">Daftar Laporan Inspeksi</a></li>
+                            <li class="breadcrumb-item">
+                                <a href="javascript: void(0)">Daftar Laporan Inspeksi PICA</a>
+                            </li>
                         </ul>
                     </div>
+
                     <div class="col-12">
                         <div class="mb-3 row d-flex align-items-center">
                             <div class="col-sm-12 col-md-10 mb-2">
                                 <form action="" method="get">
                                     <div class="input-group" id="pc-datepicker-10">
-                                        <input type="text" class="form-control form-control-sm" placeholder="Start date" name="rangeStart" style="max-width: 200px;" id="range-start">
+                                        <input
+                                            type="text"
+                                            class="form-control form-control-sm"
+                                            placeholder="Start date"
+                                            name="rangeStart"
+                                            style="max-width: 200px;"
+                                            id="range-start"
+                                        >
                                         <span class="input-group-text">s/d</span>
-                                        <input type="text" class="form-control form-control-sm" placeholder="End date" name="rangeEnd" style="max-width: 200px;" id="range-end">
+                                        <input
+                                            type="text"
+                                            class="form-control form-control-sm"
+                                            placeholder="End date"
+                                            name="rangeEnd"
+                                            style="max-width: 200px;"
+                                            id="range-end"
+                                        >
                                         <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
+                                        @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT']))
+                                            <a
+                                                href="{{ route('form-pengawas-batubara.bundlepdf', ['rangeStart' => request('rangeStart'), 'rangeEnd' => request('rangeEnd')]) }}"
+                                                target="_blank"
+                                                class="btn btn-danger btn-sm d-inline-flex align-items-center justify-content-center gap-1 px-2"
+                                            >
+                                                <i class="fas fa-download"></i>
+                                                <span>Download</span>
+                                            </a>
+                                        @endif
                                     </div>
                                 </form>
                             </div>
-                            {{-- @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT']))
-                                <div class="col-sm-12 col-md-2 mb-2 text-md-end">
-                                    <a href="{{ route('form-pengawas-batubara.bundlepdf') }}" target="_blank"><span class="badge bg-primary" style="font-size:14px"><i class="fas fa-download"></i> Bundle PDF</span></a>
-                                </div>
-                            @endif --}}
                         </div>
                     </div>
-
-                </div>
-            </div>
-        </div>
-
-        <div class="row mode-hp">
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="accordion accordion-flush" id="accordionFlushExample">
-                        @foreach ($report as $item)
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ $item->uuid }}" aria-expanded="false" aria-controls="flush-collapse{{ $item->uuid }}">
-                                    {{ $loop->iteration }}. {{ date('d-m-Y', strtotime($item->created_at)) }} {{ date('H:i', strtotime($item->jam_kejadian)) }}
-                                </button>
-                            </h2>
-                            <div id="flush-collapse{{ $item->uuid }}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                                <div class="accordion-body">
-                                    <div class="mb-4">
-                                        <h5 class="fw-bold">Shift</h5>
-                                        <p class="ms-3">{{ $item->shift ? $item->shift : "-" }}</p>
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <h5 class="fw-bold">Area</h5>
-                                        <p class="ms-3">{{ $item->area ? $item->area : "-" }}</p>
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <h5 class="fw-bold">Departemen</h5>
-                                        <p class="ms-3">{{ $item->departemen ? $item->departemen : "-" }}</p>
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <h5 class="fw-bold">Temuan KTA/TTA:</h5>
-                                        <p class="ms-3">{{ $item->temuan ? $item->temuan : "-" }}</p>
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <h5 class="fw-bold">Risiko:</h5>
-                                        <p class="ms-3">{{ $item->risiko ? $item->risiko : "-" }}</p>
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <h5 class="fw-bold">Pengendalian:</h5>
-                                        <p class="ms-3">{{ $item->pengendalian ? $item->pengendalian : "-" }}</p>
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <h5 class="fw-bold">Tindak Lanjut:</h5>
-                                        <p class="ms-3">{{ $item->tindak_lanjut ? $item->tindak_lanjut : "-" }}</p>
-                                    </div>
-                                    <div class="mb-4">
-                                        <h5 class="fw-bold">Status:</h5>
-                                        <p class="ms-3">{{ $item->is_finish ? 'Close' : 'Open' }}</p>
-                                    </div>
-                                    <div class="mt-4">
-                                        <h5 class="fw-bold">Aksi</h5>
-                                        <div class="ms-3">
-                                            <a href="{{ route('form-pengawas-sap.rincian', $item->uuid) }}" class="badge bg-success me-2">
-                                                Rincian
-                                            </a>
-                                            @if (Auth::user()->role == 'ADMIN')
-                                                <a href="#" class="badge bg-danger" data-bs-toggle="modal" data-bs-target="#deleteLaporanSAP{{ $item->uuid }}">
-                                                    <i class="fas fa-trash-alt"></i> Hapus
-                                                </a>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                        @include('form-sap.delete')
-
-                        @endforeach
-
-                      </div>
                 </div>
             </div>
         </div>
@@ -139,51 +199,120 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="dt-responsive table-responsive">
-                            <table id="cbtn-selectors" class="table table-striped table-hover table-bordered nowrap">
-                                <thead style="text-align: center; vertical-align: middle;">
+                            <table id="cbtn-selectors" class="table table-striped table-hover table-bordered align-middle">
+                                <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Tanggal Pelaporan</th>
-                                        <th>Jam Kejadian</th>
-                                        <th>Shift</th>
-                                        <th>NIK</th>
-                                        <th>Nama PIC</th>
-                                        <th>Area</th>
-                                        <th>Departemen</th>
-                                        <th>Temuan KTA/TTA</th>
-                                        <th>Risiko</th>
-                                        <th>Pengendalian</th>
-                                        <th>Finish</th>
-                                        <th>Aksi</th>
+                                        <th style="width: 50px;">No</th>
+                                        <th style="width: 95px;">Tanggal Inspeksi</th>
+                                        <th style="width: 120px;">Level</th>
+                                        <th style="width: 120px;">Lokasi</th>
+                                        <th style="width: 120px;">Inspektor</th>
+                                        <th style="width: 220px;">Uraian Temuan</th>
+                                        <th style="width: 110px;">Dokumentasi Temuan</th>
+                                        <th style="width: 95px;">Tingkat Risiko</th>
+                                        <th style="width: 220px;">Rekomendasi Tindak Lanjut</th>
+                                        <th style="width: 95px;">Due Date</th>
+                                        <th style="width: 110px;">PIC</th>
+                                        <th style="width: 105px;">Tanggal Perbaikan</th>
+                                        <th style="width: 120px;">Dokumentasi Tindakan Perbaikan</th>
+                                        <th style="width: 90px;">Status</th>
+                                        <th style="width: 120px;">Aksi</th>
                                     </tr>
-
                                 </thead>
                                 <tbody>
                                     @foreach ($report as $item)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ date('d-m-Y', strtotime($item->created_at)) }}</td>
-                                        <td>{{ date('H:i', strtotime($item->jam_kejadian)) }}</td>
-                                        <td>{{ $item->shift }}</td>
-                                        <td>{{ $item->nik_pic }}</td>
-                                        <td>{{ $item->pic }}</td>
-                                        <td>{{ $item->area }}</td>
-                                        <td>{{ $item->departemen }}</td>
-                                        <td>{{ \Illuminate\Support\Str::limit($item->temuan, 20) }}</td>
-                                        <td>{{ \Illuminate\Support\Str::limit($item->risiko, 20) }}</td>
-                                        <td>{{ \Illuminate\Support\Str::limit($item->pengendalian, 20) }}</td>
-                                        <td>{{ $item->is_finish ? 'Selesai' : 'Belum' }}</td>
-                                            <td>
-                                                <a href="{{ route('form-pengawas-sap.rincian', $item->uuid) }}"><span class="badge bg-success">Rincian</span></a>
-                                                @if (Auth::user()->role == 'ADMIN')
-                                                    <a href="#"><span class="badge bg-danger" data-bs-toggle="modal" data-bs-target="#deleteLaporanSAP{{ $item->uuid }}"><i class="fas fa-trash-alt"></i> Hapus</span></a>
+                                        @php
+                                            $fotoTemuan = array_values(array_filter([
+                                                $item->file_temuan ?? null,
+                                                $item->file_temuan2 ?? null,
+                                                $item->file_temuan3 ?? null,
+                                            ]));
+
+                                            $fotoPerbaikan = array_values(array_filter([
+                                                $item->file_tindakLanjut ?? null,
+                                                $item->file_tindakLanjut2 ?? null,
+                                                $item->file_tindakLanjut3 ?? null,
+                                            ]));
+                                        @endphp
+
+                                        <tr>
+                                            <td class="text-center-cell">{{ $loop->iteration }}</td>
+                                            <td class="text-center-cell">
+                                                {{ $item->created_at ? date('d-m-Y H:i', strtotime($item->created_at)) : '-' }}
+                                            </td>
+                                            <td class="text-cell">{{ $item->level ?? '-' }}</td>
+                                            <td class="text-cell">{{ $item->area ?? '-' }}</td>
+                                            <td class="text-cell">{{ $item->inspektor1 ?? '-' }}</td>
+                                            <td class="text-cell">{{ $item->temuan ?? '-' }}</td>
+
+                                            <td class="img-cell">
+                                                @if (count($fotoTemuan))
+                                                    <div class="img-group">
+                                                        @foreach ($fotoTemuan as $foto)
+                                                            <a href="{{ $foto }}" target="_blank" class="img-item">
+                                                                <img src="{{ $foto }}" alt="Dokumentasi Temuan">
+                                                            </a>
+                                                        @endforeach
+                                                    </div>
+                                                @else
+                                                    <div class="img-empty">-</div>
                                                 @endif
                                             </td>
-                                    </tr>
-                                    @include('form-sap.delete')
+
+                                            <td class="text-center-cell">{{ $item->tingkat_risiko ?? '-' }}</td>
+                                            <td class="text-center-cell">{{ $item->tindak_lanjut ?? '-' }}</td>
+                                            <td class="text-center-cell">
+                                                {{ $item->due_date ? date('d-m-Y', strtotime($item->due_date)) : '-' }}
+                                            </td>
+                                            <td class="text-cell">{{ $item->departemen ?? '-' }}</td>
+                                            <td class="text-center-cell">
+                                                {{ $item->tanggal_perbaikan ? date('d-m-Y', strtotime($item->tanggal_perbaikan)) : '-' }}
+                                            </td>
+
+                                            <td class="img-cell">
+                                                @if (count($fotoPerbaikan))
+                                                    <div class="img-group">
+                                                        @foreach ($fotoPerbaikan as $foto)
+                                                            <a href="{{ $foto }}" target="_blank" class="img-item">
+                                                                <img src="{{ $foto }}" alt="Dokumentasi Tindakan Perbaikan">
+                                                            </a>
+                                                        @endforeach
+                                                    </div>
+                                                @else
+                                                    <div class="img-empty">-</div>
+                                                @endif
+                                            </td>
+
+                                            <td class="text-center-cell">
+                                                @if ($item->is_finish)
+                                                    <span class="status-badge status-close">Close</span>
+                                                @else
+                                                    <span class="status-badge status-open">Open</span>
+                                                @endif
+                                            </td>
+
+                                            <td class="aksi-cell">
+                                                <a href="{{ route('form-pengawas-sap.rincian', $item->uuid) }}">
+                                                    <span class="badge bg-success">Rincian</span>
+                                                </a>
+
+                                                @if (Auth::user()->role == 'ADMIN')
+                                                    <a href="#">
+                                                        <span
+                                                            class="badge bg-danger"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#deleteLaporanSAP{{ $item->uuid }}"
+                                                        >
+                                                            <i class="fas fa-trash-alt"></i> Hapus
+                                                        </span>
+                                                    </a>
+                                                @endif
+                                            </td>
+                                        </tr>
+
+                                        @include('form-sap.delete')
                                     @endforeach
                                 </tbody>
-
                             </table>
                         </div>
                     </div>
@@ -194,14 +323,15 @@
 </section>
 
 @include('layout.footer')
+
 <script>
     (function () {
-        const datepicker_range = new DateRangePicker(document.querySelector('#pc-datepicker-10'), {
+        new DateRangePicker(document.querySelector('#pc-datepicker-10'), {
             buttonClass: 'btn'
         });
     })();
-
 </script>
+
 <script>
     $('#basic-btn').DataTable({
         dom: 'Bfrtip',
@@ -211,16 +341,23 @@
     $('#cbtn-selectors').DataTable({
         dom: 'Bfrtip',
         pageLength: 25,
-        buttons: [{
+        autoWidth: false,
+        scrollX: false,
+        columnDefs: [
+            { targets: [0, 1, 6, 8, 10, 12, 13], className: 'text-center align-middle' },
+            { targets: [5, 11, 13], orderable: false, searchable: false }
+        ],
+        buttons: [
+            {
                 extend: 'copyHtml5',
                 exportOptions: {
-                    columns: [0, ':visible']
+                    columns: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 12]
                 }
             },
             {
                 extend: 'excelHtml5',
                 exportOptions: {
-                    columns: ':visible'
+                    columns: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 12]
                 }
             },
             {
@@ -228,10 +365,13 @@
                 orientation: 'landscape',
                 pageSize: 'A4',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+                    columns: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 12]
                 },
                 customize: function (doc) {
                     doc.content[1].margin = [10, 10, 10, 10];
+                    doc.styles.tableHeader.alignment = 'center';
+                    doc.styles.tableHeader.fontSize = 9;
+                    doc.defaultStyle.fontSize = 8;
                 }
             },
             'colvis'
@@ -253,7 +393,6 @@
         }]
     });
 
-    // [ Custom File (JSON) ]
     $('#pdf-json').DataTable({
         dom: 'Bfrtip',
         buttons: [{
@@ -264,6 +403,4 @@
             }
         }]
     });
-
 </script>
-

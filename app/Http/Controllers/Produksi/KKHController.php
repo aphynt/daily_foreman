@@ -472,6 +472,7 @@ class KKHController extends Controller
             ->update([
                 'ferivikasi_pengawas' => true,
                 'nik_pengawas' => Auth::user()->nik,
+                'fit_or' => 1,
             ]);
 
         return response()->json(['status' => 'ok']);
