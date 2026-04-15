@@ -22,6 +22,8 @@ use DateTime;
 use Illuminate\Support\Facades\Log as FacadesLog;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\File;
 
 class ERTController extends Controller
 {
@@ -508,10 +510,13 @@ class ERTController extends Controller
             'us.nik as nik_pic',
             'ert.nik_petugas',
             'us3.name as nama_petugas',
+            'us3.position as position_petugas',
             'ert.nik_penerima',
             'us4.name as nama_penerima',
+            'us4.position as position_penerima',
             'ert.nik_superintendent',
             'us5.name as nama_superintendent',
+            'us5.position as position_superintendent',
             'ert.is_draft',
             'ert.verified_petugas',
             'ert.verified_penerima',
@@ -578,6 +583,225 @@ class ERTController extends Controller
 
 
         return view('ert.preview', compact(['data']));
+    }
+
+    public function download($uuid)
+    {
+        $daily = DB::table('se_ert_daily as ert')
+        ->leftJoin('users as us', 'ert.foreman_id', '=', 'us.id')
+        ->leftJoin('ref_shift as sh', 'ert.shift', '=', 'sh.id')
+        ->leftJoin('users as us3', 'ert.nik_petugas', '=', 'us3.nik')
+        ->leftJoin('users as us4', 'ert.nik_penerima', '=', 'us4.nik')
+        ->leftJoin('users as us5', 'ert.nik_superintendent', '=', 'us5.nik')
+        ->select(
+            'ert.id',
+            'ert.uuid',
+            'ert.tanggal',
+            'us.position',
+            'sh.keterangan as shift',
+            'us.name as pic',
+            'us.nik as nik_pic',
+            'ert.nik_petugas',
+            'us3.name as nama_petugas',
+            'us3.position as position_petugas',
+            'ert.nik_penerima',
+            'us4.name as nama_penerima',
+            'us4.position as position_penerima',
+            'ert.nik_superintendent',
+            'us5.name as nama_superintendent',
+            'us5.position as position_superintendent',
+            'ert.is_draft',
+            'ert.verified_petugas',
+            'ert.verified_penerima',
+            'ert.verified_superintendent',
+            'ert.created_at',
+            'ert.updated_at',
+            'ert.finished_at',
+        )
+        ->where('ert.statusenabled', true)
+        ->where('ert.uuid', $uuid)->first();
+
+        if($daily == null){
+            return redirect()->back()->with('info', 'Maaf, data tidak ditemukan');
+        }else {
+            $daily->verified_petugas = $daily->verified_petugas != null ? QrCode::size(70)->generate('Telah diverifikasi oleh: ' . $daily->nama_petugas) : null;
+            $daily->verified_penerima = $daily->verified_penerima != null ? QrCode::size(70)->generate('Telah diverifikasi oleh: ' . $daily->nama_penerima) : null;
+            $daily->verified_superintendent = $daily->verified_superintendent != null ? QrCode::size(70)->generate('Telah diverifikasi oleh: ' . $daily->nama_superintendent) : null;
+        }
+
+
+        $sub = DB::table('se_ert_sub_kegiatan as sub')
+        ->leftJoin('se_ert_daily as ert', 'sub.ert_id', '=', 'ert.id')
+        ->select(
+            'sub.sub',
+            'sub.kategori',
+            'sub.frekuensi',
+            'sub.lokasi',
+            'sub.status',
+            'sub.keterangan',
+            'sub.foto_kegiatan',
+        )
+        ->where('sub.statusenabled', true)
+        ->where('sub.ert_uuid', $uuid)->get();
+
+        $temuan = DB::table('se_ert_temuan_tindak_lanjut as temuan')
+        ->leftJoin('se_ert_daily as ert', 'temuan.ert_id', '=', 'ert.id')
+        ->select(
+            'temuan.foto_temuan',
+            'temuan.deskripsi_temuan',
+            'temuan.tindak_lanjut',
+            'temuan.status',
+        )
+        ->where('temuan.statusenabled', true)
+        ->where('temuan.ert_uuid', $uuid)->get();
+
+        $pending = DB::table('se_ert_job_pending as job')
+        ->leftJoin('se_ert_daily as ert', 'job.ert_id', '=', 'ert.id')
+        ->select(
+            'job.kegiatan_pending',
+            'job.alasan_belum_selesai',
+            'job.prioritas',
+            'job.instruksi_shift_berikutnya',
+            'job.foto_pending',
+        )
+        ->where('job.statusenabled', true)
+        ->where('job.ert_uuid', $uuid)->get();
+
+        $data = [
+            'daily' => $daily,
+            'sub' => $sub,
+            'temuan' => $temuan,
+            'pending' => $pending,
+        ];
+
+
+        return view('ert.cetak', compact(['data']));
+    }
+
+    public function pdf($uuid)
+    {
+        $daily = DB::table('se_ert_daily as ert')
+        ->leftJoin('users as us', 'ert.foreman_id', '=', 'us.id')
+        ->leftJoin('ref_shift as sh', 'ert.shift', '=', 'sh.id')
+        ->leftJoin('users as us3', 'ert.nik_petugas', '=', 'us3.nik')
+        ->leftJoin('users as us4', 'ert.nik_penerima', '=', 'us4.nik')
+        ->leftJoin('users as us5', 'ert.nik_superintendent', '=', 'us5.nik')
+        ->select(
+            'ert.id',
+            'ert.uuid',
+            'ert.tanggal',
+            'us.position',
+            'sh.keterangan as shift',
+            'us.name as pic',
+            'us.nik as nik_pic',
+            'ert.nik_petugas',
+            'us3.name as nama_petugas',
+            'us3.position as position_petugas',
+            'ert.nik_penerima',
+            'us4.name as nama_penerima',
+            'us4.position as position_penerima',
+            'ert.nik_superintendent',
+            'us5.name as nama_superintendent',
+            'us5.position as position_superintendent',
+            'ert.is_draft',
+            'ert.verified_petugas',
+            'ert.verified_penerima',
+            'ert.verified_superintendent',
+            'ert.created_at',
+            'ert.updated_at',
+            'ert.finished_at',
+        )
+        ->where('ert.statusenabled', true)
+        ->where('ert.uuid', $uuid)->first();
+
+        if($daily == null){
+            return redirect()->back()->with('info', 'Maaf, data tidak ditemukan');
+        }else {
+            $item = $daily;
+
+            $qrTempFolder = storage_path('app/qr-temp');
+            if (!File::exists($qrTempFolder)) {
+                File::makeDirectory($qrTempFolder, 0755, true);
+            }
+
+            if($item->verified_petugas != null){
+                $fileName = 'verified_petugas' . $item->uuid . '.png';
+                $filePath = $qrTempFolder . DIRECTORY_SEPARATOR . $fileName;
+
+                QrCode::size(150)->format('png')->generate(route('verified.index', ['encodedNik' => base64_encode($item->verified_petugas)]), $filePath);
+                $item->verified_petugas = $filePath;
+            }else{
+                $item->verified_petugas == null;
+            }
+
+            if($item->verified_penerima != null){
+                $fileName = 'verified_penerima' . $item->uuid . '.png';
+                $filePath = $qrTempFolder . DIRECTORY_SEPARATOR . $fileName;
+
+                QrCode::size(150)->format('png')->generate(route('verified.index', ['encodedNik' => base64_encode($item->verified_penerima)]), $filePath);
+                $item->verified_penerima = $filePath;
+            }else{
+                $item->verified_penerima == null;
+            }
+
+            if($item->verified_superintendent != null){
+                $fileName = 'verified_superintendent' . $item->uuid . '.png';
+                $filePath = $qrTempFolder . DIRECTORY_SEPARATOR . $fileName;
+
+                QrCode::size(150)->format('png')->generate(route('verified.index', ['encodedNik' => base64_encode($item->verified_superintendent)]), $filePath);
+                $item->verified_superintendent = $filePath;
+            }else{
+                $item->verified_superintendent == null;
+            }
+
+        }
+
+        $sub = DB::table('se_ert_sub_kegiatan as sub')
+        ->leftJoin('se_ert_daily as ert', 'sub.ert_id', '=', 'ert.id')
+        ->select(
+            'sub.sub',
+            'sub.kategori',
+            'sub.frekuensi',
+            'sub.lokasi',
+            'sub.status',
+            'sub.keterangan',
+            'sub.foto_kegiatan',
+        )
+        ->where('sub.statusenabled', true)
+        ->where('sub.ert_uuid', $uuid)->get();
+
+        $temuan = DB::table('se_ert_temuan_tindak_lanjut as temuan')
+        ->leftJoin('se_ert_daily as ert', 'temuan.ert_id', '=', 'ert.id')
+        ->select(
+            'temuan.foto_temuan',
+            'temuan.deskripsi_temuan',
+            'temuan.tindak_lanjut',
+            'temuan.status',
+        )
+        ->where('temuan.statusenabled', true)
+        ->where('temuan.ert_uuid', $uuid)->get();
+
+        $pending = DB::table('se_ert_job_pending as job')
+        ->leftJoin('se_ert_daily as ert', 'job.ert_id', '=', 'ert.id')
+        ->select(
+            'job.kegiatan_pending',
+            'job.alasan_belum_selesai',
+            'job.prioritas',
+            'job.instruksi_shift_berikutnya',
+            'job.foto_pending',
+        )
+        ->where('job.statusenabled', true)
+        ->where('job.ert_uuid', $uuid)->get();
+
+        $data = [
+            'daily' => $daily,
+            'sub' => $sub,
+            'temuan' => $temuan,
+            'pending' => $pending,
+        ];
+
+        $pdf = PDF::loadView('ert.download', compact('data'));
+        return $pdf->download('FM-SE-72 - Laporan Kegiatan Harian & Job Pending Safety ERT.pdf');
     }
 
 

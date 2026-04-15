@@ -283,25 +283,53 @@
                                     <small class="form-text-modern">Default terisi dengan akun yang sedang login.</small>
                                 </div>
 
+
                                 <div class="mb-3">
                                     <label for="inspektor2" class="form-label">Inspektor 2 <span class="text-muted">(jika ada)</span></label>
-                                    <input class="form-control" id="inspektor2" placeholder="Masukkan nama inspektor tambahan" name="inspektor2">
+                                    <select class="form-select" id="inspektor2" name="inspektor2" data-trigger required>
+                                        <option value="" selected>-- Pilih Inspektor 2 jika ada --</option>
+                                        @foreach ($pic as $p)
+                                            <option value="{{ $p->nik }}">{{ $p->name }} ({{ $p->departemen }})</option>
+                                        @endforeach
+                                    </select>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="inspektor3" class="form-label">Inspektor 3 <span class="text-muted">(jika ada)</span></label>
-                                    <input class="form-control" id="inspektor3" placeholder="Masukkan nama inspektor tambahan" name="inspektor3">
+                                    <label for="inspektor2" class="form-label">Inspektor 3 <span class="text-muted">(jika ada)</span></label>
+                                    <select class="form-select" id="inspektor3" name="inspektor3" data-trigger required>
+                                        <option value="" selected>-- Pilih Inspektor 3 jika ada --</option>
+                                        @foreach ($pic as $p)
+                                            <option value="{{ $p->nik }}">{{ $p->name }} ({{ $p->departemen }})</option>
+                                        @endforeach
+                                    </select>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="inspektor4" class="form-label">Inspektor 4 <span class="text-muted">(jika ada)</span></label>
-                                    <input class="form-control" id="inspektor4" placeholder="Masukkan nama inspektor tambahan" name="inspektor4">
+                                    <label for="inspektor2" class="form-label">Inspektor 4 <span class="text-muted">(jika ada)</span></label>
+                                    <select class="form-select" id="inspektor4" name="inspektor4" data-trigger required>
+                                        <option value="" selected>-- Pilih Inspektor 4 jika ada --</option>
+                                        @foreach ($pic as $p)
+                                            <option value="{{ $p->nik }}">{{ $p->name }} ({{ $p->departemen }})</option>
+                                        @endforeach
+                                    </select>
                                 </div>
 
-                                <div class="mb-0">
+                                <div class="mb-3">
                                     <label for="inspektor5" class="form-label">Inspektor 5 <span class="text-muted">(jika ada)</span></label>
                                     <input class="form-control" id="inspektor5" placeholder="Masukkan nama inspektor tambahan" name="inspektor5">
                                 </div>
+
+                                <div class="mb-3">
+                                    <label for="level" class="form-label">PICA Level</label>
+                                    <select class="form-select" id="level" name="level" required>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                    </select>
+                                </div>
+
+
                             </div>
 
                             <div class="form-section">
@@ -331,10 +359,16 @@
                                     </select>
                                 </div>
 
-                                <div class="mb-0">
+                                <div class="mb-3">
                                     <label for="pc-timepicker-1" class="form-label">Jam Kejadian</label>
                                     <input type="text" id="pc-timepicker-1" class="form-control" value="" name="jamKejadian" placeholder="Pilih atau masukkan jam kejadian">
                                 </div>
+
+
+
+
+
+
                             </div>
 
                             <div class="form-section">
@@ -362,10 +396,10 @@
                                     <input type="file" class="form-control" name="file_temuan2" accept="image/*" />
                                 </div>
 
-                                <div class="mb-3 file-input-wrap">
+                                {{-- <div class="mb-3 file-input-wrap">
                                     <label class="form-label">Foto Temuan 3 <span class="text-muted">(jika ada)</span></label>
                                     <input type="file" class="form-control" name="file_temuan3" accept="image/*" />
-                                </div>
+                                </div> --}}
 
                                 <div class="mb-3">
                                     <label for="tingkatRisiko" class="form-label">Tingkat Risiko</label>
@@ -376,15 +410,7 @@
                                     </select>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label for="level" class="form-label">PICA Level</label>
-                                    <select class="form-select" id="level" name="level" required>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                    </select>
-                                </div>
+
 
                                 <div class="mb-0">
                                     <label for="departemen" class="form-label">PIC Departemen</label>
@@ -440,10 +466,10 @@
                                     <input type="file" class="form-control" name="file_tindakLanjut2" accept="image/*" />
                                 </div>
 
-                                <div class="mb-0 file-input-wrap">
+                                {{-- <div class="mb-0 file-input-wrap">
                                     <label class="form-label">Foto Bukti Tindak Lanjut 3 <span class="text-muted">(jika ada)</span></label>
                                     <input type="file" class="form-control" name="file_tindakLanjut3" accept="image/*" />
-                                </div>
+                                </div> --}}
                             </div>
 
                             <div class="submit-wrap">
