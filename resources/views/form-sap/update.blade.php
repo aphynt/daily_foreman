@@ -1,200 +1,690 @@
 @include('layout.head', ['title' => 'Update Laporan SAP'])
 @include('layout.sidebar')
 @include('layout.header')
+
+@php
+    use Illuminate\Support\Str;
+
+    $report = $data['report'];
+
+    $imageUrl = function ($path) {
+        if (!$path) return null;
+
+        if (Str::startsWith($path, ['http://', 'https://'])) {
+            return $path;
+        }
+
+        return asset('storage/' . ltrim($path, '/'));
+    };
+
+    $temuanImages = array_filter([
+        $imageUrl($report->file_temuan ?? null),
+        $imageUrl($report->file_temuan2 ?? null),
+        $imageUrl($report->file_temuan3 ?? null),
+    ]);
+
+    $tindakLanjutImages = array_filter([
+        $imageUrl($report->file_tindakLanjut ?? null),
+        $imageUrl($report->file_tindakLanjut2 ?? null),
+        $imageUrl($report->file_tindakLanjut3 ?? null),
+    ]);
+@endphp
+
 <style>
-    /* ... (pakai style yang sama seperti milikmu, saya biarkan utuh) ... */
-    table { page-break-inside: auto; font-family: 'Times New Roman', Times, serif; font-size: 12px; -fs-table-paginate: paginate; }
-    tr { page-break-inside: avoid; page-break-after: auto; }
-    table tr td, table tr th { font-size: small; }
-    .header { margin-bottom: 20px; display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding: .3rem; }
-    .header img { vertical-align: middle; }
-    .header .title { display: inline-block; margin-left: 10px; text-align: left; }
-    .header .title h1 { margin: 0; font-size: 18px; color: #0000FF; }
-    .header .title p { margin: 0; font-size: 12px; }
-    .header .doc-number { text-align: right; font-size: 12px; }
-    .info-table, .data-table { width: 100%; border-collapse: collapse; margin-bottom: 2px; }
-    .info-table td { padding: 5px; width: 20pt; }
-    .info-table td:first-child { width: 15%; }
-    .info-table td:nth-child(2) { width: .2%; }
-    .info-table td:nth-child(3) { width: 30%; vertical-align: bottom; }
-    .info-table td:nth-child(4) { width: 10%; background-color: rgb(255, 255, 255); }
-    .info-table td:nth-child(5) { width: 15%; vertical-align: bottom; }
-    .info-table td:nth-child(6) { width: .2%; }
-    .info-table td:nth-child(7) { width: 30%; }
-    .data-table th, .data-table td { border: 1px solid #000; text-align: center; }
-    .flex { display: flex; }
-    table.data_table { width: 100%; border: 1px solid #000; table-layout: fixed; }
-    table.data_table tr td, table.data_table tr th { text-align: center; border: 1px solid #000; }
-    table.data_table tbody tr td { height: 15pt; }
-    table.table_close { width: 100%; table-layout: fixed; }
-    table.table_close tr th { height: 15pt; padding: .2rem; }
-    th.noborder { border: none; }
-    hr { margin-bottom: 1rem; }
-    .flex { display: flex; justify-content: space-between; }
-    .hor { display: flex; flex-direction: column; }
-    h4 { margin-bottom: 0px; }
-    .grid-container { display: grid; grid-template-columns: 70% 30%; gap: 20px; margin: 20px; }
-    .grid-table table { width: 100%; border-collapse: collapse; }
-    .grid-table th, .grid-table td { border: 1px solid #000; padding: 8px; text-align: center; }
-    .grid-table th { background-color: #f4f4f4; }
-    .custom-img { max-width: 100%; height: auto; }
+    :root {
+        --sap-primary: #2563eb;
+        --sap-primary-soft: rgba(37, 99, 235, 0.08);
+        --sap-success: #16a34a;
+        --sap-success-soft: rgba(22, 163, 74, 0.1);
+        --sap-warning: #f59e0b;
+        --sap-warning-soft: rgba(245, 158, 11, 0.12);
+        --sap-text: #0f172a;
+        --sap-muted: #64748b;
+        --sap-border: #e2e8f0;
+        --sap-card: #ffffff;
+        --sap-radius: 18px;
+        --sap-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        --sap-shadow-soft: 0 4px 14px rgba(15, 23, 42, 0.06);
+    }
+
+    .pc-container {
+        background: linear-gradient(180deg, #f8fbff 0%, #f8fafc 100%);
+        min-height: 100vh;
+    }
+
+    .pc-content {
+        padding-top: 24px;
+        padding-bottom: 32px;
+    }
+
+    .page-title-wrap {
+        margin-bottom: 20px;
+    }
+
+    .page-title-wrap h3 {
+        margin: 0;
+        font-weight: 700;
+        color: var(--sap-text);
+        letter-spacing: -0.02em;
+    }
+
+    .page-subtitle {
+        margin-top: 6px;
+        color: var(--sap-muted);
+        font-size: 0.95rem;
+    }
+
+    .report-card {
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        border-radius: var(--sap-radius);
+        box-shadow: var(--sap-shadow);
+        overflow: hidden;
+        background: var(--sap-card);
+    }
+
+    .report-card .card-body {
+        padding: 28px;
+    }
+
+    .topbar-wrap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid var(--sap-border);
+    }
+
+    .topbar-logo img {
+        max-width: 220px;
+        height: auto;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 16px;
+        border-radius: 12px;
+        background: var(--sap-primary-soft);
+        color: var(--sap-primary);
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+    .back-btn:hover {
+        background: rgba(37, 99, 235, 0.14);
+        color: var(--sap-primary);
+    }
+
+    .hero-box {
+        border: 1px solid var(--sap-border);
+        background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+        border-radius: 18px;
+        padding: 22px;
+        margin-bottom: 20px;
+        box-shadow: var(--sap-shadow-soft);
+    }
+
+    .hero-box h2 {
+        margin: 0;
+        font-weight: 800;
+        color: var(--sap-text);
+        letter-spacing: -0.02em;
+    }
+
+    .hero-box p {
+        margin: 8px 0 0;
+        color: var(--sap-muted);
+    }
+
+    .status-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
+    }
+
+    .status-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 38px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        border: 1px solid transparent;
+    }
+
+    .status-open {
+        background: var(--sap-warning-soft);
+        color: #b45309;
+        border-color: rgba(245, 158, 11, 0.18);
+    }
+
+    .status-finish {
+        background: var(--sap-success-soft);
+        color: #15803d;
+        border-color: rgba(22, 163, 74, 0.18);
+    }
+
+    .section-card {
+        border: 1px solid var(--sap-border);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+        box-shadow: var(--sap-shadow-soft);
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    .section-badge {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: var(--sap-primary-soft);
+        color: var(--sap-primary);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+
+    .section-title h5 {
+        margin: 0;
+        font-weight: 700;
+        color: var(--sap-text);
+    }
+
+    .section-title p {
+        margin: 2px 0 0;
+        color: var(--sap-muted);
+        font-size: 0.88rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--sap-text);
+        margin-bottom: 8px;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 12px;
+        border: 1px solid var(--sap-border);
+        min-height: 46px;
+        padding: 10px 14px;
+        font-size: 0.95rem;
+        color: var(--sap-text);
+        background-color: #fff;
+        transition: all 0.2s ease;
+        box-shadow: none;
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: rgba(37, 99, 235, 0.45);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    .readonly-field {
+        background: #f8fafc !important;
+    }
+
+    .field-note {
+        display: block;
+        margin-top: 6px;
+        font-size: 0.82rem;
+        color: var(--sap-muted);
+    }
+
+    .image-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+    }
+
+    .image-card {
+        border: 1px solid var(--sap-border);
+        border-radius: 16px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: var(--sap-shadow-soft);
+    }
+
+    .image-card img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        display: block;
+        background: #f8fafc;
+    }
+
+    .image-meta {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+        color: var(--sap-muted);
+        border-top: 1px solid var(--sap-border);
+    }
+
+    .empty-state {
+        border: 1px dashed #cbd5e1;
+        border-radius: 14px;
+        padding: 18px;
+        background: #f8fafc;
+        color: var(--sap-muted);
+        text-align: center;
+        font-size: 0.92rem;
+    }
+
+    .action-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 28px;
+    }
+
+    .submit-wrap {
+        flex: 1 1 280px;
+    }
+
+    .submit-panel {
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        border-radius: 16px;
+        padding: 14px;
+        height: 100%;
+    }
+
+    .btn-finish,
+    .btn-verify {
+        width: 100%;
+        min-height: 50px;
+        border: none;
+        border-radius: 14px;
+        font-weight: 700;
+        font-size: 1rem;
+        letter-spacing: 0.01em;
+        transition: all 0.2s ease;
+    }
+
+    .btn-finish {
+        background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+        color: #fff;
+        box-shadow: 0 10px 18px rgba(17, 24, 39, 0.20);
+    }
+
+    .btn-finish:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 22px rgba(17, 24, 39, 0.24);
+    }
+
+    .verify-wrap {
+        width: 220px;
+    }
+
+    .verify-panel {
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        border-radius: 16px;
+        padding: 14px;
+        height: 100%;
+    }
+
+    .btn-verify {
+        background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+        color: #fff;
+        box-shadow: 0 10px 18px rgba(34, 197, 94, 0.22);
+    }
+
+    .btn-verify:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 22px rgba(34, 197, 94, 0.25);
+    }
+
+    .btn-finish:disabled,
+    .btn-verify:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .alert {
+        border: none;
+        border-radius: 12px;
+        font-size: 0.92rem;
+    }
+
+    @media (max-width: 768px) {
+        .report-card .card-body {
+            padding: 18px;
+        }
+
+        .hero-box {
+            padding: 18px;
+        }
+
+        .hero-box h2 {
+            font-size: 1.35rem;
+        }
+
+        .section-card {
+            padding: 16px;
+        }
+
+        .topbar-logo img {
+            max-width: 170px;
+        }
+
+        .action-row {
+            flex-direction: column;
+        }
+
+        .submit-wrap,
+        .verify-wrap {
+            width: 100%;
+            flex: 1 1 100%;
+        }
+    }
 </style>
 
 <section class="pc-container">
     <div class="pc-content">
         <div class="row">
+            <div class="col-md-10 col-xxl-9 mb-4">
+                <div class="page-title-wrap">
+                    <h3>Update Laporan SAP</h3>
+                    <div class="page-subtitle">Lengkapi tindak lanjut dan perbarui dokumentasi laporan dengan tampilan yang selaras dengan form terbaru.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-sm-12">
-                <div class="card">
+                <div class="card report-card">
                     <div class="card-body">
-                        <div class="row g-3">
-                            {{-- FORM UPDATE --}}
-                            <form id="laporanForm"
-                                  method="post" action="{{ route('form-pengawas-sap.update', $data['report']->uuid) }}"
-                                  enctype="multipart/form-data">
-                                @csrf
+                        <form id="laporanForm"
+                              method="POST"
+                              action="{{ route('form-pengawas-sap.update', $report->uuid) }}"
+                              enctype="multipart/form-data">
+                            @csrf
 
-                                <div class="col-12">
-                                    <div class="row align-items-center g-3">
-                                        <div class="col-sm-6">
-                                            <div class="d-flex align-items-center mb-2">
-                                                <img src="{{ asset('dashboard/assets') }}/images/logo-full.png"
-                                                     class="img-fluid"
-                                                     alt="images"
-                                                     width="200px">
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6 text-sm-end">
-                                            <a href="{{ route('form-pengawas-sap.show') }}">
-                                                <span class="badge bg-primary">Kembali</span>
-                                            </a>
-                                        </div>
+                            <div class="topbar-wrap">
+                                <div class="topbar-logo">
+                                    <img src="{{ asset('dashboard/assets/images/logo-full.png') }}" alt="Logo">
+                                </div>
+                                <a href="{{ route('form-pengawas-sap.show') }}" class="back-btn">← Kembali</a>
+                            </div>
+
+                            <div class="hero-box">
+                                <h2>Update Laporan SAP Pengawas</h2>
+                                <p>Lengkapi tindak lanjut, perbarui foto, dan lakukan verifikasi bila laporan siap diproses.</p>
+
+                                <div class="status-row">
+                                    <span class="status-chip {{ (int)($report->is_finish ?? 0) === 1 ? 'status-finish' : 'status-open' }}">
+                                        {{ (int)($report->is_finish ?? 0) === 1 ? 'Selesai / Closing' : 'Open / Belum Selesai' }}
+                                    </span>
+
+                                    <span class="status-chip" style="background:#eef2ff;color:#4338ca;border-color:#c7d2fe;">
+                                        PICA Level: {{ $report->level ?? '-' }}
+                                    </span>
+
+                                    <span class="status-chip" style="background:rgba(239,246,255,1);color:#1d4ed8;border-color:#bfdbfe;">
+                                        Risiko: {{ $report->tingkat_risiko ?? '-' }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="section-card">
+                                <div class="section-title">
+                                    <span class="section-badge">1</span>
+                                    <div>
+                                        <h5>Informasi Dasar</h5>
+                                        <p>Data laporan yang sudah tercatat.</p>
                                     </div>
                                 </div>
 
-                                <h2 style="text-align: center;"><u>LAPORAN SAP PENGAWAS</u></h2>
-
-                                <div class="row">
-                                    <div class="col-md-3 mb-3">
-                                        <label>Tanggal Pelaporan</label>
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">Tanggal Pelaporan</label>
                                         <input type="text"
-                                               class="form-control"
-                                               value="{{ date('d-m-Y', strtotime($data['report']->created_at)) }}"
-                                               readonly>
-                                    </div>
-                                    <div class="col-md-3 mb-3">
-                                        <label>Jam Kejadian</label>
-                                        <input type="text"
-                                               class="form-control"
-                                               value="{{ date('H:i', strtotime($data['report']->jam_kejadian)) }}"
-                                               readonly>
-                                    </div>
-                                    <div class="col-md-3 mb-3">
-                                        <label>Shift</label>
-                                        <input type="text"
-                                               class="form-control"
-                                               value="{{ $data['report']->shift ?: '-' }}"
-                                               readonly>
-                                    </div>
-                                    <div class="col-md-3 mb-3">
-                                        <label>Area</label>
-                                        <input type="text"
-                                               class="form-control"
-                                               value="{{ $data['report']->area ?: '-' }}"
-                                               readonly>
-                                    </div>
-                                    <div class="col-md-3 mb-3">
-                                        <label>PIC</label>
-                                        <input type="text"
-                                               class="form-control"
-                                               value="{{ $data['report']->pic ?: '-' }}"
+                                               class="form-control readonly-field"
+                                               value="{{ !empty($report->created_at) ? date('d-m-Y', strtotime($report->created_at)) : '-' }}"
                                                readonly>
                                     </div>
 
-                                    <div class="mb-3">
-                                        <label>Temuan KTA/TTA</label>
-                                        <textarea class="form-control"
-                                                  rows="5"
-                                                  name="temuan"
-                                                  placeholder="Masukkan Temuan">{{ old('temuan', $data['report']->temuan) }}</textarea>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Jam Kejadian</label>
+                                        <input type="text"
+                                               class="form-control readonly-field"
+                                               value="{{ !empty($report->jam_kejadian) ? date('H:i', strtotime($report->jam_kejadian)) : '-' }}"
+                                               readonly>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label class="form-label">Shift</label>
+                                        <input type="text"
+                                               class="form-control readonly-field"
+                                               value="{{ $report->shift ?: '-' }}"
+                                               readonly>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label class="form-label">Area</label>
+                                        <input type="text"
+                                               class="form-control readonly-field"
+                                               value="{{ $report->area ?: '-' }}"
+                                               readonly>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label">PICA Level</label>
+                                        <select class="form-select" id="level" name="level" required>
+                                            <option value="1" {{ old('level', $report->level) == '1' ? 'selected' : '' }}>1</option>
+                                            <option value="2" {{ old('level', $report->level) == '2' ? 'selected' : '' }}>2</option>
+                                            <option value="3" {{ old('level', $report->level) == '3' ? 'selected' : '' }}>3</option>
+                                            <option value="4" {{ old('level', $report->level) == '4' ? 'selected' : '' }}>4</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label">PIC Departemen</label>
+                                        <select class="form-select" id="pic" name="pic" required>
+                                            <option value="{{ $report->pic }}" selected>{{ $report->nama_pic }}</option>
+                                            @foreach ($data['departemen'] as $dep)
+                                                <option value="{{ $dep->id }}">{{ $dep->keterangan }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label">Tingkat Risiko</label>
+                                        <select class="form-select" id="tingkatRisiko" name="tingkatRisiko" required>
+                                            <option value="Ringan" {{ old('tingkatRisiko', $report->tingkat_risiko) == 'Ringan' ? 'selected' : '' }}>Ringan</option>
+                                            <option value="Sedang" {{ old('tingkatRisiko', $report->tingkat_risiko) == 'Sedang' ? 'selected' : '' }}>Sedang</option>
+                                            <option value="Tinggi" {{ old('tingkatRisiko', $report->tingkat_risiko) == 'Tinggi' ? 'selected' : '' }}>Tinggi</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="section-card">
+                                <div class="section-title">
+                                    <span class="section-badge">2</span>
+                                    <div>
+                                        <h5>Temuan & Analisis</h5>
+                                        <p>Bagian ini disamakan dengan form utama agar alur pengisian tetap konsisten.</p>
                                     </div>
                                 </div>
 
-                                <h4>Foto Temuan</h4>
                                 <div class="mb-3">
-                                    <input type="file"
-                                           class="form-control"
-                                           name="file_temuan"
-                                           accept="image/*" />
-                                    @if(!empty($data['report']->file_temuan))
-                                        <div class="col-md-4 mt-2">
-                                            <img src="{{ $data['report']->file_temuan }}"
-                                                 alt="Photo Temuan"
-                                                 class="img-thumbnail custom-img">
-                                        </div>
-                                    @endif
+                                    <label class="form-label">Temuan KTA/TTA</label>
+                                    <textarea class="form-control"
+                                              rows="5"
+                                              name="temuan"
+                                              placeholder="Masukkan temuan">{{ old('temuan', $report->temuan) }}</textarea>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="tingkatRisiko" class="form-label">Tingkat Risiko:</label>
-                                    <select class="form-select" id="tingkatRisiko" name="tingkatRisiko" required>
-                                        <option value="{{ $data['report']->tingkat_risiko }}">{{ $data['report']->tingkat_risiko }}</option>
-                                        <option value="Ringan">Ringan</option>
-                                        <option value="Sedang">Sedang</option>
-                                        <option value="Tinggi">Tinggi</option>
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label>Risiko</label>
+                                    <label class="form-label">Risiko</label>
                                     <textarea class="form-control"
                                               rows="5"
                                               name="risiko"
-                                              placeholder="Masukkan Risiko">{{ old('risiko', $data['report']->risiko) }}</textarea>
+                                              placeholder="Masukkan risiko">{{ old('risiko', $report->risiko) }}</textarea>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label>Pengendalian</label>
+                                <div class="mb-0">
+                                    <label class="form-label">Pengendalian</label>
                                     <textarea class="form-control"
                                               rows="5"
                                               name="pengendalian"
-                                              placeholder="Masukkan Pengendalian">{{ old('pengendalian', $data['report']->pengendalian) }}</textarea>
+                                              placeholder="Masukkan pengendalian">{{ old('pengendalian', $report->pengendalian) }}</textarea>
+                                </div>
+                            </div>
+
+                            <div class="section-card">
+                                <div class="section-title">
+                                    <span class="section-badge">3</span>
+                                    <div>
+                                        <h5>Foto Temuan</h5>
+                                        <p>Support hingga 3 foto, sama seperti form input awal.</p>
+                                    </div>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label>Tindak Lanjut</label>
+                                    <label class="form-label">Foto Temuan 1</label>
+                                    <input type="file" class="form-control" name="file_temuan" accept="image/*" />
+                                    <small class="field-note">Kosongkan jika tidak ingin mengganti foto.</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Foto Temuan 2 <span class="text-muted">(jika ada)</span></label>
+                                    <input type="file" class="form-control" name="file_temuan2" accept="image/*" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Foto Temuan 3 <span class="text-muted">(jika ada)</span></label>
+                                    <input type="file" class="form-control" name="file_temuan3" accept="image/*" />
+                                </div>
+
+                                <div class="mb-0">
+                                    <label class="form-label">Foto Temuan Saat Ini</label>
+                                    @if(count($temuanImages) > 0)
+                                        <div class="image-grid">
+                                            @foreach($temuanImages as $index => $img)
+                                                <div class="image-card">
+                                                    <a href="{{ $img }}" target="_blank">
+                                                        <img src="{{ $img }}" alt="Foto Temuan {{ $index + 1 }}">
+                                                    </a>
+                                                    <div class="image-meta">Foto Temuan {{ $index + 1 }}. Klik untuk membuka.</div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <div class="empty-state">Belum ada foto temuan tersimpan.</div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="section-card" style="margin-bottom: 0;">
+                                <div class="section-title">
+                                    <span class="section-badge">4</span>
+                                    <div>
+                                        <h5>Tindak Lanjut</h5>
+                                        <p>Bagian ini juga disamakan dengan form utama, termasuk 3 slot foto bukti.</p>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Tindak Lanjut</label>
                                     <textarea class="form-control"
                                               rows="5"
                                               name="tindakLanjut"
-                                              placeholder="Masukkan Tindak Lanjut">{{ old('tindakLanjut', $data['report']->tindak_lanjut) }}</textarea>
+                                              placeholder="Masukkan tindak lanjut">{{ old('tindakLanjut', $report->tindak_lanjut) }}</textarea>
                                 </div>
 
-                                <h4>Foto Tindak Lanjut</h4>
                                 <div class="mb-3">
-                                    <input type="file"
-                                           class="form-control"
-                                           name="file_tindakLanjut"
-                                           accept="image/*" />
-                                    @if(!empty($data['report']->file_tindakLanjut))
-                                        <div class="col-md-4 mt-2">
-                                            <img src="{{ $data['report']->file_tindakLanjut }}"
-                                                 alt="Photo Tindak Lanjut"
-                                                 class="img-thumbnail custom-img">
+                                    <label class="form-label">Foto Bukti Tindak Lanjut 1</label>
+                                    <input type="file" class="form-control" name="file_tindakLanjut" accept="image/*" />
+                                    <small class="field-note">Kosongkan jika tidak ingin mengganti foto.</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Foto Bukti Tindak Lanjut 2 <span class="text-muted">(jika ada)</span></label>
+                                    <input type="file" class="form-control" name="file_tindakLanjut2" accept="image/*" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Foto Bukti Tindak Lanjut 3 <span class="text-muted">(jika ada)</span></label>
+                                    <input type="file" class="form-control" name="file_tindakLanjut3" accept="image/*" />
+                                </div>
+
+                                <div class="mb-0">
+                                    <label class="form-label">Foto Bukti Saat Ini</label>
+                                    @if(count($tindakLanjutImages) > 0)
+                                        <div class="image-grid">
+                                            @foreach($tindakLanjutImages as $index => $img)
+                                                <div class="image-card">
+                                                    <a href="{{ $img }}" target="_blank">
+                                                        <img src="{{ $img }}" alt="Foto Tindak Lanjut {{ $index + 1 }}">
+                                                    </a>
+                                                    <div class="image-meta">Foto Bukti {{ $index + 1 }}. Klik untuk membuka.</div>
+                                                </div>
+                                            @endforeach
                                         </div>
+                                    @else
+                                        <div class="empty-state">Belum ada foto bukti tindak lanjut tersimpan.</div>
                                     @endif
                                 </div>
 
-                                <div class="text-center m-t-20">
-                                    <button type="submit"
-                                            class="badge bg-dark"
-                                            style="font-size:20px"
-                                            id="submitSAP">
-                                        Finish
-                                    </button>
+                                <div class="action-row">
+                                    <div class="submit-wrap">
+                                        <div class="submit-panel">
+                                            <button type="submit" class="btn-finish" id="submitSAP">
+                                                Finish / Update
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    @if((int)($report->is_finish ?? 0) === 0 && Auth::user()->id == 3)
+                                        <div class="verify-wrap">
+                                            <div class="verify-panel">
+                                                <form action="{{ route('form-pengawas-sap.verify-scc', $report->uuid) }}" method="POST" onsubmit="return confirm('Yakin ingin memverifikasi laporan ini?')">
+                                                    @csrf
+                                                    <button type="submit" class="btn-verify">
+                                                        Verifikasi
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
-                            </form>
-                        </div> {{-- row g-3 --}}
-                    </div> {{-- card-body --}}
-                </div> {{-- card --}}
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -202,7 +692,6 @@
 
 @include('layout.footer')
 
-<!-- jQuery AJAX setup (tetap) -->
 <script>
     $.ajaxSetup({
         headers: {
@@ -210,20 +699,22 @@
         }
     });
 </script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const formSAP = document.getElementById('laporanForm');
     const submitSAP = document.getElementById('submitSAP');
 
-    // convert Blob -> File if needed
     function ensureFile(obj, originalName = 'image.jpg') {
         if (!obj) return null;
         if (obj instanceof File) return obj;
         if (obj instanceof Blob) {
             try {
-                return new File([obj], originalName, { type: obj.type || 'image/jpeg', lastModified: Date.now() });
+                return new File([obj], originalName, {
+                    type: obj.type || 'image/jpeg',
+                    lastModified: Date.now()
+                });
             } catch (err) {
-                // older browsers may not support File constructor
                 obj.name = originalName;
                 return obj;
             }
@@ -264,17 +755,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
         submitSAP.disabled = true;
         const originalText = submitSAP.innerText;
-        submitSAP.innerText = 'Processing...';
+        submitSAP.innerText = 'Memproses...';
 
-        // safety timeout (kembalikan tombol kalau stuck)
+        const oldAlerts = formSAP.querySelectorAll('.alert');
+        oldAlerts.forEach(el => el.remove());
+
         const safetyTimer = setTimeout(() => {
             submitSAP.disabled = false;
             submitSAP.innerText = originalText;
         }, 30000);
 
         try {
-            const inputTemuan = formSAP.querySelector('input[name="file_temuan"]');
-            const inputTindak = formSAP.querySelector('input[name="file_tindakLanjut"]');
+            const fileFields = [
+                'file_temuan',
+                'file_temuan2',
+                'file_temuan3',
+                'file_tindakLanjut',
+                'file_tindakLanjut2',
+                'file_tindakLanjut3'
+            ];
 
             const options = {
                 maxSizeMB: 1.0,
@@ -283,24 +782,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 initialQuality: 0.75
             };
 
-            let compressedTemuan = null;
-            let compressedTindak = null;
-
-            if (inputTemuan && inputTemuan.files && inputTemuan.files.length > 0) {
-                compressedTemuan = await compressFileWithLib(inputTemuan.files[0], options);
+            for (const fieldName of fileFields) {
+                const input = formSAP.querySelector(`input[name="${fieldName}"]`);
+                if (input && input.files && input.files.length > 0) {
+                    const compressed = await compressFileWithLib(input.files[0], options);
+                    if (compressed) {
+                        replaceInputFile(input, compressed);
+                    }
+                }
             }
-            if (inputTindak && inputTindak.files && inputTindak.files.length > 0) {
-                compressedTindak = await compressFileWithLib(inputTindak.files[0], options);
-            }
 
-            // replace inputs (hanya jika konversi berhasil jadi File)
-            if (compressedTemuan) replaceInputFile(inputTemuan, compressedTemuan);
-            if (compressedTindak) replaceInputFile(inputTindak, compressedTindak);
-
-            // pemberitahuan kecil ke user
             const alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-info mt-2';
-            alertDiv.innerText = 'Gambar dikompres (client-side). Mengirim form...';
+            alertDiv.className = 'alert alert-info mt-3';
+            alertDiv.innerText = 'Gambar sedang dioptimalkan dan form akan segera dikirim...';
             formSAP.prepend(alertDiv);
 
             clearTimeout(safetyTimer);
@@ -312,8 +806,8 @@ document.addEventListener('DOMContentLoaded', function () {
             submitSAP.innerText = originalText;
 
             const errDiv = document.createElement('div');
-            errDiv.className = 'alert alert-danger mt-2';
-            errDiv.innerText = 'Terjadi kesalahan saat memproses gambar. Mengirim form tanpa kompresi.';
+            errDiv.className = 'alert alert-danger mt-3';
+            errDiv.innerText = 'Terjadi kendala saat memproses gambar. Form tetap dikirim tanpa kompresi.';
             formSAP.prepend(errDiv);
 
             formSAP.submit();

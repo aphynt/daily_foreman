@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Produksi;
 
 use App\Http\Controllers\Controller;
 use App\Models\Area;
+use App\Models\Departemen;
 use App\Models\SAPReport;
 use App\Models\SAPReportImage;
 use App\Models\Shift;
 use App\Models\User;
+use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -43,152 +45,205 @@ class FormPengawasSAPController extends Controller
         ->select('us.nik', 'us.name', 'dep.keterangan as departemen')
         ->whereNotIn('us.role', ['ADMIN', 'MANAGEMENT'])
         ->where('us.statusenabled', true)->get();
+        $departemen = Departemen::where('statusenabled', true)->get();
         $shift = Shift::where('statusenabled', true)->get();
         $area = Area::where('statusenabled', true)->get();
-        return view('form-sap.index', compact('area', 'shift', 'pic'));
+        return view('form-sap.index', compact('area', 'shift', 'pic', 'departemen'));
     }
 
     public function post(Request $request)
     {
-        // dd($request->file_tindakLanjut);
-
         DB::beginTransaction();
 
         try {
             $fileTemuan = null;
+            $fileTemuan2 = null;
+            $fileTemuan3 = null;
             $fileTindakLanjut = null;
-            $finishing = false;
+            $fileTindakLanjut2 = null;
+            $fileTindakLanjut3 = null;
 
-            if ($request->file_temuan != null) {
-                $file = $request->file('file_temuan');
-                $destinationPath = public_path('storage/sap/file_temuan');
-                $fileName = time() . '_' . $file->getClientOriginalName();
+            $finishing = !empty($request->tindakLanjut);
+
+            $saveFile = function ($fieldName, $relativeFolder) use ($request) {
+                if (!$request->hasFile($fieldName)) {
+                    return null;
+                }
+
+                $file = $request->file($fieldName);
+                $destinationPath = public_path($relativeFolder);
+
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0777, true);
+                }
+
+                $fileName = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
                 $file->move($destinationPath, $fileName);
-                $fileTemuan = url('storage/sap/file_temuan/' . $fileName);
-            }
 
-            if ($request->file_tindakLanjut != null) {
-                $file2 = $request->file('file_tindakLanjut');
-                $destinationPath2 = public_path('storage/sap/file_tindakLanjut');
-                $fileName2 = time() . '_' . $file2->getClientOriginalName();
-                $file2->move($destinationPath2, $fileName2);
-                $fileTindakLanjut = url('storage/sap/file_tindakLanjut/' . $fileName2);
+                return url($relativeFolder . '/' . $fileName);
+            };
+
+            $fileTemuan = $saveFile('file_temuan', 'storage/sap/file_temuan');
+            $fileTemuan2 = $saveFile('file_temuan2', 'storage/sap/file_temuan');
+            $fileTemuan3 = $saveFile('file_temuan3', 'storage/sap/file_temuan');
+
+            $fileTindakLanjut = $saveFile('file_tindakLanjut', 'storage/sap/file_tindakLanjut');
+            $fileTindakLanjut2 = $saveFile('file_tindakLanjut2', 'storage/sap/file_tindakLanjut');
+            $fileTindakLanjut3 = $saveFile('file_tindakLanjut3', 'storage/sap/file_tindakLanjut');
+
+            if ($fileTindakLanjut || $fileTindakLanjut2 || $fileTindakLanjut3) {
                 $finishing = true;
             }
 
             $report = SAPReport::create([
-                'uuid'           => (string) Uuid::uuid4()->toString(),
-                'foreman_id'     => Auth::user()->id,
-                'shift'          => $request->shift,
-                'area'           => $request->area,
-                'jam_kejadian'   => $request->jamKejadian,
-                'temuan'         => $request->temuan,
-                'tingkat_risiko'  => $request->tingkatRisiko,
-                'tindak_lanjut'  => $request->tindakLanjut,
-                'risiko'         => $request->risiko,
-                'pic'         => $request->pic,
-                'pengendalian'   => $request->pengendalian,
-                'file_temuan'    => $fileTemuan,
+                'uuid' => (string) Uuid::uuid4()->toString(),
+                'foreman_id' => Auth::user()->id,
+                'statusenabled' => 1,
+
+                'inspektor1' => $request->inspektor1,
+                'inspektor2' => $request->inspektor2,
+                'inspektor3' => $request->inspektor3,
+                'inspektor4' => $request->inspektor4,
+                'inspektor5' => $request->inspektor5,
+
+                'shift' => $request->shift,
+                'area' => $request->area,
+                'level' => $request->level,
+                'jam_kejadian' => $request->jamKejadian,
+                'temuan' => $request->temuan,
+                'tingkat_risiko' => $request->tingkatRisiko,
+                'tindak_lanjut' => $request->tindakLanjut,
+                'risiko' => $request->risiko,
+                'departemen_pic' => $request->departemen,
+                'pengendalian' => $request->pengendalian,
+
+                'file_temuan' => $fileTemuan,
+                'file_temuan2' => $fileTemuan2,
+                'file_temuan3' => $fileTemuan3,
                 'file_tindakLanjut' => $fileTindakLanjut,
-                'is_finish'      => $finishing,
+                'file_tindakLanjut2' => $fileTindakLanjut2,
+                'file_tindakLanjut3' => $fileTindakLanjut3,
+
+                'is_finish' => $finishing,
             ]);
 
             DB::commit();
 
-            // return response()->json([
-            //     'status'  => 'success',
-            //     'message' => 'Report berhasil diposting',
-            //     'data'    => $report,
-            // ]);
-
-            return redirect()->route('form-pengawas-sap.show')->with('success', 'SAP berhasil diposting');
+            return redirect()
+                ->route('form-pengawas-sap.show')
+                ->with('success', 'SAP berhasil diposting');
         } catch (\Throwable $th) {
             DB::rollBack();
 
-            return redirect()->back()->with('info', 'SAP gagal diposting'. $th->getMessage());
-
-            // return response()->json([
-            //     'status'  => 'error',
-            //     'message' => $th->getMessage(),
-            // ], 500);
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'SAP gagal diposting: ' . $th->getMessage());
         }
     }
 
 
     public function update(Request $request, $uuid)
     {
-
-        // return $request;
         DB::beginTransaction();
 
         try {
-
             $report = SAPReport::where('uuid', $uuid)->firstOrFail();
 
-            $fileTemuan       = $report->file_temuan;
-            $fileTindakLanjut = $report->file_tindakLanjut;
+            // ambil file lama
+            $fileTemuan = $report->file_temuan;
+            $fileTemuan2 = $report->file_temuan2;
+            $fileTemuan3 = $report->file_temuan3;
 
-            // === HANDLE FILE TEMUAN ===
-            if ($request->file_temuan != null) {
-                $file = $request->file('file_temuan');
-                $destinationPath = public_path('storage/sap/file_temuan');
+            $fileTindakLanjut = $report->file_tindakLanjut;
+            $fileTindakLanjut2 = $report->file_tindakLanjut2;
+            $fileTindakLanjut3 = $report->file_tindakLanjut3;
+
+            $saveFile = function ($fieldName, $relativeFolder) use ($request) {
+                if (!$request->hasFile($fieldName)) {
+                    return null;
+                }
+
+                $file = $request->file($fieldName);
+                $destinationPath = public_path($relativeFolder);
 
                 if (!file_exists($destinationPath)) {
                     mkdir($destinationPath, 0755, true);
                 }
 
-                $fileName = time() . '_' . $file->getClientOriginalName();
+                $fileName = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
                 $file->move($destinationPath, $fileName);
 
-                $fileTemuan = url('storage/sap/file_temuan/' . $fileName);
+                return url($relativeFolder . '/' . $fileName);
+            };
+
+            $newFileTemuan = $saveFile('file_temuan', 'storage/sap/file_temuan');
+            $newFileTemuan2 = $saveFile('file_temuan2', 'storage/sap/file_temuan');
+            $newFileTemuan3 = $saveFile('file_temuan3', 'storage/sap/file_temuan');
+
+            if ($newFileTemuan) {
+                $fileTemuan = $newFileTemuan;
+            }
+            if ($newFileTemuan2) {
+                $fileTemuan2 = $newFileTemuan2;
+            }
+            if ($newFileTemuan3) {
+                $fileTemuan3 = $newFileTemuan3;
             }
 
-            // === HANDLE FILE TINDAK LANJUT ===
-            if ($request->file_tindakLanjut != null) {
-                $file2 = $request->file('file_tindakLanjut');
-                $destinationPath2 = public_path('storage/sap/file_tindakLanjut');
+            $newFileTindakLanjut = $saveFile('file_tindakLanjut', 'storage/sap/file_tindakLanjut');
+            $newFileTindakLanjut2 = $saveFile('file_tindakLanjut2', 'storage/sap/file_tindakLanjut');
+            $newFileTindakLanjut3 = $saveFile('file_tindakLanjut3', 'storage/sap/file_tindakLanjut');
 
-                if (!file_exists($destinationPath2)) {
-                    mkdir($destinationPath2, 0755, true);
-                }
-
-                $fileName2 = time() . '_' . $file2->getClientOriginalName();
-                $file2->move($destinationPath2, $fileName2);
-
-                $fileTindakLanjut = url('storage/sap/file_tindakLanjut/' . $fileName2);
+            if ($newFileTindakLanjut) {
+                $fileTindakLanjut = $newFileTindakLanjut;
+            }
+            if ($newFileTindakLanjut2) {
+                $fileTindakLanjut2 = $newFileTindakLanjut2;
+            }
+            if ($newFileTindakLanjut3) {
+                $fileTindakLanjut3 = $newFileTindakLanjut3;
             }
 
+            if(Auth::user()->id == 3){
+                $finishing = 0;
+            }else{
+                $finishing = 1;
+            }
 
             $dataUpdate = [
-                'temuan'           => $request->temuan,
-                'tindak_lanjut'    => $request->tindakLanjut,
-                'risiko'           => $request->risiko,
-                'tingkat_risiko'   => $request->tingkatRisiko,
-                'pengendalian'     => $request->pengendalian,
-                'file_temuan'      => $fileTemuan,
-                'file_tindakLanjut'=> $fileTindakLanjut,
-                'is_finish'        => true,
+                'temuan' => $request->temuan,
+                'tindak_lanjut' => $request->tindakLanjut,
+                'risiko' => $request->risiko,
+                'tingkat_risiko' => $request->tingkatRisiko,
+                'pengendalian' => $request->pengendalian,
+                'departemen_pic' => $request->pic,
+
+                'file_temuan' => $fileTemuan,
+                'file_temuan2' => $fileTemuan2,
+                'file_temuan3' => $fileTemuan3,
+
+                'file_tindakLanjut' => $fileTindakLanjut,
+                'file_tindakLanjut2' => $fileTindakLanjut2,
+                'file_tindakLanjut3' => $fileTindakLanjut3,
+
+                'is_finish' => $finishing,
             ];
 
             $report->update($dataUpdate);
 
             DB::commit();
 
-            // return response()->json([
-            //     'status'  => 'success',
-            //     'message' => 'Report berhasil diupdate!',
-            //     'data'    => $report,
-            // ]);
-
-            return redirect()->route('form-pengawas-sap.show')->with('success', 'SAP berhasil diclosing');
-        }  catch (\Throwable $e) {
+            return redirect()
+                ->route('form-pengawas-sap.show')
+                ->with('success', 'SAP berhasil diclosing');
+        } catch (\Throwable $e) {
             DB::rollBack();
 
-            // return response()->json([
-            //     'status'  => 'error',
-            //     'message' => 'Report gagal diupdate: ' . $e->getMessage(),
-            // ], 500);
-            return redirect()->back()->with('info', 'SAP gagal diposting'. $e->getMessage());
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'SAP gagal diupdate: ' . $e->getMessage());
         }
     }
 
@@ -196,30 +251,21 @@ class FormPengawasSAPController extends Controller
     {
         $report = DB::table('prd_sap_report as sr')
         ->leftJoin('users as us', 'sr.foreman_id', 'us.id')
-        ->leftJoin('users as us2', 'sr.pic', 'us2.nik')
+        ->leftJoin('ref_departemen as dep', 'sr.departemen_pic', 'dep.id')
         ->leftJoin('ref_shift as sh', 'sr.shift', 'sh.id')
         ->leftJoin('ref_region as ar', 'sr.area', 'ar.id')
         ->select(
-            'sr.uuid',
-            'sr.created_at',
-            'sr.jam_kejadian',
+            'sr.*',
             'sh.keterangan as shift',
             'us.nik as nik_pembuat',
             'us.name as pembuat',
-            'us2.nik as nik_pic',
-            'us2.name as pic',
+            'dep.keterangan as nama_pic',
             'ar.keterangan as area',
-            'sr.temuan',
-            'sr.risiko',
-            'sr.tingkat_risiko',
-            'sr.tindak_lanjut',
-            'sr.pengendalian',
-            'sr.file_temuan',
-            'sr.file_tindakLanjut',
-            'sr.is_finish'
         )
         ->where('sr.statusenabled', true)
         ->where('sr.uuid', $uuid)->first();
+
+        $departemen = Departemen::where('statusenabled', true)->get();
 
         if($report == null){
             return redirect()->back()->with('info', 'Maaf, SAP tidak ditemukan');
@@ -227,6 +273,7 @@ class FormPengawasSAPController extends Controller
 
         $data = [
             'report' => $report,
+            'departemen' => $departemen,
         ];
 
         // dd($data);
@@ -279,7 +326,7 @@ class FormPengawasSAPController extends Controller
 
         $report = DB::table('prd_sap_report as sr')
         ->leftJoin('users as us', 'sr.foreman_id', 'us.id')
-        ->leftJoin('ref_departemen as dep', 'us.departemen_id', 'dep.id')
+        ->leftJoin('ref_departemen as dep', 'sr.departemen_pic', 'dep.id')
         ->leftJoin('ref_shift as sh', 'sr.shift', 'sh.id')
         ->leftJoin('ref_region as ar', 'sr.area', 'ar.id')
         ->select(
@@ -318,6 +365,20 @@ class FormPengawasSAPController extends Controller
         $report = $report->orderBy('created_at', 'DESC')->get();
 
         return view('form-sap.daftar.index', compact('report'));
+    }
+
+    public function verifySCC(Request $request, $id)
+    {
+        try {
+            SAPReport::where('id', $id)
+            ->update([
+                'verified_scc' => Auth::user()->nik,
+                'verified_datetime_scc' => Carbon::now()
+                ]);
+        return redirect()->back()->with('success', 'Laporan SAP berhasil diverifikasi dan akan diteruskan ke Departemen terkait');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('info', 'Laporan SAP gagal diverifikasi ');
+        }
     }
 
 }

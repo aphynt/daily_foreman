@@ -28648,7 +28648,7 @@ select.form-control:hover {
 [readonly].dataTable-selector,
 [readonly].datatable-input,
 select.form-control[readonly] {
-    opacity: .6
+    opacity: .9
 }
 
 .input-group-text svg {

@@ -157,7 +157,7 @@
                     <ul class="pc-submenu">
                         @if (canAccess('pengawas-produksi-pitstop.index'))<li class="pc-item"><a class="pc-link" href="{{ route('pengawas-produksi-pitstop.index') }}">Pengawas OB</a></li>@endif
                         @if (canAccess('form-pengawas-batubara.show'))<li class="pc-item"><a class="pc-link" href="{{ route('form-pengawas-batubara.show') }}">Pengawas Coal</a></li>@endif
-                        @if (canAccess('form-pengawas-sap.show'))<li class="pc-item"><a class="pc-link" href="{{ route('form-pengawas-sap.show') }}">Laporan Inspeksi</a></li>@endif
+                        @if (canAccess('form-pengawas-sap.show'))<li class="pc-item"><a class="pc-link" href="{{ route('form-pengawas-sap.show') }}">Laporan Inspeksi PICA</a></li>@endif
                         @if (canAccess('laporan-kata-sandi.show'))<li class="pc-item"><a class="pc-link" href="{{ route('laporan-kata-sandi.show') }}">Laporan Kata Sandi</a></li>@endif
                         @if (canAccess('jobpending.produksi.detail'))<li class="pc-item"><a class="pc-link" href="{{ route('jobpending.produksi.detail') }}">Laporan Job Pending Produksi</a></li>@endif
                         {{-- @if (canAccess('jobpending.safety.detail'))<li class="pc-item"><a class="pc-link" href="{{ route('jobpending.safety.detail') }}">Laporan Job Pending Safety</a></li>@endif --}}

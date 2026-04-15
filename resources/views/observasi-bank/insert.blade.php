@@ -28,6 +28,37 @@
         font-size: 14px;
         color: #664d03;
     }
+
+    .upload-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .upload-card {
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        padding: 12px;
+        background: #fff;
+    }
+
+    .upload-card label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .upload-note {
+        font-size: 12px;
+        color: #6c757d;
+        margin-top: 6px;
+    }
+
+    @media (max-width: 768px) {
+        .upload-grid {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 <section class="pc-container">
     <div class="pc-content">
@@ -45,7 +76,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="container mt-3">
-                            <form action="{{ route('observasibank.post') }}" method="POST" id="submitformObservasiBank">
+                            <form action="{{ route('observasibank.post') }}" method="POST" id="submitformObservasiBank" enctype="multipart/form-data">
                                 @csrf
                                 <!-- Inputan di atas tabel -->
                                 <div class="row mb-3">
@@ -766,6 +797,39 @@
                                     </div>
 
                                 </div>
+                                <hr>
+                                <div class="row mb-3">
+                                    <h5>XIII. Dokumentasi Foto</h5>
+
+                                    <div class="upload-grid">
+                                        <div class="upload-card">
+                                            <label>Dokumentasi Foto 1</label>
+                                            <input type="file"
+                                                class="form-control form-control-sm"
+                                                name="dokumentasi_foto_1"
+                                                accept="image/*">
+                                            <div class="upload-note">Format disarankan: JPG, PNG, WEBP.</div>
+                                        </div>
+
+                                        <div class="upload-card">
+                                            <label>Dokumentasi Foto 2</label>
+                                            <input type="file"
+                                                class="form-control form-control-sm"
+                                                name="dokumentasi_foto_2"
+                                                accept="image/*">
+                                            <div class="upload-note">Opsional, isi jika ada dokumentasi tambahan.</div>
+                                        </div>
+
+                                        <div class="upload-card">
+                                            <label>Dokumentasi Foto 3</label>
+                                            <input type="file"
+                                                class="form-control form-control-sm"
+                                                name="dokumentasi_foto_3"
+                                                accept="image/*">
+                                            <div class="upload-note">Opsional, isi jika ada dokumentasi tambahan.</div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <!-- Tombol Submit -->
                                 <div class="text-center mt-3">
                                     <button type="submit" class="btn btn-primary btn-sm" id="submitButtonObservasiBank">Submit</button>
@@ -948,4 +1012,93 @@
             alert("Silakan isi semua pilihan True/False/N/A sebelum mengirimkan form!");
         }
     });
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const formObservasi = document.getElementById('submitformObservasiBank');
+    const submitButton = document.getElementById('submitButtonObservasiBank');
+
+    function ensureFile(obj, originalName = 'image.jpg') {
+        if (!obj) return null;
+        if (obj instanceof File) return obj;
+        if (obj instanceof Blob) {
+            try {
+                return new File([obj], originalName, {
+                    type: obj.type || 'image/jpeg',
+                    lastModified: Date.now()
+                });
+            } catch (err) {
+                obj.name = originalName;
+                return obj;
+            }
+        }
+        return null;
+    }
+
+    async function compressFileWithLib(file, options = {}) {
+        if (typeof imageCompression === 'undefined') {
+            return file;
+        }
+
+        try {
+            const compressed = await imageCompression(file, options);
+            return ensureFile(compressed, file.name);
+        } catch (err) {
+            console.error('Compression error:', err);
+            return file;
+        }
+    }
+
+    function replaceInputFile(inputElement, file) {
+        if (!inputElement || !file) return;
+
+        const fileToAdd = ensureFile(file, file.name || 'image.jpg');
+        if (!(fileToAdd instanceof File)) return;
+
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(fileToAdd);
+        inputElement.files = dataTransfer.files;
+    }
+
+    formObservasi.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        submitButton.disabled = true;
+        const originalText = submitButton.innerText;
+        submitButton.innerText = 'Processing...';
+
+        try {
+            const fileFields = [
+                'dokumentasi_foto_1',
+                'dokumentasi_foto_2',
+                'dokumentasi_foto_3'
+            ];
+
+            const options = {
+                maxSizeMB: 1.0,
+                maxWidthOrHeight: 1920,
+                useWebWorker: true,
+                initialQuality: 0.75
+            };
+
+            for (const fieldName of fileFields) {
+                const input = formObservasi.querySelector(`input[name="${fieldName}"]`);
+                if (input && input.files && input.files.length > 0) {
+                    const compressed = await compressFileWithLib(input.files[0], options);
+                    if (compressed) {
+                        replaceInputFile(input, compressed);
+                    }
+                }
+            }
+
+            formObservasi.submit();
+        } catch (err) {
+            console.error(err);
+            submitButton.disabled = false;
+            submitButton.innerText = originalText;
+            formObservasi.submit();
+        }
+    });
+});
 </script>

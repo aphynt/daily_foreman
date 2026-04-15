@@ -27,12 +27,13 @@
 
         <div class="row g-1">
             <h5 class="w-100">Fitur Pilihan</h5>
-
-            {{-- BLOK UTAMA: sebelumnya pakai role, sekarang pakai akses --}}
             @if (
                 canAccess('form-pengawas-new.index') ||
                 canAccess('form-pengawas-batubara.index') ||
-                canAccess('pengawas-pitstop.index')
+                canAccess('pengawas-pitstop.index') ||
+                canAccess('ert.index') ||
+                canAccess('patrol.index') ||
+                canAccess('form-pengawas-sap.index')
             )
 
                 {{-- FORM INPUT --}}
@@ -69,6 +70,45 @@
                             <div class="card-body text-center" style="padding-left:2px; padding-right:2px;">
                                 <img class="img-fluid card-img-top" src="{{ asset('dashboard/assets') }}/images/widget/pencil.png" style="max-width: 20px">
                                 <h6 class="card-title" style="font-size:11px">Form Pit Stop</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endif
+
+                @if (canAccess('ert.index'))
+                <div class="col-4 col-md-4 col-xxl-4">
+                    <a href="{{ route('ert.index') }}" class="text-decoration-none">
+                        <div class="card mb-3">
+                            <div class="card-body text-center" style="padding-left:2px; padding-right:2px;">
+                                <img class="img-fluid card-img-top" src="{{ asset('dashboard/assets') }}/images/widget/pencil.png" style="max-width: 20px">
+                                <h6 class="card-title" style="font-size:11px">Form ERT</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endif
+
+                @if (canAccess('patrol.index'))
+                <div class="col-4 col-md-4 col-xxl-4">
+                    <a href="{{ route('patrol.index') }}" class="text-decoration-none">
+                        <div class="card mb-3">
+                            <div class="card-body text-center" style="padding-left:2px; padding-right:2px;">
+                                <img class="img-fluid card-img-top" src="{{ asset('dashboard/assets') }}/images/widget/pencil.png" style="max-width: 20px">
+                                <h6 class="card-title" style="font-size:11px">Form Patrol</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endif
+
+                @if (canAccess('form-pengawas-sap.index'))
+                <div class="col-4 col-md-4 col-xxl-4">
+                    <a href="{{ route('form-pengawas-sap.index') }}" class="text-decoration-none">
+                        <div class="card mb-3">
+                            <div class="card-body text-center" style="padding-left:2px; padding-right:2px;">
+                                <img class="img-fluid card-img-top" src="{{ asset('dashboard/assets') }}/images/widget/pencil.png" style="max-width: 20px">
+                                <h6 class="card-title" style="font-size:11px">Form Inspeksi PICA</h6>
                             </div>
                         </div>
                     </a>
@@ -225,7 +265,7 @@
                 </div>
                 <div class="card-body">
                     <div class="list-group">
-                        @if (canAccess('form-pengawas-sap.index'))<a href="{{ route('form-pengawas-sap.index') }}" class="list-group-item">Inspeksi</a>@endif
+                        @if (canAccess('form-pengawas-sap.index'))<a href="{{ route('form-pengawas-sap.index') }}" class="list-group-item">Inspeksi PICA</a>@endif
                         @if (canAccess('klkh.loading-point'))<a href="{{ route('klkh.loading-point') }}" class="list-group-item">KLKH Loading Point</a>@endif
                         @if (canAccess('klkh.haul-road'))<a href="{{ route('klkh.haul-road') }}" class="list-group-item">KLKH Haul Road</a>@endif
                         @if (canAccess('klkh.disposal'))<a href="{{ route('klkh.disposal') }}" class="list-group-item">KLKH Disposal/Dumping Point</a>@endif

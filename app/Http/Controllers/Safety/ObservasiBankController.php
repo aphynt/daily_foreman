@@ -116,7 +116,27 @@ class ObservasiBankController extends Controller
         try {
 
             $data = $request->all();
-            // dd($data);
+            $saveFile = function ($fieldName, $relativeFolder) use ($request) {
+                if (!$request->hasFile($fieldName)) {
+                    return null;
+                }
+
+                $file = $request->file($fieldName);
+                $destinationPath = public_path($relativeFolder);
+
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0755, true);
+                }
+
+                $fileName = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
+                $file->move($destinationPath, $fileName);
+
+                return url($relativeFolder . '/' . $fileName);
+            };
+
+            $dokumentasiFoto1 = $saveFile('dokumentasi_foto_1', 'storage/observasi_bank/dokumentasi');
+            $dokumentasiFoto2 = $saveFile('dokumentasi_foto_2', 'storage/observasi_bank/dokumentasi');
+            $dokumentasiFoto3 = $saveFile('dokumentasi_foto_3', 'storage/observasi_bank/dokumentasi');
 
             $dataToInsert = [
                 'uuid' => (string) Uuid::uuid4(),
@@ -236,6 +256,10 @@ class ObservasiBankController extends Controller
                 // XII. VALIDASI PENGAWAS
                 'pengawas1' => $data['pengawas1'] ?? null,
 
+                'dokumentasi_foto_1' => $dokumentasiFoto1,
+                'dokumentasi_foto_2' => $dokumentasiFoto2,
+                'dokumentasi_foto_3' => $dokumentasiFoto3,
+
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ];
@@ -249,6 +273,34 @@ class ObservasiBankController extends Controller
             return redirect()->back()->with('info', 'Observasi BANK gagal disimpan' . $th->getMessage());
         }
     }
+
+    public function preview($uuid)
+    {
+        $data['report'] = DB::table('se_observasi_bank as ob')
+            ->leftJoin('ref_departemen as dep', 'ob.departemen_id', '=', 'dep.id')
+            ->leftJoin('users as us1', 'ob.petugas1', '=', 'us1.nik')
+            ->leftJoin('users as us2', 'ob.petugas2', '=', 'us2.nik')
+            ->leftJoin('users as us3', 'ob.petugas3', '=', 'us3.nik')
+            ->leftJoin('users as us4', 'ob.pengawas1', '=', 'us4.nik')
+            ->select(
+                'ob.*',
+                'dep.keterangan as departemen',
+                'us1.name as nama_petugas1',
+                'us2.name as nama_petugas2',
+                'us3.name as nama_petugas3',
+                'us4.name as nama_pengawas1',
+            )
+            ->where('ob.uuid', $uuid)
+            ->where('ob.statusenabled', 1)
+            ->first();
+
+        if (!$data['report']) {
+            abort(404);
+        }
+
+        return view('observasi-bank.preview', compact('data'));
+    }
+
 
     public function delete($id)
     {

@@ -21,6 +21,8 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Http\Controllers\WhatsAppController;
 use Illuminate\Support\Facades\Log as FacadesLog;
 use App\Models\RefConf;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\File;
 
 class PatrolController extends Controller
 {
@@ -578,6 +580,225 @@ class PatrolController extends Controller
 
 
         return view('patrol.preview', compact(['data']));
+    }
+
+    public function download($uuid)
+    {
+        $daily = DB::table('se_patrol_daily as patrol')
+        ->leftJoin('users as us', 'patrol.foreman_id', '=', 'us.id')
+        ->leftJoin('ref_shift as sh', 'patrol.shift', '=', 'sh.id')
+        ->leftJoin('users as us3', 'patrol.nik_petugas', '=', 'us3.nik')
+        ->leftJoin('users as us4', 'patrol.nik_penerima', '=', 'us4.nik')
+        ->leftJoin('users as us5', 'patrol.nik_superintendent', '=', 'us5.nik')
+        ->select(
+            'patrol.id',
+            'patrol.uuid',
+            'patrol.tanggal',
+            'us.position',
+            'sh.keterangan as shift',
+            'us.name as pic',
+            'us.nik as nik_pic',
+            'patrol.nik_petugas',
+            'us3.name as nama_petugas',
+            'us3.position as position_petugas',
+            'patrol.nik_penerima',
+            'us4.name as nama_penerima',
+            'us4.position as position_penerima',
+            'patrol.nik_superintendent',
+            'us5.name as nama_superintendent',
+            'us5.position as position_superintendent',
+            'patrol.is_draft',
+            'patrol.verified_petugas',
+            'patrol.verified_penerima',
+            'patrol.verified_superintendent',
+            'patrol.created_at',
+            'patrol.updated_at',
+            'patrol.finished_at',
+        )
+        ->where('patrol.statusenabled', true)
+        ->where('patrol.uuid', $uuid)->first();
+
+        if($daily == null){
+            return redirect()->back()->with('info', 'Maaf, data tidak ditemukan');
+        }else {
+            $daily->verified_petugas = $daily->verified_petugas != null ? QrCode::size(70)->generate('Telah diverifikasi oleh: ' . $daily->nama_petugas) : null;
+            $daily->verified_penerima = $daily->verified_penerima != null ? QrCode::size(70)->generate('Telah diverifikasi oleh: ' . $daily->nama_penerima) : null;
+            $daily->verified_superintendent = $daily->verified_superintendent != null ? QrCode::size(70)->generate('Telah diverifikasi oleh: ' . $daily->nama_superintendent) : null;
+        }
+
+
+        $sub = DB::table('se_patrol_sub_kegiatan as sub')
+        ->leftJoin('se_patrol_daily as patrol', 'sub.patrol_id', '=', 'patrol.id')
+        ->select(
+            'sub.sub',
+            'sub.kategori',
+            'sub.frekuensi',
+            'sub.lokasi',
+            'sub.status',
+            'sub.keterangan',
+            'sub.foto_kegiatan',
+        )
+        ->where('sub.statusenabled', true)
+        ->where('sub.patrol_uuid', $uuid)->get();
+
+        $temuan = DB::table('se_patrol_temuan_tindak_lanjut as temuan')
+        ->leftJoin('se_patrol_daily as patrol', 'temuan.patrol_id', '=', 'patrol.id')
+        ->select(
+            'temuan.foto_temuan',
+            'temuan.deskripsi_temuan',
+            'temuan.tindak_lanjut',
+            'temuan.status',
+        )
+        ->where('temuan.statusenabled', true)
+        ->where('temuan.patrol_uuid', $uuid)->get();
+
+        $pending = DB::table('se_patrol_job_pending as job')
+        ->leftJoin('se_patrol_daily as patrol', 'job.patrol_id', '=', 'patrol.id')
+        ->select(
+            'job.kegiatan_pending',
+            'job.alasan_belum_selesai',
+            'job.prioritas',
+            'job.instruksi_shift_berikutnya',
+            'job.foto_pending',
+        )
+        ->where('job.statusenabled', true)
+        ->where('job.patrol_uuid', $uuid)->get();
+
+        $data = [
+            'daily' => $daily,
+            'sub' => $sub,
+            'temuan' => $temuan,
+            'pending' => $pending,
+        ];
+
+
+        return view('patrol.cetak', compact(['data']));
+    }
+
+    public function pdf($uuid)
+    {
+        $daily = DB::table('se_patrol_daily as patrol')
+        ->leftJoin('users as us', 'patrol.foreman_id', '=', 'us.id')
+        ->leftJoin('ref_shift as sh', 'patrol.shift', '=', 'sh.id')
+        ->leftJoin('users as us3', 'patrol.nik_petugas', '=', 'us3.nik')
+        ->leftJoin('users as us4', 'patrol.nik_penerima', '=', 'us4.nik')
+        ->leftJoin('users as us5', 'patrol.nik_superintendent', '=', 'us5.nik')
+        ->select(
+            'patrol.id',
+            'patrol.uuid',
+            'patrol.tanggal',
+            'us.position',
+            'sh.keterangan as shift',
+            'us.name as pic',
+            'us.nik as nik_pic',
+            'patrol.nik_petugas',
+            'us3.name as nama_petugas',
+            'us3.position as position_petugas',
+            'patrol.nik_penerima',
+            'us4.name as nama_penerima',
+            'us4.position as position_penerima',
+            'patrol.nik_superintendent',
+            'us5.name as nama_superintendent',
+            'us5.position as position_superintendent',
+            'patrol.is_draft',
+            'patrol.verified_petugas',
+            'patrol.verified_penerima',
+            'patrol.verified_superintendent',
+            'patrol.created_at',
+            'patrol.updated_at',
+            'patrol.finished_at',
+        )
+        ->where('patrol.statusenabled', true)
+        ->where('patrol.uuid', $uuid)->first();
+
+        if($daily == null){
+            return redirect()->back()->with('info', 'Maaf, data tidak ditemukan');
+        }else {
+            $item = $daily;
+
+            $qrTempFolder = storage_path('app/qr-temp');
+            if (!File::exists($qrTempFolder)) {
+                File::makeDirectory($qrTempFolder, 0755, true);
+            }
+
+            if($item->verified_petugas != null){
+                $fileName = 'verified_petugas' . $item->uuid . '.png';
+                $filePath = $qrTempFolder . DIRECTORY_SEPARATOR . $fileName;
+
+                QrCode::size(150)->format('png')->generate(route('verified.index', ['encodedNik' => base64_encode($item->verified_petugas)]), $filePath);
+                $item->verified_petugas = $filePath;
+            }else{
+                $item->verified_petugas == null;
+            }
+
+            if($item->verified_penerima != null){
+                $fileName = 'verified_penerima' . $item->uuid . '.png';
+                $filePath = $qrTempFolder . DIRECTORY_SEPARATOR . $fileName;
+
+                QrCode::size(150)->format('png')->generate(route('verified.index', ['encodedNik' => base64_encode($item->verified_penerima)]), $filePath);
+                $item->verified_penerima = $filePath;
+            }else{
+                $item->verified_penerima == null;
+            }
+
+            if($item->verified_superintendent != null){
+                $fileName = 'verified_superintendent' . $item->uuid . '.png';
+                $filePath = $qrTempFolder . DIRECTORY_SEPARATOR . $fileName;
+
+                QrCode::size(150)->format('png')->generate(route('verified.index', ['encodedNik' => base64_encode($item->verified_superintendent)]), $filePath);
+                $item->verified_superintendent = $filePath;
+            }else{
+                $item->verified_superintendent == null;
+            }
+
+        }
+
+        $sub = DB::table('se_patrol_sub_kegiatan as sub')
+        ->leftJoin('se_patrol_daily as patrol', 'sub.patrol_id', '=', 'patrol.id')
+        ->select(
+            'sub.sub',
+            'sub.kategori',
+            'sub.frekuensi',
+            'sub.lokasi',
+            'sub.status',
+            'sub.keterangan',
+            'sub.foto_kegiatan',
+        )
+        ->where('sub.statusenabled', true)
+        ->where('sub.patrol_uuid', $uuid)->get();
+
+        $temuan = DB::table('se_patrol_temuan_tindak_lanjut as temuan')
+        ->leftJoin('se_patrol_daily as patrol', 'temuan.patrol_id', '=', 'patrol.id')
+        ->select(
+            'temuan.foto_temuan',
+            'temuan.deskripsi_temuan',
+            'temuan.tindak_lanjut',
+            'temuan.status',
+        )
+        ->where('temuan.statusenabled', true)
+        ->where('temuan.patrol_uuid', $uuid)->get();
+
+        $pending = DB::table('se_patrol_job_pending as job')
+        ->leftJoin('se_patrol_daily as patrol', 'job.patrol_id', '=', 'patrol.id')
+        ->select(
+            'job.kegiatan_pending',
+            'job.alasan_belum_selesai',
+            'job.prioritas',
+            'job.instruksi_shift_berikutnya',
+            'job.foto_pending',
+        )
+        ->where('job.statusenabled', true)
+        ->where('job.patrol_uuid', $uuid)->get();
+
+        $data = [
+            'daily' => $daily,
+            'sub' => $sub,
+            'temuan' => $temuan,
+            'pending' => $pending,
+        ];
+
+        $pdf = PDF::loadView('patrol.download', compact('data'));
+        return $pdf->download('FM-SE-72 - Laporan Kegiatan Harian & Job Pending Safety Patrol.pdf');
     }
 
 
