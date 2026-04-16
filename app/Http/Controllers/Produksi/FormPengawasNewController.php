@@ -1442,7 +1442,7 @@ class FormPengawasNewController extends Controller
                 'deleted_by' => Auth::user()->id,
             ]);
 
-            return redirect()->back()->with('success', 'Laporan kerja berhasil dihapus');
+            return redirect()->route('pengawas-produksi-pitstop.index')->with('success', 'Laporan kerja berhasil dihapus');
 
         } catch (\Throwable $th) {
             return redirect()->back()->with('info', 'Laporan kerja gagal dihapus');

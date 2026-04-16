@@ -176,14 +176,15 @@
                                         >
                                         <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
                                         @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT']))
-                                            <a
-                                                href="{{ route('form-pengawas-batubara.bundlepdf', ['rangeStart' => request('rangeStart'), 'rangeEnd' => request('rangeEnd')]) }}"
-                                                target="_blank"
-                                                class="btn btn-danger btn-sm d-inline-flex align-items-center justify-content-center gap-1 px-2"
-                                            >
-                                                <i class="fas fa-download"></i>
-                                                <span>Download</span>
-                                            </a>
+                                            <button
+    type="submit"
+    name="export"
+    value="excel"
+    class="btn btn-success btn-sm d-inline-flex align-items-center justify-content-center gap-1 px-2"
+>
+    <i class="fas fa-file-excel"></i>
+    <span>Download Excel</span>
+</button>
                                         @endif
                                     </div>
                                 </form>
@@ -208,20 +209,20 @@
                                         <th style="width: 120px;">Lokasi</th>
                                         <th style="width: 120px;">Inspektor</th>
                                         <th style="width: 220px;">Uraian Temuan</th>
-                                        <th style="width: 110px;">Dokumentasi Temuan</th>
+                                        {{-- <th style="width: 110px;">Dokumentasi Temuan</th> --}}
                                         <th style="width: 95px;">Tingkat Risiko</th>
                                         <th style="width: 220px;">Rekomendasi Tindak Lanjut</th>
                                         <th style="width: 95px;">Due Date</th>
                                         <th style="width: 110px;">PIC</th>
                                         <th style="width: 105px;">Tanggal Perbaikan</th>
-                                        <th style="width: 120px;">Dokumentasi Tindakan Perbaikan</th>
+                                        {{-- <th style="width: 120px;">Dokumentasi Tindakan Perbaikan</th> --}}
                                         <th style="width: 90px;">Status</th>
                                         <th style="width: 120px;">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($report as $item)
-                                        @php
+                                        {{-- @php
                                             $fotoTemuan = array_values(array_filter([
                                                 $item->file_temuan ?? null,
                                                 $item->file_temuan2 ?? null,
@@ -233,7 +234,7 @@
                                                 $item->file_tindakLanjut2 ?? null,
                                                 $item->file_tindakLanjut3 ?? null,
                                             ]));
-                                        @endphp
+                                        @endphp --}}
 
                                         <tr>
                                             <td class="text-center-cell">{{ $loop->iteration }}</td>
@@ -245,7 +246,7 @@
                                             <td class="text-cell">{{ $item->inspektor1 ?? '-' }}</td>
                                             <td class="text-cell">{{ $item->temuan ?? '-' }}</td>
 
-                                            <td class="img-cell">
+                                            {{-- <td class="img-cell">
                                                 @if (count($fotoTemuan))
                                                     <div class="img-group">
                                                         @foreach ($fotoTemuan as $foto)
@@ -257,7 +258,7 @@
                                                 @else
                                                     <div class="img-empty">-</div>
                                                 @endif
-                                            </td>
+                                            </td> --}}
 
                                             <td class="text-center-cell">{{ $item->tingkat_risiko ?? '-' }}</td>
                                             <td class="text-center-cell">{{ $item->tindak_lanjut ?? '-' }}</td>
@@ -269,7 +270,7 @@
                                                 {{ $item->tanggal_perbaikan ? date('d-m-Y', strtotime($item->tanggal_perbaikan)) : '-' }}
                                             </td>
 
-                                            <td class="img-cell">
+                                            {{-- <td class="img-cell">
                                                 @if (count($fotoPerbaikan))
                                                     <div class="img-group">
                                                         @foreach ($fotoPerbaikan as $foto)
@@ -281,7 +282,7 @@
                                                 @else
                                                     <div class="img-empty">-</div>
                                                 @endif
-                                            </td>
+                                            </td> --}}
 
                                             <td class="text-center-cell">
                                                 @if ($item->is_finish)
@@ -344,20 +345,20 @@
         autoWidth: false,
         scrollX: false,
         columnDefs: [
-            { targets: [0, 1, 6, 8, 10, 12, 13], className: 'text-center align-middle' },
-            { targets: [5, 11, 13], orderable: false, searchable: false }
+            { targets: [0, 1, 6, 8, 10, 11, 12], className: 'text-center align-middle' },
+            { targets: [12], orderable: false, searchable: false }
         ],
         buttons: [
             {
                 extend: 'copyHtml5',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 12]
+                    columns: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11]
                 }
             },
             {
                 extend: 'excelHtml5',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 12]
+                    columns: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11]
                 }
             },
             {
@@ -365,7 +366,7 @@
                 orientation: 'landscape',
                 pageSize: 'A4',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 12]
+                    columns: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11]
                 },
                 customize: function (doc) {
                     doc.content[1].margin = [10, 10, 10, 10];

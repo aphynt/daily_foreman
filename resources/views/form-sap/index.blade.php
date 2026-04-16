@@ -286,7 +286,7 @@
 
                                 <div class="mb-3">
                                     <label for="inspektor2" class="form-label">Inspektor 2 <span class="text-muted">(jika ada)</span></label>
-                                    <select class="form-select" id="inspektor2" name="inspektor2" data-trigger required>
+                                    <select class="form-select" id="inspektor2" name="inspektor2" data-trigger>
                                         <option value="" selected>-- Pilih Inspektor 2 jika ada --</option>
                                         @foreach ($pic as $p)
                                             <option value="{{ $p->nik }}">{{ $p->name }} ({{ $p->departemen }})</option>
@@ -295,8 +295,8 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="inspektor2" class="form-label">Inspektor 3 <span class="text-muted">(jika ada)</span></label>
-                                    <select class="form-select" id="inspektor3" name="inspektor3" data-trigger required>
+                                    <label for="inspektor3" class="form-label">Inspektor 3 <span class="text-muted">(jika ada)</span></label>
+                                    <select class="form-select" id="inspektor3" name="inspektor3" data-trigger>
                                         <option value="" selected>-- Pilih Inspektor 3 jika ada --</option>
                                         @foreach ($pic as $p)
                                             <option value="{{ $p->nik }}">{{ $p->name }} ({{ $p->departemen }})</option>
@@ -305,8 +305,8 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="inspektor2" class="form-label">Inspektor 4 <span class="text-muted">(jika ada)</span></label>
-                                    <select class="form-select" id="inspektor4" name="inspektor4" data-trigger required>
+                                    <label for="inspektor4" class="form-label">Inspektor 4 <span class="text-muted">(jika ada)</span></label>
+                                    <select class="form-select" id="inspektor4" name="inspektor4" data-trigger>
                                         <option value="" selected>-- Pilih Inspektor 4 jika ada --</option>
                                         @foreach ($pic as $p)
                                             <option value="{{ $p->nik }}">{{ $p->name }} ({{ $p->departemen }})</option>
@@ -415,6 +415,9 @@
                                 <div class="mb-0">
                                     <label for="departemen" class="form-label">PIC Departemen</label>
                                     <select class="form-select" id="departemen" name="departemen" data-trigger required>
+                                        <option value="{{ $departemenSelected?->id ?? null }}">
+                                            {{ $departemenSelected?->keterangan ?? 'Pilih Departemen' }}
+                                        </option>
                                         @foreach ($departemen as $dep)
                                             <option value="{{ $dep->id }}">{{ $dep->keterangan }}</option>
                                         @endforeach

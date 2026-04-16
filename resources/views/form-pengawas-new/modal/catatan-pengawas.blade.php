@@ -31,11 +31,11 @@
                 <form id="formCatatan" novalidate>
                     <div class="mb-3">
                         <label for="start">Start</label>
-                        <input type="text" id="pc-timepicker-1" class="form-control" id="start_catatan" name="jam_start[]">
+                        <input type="time" class="form-control" id="start_catatan" name="jam_start[]">
                     </div>
                     <div class="mb-3">
                         <label for="end">End</label>
-                        <input type="text" id="pc-timepicker-2" class="form-control" id="end_catatan" name="jam_stop[]">
+                        <input type="time" class="form-control" id="end_catatan" name="jam_stop[]">
                     </div>
                     <div class="mb-3">
                         <label for="description">Deskripsi</label>

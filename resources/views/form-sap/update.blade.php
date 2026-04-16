@@ -500,6 +500,30 @@
                                     </div>
 
                                     <div class="col-md-4">
+                                        <label class="form-label">Inspektor 1</label>
+                                        <input type="text" class="form-control readonly-field" value="{{ $report->inspektor1 ?: '-' }}" readonly>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label">Inspektor 2</label>
+                                        <input type="text" class="form-control readonly-field" value="{{ $report->inspektor2 ?: '-' }}" readonly>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label">Inspektor 3</label>
+                                        <input type="text" class="form-control readonly-field" value="{{ $report->inspektor3 ?: '-' }}" readonly>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label">Inspektor 4</label>
+                                        <input type="text" class="form-control readonly-field" value="{{ $report->inspektor4 ?: '-' }}" readonly>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label">Inspektor 5</label>
+                                        <input type="text" class="form-control readonly-field" value="{{ $report->inspektor5 ?: '-' }}" readonly>
+                                    </div>
+                                    <div class="col-md-4">
                                         <label class="form-label">PICA Level</label>
                                         <select class="form-select" id="level" name="level" required>
                                             <option value="1" {{ old('level', $report->level) == '1' ? 'selected' : '' }}>1</option>

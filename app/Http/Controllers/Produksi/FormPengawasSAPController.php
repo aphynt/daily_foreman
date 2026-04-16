@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Produksi;
 
+use App\Exports\InspeksiPICAExport;
 use App\Http\Controllers\Controller;
 use App\Models\Area;
 use App\Models\Departemen;
@@ -15,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
+use Maatwebsite\Excel\Facades\Excel;
 
 class FormPengawasSAPController extends Controller
 {
@@ -46,9 +48,10 @@ class FormPengawasSAPController extends Controller
         ->whereNotIn('us.role', ['ADMIN', 'MANAGEMENT'])
         ->where('us.statusenabled', true)->get();
         $departemen = Departemen::where('statusenabled', true)->get();
+        $departemenSelected = Departemen::where('id', Auth::user()->departemen_id)->first();
         $shift = Shift::where('statusenabled', true)->get();
         $area = Area::where('statusenabled', true)->get();
-        return view('form-sap.index', compact('area', 'shift', 'pic', 'departemen'));
+        return view('form-sap.index', compact('area', 'shift', 'pic', 'departemen', 'departemenSelected'));
     }
 
     public function post(Request $request)
@@ -382,6 +385,11 @@ class FormPengawasSAPController extends Controller
 
         // }
         $report = $report->orderBy('created_at', 'DESC')->get();
+
+        if ($request->get('export') === 'excel') {
+            $fileName = "($startTimeFormatted - $endTimeFormatted) PICA Inspeksi Level IV.xlsx";
+            return Excel::download(new InspeksiPICAExport($report), $fileName);
+        }
 
         return view('form-sap.daftar.index', compact('report'));
     }
