@@ -12,6 +12,8 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class InspeksiPICAExport implements
     FromCollection,
@@ -37,13 +39,25 @@ class InspeksiPICAExport implements
         $no = 1;
 
         return $this->data->map(function ($item) use (&$no) {
+            $isClose = (int) ($item->is_finish ?? 0) === 1;
+
+            $inspectors = collect([
+                $item->inspektor1 ?? null,
+                $item->inspektor2 ?? null,
+                $item->inspektor3 ?? null,
+                $item->inspektor4 ?? null,
+                $item->inspektor5 ?? null,
+            ])->filter(function ($value) {
+                return !is_null($value) && trim($value) !== '';
+            })->implode("\n");
+
             return [
                 $no++,
                 $item->created_at
                     ? Carbon::parse($item->created_at)->format('d-M-y')
                     : null,
                 $item->area,
-                $item->pic,
+                $inspectors ?: '-',
                 $item->temuan,
                 $item->file_temuan,
                 $item->tingkat_risiko,
@@ -52,11 +66,12 @@ class InspeksiPICAExport implements
                     ? Carbon::parse($item->created_at)->addDays(7)->format('d-M-y')
                     : null,
                 'Produksi',
-                $item->is_finish === 'Close' && $item->updated_at
-                    ? Carbon::parse($item->updated_at)->format('d-M-y')
+                $isClose && $item->tanggal_perbaikan
+                    ? Carbon::parse($item->tanggal_perbaikan)->format('d-M-y')
                     : null,
                 $item->file_tindakLanjut,
-                $item->is_finish,
+                $isClose ? 'Close' : 'Open',
+                $item->level,
             ];
         });
     }
@@ -67,7 +82,7 @@ class InspeksiPICAExport implements
             'No',
             'Tgl. Inspeksi',
             'Lokasi',
-            'Inspector',
+            'Inspektor',
             'Uraian Temuan',
             'Dokumentasi Temuan',
             'Tingkat Risiko',
@@ -94,7 +109,7 @@ class InspeksiPICAExport implements
                     $d2->setName('Logo2');
                     $d2->setDescription('Logo Perusahaan 2');
                     $d2->setPath($logo);
-                    // $d2->setHeight(50);
+                    $d2->setHeight(50);
                     $d2->setCoordinates('A1');
                     $d2->setOffsetX(0);
                     $d2->setWorksheet($sheet);
@@ -113,8 +128,8 @@ class InspeksiPICAExport implements
                     ],
                 ]);
 
-                $sheet->setCellValue('M1', 'FM-SE-82/05/24/09/25');
-                $sheet->getStyle('M1')->applyFromArray([
+                $sheet->setCellValue('N1', 'FM-SE-82/05/24/09/25');
+                $sheet->getStyle('N1')->applyFromArray([
                     'font' => [
                         'bold' => true,
                         'size' => 9,
@@ -130,13 +145,13 @@ class InspeksiPICAExport implements
                 $sheet->getColumnDimension('C')->setWidth(18);
                 $sheet->getColumnDimension('D')->setWidth(25);
                 $sheet->getColumnDimension('E')->setWidth(35);
-                $sheet->getColumnDimension('F')->setWidth(35);
+                $sheet->getColumnDimension('F')->setWidth(30);
                 $sheet->getColumnDimension('G')->setWidth(14);
                 $sheet->getColumnDimension('H')->setWidth(35);
                 $sheet->getColumnDimension('I')->setWidth(14);
                 $sheet->getColumnDimension('J')->setWidth(18);
                 $sheet->getColumnDimension('K')->setWidth(14);
-                $sheet->getColumnDimension('L')->setWidth(35);
+                $sheet->getColumnDimension('L')->setWidth(30);
                 $sheet->getColumnDimension('M')->setWidth(10);
                 $sheet->getColumnDimension('N')->setWidth(10);
 
@@ -162,6 +177,23 @@ class InspeksiPICAExport implements
 
                 foreach ($this->data as $item) {
                     $row = $startDataRow + $rowIndex;
+                    $isClose = (int) ($item->is_finish ?? 0) === 1;
+                    $statusCell = 'M' . $row;
+
+                    $sheet->getStyle($statusCell)->applyFromArray([
+                        'font' => [
+                            'bold' => true,
+                            'color' => ['rgb' => $isClose ? 'FFFFFF' : 'FFFFFF'],
+                        ],
+                        'fill' => [
+                            'fillType' => Fill::FILL_SOLID,
+                            'startColor' => ['rgb' => $isClose ? '198754' : 'DC3545'],
+                        ],
+                        'alignment' => [
+                            'horizontal' => Alignment::HORIZONTAL_CENTER,
+                            'vertical'   => Alignment::VERTICAL_CENTER,
+                        ],
+                    ]);
 
                     $sheet->getRowDimension($row)->setRowHeight(80);
 
@@ -195,7 +227,7 @@ class InspeksiPICAExport implements
     public function styles(Worksheet $sheet)
     {
         return [
-            'A4:M4' => [
+            'A4:N4' => [
                 'font' => [
                     'bold' => true,
                     'size' => 11,

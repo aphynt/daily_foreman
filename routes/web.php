@@ -172,7 +172,7 @@ Route::group(['middleware' => ['auth']], function(){
     //Form Pengawas SAP
     Route::get('/form-pengawas-sap/index', [FormPengawasSAPController::class, 'index'])->name('form-pengawas-sap.index');
     Route::post('/form-pengawas-sap/post', [FormPengawasSAPController::class, 'post'])->name('form-pengawas-sap.post');
-    Route::post('/form-pengawas-sap/verify-scc/{id}', [FormPengawasSAPController::class, 'verifySCC'])->name('form-pengawas-sap.verify-scc');
+    Route::post('/form-pengawas-sap/verify-scc/{uuid}', [FormPengawasSAPController::class, 'verifySCC'])->name('form-pengawas-sap.verify-scc');
     Route::get('/form-pengawas-sap/show', [FormPengawasSAPController::class, 'show'])->name('form-pengawas-sap.show');
     Route::get('/form-pengawas-sap/delete/{uuid}', [FormPengawasSAPController::class, 'delete'])->name('form-pengawas-sap.delete');
     Route::get('/form-pengawas-sap/rincian/{uuid}', [FormPengawasSAPController::class, 'rincian'])->name('form-pengawas-sap.rincian');

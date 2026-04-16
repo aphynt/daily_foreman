@@ -416,7 +416,7 @@
             <div class="col-md-10 col-xxl-9 mb-4">
                 <div class="page-title-wrap">
                     <h3>Update Laporan SAP</h3>
-                    <div class="page-subtitle">Lengkapi tindak lanjut dan perbarui dokumentasi laporan dengan tampilan yang selaras dengan form terbaru.</div>
+                    <div class="page-subtitle">Lengkapi tindak lanjut dan perbarui dokumentasi laporan</div>
                 </div>
             </div>
         </div>
@@ -684,6 +684,7 @@
                                 </div>
 
                                 <div class="action-row">
+                                    @if($report->foreman_id == Auth::user()->id)
                                     <div class="submit-wrap">
                                         <div class="submit-panel">
                                             <button type="submit" class="btn-finish" id="submitSAP">
@@ -691,16 +692,20 @@
                                             </button>
                                         </div>
                                     </div>
+                                    @endif
 
-                                    @if((int)($report->is_finish ?? 0) === 0 && Auth::user()->id == 3)
+                                    @if(Auth::user()->id == 3)
                                         <div class="verify-wrap">
                                             <div class="verify-panel">
-                                                <form action="{{ route('form-pengawas-sap.verify-scc', $report->uuid) }}" method="POST" onsubmit="return confirm('Yakin ingin memverifikasi laporan ini?')">
-                                                    @csrf
-                                                    <button type="submit" class="btn-verify">
-                                                        Verifikasi
-                                                    </button>
-                                                </form>
+                                                <button type="submit"
+                                                        class="btn-verify"
+                                                        id="submitVerifySCC"
+                                                        formaction="{{ route('form-pengawas-sap.verify-scc', $report->uuid) }}"
+                                                        formmethod="POST"
+                                                        formenctype="multipart/form-data"
+                                                        onclick="return confirm('Yakin ingin memverifikasi laporan ini?')">
+                                                    Update Form & Teruskan ke PIC
+                                                </button>
                                             </div>
                                         </div>
                                     @endif
@@ -723,7 +728,6 @@
         }
     });
 </script>
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const formSAP = document.getElementById('laporanForm');
@@ -777,16 +781,39 @@ document.addEventListener('DOMContentLoaded', function () {
     formSAP.addEventListener('submit', async function (e) {
         e.preventDefault();
 
-        submitSAP.disabled = true;
-        const originalText = submitSAP.innerText;
-        submitSAP.innerText = 'Memproses...';
+        const submitter = e.submitter || document.activeElement;
+        const originalAction = formSAP.getAttribute('action');
+        const originalMethod = formSAP.getAttribute('method') || 'POST';
+        const originalEnctype = formSAP.getAttribute('enctype') || 'multipart/form-data';
+
+        const targetAction = submitter?.getAttribute('formaction') || originalAction;
+        const targetMethod = submitter?.getAttribute('formmethod') || originalMethod;
+        const targetEnctype = submitter?.getAttribute('formenctype') || originalEnctype;
+
+        if (submitter) {
+            submitter.disabled = true;
+        }
+
+        if (submitSAP) {
+            submitSAP.disabled = true;
+        }
+
+        const originalText = submitter ? submitter.innerText : '';
+        if (submitter) {
+            submitter.innerText = 'Memproses...';
+        }
 
         const oldAlerts = formSAP.querySelectorAll('.alert');
         oldAlerts.forEach(el => el.remove());
 
         const safetyTimer = setTimeout(() => {
-            submitSAP.disabled = false;
-            submitSAP.innerText = originalText;
+            if (submitter) {
+                submitter.disabled = false;
+                submitter.innerText = originalText;
+            }
+            if (submitSAP && submitSAP !== submitter) {
+                submitSAP.disabled = false;
+            }
         }, 30000);
 
         try {
@@ -822,19 +849,35 @@ document.addEventListener('DOMContentLoaded', function () {
             formSAP.prepend(alertDiv);
 
             clearTimeout(safetyTimer);
-            formSAP.submit();
+
+            formSAP.setAttribute('action', targetAction);
+            formSAP.setAttribute('method', targetMethod);
+            formSAP.setAttribute('enctype', targetEnctype);
+
+            HTMLFormElement.prototype.submit.call(formSAP);
         } catch (err) {
             console.error('Error during compression/submit:', err);
             clearTimeout(safetyTimer);
-            submitSAP.disabled = false;
-            submitSAP.innerText = originalText;
+
+            if (submitter) {
+                submitter.disabled = false;
+                submitter.innerText = originalText;
+            }
+
+            if (submitSAP && submitSAP !== submitter) {
+                submitSAP.disabled = false;
+            }
 
             const errDiv = document.createElement('div');
             errDiv.className = 'alert alert-danger mt-3';
             errDiv.innerText = 'Terjadi kendala saat memproses gambar. Form tetap dikirim tanpa kompresi.';
             formSAP.prepend(errDiv);
 
-            formSAP.submit();
+            formSAP.setAttribute('action', targetAction);
+            formSAP.setAttribute('method', targetMethod);
+            formSAP.setAttribute('enctype', targetEnctype);
+
+            HTMLFormElement.prototype.submit.call(formSAP);
         }
     });
 });

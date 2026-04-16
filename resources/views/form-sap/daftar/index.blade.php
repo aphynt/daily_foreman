@@ -177,14 +177,14 @@
                                         <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
                                         @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT']))
                                             <button
-    type="submit"
-    name="export"
-    value="excel"
-    class="btn btn-success btn-sm d-inline-flex align-items-center justify-content-center gap-1 px-2"
->
-    <i class="fas fa-file-excel"></i>
-    <span>Download Excel</span>
-</button>
+                                                type="submit"
+                                                name="export"
+                                                value="excel"
+                                                class="btn btn-success btn-sm d-inline-flex align-items-center justify-content-center gap-1 px-2"
+                                            >
+                                                <i class="fas fa-download"></i>
+                                                <span>Download</span>
+                                            </button>
                                         @endif
                                     </div>
                                 </form>
@@ -243,7 +243,15 @@
                                             </td>
                                             <td class="text-cell">{{ $item->level ?? '-' }}</td>
                                             <td class="text-cell">{{ $item->area ?? '-' }}</td>
-                                            <td class="text-cell">{{ $item->inspektor1 ?? '-' }}</td>
+                                            <td class="text-cell">
+                                                {{ implode(', ', array_filter([
+                                                    $item->inspektor1,
+                                                    $item->inspektor2,
+                                                    $item->inspektor3,
+                                                    $item->inspektor4,
+                                                    $item->inspektor5
+                                                ])) ?: '-' }}
+                                            </td>
                                             <td class="text-cell">{{ $item->temuan ?? '-' }}</td>
 
                                             {{-- <td class="img-cell">
