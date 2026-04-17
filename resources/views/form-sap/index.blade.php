@@ -277,7 +277,7 @@
                                     <select class="form-select" id="inspektor1" name="inspektor1" data-trigger required>
                                         <option value="{{ Auth::user()->name }}" selected>{{ Auth::user()->name }}</option>
                                         @foreach ($pic as $p)
-                                            <option value="{{ $p->nik }}">{{ $p->name }} ({{ $p->departemen }})</option>
+                                            <option value="{{ $p->name }}">{{ $p->name }} ({{ $p->departemen }})</option>
                                         @endforeach
                                     </select>
                                     <small class="form-text-modern">Default terisi dengan akun yang sedang login.</small>
@@ -289,7 +289,7 @@
                                     <select class="form-select" id="inspektor2" name="inspektor2" data-trigger>
                                         <option value="" selected>-- Pilih Inspektor 2 jika ada --</option>
                                         @foreach ($pic as $p)
-                                            <option value="{{ $p->nik }}">{{ $p->name }} ({{ $p->departemen }})</option>
+                                            <option value="{{ $p->name }}">{{ $p->name }} ({{ $p->departemen }})</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -299,7 +299,7 @@
                                     <select class="form-select" id="inspektor3" name="inspektor3" data-trigger>
                                         <option value="" selected>-- Pilih Inspektor 3 jika ada --</option>
                                         @foreach ($pic as $p)
-                                            <option value="{{ $p->nik }}">{{ $p->name }} ({{ $p->departemen }})</option>
+                                            <option value="{{ $p->name }}">{{ $p->name }} ({{ $p->departemen }})</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -309,7 +309,7 @@
                                     <select class="form-select" id="inspektor4" name="inspektor4" data-trigger>
                                         <option value="" selected>-- Pilih Inspektor 4 jika ada --</option>
                                         @foreach ($pic as $p)
-                                            <option value="{{ $p->nik }}">{{ $p->name }} ({{ $p->departemen }})</option>
+                                            <option value="{{ $p->name }}">{{ $p->name }} ({{ $p->departemen }})</option>
                                         @endforeach
                                     </select>
                                 </div>

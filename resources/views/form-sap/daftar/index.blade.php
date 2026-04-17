@@ -12,7 +12,6 @@
     #cbtn-selectors thead th,
     #cbtn-selectors tbody td {
         white-space: normal !important;
-        word-break: break-word;
         overflow-wrap: break-word;
         vertical-align: middle;
     }
@@ -31,7 +30,6 @@
 
     #cbtn-selectors .text-cell {
         white-space: normal !important;
-        word-break: break-word;
         overflow-wrap: break-word;
     }
 
@@ -137,6 +135,7 @@
     #pc-datepicker-10 .form-control {
         min-height: 38px;
     }
+
 </style>
 
 <section class="pc-container">
