@@ -206,7 +206,7 @@ class PatrolController extends Controller
         try {
             $typeDraft = true;
             $finished = null;
-            if($request->actionType == 'finish'){
+            if ($request->actionType == 'finish') {
                 $typeDraft = false;
                 $finished = Carbon::now();
 
@@ -214,26 +214,53 @@ class PatrolController extends Controller
                 $reportDate = $finished->format('d-m-Y H:i');
                 $shift = Shift::where('id', $request->shift_id)->value('keterangan');
 
-                // Kirim WhatsApp
                 $waController = new WhatsAppController();
-                $number = RefConf::where('id', 11)->value('value');
 
-                $message = <<<MSG
-                🔔 *Reminder Verifikasi Laporan Harian Safety Patrol*
+                $verificationNumber = RefConf::where('id', 11)->value('value');
 
-                PIC: $picName,
+                $verificationMessage = <<<MSG
+            🔔 *Reminder Verifikasi Laporan Harian SECTION SAFETY PATROL*
 
-                Terdapat laporan yang telah berhasil disubmit pada tanggal: $reportDate
-                Shift: $shift
+            PIC: $picName
 
-                Mohon bantuannya untuk melakukan pengecekan dan verifikasi laporan tersebut.
+            Terdapat laporan yang telah berhasil disubmit pada tanggal: $reportDate
+            Shift: $shift
 
-                Terima kasih atas perhatian dan kerja samanya.
-                _Pesan ini dikirim secara otomatis. Mohon tidak membalas pesan ini._
-                MSG;
+            Mohon bantuannya untuk melakukan pengecekan dan verifikasi laporan tersebut di aplikasi Daily Foreman.
 
-                $waResult = $waController->sendMessage($number, $message);
-                FacadesLog::info('WA Send Result: ', $waResult);
+            Terima kasih atas perhatian dan kerja samanya.
+            _Pesan ini dikirim secara otomatis. Mohon tidak membalas pesan ini._
+            MSG;
+
+                $verificationWaResult = $waController->sendMessage($verificationNumber, $verificationMessage);
+                FacadesLog::info('WA Send Result Verification', [
+                    'number' => $verificationNumber,
+                    'result' => $verificationWaResult
+                ]);
+
+                $reportNotificationNumber = RefConf::where('id', 25)->value('value');
+
+                $reportNotificationMessage = <<<MSG
+            🔔 *Pemberitahuan Laporan Kerja SECTION SAFETY PATROL*
+
+            Halo,
+
+            Laporan kerja telah dibuat dan disubmit oleh:
+            *Nama:* $picName
+            *Tanggal submit:* $reportDate
+            *Shift:* $shift
+
+            Mohon bantuannya untuk melakukan pengecekan dan verifikasi laporan tersebut di aplikasi Daily Foreman.
+
+            Terima kasih atas perhatian dan kerja samanya.
+            _Pesan ini dikirim secara otomatis. Mohon tidak membalas pesan ini._
+            MSG;
+
+                $reportNotificationWaResult = $waController->sendMessage($reportNotificationNumber, $reportNotificationMessage);
+                FacadesLog::info('WA Send Result Report Notification', [
+                    'number' => $reportNotificationNumber,
+                    'result' => $reportNotificationWaResult
+                ]);
             }
             $uuid = $request->uuid;
 
