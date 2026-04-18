@@ -152,44 +152,61 @@
                     </div>
 
                     <div class="col-12">
-                        <div class="mb-3 row d-flex align-items-center">
-                            <div class="col-sm-12 col-md-10 mb-2">
-                                <form action="" method="get">
-                                    <div class="input-group" id="pc-datepicker-10">
-                                        <input
-                                            type="text"
-                                            class="form-control form-control-sm"
-                                            placeholder="Start date"
-                                            name="rangeStart"
-                                            style="max-width: 200px;"
-                                            id="range-start"
-                                        >
-                                        <span class="input-group-text">s/d</span>
-                                        <input
-                                            type="text"
-                                            class="form-control form-control-sm"
-                                            placeholder="End date"
-                                            name="rangeEnd"
-                                            style="max-width: 200px;"
-                                            id="range-end"
-                                        >
-                                        <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
-                                        @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT']))
-                                            <button
-                                                type="submit"
-                                                name="export"
-                                                value="excel"
-                                                class="btn btn-success btn-sm d-inline-flex align-items-center justify-content-center gap-1 px-2"
-                                            >
-                                                <i class="fas fa-download"></i>
-                                                <span>Download</span>
-                                            </button>
-                                        @endif
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+    <div class="mb-3 row d-flex align-items-center">
+        <div class="col-sm-12 col-md-10 mb-2">
+            <form action="" method="get">
+                <div class="input-group" id="pc-datepicker-10">
+                    <input
+                        type="text"
+                        class="form-control form-control-sm"
+                        placeholder="Start date"
+                        name="rangeStart"
+                        style="max-width: 200px;"
+                        id="range-start"
+                        value="{{ request('rangeStart') }}"
+                    >
+
+                    <span class="input-group-text">s/d</span>
+
+                    <input
+                        type="text"
+                        class="form-control form-control-sm"
+                        placeholder="End date"
+                        name="rangeEnd"
+                        style="max-width: 200px;"
+                        id="range-end"
+                        value="{{ request('rangeEnd') }}"
+                    >
+
+                    <span class="input-group-text">Status</span>
+                    <select
+                        name="status"
+                        class="form-select form-select-sm"
+                        style="max-width: 150px;"
+                    >
+                        <option value="" {{ request('status') == '' ? 'selected' : '' }}>All</option>
+                        <option value="0" {{ request('status') == 'OPEN' ? 'selected' : '' }}>Open</option>
+                        <option value="1" {{ request('status') == 'CLOSE' ? 'selected' : '' }}>Close</option>
+                    </select>
+
+                    <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
+
+                    @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT']))
+                        <button
+                            type="submit"
+                            name="export"
+                            value="excel"
+                            class="btn btn-success btn-sm d-inline-flex align-items-center justify-content-center gap-1 px-2"
+                        >
+                            <i class="fas fa-download"></i>
+                            <span>Download</span>
+                        </button>
+                    @endif
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
                 </div>
             </div>
         </div>

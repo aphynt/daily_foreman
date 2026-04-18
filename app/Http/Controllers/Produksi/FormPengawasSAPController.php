@@ -443,6 +443,10 @@ MSG;
             });
         }
 
+        if ($request->filled('status')) {
+            $report->where('is_finish', $request->status);
+        }
+
         $report = $report->orderBy('sr.created_at', 'DESC')->get();
 
         if ($request->get('export') === 'excel') {
@@ -520,6 +524,68 @@ MSG;
                 $finishing = 0;
             }else{
                 $finishing = 1;
+                $waController = new WhatsAppController();
+
+                if($request->pic == 2){
+                    $verificationNumber = RefConf::where('id', 14)->value('value');
+                }else if($request->pic == 3){
+                    $verificationNumber = RefConf::where('id', 20)->value('value');
+                }else if($request->pic == 4){
+                    $verificationNumber = RefConf::where('id', 18)->value('value');
+                }else if($request->pic == 5){
+                    $verificationNumber = RefConf::where('id', 19)->value('value');
+                }else if($request->pic == 6){
+                    $verificationNumber = RefConf::where('id', 16)->value('value');
+                }else if($request->pic == 7){
+                    $verificationNumber = RefConf::where('id', 17)->value('value');
+                }else if($request->pic == 8){
+                    $verificationNumber = RefConf::where('id', 13)->value('value');
+                }else if($request->pic == 10){
+                    $verificationNumber = RefConf::where('id', 23)->value('value');
+                }else if($request->pic == 11){
+                    $verificationNumber = RefConf::where('id', 21)->value('value');
+                }else if($request->pic == 12){
+                    $verificationNumber = RefConf::where('id', 22)->value('value');
+                }
+
+
+                $dueDate = $report->created_at
+                    ? Carbon::parse($report->created_at)->addDays(7)->format('d-m-Y')
+                    : '-';
+                $area = Area::where('id', $report->area)->value('keterangan');
+
+                $verificationMessage = <<<MSG
+                🔔 *Notifikasi Tindak Lanjut PICA Report*
+
+                Yth. PIC,
+
+                Terdapat *PICA Report* yang masih berstatus *Open* dan telah diteruskan kepada Anda untuk segera ditindaklanjuti ke PIC masing-masing.
+
+                Detail temuan:
+                - No. Report: {$report->id}
+                - Area: {$area}
+                - Temuan: {$request->temuan}
+                - Tingkat Risiko: {$request->tingkatRisiko}
+                - Due Date: {$dueDate}
+
+                Mohon segera melakukan tindak lanjut atas temuan tersebut dan memperbarui progres perbaikannya.
+
+                Terima kasih atas perhatian dan kerja samanya.
+                _Pesan ini dikirim secara otomatis. Mohon tidak membalas pesan ini._
+                MSG;
+
+                if (!empty($verificationNumber)) {
+                    $verificationWaResult = $waController->sendMessage($verificationNumber, $verificationMessage);
+
+                    FacadesLog::info('WA Send Result Verification', [
+                        'number' => $verificationNumber,
+                        'result' => $verificationWaResult
+                    ]);
+                }
+                FacadesLog::info('WA Send Result Verification', [
+                    'number' => $verificationNumber,
+                    'result' => $verificationWaResult
+                ]);
             }
 
             $dataUpdate = [

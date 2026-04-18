@@ -139,7 +139,7 @@
                 <div class="row align-items-center">
                     <div class="col-sm-12">
                         <h3 class="page-title mb-1">Inspeksi Tidak Terencana dan Kepatuhan Golden Rules</h3>
-                        <p class="sub-title">Form inspeksi kepatuhan golden rules dengan pencarian berdasarkan NIK atau unit focus.</p>
+                        <p class="sub-title">Form inspeksi kepatuhan golden rules dengan pencarian berdasarkan NIK, input manual, atau unit focus.</p>
                     </div>
                 </div>
             </div>
@@ -155,8 +155,9 @@
                             <div class="modern-note mb-4">
                                 <strong>NOTE</strong>
                                 <ul class="mb-0 ps-3">
-                                    <li>Pilih metode pencarian data berdasarkan <b>NIK</b> atau <b>Focus Unit HD</b>.</li>
+                                    <li>Pilih metode pencarian data berdasarkan <b>NIK</b>, <b>Manual</b>, atau <b>Focus Unit HD</b>.</li>
                                     <li>Jika pilih <b>NIK</b>, user cukup pilih NIK lalu nama terisi otomatis.</li>
+                                    <li>Jika pilih <b>Manual</b>, user bisa input sendiri NIK dan nama.</li>
                                     <li>Jika pilih <b>Focus</b>, user pilih unit HD lalu NIK dan nama panggil terisi otomatis dari API.</li>
                                     <li>Pelanggaran dapat dipilih lebih dari satu, termasuk opsi <b>Lainnya</b>.</li>
                                 </ul>
@@ -166,13 +167,19 @@
                             <div class="field-card">
                                 <div class="section-label">Searching By</div>
                                 <div class="row">
-                                    <div class="col-md-6 mb-2">
+                                    <div class="col-md-4 mb-2">
+                                        <label class="search-option">
+                                            <input type="radio" name="searching_by" value="manual">
+                                            <span>Manual</span>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
                                         <label class="search-option">
                                             <input type="radio" name="searching_by" value="nik" checked>
                                             <span>NIK</span>
                                         </label>
                                     </div>
-                                    <div class="col-md-6 mb-2">
+                                    <div class="col-md-4 mb-2">
                                         <label class="search-option">
                                             <input type="radio" name="searching_by" value="focus">
                                             <span>Focus</span>
@@ -181,6 +188,21 @@
                                 </div>
                             </div>
 
+                            {{-- MODE MANUAL --}}
+                            <div id="manualSection" class="field-card hidden-section">
+                                <div class="section-label">Input Manual</div>
+                                <div class="row">
+                                    <div class="col-md-6 col-12 mb-3">
+                                        <label class="form-label">NIK</label>
+                                        <input type="text" class="form-control form-control-sm" name="manual_nik" id="manual_nik" placeholder="Tulis NIK" >
+                                    </div>
+
+                                    <div class="col-md-6 col-12 mb-3">
+                                        <label class="form-label">Nama</label>
+                                        <input type="text" class="form-control form-control-sm" name="manual_nama" id="manual_nama" placeholder="Tulis nama">
+                                    </div>
+                                </div>
+                            </div>
                             {{-- MODE NIK --}}
                             <div id="nikSection" class="field-card">
                                 <div class="section-label">Pilih Berdasarkan NIK</div>
@@ -349,6 +371,10 @@
     const formInspeksiGoldenRules = document.getElementById('submitformInspeksiGoldenRules');
     const submitButtonInspeksiGoldenRules = document.getElementById('submitButtonInspeksiGoldenRules');
 
+    const manualSection = document.getElementById('manualSection');
+    const manualNik = document.getElementById('manual_nik');
+    const manualNama = document.getElementById('manual_nama');
+
     const nikSection = document.getElementById('nikSection');
     const focusSection = document.getElementById('focusSection');
     const radioSearchingBy = document.querySelectorAll('input[name="searching_by"]');
@@ -381,15 +407,25 @@
         const selected = document.querySelector('input[name="searching_by"]:checked').value;
 
         nikSection.classList.add('hidden-section');
+        manualSection.classList.add('hidden-section');
         focusSection.classList.add('hidden-section');
 
         nikSelect.required = false;
+        manualNik.required = false;
+        manualNama.required = false;
         focusUnitHd.required = false;
 
         if (selected === 'nik') {
             nikSection.classList.remove('hidden-section');
             nikSelect.required = true;
             syncNikToFinal();
+        }
+
+        if (selected === 'manual') {
+            manualSection.classList.remove('hidden-section');
+            manualNik.required = true;
+            manualNama.required = true;
+            syncManualToFinal();
         }
 
         if (selected === 'focus') {
@@ -399,6 +435,16 @@
             finalNik.value = focusNik.value || '';
             finalNama.value = focusNama.value || '';
         }
+    }
+
+    ['input', 'change', 'blur'].forEach(evt => {
+        manualNik.addEventListener(evt, syncManualToFinal);
+        manualNama.addEventListener(evt, syncManualToFinal);
+    });
+
+    function syncManualToFinal() {
+        finalNik.value = (manualNik.value || '').trim();
+        finalNama.value = (manualNama.value || '').trim();
     }
 
     function toggleLainnyaInput() {
@@ -461,6 +507,15 @@
     formInspeksiGoldenRules.addEventListener('submit', function(e) {
         const checkedPelanggaran = document.querySelectorAll('input[name="pelanggaran[]"]:checked');
         const selected = document.querySelector('input[name="searching_by"]:checked').value;
+
+        if (selected === 'manual') {
+            syncManualToFinal();
+            if (!finalNik.value || !finalNama.value) {
+                e.preventDefault();
+                alert('Silakan isi NIK dan nama secara manual terlebih dahulu.');
+                return;
+            }
+        }
 
 
         if (selected === 'nik') {

@@ -21,27 +21,107 @@ class InspeksiTidakTerencanaController extends Controller
     {
         session(['requestTimeInspeksiTidakTerencana' => $request->all()]);
 
-        if (empty($request->rangeStart) || empty($request->rangeEnd)){
-            $time = new DateTime();
-            $startDate = $time->format('Y-m-d');
-            $endDate = $time->format('Y-m-d');
-
-            $start = new DateTime("$startDate");
-            $end = new DateTime("$endDate");
-
-        }else{
-            $start = new DateTime("$request->rangeStart");
-            $end = new DateTime("$request->rangeEnd");
+        if (empty($request->rangeStart) || empty($request->rangeEnd)) {
+            $start = Carbon::today()->format('Y-m-d');
+            $end   = Carbon::today()->format('Y-m-d');
+        } else {
+            $start = Carbon::parse($request->rangeStart)->format('Y-m-d');
+            $end   = Carbon::parse($request->rangeEnd)->format('Y-m-d');
         }
 
+        $table = (new InspeksiTidakTerencana)->getTable();
 
-        $startTimeFormatted = $start->format('Y-m-d');
-        $endTimeFormatted = $end->format('Y-m-d');
+        $rawData = InspeksiTidakTerencana::from($table . ' as itt')
+            ->leftJoin('users as u', 'itt.pic', '=', 'u.id')
+            ->where('itt.statusenabled', true)
+            ->whereBetween(DB::raw('CONVERT(varchar, itt.tanggal, 23)'), [$start, $end])
+            ->orderBy('itt.nik')
+            ->orderBy('itt.tanggal')
+            ->orderBy('itt.waktu')
+            ->select([
+                'itt.*',
+                'u.id as pic_user_id',
+                'u.nik as pic_nik',
+                'u.name as pic_nama',
+            ])
+            ->get();
 
-        $data = InspeksiTidakTerencana::where('statusenabled', true)
-        ->whereBetween(DB::raw('CONVERT(varchar, tanggal, 23)'), [$startTimeFormatted, $endTimeFormatted])
-        ->get();
+        $data = $rawData->groupBy(function ($item) {
+            return $item->nik . '|' . Carbon::parse($item->tanggal)->format('Y-m-d');
+        })->map(function ($items) {
+            $first = $items->first();
+
+            return (object) [
+                'id' => $first->id,
+                'uuid' => $first->uuid,
+                'nik' => $first->nik,
+                'nama' => $first->nama,
+                'tanggal' => Carbon::parse($first->tanggal)->format('Y-m-d'),
+                'waktu' => $items->map(function ($row) {
+                    return Carbon::parse($row->waktu)->format('H:i');
+                })->unique()->implode(', '),
+                'pelanggaran' => $items->map(function ($row) {
+                    return trim($row->pelanggaran . ' ' . $row->pelanggaran_detail);
+                })->implode(' | '),
+
+                // PIC hasil join users
+                'pic_nik' => $items->pluck('pic_nik')->filter()->unique()->implode(', ') ?: '-',
+                'pic_nama' => $items->pluck('pic_nama')->filter()->unique()->implode(', ') ?: '-',
+
+                'jumlah_temuan' => $items->count(),
+                'detail' => $items,
+            ];
+        })->values();
+
         return view('inspeksi.tidak-terencana.index', compact('data'));
+    }
+
+    public function preview(Request $request)
+    {
+        if (empty($request->rangeStart) || empty($request->rangeEnd)) {
+            $start = Carbon::today()->format('Y-m-d');
+            $end   = Carbon::today()->format('Y-m-d');
+        } else {
+            $start = Carbon::parse($request->rangeStart)->format('Y-m-d');
+            $end   = Carbon::parse($request->rangeEnd)->format('Y-m-d');
+        }
+
+        $rows = InspeksiTidakTerencana::where('statusenabled', true)
+            ->whereBetween(DB::raw('CONVERT(varchar, tanggal, 23)'), [$start, $end])
+            ->orderBy('tanggal')
+            ->orderBy('waktu')
+            ->get()
+            ->map(function ($item, $key) {
+                return (object) [
+                    'no' => $key + 1,
+                    'nama' => $item->nama,
+                    'nik' => $item->nik,
+                    'tanggal' => Carbon::parse($item->tanggal)->format('d-m-Y'),
+                    'waktu' => Carbon::parse($item->waktu)->format('H:i'),
+                    'kode_item' => $item->pelanggaran, // A,B,C,dst
+                    'level' => null, // nanti isi 1-5 kalau field-nya sudah ada
+                    'keterangan' => $item->keterangan,
+                ];
+            });
+
+        $pages = $rows->chunk(30);
+
+        return view('inspeksi.tidak-terencana.preview', compact('pages'));
+    }
+
+    public function delete($uuid)
+    {
+        try {
+            InspeksiTidakTerencana::where('uuid', $uuid)->update([
+                'statusenabled' => false,
+                'deleted_by' => Auth::user()->id,
+            ]);
+
+            return redirect()->route('inspeksi.tidakterencana')->with('success', 'Inspeksi Tidak Terencana berhasil dihapus');
+
+        } catch (\Throwable $th) {
+            return redirect()->route('inspeksi.tidakterencana')->with('info', nl2br('Inspeksi Tidak Terencana gagal dihapus..\n' . $th->getMessage()));
+        }
     }
 
     public function operatorFocus($unit)
@@ -152,17 +232,20 @@ class InspeksiTidakTerencanaController extends Controller
             $pelanggaranDetail = implode("\n", $pelanggaranDetailItems);
 
             InspeksiTidakTerencana::create([
-                'uuid'                => (string) Uuid::uuid4()->toString(),
-                'pic'                 => Auth::user()->id,
-                'searching_by'        => $request->searching_by,
-                'nik'                 => $nik,
-                'nama'                => $nama,
-                'tanggal'             => $request->tanggal,
-                'waktu'               => $request->waktu,
-                'pelanggaran'         => $pelanggaranString,
-                'pelanggaran_lainnya' => $request->pelanggaran_lainnya,
-                'pelanggaran_detail'  => $pelanggaranDetail,
-                'keterangan'          => $request->keterangan,
+                'uuid'                      => (string) Uuid::uuid4()->toString(),
+                'pic'                       => Auth::user()->id,
+                'inspektor'                 => Auth::user()->nik,
+                'verified_inspektor'        => Auth::user()->nik,
+                'date_verified_inspektor'   => Carbon::now(),
+                'searching_by'              => $request->searching_by,
+                'nik'                       => $nik,
+                'nama'                      => $nama,
+                'tanggal'                   => $request->tanggal,
+                'waktu'                     => $request->waktu,
+                'pelanggaran'               => $pelanggaranString,
+                'pelanggaran_lainnya'       => $request->pelanggaran_lainnya,
+                'pelanggaran_detail'        => $pelanggaranDetail,
+                'keterangan'                => $request->keterangan,
             ]);
 
             DB::commit();

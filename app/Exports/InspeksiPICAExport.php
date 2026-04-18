@@ -49,6 +49,8 @@ class InspeksiPICAExport implements
                 $item->inspektor5 ?? null,
             ])->filter(function ($value) {
                 return !is_null($value) && trim($value) !== '';
+            })->map(function ($value) {
+                return '- ' . trim($value);
             })->implode("\n");
 
             return [
@@ -143,7 +145,7 @@ class InspeksiPICAExport implements
                 $sheet->getColumnDimension('A')->setWidth(5);
                 $sheet->getColumnDimension('B')->setWidth(12);
                 $sheet->getColumnDimension('C')->setWidth(18);
-                $sheet->getColumnDimension('D')->setWidth(25);
+                $sheet->getColumnDimension('D')->setWidth(30);
                 $sheet->getColumnDimension('E')->setWidth(35);
                 $sheet->getColumnDimension('F')->setWidth(30);
                 $sheet->getColumnDimension('G')->setWidth(14);

@@ -471,7 +471,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/inspeksi/tidakterencana/operatorFocus/{unit}', [InspeksiTidakTerencanaController::class, 'operatorFocus'])->name('inspeksi.tidakterencana.operatorFocus');
     Route::get('/inspeksi/tidakterencana/insert', [InspeksiTidakTerencanaController::class, 'insert'])->name('inspeksi.tidakterencana.insert')->middleware('canAccess');
     Route::post('/inspeksi/tidakterencana/post', [InspeksiTidakTerencanaController::class, 'post'])->name('inspeksi.tidakterencana.post');
-    Route::get('/inspeksi/tidakterencana/delete/{id}', [InspeksiTidakTerencanaController::class, 'delete'])->name('inspeksi.tidakterencana.delete');
+    Route::get('/inspeksi/tidakterencana/delete/{uuid}', [InspeksiTidakTerencanaController::class, 'delete'])->name('inspeksi.tidakterencana.delete');
     Route::get('/inspeksi/tidakterencana/preview/{uuid}', [InspeksiTidakTerencanaController::class, 'preview'])->name('inspeksi.tidakterencana.preview');
     Route::get('/inspeksi/tidakterencana/bundlepdf', [InspeksiTidakTerencanaController::class, 'bundlepdf'])->name('inspeksi.tidakterencana.bundlepdf');
     Route::get('/inspeksi/tidakterencana/cetak/{uuid}', [InspeksiTidakTerencanaController::class, 'cetak'])->name('inspeksi.tidakterencana.cetak');
