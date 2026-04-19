@@ -215,6 +215,35 @@ MSG;
         }
     }
 
+    public function open(Request $request, $uuid)
+    {
+        DB::beginTransaction();
+
+        try {
+            $report = SAPReport::where('uuid', $uuid)->firstOrFail();
+
+
+            $dataUpdate = [
+                'is_finish' => false,
+            ];
+
+            $report->update($dataUpdate);
+
+            DB::commit();
+
+            return redirect()
+                ->route('form-pengawas-sap.show')
+                ->with('success', 'SAP berhasil dibuka kembali');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'SAP gagal diupdate: ' . $e->getMessage());
+        }
+    }
+
 
     public function update(Request $request, $uuid)
     {
@@ -278,11 +307,11 @@ MSG;
                 $fileTindakLanjut3 = $newFileTindakLanjut3;
             }
 
-            if(Auth::user()->id == 3){
-                $finishing = 0;
-            }else{
-                $finishing = 1;
-            }
+            // if(Auth::user()->id == 3){
+            //     $finishing = 0;
+            // }else{
+            //     $finishing = 1;
+            // }
 
             $dataUpdate = [
                 'temuan' => $request->temuan,
@@ -300,7 +329,7 @@ MSG;
                 'file_tindakLanjut2' => $fileTindakLanjut2,
                 'file_tindakLanjut3' => $fileTindakLanjut3,
 
-                'is_finish' => $finishing,
+                'is_finish' => true,
             ];
 
             $report->update($dataUpdate);

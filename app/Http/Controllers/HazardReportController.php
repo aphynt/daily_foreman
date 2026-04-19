@@ -218,7 +218,12 @@ class HazardReportController extends Controller
         ->where('hz.statusenabled', true)
         ->where('hz.uuid', $uuid)->first();
 
-        return view('safety.hazard-report.review', compact('data'));
+        if($data->verified_scc == null || $data->verified_scc == ''){
+            return view('safety.hazard-report.review', compact('data'));
+        }else{
+            return view('safety.hazard-report.show', compact('data'));
+        }
+
     }
 
     public function verifySCC(Request $request)

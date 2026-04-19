@@ -421,7 +421,14 @@
                             <div class="topbar-logo">
                                 <img src="{{ asset('dashboard/assets/images/logo-full.png') }}" alt="Logo">
                             </div>
-                            <a href="{{ route('form-pengawas-sap.show') }}" class="back-btn">← Kembali</a>
+
+                            <div class="topbar-actions">
+                                <a href="{{ route('form-pengawas-sap.show') }}" class="back-btn">← Kembali</a>
+                                {{-- @if (Auth::user()->id == 3) --}}
+
+                                <a href="{{ route('form-pengawas-sap.open', $report->uuid) }}" class="back-btn">🔍 Open</a>
+                                {{-- @endif --}}
+                            </div>
                         </div>
 
                         <div class="hero-box">
