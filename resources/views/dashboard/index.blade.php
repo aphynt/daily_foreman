@@ -28,6 +28,7 @@
         <div class="row g-1">
             <h5 class="w-100">Fitur Pilihan</h5>
             @if (
+                canAccess('hazard-report.insert') ||
                 canAccess('form-pengawas-new.index') ||
                 canAccess('form-pengawas-batubara.index') ||
                 canAccess('pengawas-pitstop.index') ||
@@ -37,6 +38,19 @@
             )
 
                 {{-- FORM INPUT --}}
+
+                @if (canAccess('hazard-report.insert'))
+                <div class="col-4 col-md-4 col-xxl-4">
+                    <a href="{{ route('hazard-report.insert') }}" class="text-decoration-none">
+                        <div class="card mb-3">
+                            <div class="card-body text-center" style="padding-left:2px; padding-right:2px;">
+                                <img class="img-fluid card-img-top" src="{{ asset('dashboard/assets') }}/images/widget/hazard.png" style="max-width: 20px">
+                                <h6 class="card-title" style="font-size:11px">Hazard Report</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endif
                 @if (canAccess('form-pengawas-new.index'))
                 <div class="col-4 col-md-4 col-xxl-4">
                     <a href="{{ route('form-pengawas-new.index') }}" class="text-decoration-none">
@@ -62,6 +76,8 @@
                     </a>
                 </div>
                 @endif
+
+
 
                 @if (canAccess('pengawas-pitstop.index'))
                 <div class="col-4 col-md-4 col-xxl-4">

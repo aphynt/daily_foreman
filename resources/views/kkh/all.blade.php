@@ -91,6 +91,7 @@
                                         <th rowspan="2">Fit Bekerja</th>
                                         <th rowspan="2">Keluhan</th>
                                         <th rowspan="2">Masalah Pribadi</th>
+                                        <th colspan="2">Verifikasi P3K</th>
                                         <th colspan="2">Verifikasi Pengawas</th>
                                         <th rowspan="2">Aksi</th>
                                     </tr>
@@ -100,6 +101,8 @@
                                         <th>Mulai</th>
                                         <th>Bangun</th>
                                         <th>Total</th>
+                                        <th>Nama</th>
+                                        <th>Catatan</th>
                                         <th>NIK</th>
                                         <th>Nama</th>
                                     </tr>
@@ -208,6 +211,8 @@
                 { data: 'MASALAH_PRIBADI' },
                 { data: 'NIK_PENGAWAS' },
                 { data: 'NAMA_PENGAWAS' },
+                { data: 'NIK_PENGAWAS' },
+                { data: 'NAMA_PENGAWAS' },
                 {
                     data: null,
                     render: function(data, type, row) {
@@ -218,11 +223,12 @@
                                 <button class="btn-verifikasi badge w-100"
                                     data-id="${row.id}"
                                     style="font-size:14px;background-color:#001932;color:white;">
-                                    Verifikasi
+                                    Verifikasi Pengawas
                                 </button>
                             `;
 
                         }
+
 
                         return '';
                     }
