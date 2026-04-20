@@ -340,8 +340,20 @@
                                     </label>
 
                                     <label class="violation-item">
-                                        <input type="checkbox" id="pelanggaranLainnya" name="pelanggaran[]" value="K">
+                                        <input type="checkbox" name="pelanggaran[]" value="K">
                                         <span class="violation-code">K</span>
+                                        <span>Random Fatique</span>
+                                    </label>
+
+                                    <label class="violation-item">
+                                        <input type="checkbox" name="pelanggaran[]" value="L">
+                                        <span class="violation-code">L</span>
+                                        <span>Tidak Ada Pelanggaran</span>
+                                    </label>
+
+                                    <label class="violation-item">
+                                        <input type="checkbox" id="pelanggaranLainnya" name="pelanggaran[]" value="Z">
+                                        <span class="violation-code">Z</span>
                                         <span>Lainnya</span>
                                     </label>
                                 </div>

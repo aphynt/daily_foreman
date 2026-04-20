@@ -544,6 +544,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/kkh/all/name', [KKHController::class, 'all_name'])->name('kkh.all_name');
     Route::get('/kkh/name', [KKHController::class, 'name'])->name('kkh.name')->middleware('canAccess');
     Route::post('/kkh/verifikasi', [KKHController::class, 'verifikasi'])->name('kkh.verifikasi');
+    Route::post('/kkh/verifikasi_p3k', [KKHController::class, 'verifikasiP3K'])->name('kkh.verifikasi_p3k');
     Route::get('/kkh/download', [KKHController::class, 'download'])->name('kkh.download');
     Route::get('/kkh/dashboard', [KKHController::class, 'dashboard'])->name('kkh.dashboard');
 

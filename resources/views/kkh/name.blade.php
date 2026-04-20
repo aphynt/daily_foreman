@@ -74,6 +74,7 @@
                                         <th rowspan="2">Fit Bekerja</th>
                                         <th rowspan="2">Keluhan</th>
                                         <th rowspan="2">Masalah Pribadi</th>
+                                        <th colspan="2">Verifikasi P3K</th>
                                         <th colspan="2">Verifikasi Pengawas</th>
                                         <th rowspan="2">Aksi</th>
                                     </tr>
@@ -83,6 +84,8 @@
                                         <th>Mulai</th>
                                         <th>Bangun</th>
                                         <th>Total</th>
+                                        <th>Nama</th>
+                                        <th>Catatan</th>
                                         <th>NIK</th>
                                         <th>Nama</th>
                                     </tr>
@@ -101,7 +104,7 @@
         </div>
     </div>
 </section>
-
+@include('kkh.modal.verifikasiP3K')
 @include('layout.footer')
 
 <script>
@@ -190,33 +193,19 @@
                     delete d.order;
                 },
             },
-            columns: [{
-                    data: 'TANGGAL_DIBUAT'
-                },
-                {
-                    data: 'JAM_PULANG'
-                },
-                {
-                    data: 'NIK_PENGISI'
-                },
-                {
-                    data: 'NAMA_PENGISI'
-                },
-                {
-                    data: 'SHIFT'
-                },
-                {
-                    data: 'JAM_TIDUR'
-                },
-                {
-                    data: 'JAM_BANGUN'
-                },
+            columns: [
+                { data: 'TANGGAL_DIBUAT' },
+                { data: 'JAM_PULANG' },
+                { data: 'NIK_PENGISI' },
+                { data: 'NAMA_PENGISI' },
+                { data: 'SHIFT' },
+                { data: 'JAM_TIDUR' },
+                { data: 'JAM_BANGUN' },
                 {
                     data: 'TOTAL_TIDUR',
-                    render: function (data, type, row) {
+                    render: function (data) {
                         if (data === null || data === '') return '-';
 
-                        // Cek nilai data, pastikan jadi angka dulu
                         var nilai = parseFloat(data);
                         var teks = data + ' Jam';
 
@@ -226,91 +215,104 @@
                         return '<span style="color:green;">' + teks + '</span>';
                     }
                 },
-                {
-                    data: 'JAM_BERANGKAT'
-                },
+                { data: 'JAM_BERANGKAT' },
                 {
                     data: 'FIT_BEKERJA',
-                    render: function(data, type, row) {
-                        // if (data === null || data === '') return '-';
-
-                        // Cek nilai data, pastikan jadi angka dulu
-                        // var nilai = parseInt(data);
-
+                    render: function(data) {
                         if (data == 0 || data === null || data === '') {
                             return '<span style="color:red;">TIDAK</span>';
                         }
                         return '<span style="color:green;">YA</span>';
                     }
                 },
+                { data: 'KELUHAN' },
+                { data: 'MASALAH_PRIBADI' },
                 {
-                    data: 'KELUHAN'
+                    data: 'PETUGAS_P3K',
+                    render: function(data) {
+                        return data && data !== '' ? data : '-';
+                    }
                 },
                 {
-                    data: 'MASALAH_PRIBADI'
+                    data: 'CATATAN_P3K',
+                    render: function(data) {
+                        return data && data !== '' ? data : '-';
+                    }
                 },
                 {
-                    data: 'NIK_PENGAWAS'
+                    data: 'NIK_PENGAWAS',
+                    render: function(data) {
+                        return data && data !== '' ? data : '-';
+                    }
                 },
                 {
-                    data: 'NAMA_PENGAWAS'
+                    data: 'NAMA_PENGAWAS',
+                    render: function(data) {
+                        return data && data !== '' ? data : '-';
+                    }
                 },
                 {
                     data: null,
-                    render: function (data, type, row) {
-                        if (!row) return '';
+                    render: function(data, type, row) {
+                        const verifP3k = Number(row.verif_p3k) === 1;
+                        const verifPengawas = Number(row.ferivikasi_pengawas) === 1;
 
-                        if (['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT', 'MANAGER'].includes(userRole) && row.ferivikasi_pengawas == false) {
-                            let currentUserRole = userRole?.toUpperCase();
+                        const butuhP3k =
+                            row.BUTUH_P3K === true ||
+                            row.BUTUH_P3K === 1 ||
+                            row.BUTUH_P3K === '1';
 
-                            let jabatanPengawas = row.JABATAN?.toUpperCase();
-                            let isOperator = jabatanPengawas === 'OPERATOR';
-                            let allowedToVerify = false;
+                        const canVerifyP3k =
+                            row.CAN_VERIFY_P3K === true ||
+                            row.CAN_VERIFY_P3K === 1 ||
+                            row.CAN_VERIFY_P3K === '1';
 
-                            // Cegah verifikasi diri sendiri
-                            if (jabatanPengawas !== currentUserRole) {
-                                // Kasus jika pengawas adalah OPERATOR
-                                if (isOperator) {
-                                    allowedToVerify = ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'].includes(currentUserRole);
-                                } else {
-                                    // Aturan berjenjang berdasarkan peran pengawas
-                                    switch (jabatanPengawas) {
+                        const canVerifyPengawas =
+                            row.CAN_VERIFY_PENGAWAS === true ||
+                            row.CAN_VERIFY_PENGAWAS === 1 ||
+                            row.CAN_VERIFY_PENGAWAS === '1';
 
-                                        case 'FOREMAN':
-                                            allowedToVerify = ['SUPERVISOR', 'SUPERINTENDENT'].includes(currentUserRole);
-                                            break;
-                                        case 'SUPERVISOR':
-                                            allowedToVerify = ['SUPERINTENDENT'].includes(currentUserRole);
-                                            break;
-                                        case 'SUPERINTENDENT':
-                                            allowedToVerify = ['MANAGER'].includes(currentUserRole);
-                                            break;
-                                        case 'PJS. SUPERINTENDENT':
-                                            allowedToVerify = ['MANAGER'].includes(currentUserRole);
-                                            break;
-                                        case 'ASISTEN MANAGER':
-                                            allowedToVerify = ['MANAGER'].includes(currentUserRole);
-                                            break;
-                                        default:
-                                            // Selain OPERATOR dan role spesifik, bisa diverifikasi oleh FOREMAN, SUPERVISOR, atau SUPERINTENDENT
-                                            allowedToVerify = ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'].includes(currentUserRole);
-                                    }
-                                }
-                            }
-
-                            if (allowedToVerify) {
-                                let editUrl = "{{ route('kkh.verifikasi') }}" + "?rowID=" + encodeURIComponent(row.id);
-                                return `
-                                    <button class="btn-verifikasi badge w-100" data-id="${row.id}" style="font-size:14px;background-color:#001932;color:white;">
-                                        Verifikasi
+                        if (canVerifyP3k) {
+                            return `
+                                <div class="d-grid gap-1">
+                                    <button class="btn-verifikasi-p3k badge w-100"
+                                        data-id="${row.id}"
+                                        data-fit="1"
+                                        style="font-size:13px;background-color:#15803d;color:white;">
+                                        Klinik FIT
                                     </button>
-                                `;
-                            }
+
+                                    <button class="btn-verifikasi-p3k badge w-100"
+                                        data-id="${row.id}"
+                                        data-fit="0"
+                                        style="font-size:13px;background-color:#b91c1c;color:white;">
+                                        Klinik TIDAK FIT
+                                    </button>
+                                </div>
+                            `;
                         }
-                        return '';
+
+                        if (canVerifyPengawas) {
+                            return `
+                                <button class="btn-verifikasi-pengawas badge w-100"
+                                    data-id="${row.id}"
+                                    style="font-size:14px;background-color:#001932;color:white;">
+                                    Verifikasi Pengawas
+                                </button>
+                            `;
+                        }
+
+                        if (butuhP3k && !verifP3k) {
+                            return `<span class="badge bg-warning text-dark w-100">Menunggu Klinik</span>`;
+                        }
+
+                        if (!verifPengawas) {
+                            return `<span class="badge bg-secondary w-100">Menunggu Pengawas</span>`;
+                        }
+
+                        return `Selesai`;
                     }
                 }
-
             ],
             "order": [
                 [0, "asc"]
@@ -328,59 +330,66 @@
     });
 
 
-    $(document).on('click', '.btn-verifikasi', function (e) {
-        e.preventDefault();
+    let modalVerifikasiP3K;
 
-        const rowID = $(this).data('id');
+$(document).ready(function() {
+    modalVerifikasiP3K = new bootstrap.Modal(document.getElementById('modalVerifikasiP3K'));
+});
 
-        $.ajax({
-            url: "{{ route('kkh.verifikasi') }}",
-            method: 'POST',
-            data: {
-                _token: "{{ csrf_token() }}",
-                rowID: rowID
-            },
-            success: function(response) {
-                // Swal.fire('Terverifikasi!', 'Data berhasil diverifikasi.', 'success');
+$(document).on('click', '.btn-verifikasi-p3k', function(e) {
+    e.preventDefault();
 
-                // ✅ Refresh DataTables tanpa reload halaman
-                table.ajax.reload(null, false);
-            },
-            error: function(xhr) {
-                Swal.fire('Gagal', 'Terjadi kesalahan saat memverifikasi.', 'error');
-            }
-        });
+    const rowID = $(this).data('id');
+    const fitOr = $(this).data('fit');
 
-        // Swal.fire({
-        //     title: 'Verifikasi Data?',
-        //     icon: 'question',
-        //     showCancelButton: true,
-        //     confirmButtonColor: '#3085d6',
-        //     cancelButtonColor: '#d33',
-        //     confirmButtonText: 'Ya, Verifikasi'
-        // }).then((result) => {
-        //     if (result.isConfirmed) {
-        //         $.ajax({
-        //             url: "{{ route('kkh.verifikasi') }}",
-        //             method: 'POST',
-        //             data: {
-        //                 _token: "{{ csrf_token() }}",
-        //                 rowID: rowID
-        //             },
-        //             success: function (response) {
-        //                 Swal.fire('Terverifikasi!', 'Data berhasil diverifikasi.',
-        //                     'success');
+    $('#p3k_row_id').val(rowID);
+    $('#p3k_fit_or').val(fitOr);
+    $('#catatan_p3k_modal').val('');
+    modalVerifikasiP3K.show();
+});
 
-        //                 // ✅ Refresh DataTables tanpa reload halaman
-        //                 table.ajax.reload(null, false);
-        //             },
-        //             error: function (xhr) {
-        //                 Swal.fire('Gagal', 'Terjadi kesalahan saat memverifikasi.',
-        //                     'error');
-        //             }
-        //         });
-        //     }
-        // });
+$('#formVerifikasiP3K').on('submit', function(e) {
+    e.preventDefault();
+
+    $.ajax({
+        url: "{{ route('kkh.verifikasi_p3k') }}",
+        method: 'POST',
+        data: {
+            _token: "{{ csrf_token() }}",
+            rowID: $('#p3k_row_id').val(),
+            fit_or: $('#p3k_fit_or').val(),
+            catatan: $('#catatan_p3k_modal').val()
+        },
+        success: function(response) {
+            modalVerifikasiP3K.hide();
+            table.ajax.reload(null, false);
+        },
+        error: function(xhr) {
+            console.error(xhr);
+        }
     });
+});
+
+$(document).on('click', '.btn-verifikasi-pengawas', function(e) {
+    e.preventDefault();
+
+    const rowID = $(this).data('id');
+
+    $.ajax({
+        url: "{{ route('kkh.verifikasi') }}",
+        method: 'POST',
+        data: {
+            _token: "{{ csrf_token() }}",
+            rowID: rowID
+        },
+        success: function(response) {
+            table.ajax.reload(null, false);
+        },
+        error: function(xhr) {
+            console.error(xhr);
+            table.ajax.reload(null, false);
+        }
+    });
+});
 
 </script>

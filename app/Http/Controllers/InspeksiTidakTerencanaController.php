@@ -152,52 +152,56 @@ class InspeksiTidakTerencanaController extends Controller
 
     public function post(Request $request)
     {
+        $nik = null;
+        $nama = null;
+        $pelanggaran = $request->pelanggaran ?? [];
+
+        if (in_array('Z', $pelanggaran) && empty($request->pelanggaran_lainnya)) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'pelanggaran_lainnya' => 'Pelanggaran lainnya wajib diisi.',
+                ]);
+        }
+
+        if ($request->searching_by === 'manual') {
+            $nik = $request->manual_nik;
+            $nama = $request->manual_nama;
+
+            if (empty($nik) || empty($nama)) {
+                return back()
+                    ->withInput()
+                    ->with('info', 'Data NIK/Nama manual tidak valid.');
+            }
+        }
+
+        if ($request->searching_by === 'nik') {
+            $nik = $request->nik;
+            $nama = $request->nama;
+
+            if (empty($nik) || empty($nama)) {
+                return back()
+                    ->withInput()
+                    ->with('info', 'Data NIK/Nama dari pilihan NIK tidak valid.');
+            }
+        }
+
+        if ($request->searching_by === 'focus') {
+            $nik = $request->nik;
+            $nama = $request->nama;
+
+            if (empty($nik) || empty($nama)) {
+                return back()
+                    ->withInput()
+                    ->with('info', 'Data NIK/Nama dari unit focus tidak valid.');
+            }
+        }
 
         DB::beginTransaction();
 
         try {
-            $nik = null;
-            $nama = null;
-            $pelanggaran = $request->pelanggaran ?? [];
-
-            if (in_array('K', $pelanggaran) && empty($request->pelanggaran_lainnya)) {
-                return back()
-                    ->withInput()
-                    ->withErrors([
-                        'pelanggaran_lainnya' => 'Pelanggaran lainnya wajib diisi.',
-                    ]);
-            }
-
-            if ($request->searching_by === 'nik') {
-                $nik = $request->nik;
-                $nama = $request->nama;
-
-                if (empty($nik) || empty($nama)) {
-                    return back()
-                        ->withInput()
-                        ->withErrors([
-                            'nik' => 'Data NIK/Nama dari pilihan NIK tidak valid.',
-                        ]);
-                }
-            }
-
-            if ($request->searching_by === 'focus') {
-                $nik = $request->nik;
-                $nama = $request->nama;
-
-                if (empty($nik) || empty($nama)) {
-                    return back()
-                        ->withInput()
-                        ->withErrors([
-                            'focus_unit_hd' => 'Data operator dari unit focus tidak ditemukan.',
-                        ]);
-                }
-            }
-
-            // Simpan kode pelanggaran
             $pelanggaranString = implode(',', $pelanggaran);
 
-            // Mapping kode -> deskripsi
             $pelanggaranMap = [
                 'A' => 'Melebihi batas kecepatan',
                 'B' => 'Pelanggaran rambu (STOP, mendahului, parkir, dll)',
@@ -209,17 +213,14 @@ class InspeksiTidakTerencanaController extends Controller
                 'H' => 'Tidak melaksanakan LOTO',
                 'I' => 'Tidak melakukan P2H',
                 'J' => 'Tidak mengisi KKH',
-                'K' => 'Lainnya',
+                'K' => 'Random Fatique',
+                'L' => 'Tidak Ada Pelanggaran',
+                'Z' => 'Lainnya',
             ];
 
-            // Susun detail pelanggaran dalam bentuk teks deskripsi
             $pelanggaranDetailItems = [];
 
             foreach ($pelanggaran as $kode) {
-                if ($kode === 'K') {
-                    continue;
-                }
-
                 if (isset($pelanggaranMap[$kode])) {
                     $pelanggaranDetailItems[] = '- ' . $pelanggaranMap[$kode];
                 }
@@ -232,34 +233,31 @@ class InspeksiTidakTerencanaController extends Controller
             $pelanggaranDetail = implode("\n", $pelanggaranDetailItems);
 
             InspeksiTidakTerencana::create([
-                'uuid'                      => (string) Uuid::uuid4()->toString(),
-                'pic'                       => Auth::user()->id,
-                'inspektor'                 => Auth::user()->nik,
-                'verified_inspektor'        => Auth::user()->nik,
-                'date_verified_inspektor'   => Carbon::now(),
-                'searching_by'              => $request->searching_by,
-                'nik'                       => $nik,
-                'nama'                      => $nama,
-                'tanggal'                   => $request->tanggal,
-                'waktu'                     => $request->waktu,
-                'pelanggaran'               => $pelanggaranString,
-                'pelanggaran_lainnya'       => $request->pelanggaran_lainnya,
-                'pelanggaran_detail'        => $pelanggaranDetail,
-                'keterangan'                => $request->keterangan,
+                'uuid'                    => (string) Uuid::uuid4()->toString(),
+                'pic'                     => Auth::user()->id,
+                'inspektor'               => Auth::user()->nik,
+                'verified_inspektor'      => Auth::user()->nik,
+                'date_verified_inspektor' => Carbon::now(),
+                'searching_by'            => $request->searching_by,
+                'nik'                     => $nik,
+                'nama'                    => $nama,
+                'tanggal'                 => $request->tanggal,
+                'waktu'                   => $request->waktu,
+                'pelanggaran'             => $pelanggaranString,
+                'pelanggaran_lainnya'     => $request->pelanggaran_lainnya,
+                'pelanggaran_detail'      => $pelanggaranDetail,
+                'keterangan'              => $request->keterangan,
             ]);
 
             DB::commit();
 
-            return redirect()
-                ->back()
-                ->with('success', 'Data inspeksi berhasil disimpan.');
+            return back()->with('success', 'Data inspeksi berhasil disimpan.');
         } catch (\Throwable $th) {
             DB::rollBack();
 
-            return redirect()
-                ->back()
+            return back()
                 ->withInput()
-                ->with('error', 'Data gagal disimpan. ' . $th->getMessage());
+                ->with('info', 'Data gagal disimpan. ' . $th->getMessage());
         }
     }
 }

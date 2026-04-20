@@ -34,14 +34,17 @@ class KKHController extends Controller
 
         $role = strtoupper(trim($user->role ?? ''));
         $departemenId = (int) ($user->departemen_id ?? 0);
+        $userId = (int) ($user->id ?? 0);
 
         if ($role === 'SEPERVISOR') {
             $role = 'SUPERVISOR';
         }
+        $petugasP3kIds = [5];
 
         $canSeeAll =
             in_array($role, ['ADMIN', 'MANAGEMENT']) ||
-            (in_array($role, ['SUPERVISOR', 'SUPERINTENDENT']) && $departemenId === 9);
+            (in_array($role, ['SUPERVISOR', 'SUPERINTENDENT']) && $departemenId === 9) ||
+            in_array($userId, $petugasP3kIds);
 
         $userProduksi = DB::connection('kkh')
             ->table('db_payroll.dbo.tbl_data_hr as hr')
@@ -51,6 +54,7 @@ class KKHController extends Controller
             ->when(!$canSeeAll, function ($q) use ($departemenId) {
                 $q->whereRaw('CAST(hr.Id_Departemen AS INT) = ?', [$departemenId]);
             })
+            ->orderBy('hr.Nama')
             ->get();
 
         return view('kkh.name', compact('userProduksi'));
@@ -65,7 +69,11 @@ class KKHController extends Controller
         $start = new DateTime($request->tanggalKKH);
         $tanggalKKH = $start->format('Y-m-d');
 
-        $currentUserRole = strtoupper(Auth::user()->role);
+        $currentUserRole = strtoupper(trim(Auth::user()->role ?? ''));
+
+        if ($currentUserRole === 'SEPERVISOR') {
+            $currentUserRole = 'SUPERVISOR';
+        }
 
         $kkh = DB::connection('kkh')->table('db_payroll.dbo.web_kkh as kkh')
             ->leftJoin('db_payroll.dbo.tbl_data_hr as hr', 'kkh.nik', '=', 'hr.nik')
@@ -131,11 +139,15 @@ class KKHController extends Controller
                     END AS JAM_BERANGKAT
                 "),
                 'kkh.fit_or as FIT_BEKERJA',
-                DB::raw('UPPER(kkh.keluhan) as KELUHAN'),
+                DB::raw('UPPER(LTRIM(RTRIM(ISNULL(kkh.keluhan, \'\')))) as KELUHAN'),
                 'kkh.masalah_pribadi as MASALAH_PRIBADI',
+
+                'kkh.verif_p3k',
+                'kkh.petugas_p3k as PETUGAS_P3K',
+                'kkh.catatan_p3k as CATATAN_P3K',
                 'kkh.ferivikasi_pengawas',
                 'kkh.nik_pengawas as NIK_PENGAWAS',
-                'hr2.Nama as NAMA_PENGAWAS'
+                'hr2.Nama as NAMA_PENGAWAS',
             );
 
         if ($request->search['value']) {
@@ -149,7 +161,8 @@ class KKHController extends Controller
                 'kkh.jam_bangun',
                 'kkh.jam_berangkat',
                 'kkh.fit_or',
-                'hr2.Nama'
+                'kkh.keluhan',
+                'hr2.Nama',
             ];
 
             $kkh->where(function ($query) use ($columnsToSearch, $searchValue) {
@@ -199,11 +212,9 @@ class KKHController extends Controller
         if ($cluster == 'HD' || $cluster == 'EX') {
             $niks = AssignmentOperator::where('CLASS', $cluster)->pluck('NIK');
             $kkh->whereIn('hr.nik', $niks);
-
         } elseif ($cluster == 'Unit Support') {
             $excludedNiks = AssignmentOperator::whereIn('CLASS', ['HD', 'EX'])->pluck('NIK')->toArray();
 
-            // ambil operator dari users connection env
             $allOperatorNiks = DB::connection('daily_foreman')
                 ->table('users')
                 ->whereRaw('UPPER(role) = ?', ['OPERATOR'])
@@ -221,7 +232,7 @@ class KKHController extends Controller
             ->limit($length)
             ->get();
 
-            $nikList = $kkhRows->pluck('NIK_PENGISI')->filter()->unique()->values()->toArray();
+        $nikList = $kkhRows->pluck('NIK_PENGISI')->filter()->unique()->values()->toArray();
 
         $userRoles = DB::connection('daily_foreman')
             ->table('users')
@@ -230,60 +241,95 @@ class KKHController extends Controller
             ->get()
             ->keyBy('nik');
 
-                $kkhRows->transform(function ($row) use ($currentUserRole, $userRoles) {
+        $kkhRows->transform(function ($row) use ($currentUserRole, $userRoles) {
             $role = optional($userRoles->get($row->NIK_PENGISI))->role;
-            $row->JABATAN = strtoupper($role ?? '-');
+            $row->JABATAN = strtoupper(trim($role ?? '-'));
 
-            $jabatanPengawas = strtoupper($row->JABATAN ?? '');
-            $isOperator = $jabatanPengawas === 'OPERATOR';
+            $jabatanPengisi = strtoupper(trim($row->JABATAN ?? ''));
+            $isOperator = $jabatanPengisi === 'OPERATOR';
+
+            $keluhan = strtoupper(trim((string) ($row->KELUHAN ?? '')));
+            $totalTidur = (float) trim((string) ($row->TOTAL_TIDUR ?? 0));
+
+            $butuhP3k = ($totalTidur < 6) || ($keluhan !== 'FIT');
+            $petugasP3kIds = [5];
+            $isPetugasP3k = in_array((int) Auth::user()->id, $petugasP3kIds);
+
+            $verifP3k = (int) $row->verif_p3k === 1;
+            $verifPengawas = (int) $row->ferivikasi_pengawas === 1;
+
+            $row->verif_p3k = $verifP3k ? 1 : 0;
+            $row->ferivikasi_pengawas = $verifPengawas ? 1 : 0;
+
+            $row->BUTUH_P3K = $butuhP3k ? 1 : 0;
+            $row->CAN_VERIFY_P3K = 0;
+            $row->CAN_VERIFY_PENGAWAS = 0;
+
+            if ($butuhP3k && !$verifP3k) {
+                $row->CAN_VERIFY_P3K = $isPetugasP3k ? 1 : 0;
+            }
 
             $allowedToVerify = false;
 
-            if (!$row->ferivikasi_pengawas) {
-                if ($jabatanPengawas !== $currentUserRole) {
-                    if ($isOperator) {
-                        $allowedToVerify = in_array($currentUserRole, [
-                            'FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'
-                        ]);
-                    } else {
-                        switch ($jabatanPengawas) {
-                            case 'FOREMAN':
-                                $allowedToVerify = in_array($currentUserRole, [
-                                    'SUPERVISOR', 'SUPERINTENDENT'
-                                ]);
-                                break;
+            if (!$verifPengawas) {
+                $lolosTahapP3k = (!$butuhP3k) || $verifP3k;
 
+                if ($lolosTahapP3k && $jabatanPengisi !== $currentUserRole) {
+                    if ($isOperator) {
+                        $allowedToVerify = in_array($currentUserRole, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']);
+                    } else {
+                        switch ($jabatanPengisi) {
+                            case 'FOREMAN':
+                                $allowedToVerify = in_array($currentUserRole, ['SUPERVISOR', 'SUPERINTENDENT']);
+                                break;
                             case 'SUPERVISOR':
                                 $allowedToVerify = $currentUserRole === 'SUPERINTENDENT';
                                 break;
-
                             case 'SUPERINTENDENT':
                             case 'PJS. SUPERINTENDENT':
                             case 'ASISTEN MANAGEMENT':
                                 $allowedToVerify = $currentUserRole === 'MANAGEMENT';
                                 break;
-
                             default:
-                                $allowedToVerify = in_array($currentUserRole, [
-                                    'FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'
-                                ]);
+                                $allowedToVerify = in_array($currentUserRole, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']);
                         }
                     }
                 }
             }
 
-            $row->CAN_VERIFY = $allowedToVerify;
+            $row->CAN_VERIFY_PENGAWAS = $allowedToVerify ? 1 : 0;
 
             return $row;
         });
 
-                return response()->json([
+        return response()->json([
             'draw' => $draw,
             'recordsTotal' => $filteredRecords,
             'recordsFiltered' => $filteredRecords,
             'data' => $kkhRows,
         ]);
+    }
 
+    public function verifikasiP3K(Request $request)
+    {
+        $request->validate([
+            'rowID'   => 'required',
+            'fit_or'  => 'required|in:0,1',
+            'catatan' => 'required|string'
+        ]);
+
+        DB::connection('kkh')->table('web_kkh')
+            ->where('id', $request->rowID)
+            ->update([
+                'verif_p3k'   => 1,
+                'petugas_p3k' => Auth::user()->name,
+                'catatan_p3k' => $request->catatan,
+                'fit_or'      => (int) $request->fit_or,
+            ]);
+
+        return response()->json([
+            'message' => 'Verifikasi klinik berhasil.'
+        ]);
     }
 
     public function all_name(Request $request)
@@ -308,6 +354,11 @@ class KKHController extends Controller
 
         $startTimeFormatted = $start->format('Y-m-d');
         $endTimeFormatted = $end->format('Y-m-d');
+
+        $currentUserRole = strtoupper(trim(Auth::user()->role ?? ''));
+        if ($currentUserRole === 'SEPERVISOR') {
+            $currentUserRole = 'SUPERVISOR';
+        }
 
         $kkh = DB::connection('kkh')->table('db_payroll.dbo.web_kkh as kkh')
             ->leftJoin('db_payroll.dbo.tbl_data_hr as hr', 'kkh.nik', '=', 'hr.nik')
@@ -372,8 +423,13 @@ class KKHController extends Controller
                     END AS JAM_BERANGKAT
                 "),
                 'kkh.fit_or as FIT_BEKERJA',
-                DB::raw('UPPER(kkh.keluhan) as KELUHAN'),
+                DB::raw('UPPER(LTRIM(RTRIM(ISNULL(kkh.keluhan, \'\')))) as KELUHAN'),
                 'kkh.masalah_pribadi as MASALAH_PRIBADI',
+
+                'kkh.verif_p3k',
+                'kkh.petugas_p3k as PETUGAS_P3K',
+                'kkh.catatan_p3k as CATATAN_P3K',
+
                 'kkh.ferivikasi_pengawas',
                 'kkh.nik_pengawas as NIK_PENGAWAS',
                 'hr2.Nama as NAMA_PENGAWAS'
@@ -391,7 +447,10 @@ class KKHController extends Controller
                 'kkh.jam_bangun',
                 'kkh.jam_berangkat',
                 'kkh.fit_or',
-                'hr2.Nama'
+                'kkh.keluhan',
+                'hr2.Nama',
+                'kkh.petugas_p3k',
+                'kkh.catatan_p3k'
             ];
 
             $kkh->where(function ($query) use ($columnsToSearch, $searchValue) {
@@ -417,9 +476,12 @@ class KKHController extends Controller
             $role = 'SUPERVISOR';
         }
 
+        $petugasP3kIds = [5];
+
         $canSeeAll =
             in_array($role, ['ADMIN', 'MANAGEMENT']) ||
-            (in_array($role, ['SUPERVISOR', 'SUPERINTENDENT']) && $departemenId === 9);
+            (in_array($role, ['SUPERVISOR', 'SUPERINTENDENT']) && $departemenId === 9) ||
+            in_array((int) Auth::user()->id, $petugasP3kIds);
 
         if (!$canSeeAll) {
             $kkh->whereRaw('CAST(hr.ID_Departemen AS INT) = ?', [$departemenId]);
@@ -433,7 +495,7 @@ class KKHController extends Controller
             ->limit($length)
             ->get();
 
-            $nikList = $kkhRows->pluck('NIK_PENGISI')
+        $nikList = $kkhRows->pluck('NIK_PENGISI')
             ->filter()
             ->unique()
             ->values()
@@ -446,9 +508,63 @@ class KKHController extends Controller
             ->get()
             ->keyBy('nik');
 
-            $kkhRows->transform(function ($row) use ($userRoles) {
+        $kkhRows->transform(function ($row) use ($userRoles, $currentUserRole) {
             $role = optional($userRoles->get($row->NIK_PENGISI))->role;
-            $row->JABATAN = strtoupper($role ?? '-');
+            $row->JABATAN = strtoupper(trim($role ?? '-'));
+
+            $jabatanPengisi = strtoupper(trim($row->JABATAN ?? ''));
+            $isOperator = $jabatanPengisi === 'OPERATOR';
+
+            $keluhan = strtoupper(trim((string) ($row->KELUHAN ?? '')));
+            $totalTidur = (float) trim((string) ($row->TOTAL_TIDUR ?? 0));
+
+            $butuhP3k = ($totalTidur < 6) || ($keluhan !== 'FIT');
+            $petugasP3kIds = [5];
+            $isPetugasP3k = in_array((int) Auth::user()->id, $petugasP3kIds);
+
+            $verifP3k = (int) $row->verif_p3k === 1;
+            $verifPengawas = (int) $row->ferivikasi_pengawas === 1;
+
+            $row->verif_p3k = $verifP3k ? 1 : 0;
+            $row->ferivikasi_pengawas = $verifPengawas ? 1 : 0;
+
+            $row->BUTUH_P3K = $butuhP3k ? 1 : 0;
+            $row->CAN_VERIFY_P3K = 0;
+            $row->CAN_VERIFY_PENGAWAS = 0;
+
+            if ($butuhP3k && !$verifP3k) {
+                $row->CAN_VERIFY_P3K = $isPetugasP3k ? 1 : 0;
+            }
+
+            $allowedToVerify = false;
+
+            if (!$verifPengawas) {
+                $lolosTahapP3k = (!$butuhP3k) || $verifP3k;
+
+                if ($lolosTahapP3k && $jabatanPengisi !== $currentUserRole) {
+                    if ($isOperator) {
+                        $allowedToVerify = in_array($currentUserRole, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']);
+                    } else {
+                        switch ($jabatanPengisi) {
+                            case 'FOREMAN':
+                                $allowedToVerify = in_array($currentUserRole, ['SUPERVISOR', 'SUPERINTENDENT']);
+                                break;
+                            case 'SUPERVISOR':
+                                $allowedToVerify = $currentUserRole === 'SUPERINTENDENT';
+                                break;
+                            case 'SUPERINTENDENT':
+                            case 'PJS. SUPERINTENDENT':
+                            case 'ASISTEN MANAGEMENT':
+                                $allowedToVerify = $currentUserRole === 'MANAGEMENT';
+                                break;
+                            default:
+                                $allowedToVerify = in_array($currentUserRole, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']);
+                        }
+                    }
+                }
+            }
+
+            $row->CAN_VERIFY_PENGAWAS = $allowedToVerify ? 1 : 0;
 
             return $row;
         });

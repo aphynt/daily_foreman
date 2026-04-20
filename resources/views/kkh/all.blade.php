@@ -9,7 +9,6 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <ul class="breadcrumb">
-                            {{-- <li class="breadcrumb-item"><a href="javascript: void(0)">Home</a></li> --}}
                             <li class="breadcrumb-item"><a href="javascript: void(0)">Daftar Laporan KKH Per Tanggal</a></li>
                         </ul>
                     </div>
@@ -108,12 +107,8 @@
                                     </tr>
                                 </thead>
                                 <tbody id="tableBody">
-                                    <!-- Data dari API akan ditambahkan di sini -->
                                 </tbody>
                             </table>
-                            {{-- @foreach($support as $item)
-                                @include('alat-support.modal.edit', ['item' => $item])
-                            @endforeach --}}
                         </div>
                     </div>
                 </div>
@@ -121,6 +116,7 @@
         </div>
     </div>
 </section>
+@include('kkh.modal.verifikasiP3K')
 
 @include('layout.footer')
 <script>
@@ -134,10 +130,8 @@
             const inputTanggal = document.getElementById("tanggalKKH");
             const today = new Date();
 
-            // Format tanggal menjadi YYYY-MM-DD
             const formattedDate = `${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2,
                 '0')}/${today.getFullYear()}`;
-            // Set nilai default input tanggal
             inputTanggal.value = formattedDate;
         });
 
@@ -150,12 +144,11 @@
 
 
             processing: true,
-            serverSide: true,  // Untuk menggunakan server-side processing
+            serverSide: true,
             ajax: {
-                url: '{{ route('kkh.all_api') }}',  // URL API Anda
-                method: 'GET',  // Gunakan GET atau POST sesuai dengan implementasi Anda
+                url: '{{ route('kkh.all_api') }}',
+                method: 'GET',
                 data: function(d) {
-                    // Kirimkan parameter tambahan jika diperlukan (misalnya tanggal)
                     var tanggalKKH = $('#tanggalKKH').val();
                     d.tanggalKKH = tanggalKKH;
                     var cluster = $('#cluster').val();
@@ -179,10 +172,9 @@
                 { data: 'JAM_BANGUN' },
                 {
                     data: 'TOTAL_TIDUR',
-                    render: function(data, type, row) {
+                    render: function(data) {
                         if (data === null || data === '') return '-';
 
-                        // Cek nilai data, pastikan jadi angka dulu
                         var nilai = parseFloat(data);
                         var teks = data + ' Jam';
 
@@ -195,12 +187,7 @@
                 { data: 'JAM_BERANGKAT' },
                 {
                     data: 'FIT_BEKERJA',
-                    render: function(data, type, row) {
-                        // if (data === null || data === '') return '-';
-
-                        // Cek nilai data, pastikan jadi angka dulu
-                        // var nilai = parseInt(data);
-
+                    render: function(data) {
                         if (data == 0 || data === null || data === '') {
                             return '<span style="color:red;">TIDAK</span>';
                         }
@@ -209,96 +196,166 @@
                 },
                 { data: 'KELUHAN' },
                 { data: 'MASALAH_PRIBADI' },
-                { data: 'NIK_PENGAWAS' },
-                { data: 'NAMA_PENGAWAS' },
-                { data: 'NIK_PENGAWAS' },
-                { data: 'NAMA_PENGAWAS' },
+                {
+                    data: 'PETUGAS_P3K',
+                    render: function(data) {
+                        return data && data !== '' ? data : '-';
+                    }
+                },
+                {
+                    data: 'CATATAN_P3K',
+                    render: function(data) {
+                        return data && data !== '' ? data : '-';
+                    }
+                },
+                {
+                    data: 'NIK_PENGAWAS',
+                    render: function(data) {
+                        return data && data !== '' ? data : '-';
+                    }
+                },
+                {
+                    data: 'NAMA_PENGAWAS',
+                    render: function(data) {
+                        return data && data !== '' ? data : '-';
+                    }
+                },
                 {
                     data: null,
                     render: function(data, type, row) {
+                        const verifP3k = Number(row.verif_p3k) === 1;
+                        const verifPengawas = Number(row.ferivikasi_pengawas) === 1;
 
-                        if (row.CAN_VERIFY) {
+                        const butuhP3k =
+                            row.BUTUH_P3K === true ||
+                            row.BUTUH_P3K === 1 ||
+                            row.BUTUH_P3K === '1';
 
+                        const canVerifyP3k =
+                            row.CAN_VERIFY_P3K === true ||
+                            row.CAN_VERIFY_P3K === 1 ||
+                            row.CAN_VERIFY_P3K === '1';
+
+                        const canVerifyPengawas =
+                            row.CAN_VERIFY_PENGAWAS === true ||
+                            row.CAN_VERIFY_PENGAWAS === 1 ||
+                            row.CAN_VERIFY_PENGAWAS === '1';
+
+                        if (canVerifyP3k) {
                             return `
-                                <button class="btn-verifikasi badge w-100"
+                                <div class="d-grid gap-1">
+                                    <button class="btn-verifikasi-p3k badge w-100"
+                                        data-id="${row.id}"
+                                        data-fit="1"
+                                        style="font-size:13px;background-color:#15803d;color:white;">
+                                        Klinik FIT
+                                    </button>
+
+                                    <button class="btn-verifikasi-p3k badge w-100"
+                                        data-id="${row.id}"
+                                        data-fit="0"
+                                        style="font-size:13px;background-color:#b91c1c;color:white;">
+                                        Klinik TIDAK FIT
+                                    </button>
+                                </div>
+                            `;
+                        }
+
+                        if (canVerifyPengawas) {
+                            return `
+                                <button class="btn-verifikasi-pengawas badge w-100"
                                     data-id="${row.id}"
                                     style="font-size:14px;background-color:#001932;color:white;">
                                     Verifikasi Pengawas
                                 </button>
                             `;
-
                         }
 
+                        if (butuhP3k && !verifP3k) {
+                            return `<span class="badge bg-warning text-dark w-100">Menunggu Klinik</span>`;
+                        }
 
-                        return '';
+                        if (!verifPengawas) {
+                            return `<span class="badge bg-secondary w-100">Menunggu Pengawas</span>`;
+                        }
+
+                        return `Selesai`;
                     }
                 }
-
             ],
-            "order": [[0, "asc"]],  // Default sort by first column
-            "pageLength": 25,  // Jumlah baris per halaman
-            "lengthMenu": [10, 15, 25, 50],  // Pilihan jumlah baris per halaman
+            "order": [[0, "asc"]],
+            "pageLength": 25,
+            "lengthMenu": [10, 15, 25, 50],
         });
 
-        // Event listener untuk tombol refresh
         $('#cariKKH').click(function() {
-            table.ajax.reload();  // Reload data dengan AJAX
+            table.ajax.reload();
         });
         table.ajax.reload();
     });
 
 
-    $(document).on('click', '.btn-verifikasi', function (e) {
-        e.preventDefault();
+    let modalVerifikasiP3K;
 
-        const rowID = $(this).data('id');
+$(document).ready(function() {
+    modalVerifikasiP3K = new bootstrap.Modal(document.getElementById('modalVerifikasiP3K'));
+});
 
-        $.ajax({
-            url: "{{ route('kkh.verifikasi') }}",
-            method: 'POST',
-            data: {
-                _token: "{{ csrf_token() }}",
-                rowID: rowID
-            },
-            success: function(response) {
-                // Swal.fire('Terverifikasi!', 'Data berhasil diverifikasi.', 'success');
+$(document).on('click', '.btn-verifikasi-p3k', function(e) {
+    e.preventDefault();
 
-                // ✅ Refresh DataTables tanpa reload halaman
-                table.ajax.reload(null, false);
-            },
-            error: function(xhr) {
-                Swal.fire('Gagal', 'Terjadi kesalahan saat memverifikasi.', 'error');
-            }
-        });
+    const rowID = $(this).data('id');
+    const fitOr = $(this).data('fit');
 
-        // Swal.fire({
-        //     title: 'Verifikasi Data?',
-        //     icon: 'question',
-        //     showCancelButton: true,
-        //     confirmButtonColor: '#3085d6',
-        //     cancelButtonColor: '#d33',
-        //     confirmButtonText: 'Ya, Verifikasi'
-        // }).then((result) => {
-        //     if (result.isConfirmed) {
-        //         $.ajax({
-        //             url: "{{ route('kkh.verifikasi') }}",
-        //             method: 'POST',
-        //             data: {
-        //                 _token: "{{ csrf_token() }}",
-        //                 rowID: rowID
-        //             },
-        //             success: function(response) {
-        //                 Swal.fire('Terverifikasi!', 'Data berhasil diverifikasi.', 'success');
+    $('#p3k_row_id').val(rowID);
+    $('#p3k_fit_or').val(fitOr);
+    $('#catatan_p3k_modal').val('');
 
-        //                 // ✅ Refresh DataTables tanpa reload halaman
-        //                 table.ajax.reload(null, false);
-        //             },
-        //             error: function(xhr) {
-        //                 Swal.fire('Gagal', 'Terjadi kesalahan saat memverifikasi.', 'error');
-        //             }
-        //         });
-        //     }
-        // });
+    modalVerifikasiP3K.show();
+});
+
+$('#formVerifikasiP3K').on('submit', function(e) {
+    e.preventDefault();
+
+    $.ajax({
+        url: "{{ route('kkh.verifikasi_p3k') }}",
+        method: 'POST',
+        data: {
+            _token: "{{ csrf_token() }}",
+            rowID: $('#p3k_row_id').val(),
+            fit_or: $('#p3k_fit_or').val(),
+            catatan: $('#catatan_p3k_modal').val()
+        },
+        success: function(response) {
+            modalVerifikasiP3K.hide();
+            table.ajax.reload(null, false);
+        },
+        error: function(xhr) {
+            console.error(xhr);
+        }
     });
+});
+
+$(document).on('click', '.btn-verifikasi-pengawas', function(e) {
+    e.preventDefault();
+
+    const rowID = $(this).data('id');
+
+    $.ajax({
+        url: "{{ route('kkh.verifikasi') }}",
+        method: 'POST',
+        data: {
+            _token: "{{ csrf_token() }}",
+            rowID: rowID
+        },
+        success: function(response) {
+            table.ajax.reload(null, false);
+        },
+        error: function(xhr) {
+            console.error(xhr);
+            table.ajax.reload(null, false);
+        }
+    });
+});
 </script>
 
