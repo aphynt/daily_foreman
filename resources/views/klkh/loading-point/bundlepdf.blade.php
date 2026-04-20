@@ -253,6 +253,22 @@
                     <td class="center">{!! $loading->housekeeping_check == 'n/a' ? '<img src="' . public_path('check.png') . '">' : "" !!}</td>
                     <td>{!! $loading->housekeeping_note !!}</td>
                 </tr>
+                <tr>
+                    <td class="center">14</td>
+                    <td>Fasilitas Pondok Pengawas</td>
+                    <td class="center">{!! $loading->pondok_check == 'true' ? '<img src="' . public_path('check.png') . '">' : "" !!}</td>
+                    <td class="center">{!! $loading->pondok_check == 'false' ? '<img src="' . public_path('check.png') . '">' : "" !!}</td>
+                    <td class="center">{!! $loading->pondok_check == 'n/a' ? '<img src="' . public_path('check.png') . '">' : "" !!}</td>
+                    <td>{!! $loading->pondok_note !!}</td>
+                </tr>
+                <tr>
+                    <td class="center">15</td>
+                    <td>Area Parkir LV dilengkapi tanggul dan rambu</td>
+                    <td class="center">{!! $loading->parkir_check == 'true' ? '<img src="' . public_path('check.png') . '">' : "" !!}</td>
+                    <td class="center">{!! $loading->parkir_check == 'false' ? '<img src="' . public_path('check.png') . '">' : "" !!}</td>
+                    <td class="center">{!! $loading->parkir_check == 'n/a' ? '<img src="' . public_path('check.png') . '">' : "" !!}</td>
+                    <td>{!! $loading->parkir_note !!}</td>
+                </tr>
             </tbody>
         </table>
         Catatan:

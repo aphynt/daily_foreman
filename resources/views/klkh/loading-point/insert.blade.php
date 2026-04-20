@@ -360,6 +360,48 @@
                                         class="form-control form-control-sm pb-2 mt-2" placeholder="Keterangan" />
                                 </div>
                                 <hr>
+                                <!-- Pertanyaan 14 -->
+                                <div class="mb-3">
+                                    <label for="pondok_check">14. Fasilitas Pondok Pengawas:</label>
+                                    <div class="d-flex justify-content-start">
+                                        <label for="pondok_true" class="me-3 px-2 py-2">
+                                            <input type="radio" id="pondok_true" name="pondok_check"
+                                                value="true" required /> Ya
+                                        </label>
+                                        <label for="pondok_false" class="me-3 px-2 py-2">
+                                            <input type="radio" id="pondok_false" name="pondok_check"
+                                                value="false" /> Tidak
+                                        </label>
+                                        <label for="pondok_na" class="me-3 px-2 py-2">
+                                            <input type="radio" id="pondok_na" name="pondok_check"
+                                                value="n/a" /> N/A
+                                        </label>
+                                    </div>
+                                    <input type="text" name="pondok_note" id="pondok_note"
+                                        class="form-control form-control-sm pb-2 mt-2" placeholder="Keterangan" />
+                                </div>
+                                <hr>
+                                <!-- Pertanyaan 15 -->
+                                <div class="mb-3">
+                                    <label for="parkir_check">15. Area Parkir LV dilengkapi tanggul dan rambu:</label>
+                                    <div class="d-flex justify-content-start">
+                                        <label for="parkir_true" class="me-3 px-2 py-2">
+                                            <input type="radio" id="parkir_true" name="parkir_check"
+                                                value="true" required /> Ya
+                                        </label>
+                                        <label for="parkir_false" class="me-3 px-2 py-2">
+                                            <input type="radio" id="parkir_false" name="parkir_check"
+                                                value="false" /> Tidak
+                                        </label>
+                                        <label for="parkir_na" class="me-3 px-2 py-2">
+                                            <input type="radio" id="parkir_na" name="parkir_check"
+                                                value="n/a" /> N/A
+                                        </label>
+                                    </div>
+                                    <input type="text" name="parkir_note" id="parkir_note"
+                                        class="form-control form-control-sm pb-2 mt-2" placeholder="Keterangan" />
+                                </div>
+                                <hr>
 
                                 <!-- Catatan -->
                                 <div class="form-group mt-3">

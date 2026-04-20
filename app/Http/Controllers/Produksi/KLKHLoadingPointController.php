@@ -512,6 +512,10 @@ class KLKHLoadingPointController extends Controller
                 'lighting_note' => $data['lighting_note'] ?? null,
                 'housekeeping_check' => $data['housekeeping_check'],
                 'housekeeping_note' => $data['housekeeping_note'] ?? null,
+                'pondok_check' => $data['pondok_check'],
+                'pondok_note' => $data['pondok_note'] ?? null,
+                'parkir_check' => $data['parkir_check'],
+                'parkir_note' => $data['parkir_note'] ?? null,
                 'additional_notes' => $data['additional_notes'] ?? null,
                 'superintendent' => $data['superintendent'] ?? null,
             ];

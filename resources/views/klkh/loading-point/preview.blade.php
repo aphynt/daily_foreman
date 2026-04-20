@@ -171,6 +171,22 @@
                                                 <td>{{ $ld->housekeeping_check == 'n/a' ? "✔️" : "" }}</td>
                                                 <td>{{ $ld->housekeeping_note }}</td>
                                             </tr>
+                                            <tr>
+                                                <td>14</td>
+                                                <td>Fasilitas Pondok Pengawas</td>
+                                                <td>{{ $ld->pondok_check == 'true' ? "✔️" : "" }}</td>
+                                                <td>{{ $ld->pondok_check == 'false' ? "✔️" : "" }}</td>
+                                                <td>{{ $ld->pondok_check == 'n/a' ? "✔️" : "" }}</td>
+                                                <td>{{ $ld->pondok_note }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>15</td>
+                                                <td>Area Parkir LV dilengkapi tanggul dan rambu</td>
+                                                <td>{{ $ld->parkir_check == 'true' ? "✔️" : "" }}</td>
+                                                <td>{{ $ld->parkir_check == 'false' ? "✔️" : "" }}</td>
+                                                <td>{{ $ld->parkir_check == 'n/a' ? "✔️" : "" }}</td>
+                                                <td>{{ $ld->parkir_note }}</td>
+                                            </tr>
                                         </tbody>
 
                                     </table>

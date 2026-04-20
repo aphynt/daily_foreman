@@ -248,7 +248,7 @@
                                 <hr>
                                 <!-- Pertanyaan 11 -->
                                 <div class="mb-3">
-                                    <label for="dumping_point_11">11. Terdapat pondok dump man:</label>
+                                    <label for="dumping_point_11">11. Fasilitas pondok pengawas:</label>
                                     <div class="d-flex justify-content-start">
                                         <label for="dumping_point_11_true" class="me-3 px-2 py-2">
                                             <input type="radio" id="dumping_point_11_true" name="dumping_point_11" value="true" required /> Ya
@@ -449,6 +449,41 @@
                                     </div>
                                     <input type="text" name="dumping_point_22_note" id="dumping_point_22_note" class="form-control form-control-sm pb-2 mt-2" placeholder="Keterangan" />
                                 </div>
+                                <hr>
+                                <!-- Pertanyaan 23 -->
+                                <div class="mb-3">
+                                    <label for="dumping_point_23">23. Terdapat penyalur petir / area tercover penyalur petir:</label>
+                                    <div class="d-flex justify-content-start">
+                                        <label for="dumping_point_23_true" class="me-3 px-2 py-2">
+                                            <input type="radio" id="dumping_point_23_true" name="dumping_point_23" value="true" required /> Ya
+                                        </label>
+                                        <label for="dumping_point_23_false" class="me-3 px-2 py-2">
+                                            <input type="radio" id="dumping_point_23_false" name="dumping_point_23" value="false" /> Tidak
+                                        </label>
+                                        <label for="dumping_point_23_na" class="me-3 px-2 py-2">
+                                            <input type="radio" id="dumping_point_23_na" name="dumping_point_23" value="n/a" /> N/A
+                                        </label>
+                                    </div>
+                                    <input type="text" name="dumping_point_23_note" id="dumping_point_23_note" class="form-control form-control-sm pb-2 mt-2" placeholder="Keterangan" />
+                                </div>
+                                <hr>
+                                <!-- Pertanyaan 24 -->
+                                <div class="mb-3">
+                                    <label for="dumping_point_24">24. Area Parkir LV dilengkapi tanggul dan rambu:</label>
+                                    <div class="d-flex justify-content-start">
+                                        <label for="dumping_point_24_true" class="me-3 px-2 py-2">
+                                            <input type="radio" id="dumping_point_24_true" name="dumping_point_24" value="true" required /> Ya
+                                        </label>
+                                        <label for="dumping_point_24_false" class="me-3 px-2 py-2">
+                                            <input type="radio" id="dumping_point_24_false" name="dumping_point_24" value="false" /> Tidak
+                                        </label>
+                                        <label for="dumping_point_24_na" class="me-3 px-2 py-2">
+                                            <input type="radio" id="dumping_point_24_na" name="dumping_point_24" value="n/a" /> N/A
+                                        </label>
+                                    </div>
+                                    <input type="text" name="dumping_point_24_note" id="dumping_point_24_note" class="form-control form-control-sm pb-2 mt-2" placeholder="Keterangan" />
+                                </div>
+
 
                                 <hr>
 

@@ -231,7 +231,7 @@
                 </tr>
                 <tr>
                     <td class="center">11</td>
-                    <td>Terdapat pondok dump man</td>
+                    <td>Fasilitas pondok pengawas</td>
                     <td class="center">{!! $disposal->dumping_point_11 == 'true' ? '<img src="' . public_path('check.png') . '">' : "" !!}</td>
                     <td class="center">{!! $disposal->dumping_point_11 == 'false' ? '<img src="' . public_path('check.png') . '">' : "" !!}</td>
                     <td class="center">{!! $disposal->dumping_point_11 == 'n/a' ? '<img src="' . public_path('check.png') . '">' : "" !!}</td>
@@ -324,6 +324,22 @@
                     <td class="center">{!! $disposal->dumping_point_22 == 'false' ? '<img src="' . public_path('check.png') . '">' : "" !!}</td>
                     <td class="center">{!! $disposal->dumping_point_22 == 'n/a' ? '<img src="' . public_path('check.png') . '">' : "" !!}</td>
                     <td>{!! $disposal->dumping_point_22_note !!}</td>
+                </tr>
+                <tr>
+                    <td class="center">23</td>
+                    <td>Terdapat penyalur petir / area tercover penyalur petir</td>
+                    <td class="center">{!! $disposal->dumping_point_23 == 'true' ? '<img src="' . public_path('check.png') . '">' : "" !!}</td>
+                    <td class="center">{!! $disposal->dumping_point_23 == 'false' ? '<img src="' . public_path('check.png') . '">' : "" !!}</td>
+                    <td class="center">{!! $disposal->dumping_point_23 == 'n/a' ? '<img src="' . public_path('check.png') . '">' : "" !!}</td>
+                    <td>{!! $disposal->dumping_point_23_note !!}</td>
+                </tr>
+                <tr>
+                    <td class="center">24</td>
+                    <td>Area Parkir LV dilengkapi tanggul dan rambu</td>
+                    <td class="center">{!! $disposal->dumping_point_24 == 'true' ? '<img src="' . public_path('check.png') . '">' : "" !!}</td>
+                    <td class="center">{!! $disposal->dumping_point_24 == 'false' ? '<img src="' . public_path('check.png') . '">' : "" !!}</td>
+                    <td class="center">{!! $disposal->dumping_point_24 == 'n/a' ? '<img src="' . public_path('check.png') . '">' : "" !!}</td>
+                    <td>{!! $disposal->dumping_point_24_note !!}</td>
                 </tr>
             </tbody>
         </table>

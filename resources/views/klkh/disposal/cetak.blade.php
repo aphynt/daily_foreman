@@ -230,7 +230,7 @@
                 </tr>
                 <tr>
                     <td class="center">11</td>
-                    <td>Terdapat pondok dump man</td>
+                    <td>Fasilitas pondok pengawas</td>
                     <td class="center">{!! $dp->dumping_point_11 == 'true' ? '✔️' : "" !!}</td>
                     <td class="center">{!! $dp->dumping_point_11 == 'false' ? '✔️' : "" !!}</td>
                     <td class="center">{!! $dp->dumping_point_11 == 'n/a' ? '✔️' : "" !!}</td>
@@ -323,6 +323,22 @@
                     <td class="center">{!! $dp->dumping_point_22 == 'false' ? '✔️' : "" !!}</td>
                     <td class="center">{!! $dp->dumping_point_22 == 'n/a' ? '✔️' : "" !!}</td>
                     <td>{!! $dp->dumping_point_22_note !!}</td>
+                </tr>
+                <tr>
+                    <td class="center">23</td>
+                    <td>Terdapat penyalur petir / area tercover penyalur petir</td>
+                    <td class="center">{!! $dp->dumping_point_23 == 'true' ? '✔️' : "" !!}</td>
+                    <td class="center">{!! $dp->dumping_point_23 == 'false' ? '✔️' : "" !!}</td>
+                    <td class="center">{!! $dp->dumping_point_23 == 'n/a' ? '✔️' : "" !!}</td>
+                    <td>{!! $dp->dumping_point_23_note !!}</td>
+                </tr>
+                <tr>
+                    <td class="center">24</td>
+                    <td>Area Parkir LV dilengkapi tanggul dan rambu</td>
+                    <td class="center">{!! $dp->dumping_point_24 == 'true' ? '✔️' : "" !!}</td>
+                    <td class="center">{!! $dp->dumping_point_24 == 'false' ? '✔️' : "" !!}</td>
+                    <td class="center">{!! $dp->dumping_point_24 == 'n/a' ? '✔️' : "" !!}</td>
+                    <td>{!! $dp->dumping_point_24_note !!}</td>
                 </tr>
             </tbody>
         </table>

@@ -201,6 +201,10 @@ class KLKHDisposalController extends Controller
                     'dumping_point_21_note' => $data['dumping_point_21_note'] ?? null,
                     'dumping_point_22' => $data['dumping_point_22'],
                     'dumping_point_22_note' => $data['dumping_point_22_note'] ?? null,
+                    'dumping_point_23' => $data['dumping_point_23'],
+                    'dumping_point_23_note' => $data['dumping_point_23_note'] ?? null,
+                    'dumping_point_24' => $data['dumping_point_24'],
+                    'dumping_point_24_note' => $data['dumping_point_24_note'] ?? null,
                     'additional_notes' => $data['additional_notes'] ?? null,
                     'superintendent' => $data['superintendent'] ?? null,
             ];
