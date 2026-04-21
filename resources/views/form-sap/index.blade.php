@@ -440,8 +440,8 @@
                                 </div>
 
                                 <div class="mb-0">
-                                    <label class="form-label">Pengendalian</label>
-                                    <textarea class="form-control" placeholder="Jelaskan pengendalian yang sudah ada atau yang disarankan" name="pengendalian"></textarea>
+                                    <label class="form-label">Pengendalian Awal</label>
+                                    <textarea class="form-control" placeholder="Jelaskan pengendalian awal yang sudah ada atau yang disarankan" name="pengendalian"></textarea>
                                 </div>
                             </div>
 

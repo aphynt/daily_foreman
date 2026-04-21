@@ -613,7 +613,7 @@
                             </div>
 
                             <div class="field-block">
-                                <label class="field-label">Pengendalian</label>
+                                <label class="field-label">Pengendalian Awal</label>
                                 <textarea class="field-textarea" readonly>{{ $report->pengendalian ?? '-' }}</textarea>
                             </div>
                         </div>

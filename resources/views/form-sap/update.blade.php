@@ -580,7 +580,7 @@
                                 </div>
 
                                 <div class="mb-0">
-                                    <label class="form-label">Pengendalian</label>
+                                    <label class="form-label">Pengendalian Awal</label>
                                     <textarea class="form-control"
                                               rows="5"
                                               name="pengendalian"
