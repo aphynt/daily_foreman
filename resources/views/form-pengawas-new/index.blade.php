@@ -632,43 +632,55 @@ formData.append('alat_support', JSON.stringify(alatSupportData));
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             },
         })
-            .then(response => {
-                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('uuid').value = data.uuid;
+        .then(async (response) => {
+            let data = {};
 
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text:"Saving Success",
-                    }).then(() => {
-                        if(actionType == 'finish'){
-                            window.location.href = "{{ route('form-pengawas-new.show') }}";
-                        }else{
-                            location.reload();
-                        }
+            try {
+                data = await response.json();
+            } catch (e) {
+                data = {};
+            }
 
-                          // Halaman akan di-reload setelah popup Swal ditutup
-                    });
+            if (!response.ok) {
+                throw new Error(
+                    data.error ||
+                    data.message ||
+                    `HTTP error! Status: ${response.status}`
+                );
+            }
 
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: `Failed to save: ${data.error}`,
-                    });
-                }
-            })
-            .catch(error => {
+            return data;
+        })
+        .then((data) => {
+            if (data.success) {
+                document.getElementById('uuid').value = data.uuid;
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Saving Success',
+                }).then(() => {
+                    if (actionType == 'finish') {
+                        window.location.href = "{{ route('form-pengawas-new.show') }}";
+                    } else {
+                        location.reload();
+                    }
+                });
+            } else {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: `Error saving: ${error.message}`,
+                    html: `<div style="text-align:left;word-break:break-word;">Failed to save: ${data.error || data.message || 'Unknown error'}</div>`,
                 });
+            }
+        })
+        .catch((error) => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                html: `<div style="text-align:left;word-break:break-word;">Error saving: ${error.message}</div>`,
             });
+        });
     }
 </script>
 

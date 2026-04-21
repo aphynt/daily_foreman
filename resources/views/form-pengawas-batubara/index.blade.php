@@ -470,41 +470,49 @@
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 },
             })
-                .then(response => {
-                    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById('uuid').value = data.uuid;
+            .then(async (response) => {
+                let data = {};
 
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text:"Saving Success",
-                        }).then(() => {
-                            if(actionType == 'finish'){
-                            window.location.href = "{{ route('form-pengawas-batubara.show') }}";
-                            }else{
-                                location.reload();
-                            }
-                        });
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    data = {
+                        error: `HTTP error! Status: ${response.status}`
+                    };
+                }
 
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: `Failed to save: ${data.error}`,
-                        });
-                    }
-                })
-                .catch(error => {
+                if (!response.ok) {
+                    throw new Error(data.error || data.message || `HTTP error! Status: ${response.status}`);
+                }
+
+                return data;
+            })
+            .then((data) => {
+                if (data.success) {
+                    document.getElementById('uuid').value = data.uuid;
+
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: `Error saving: ${error.message}`,
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Saving Success',
+                    }).then(() => {
+                        if (actionType === 'finish') {
+                            window.location.href = "{{ route('form-pengawas-batubara.show') }}";
+                        } else {
+                            location.reload();
+                        }
                     });
+                } else {
+                    throw new Error(data.error || 'Unknown error');
+                }
+            })
+            .catch((error) => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    html: `<div style="text-align:left;word-break:break-word;">${error.message}</div>`,
                 });
+            });
         }
 </script>
 
