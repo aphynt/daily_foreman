@@ -290,7 +290,7 @@
                                         </td>
                                         <td>
                                             @if ($item->status == 0)
-                                                <span class="badge bg-warning">Pending</span>
+                                                <span class="badge bg-warning">Reviewed</span>
                                             @elseif($item->status == 1)
                                                 <span class="badge bg-info">Open</span>
                                             @else

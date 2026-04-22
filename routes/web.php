@@ -184,7 +184,9 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/hazard-report/insert', [HazardReportController::class, 'insert'])->name('hazard-report.insert')->middleware('canAccess');
     Route::post('/hazard-report/post', [HazardReportController::class, 'post'])->name('hazard-report.post');
     Route::get('/hazard-report/review/{uuid}', [HazardReportController::class, 'review'])->name('hazard-report.review');
+    Route::put('/hazard-report/update/{uuid}', [HazardReportController::class, 'update'])->name('hazard-report.update');
     Route::get('/hazard-report/delete/{uuid}', [HazardReportController::class, 'delete'])->name('hazard-report.delete');
+    Route::put('/hazard-report/update-departemen/{uuid}', [HazardReportController::class, 'updateDepartemen'])->name('hazard-report.update.departemen');
     Route::post('/hazard-report/close', [HazardReportController::class, 'closeHazard'])->name('hazard-report.close');
     Route::post('/hazard-report/verifySCC', [HazardReportController::class, 'verifySCC'])->name('hazard-report.verify.scc');
 

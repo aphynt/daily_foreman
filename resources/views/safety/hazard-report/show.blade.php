@@ -208,11 +208,21 @@
                                     <label class="form-label">No Inspeksi:</label>
                                     <input class="form-control" value="{{ $data->no_inspeksi }}" readonly>
                                 </div>
+                                <div class="row">
+                                    @if (Auth::user()->role == 'ADMIN')
+                                        <div class="col-md-6 mb-3">
+                                        <label class="form-label">Pembuat:</label>
+                                        <input class="form-control" value="{{ $data->pic_name }}" readonly>
+                                    </div>
+                                    @endif
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Kepada:</label>
+                                        <input class="form-control" value="{{ $data->kepada }}" readonly>
+                                    </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label">Kepada:</label>
-                                    <input class="form-control" value="{{ $data->kepada }}" readonly>
                                 </div>
+
+
 
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
