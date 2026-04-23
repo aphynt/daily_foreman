@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\HazardReportExport;
 use App\Models\Departemen;
 use App\Models\HazardReport;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ use Ramsey\Uuid\Uuid;
 use DateTime;
 use App\Models\RefConf;
 use Illuminate\Support\Facades\Log as FacadesLog;
+use Maatwebsite\Excel\Facades\Excel;
 
 class HazardReportController extends Controller
 {
@@ -46,6 +48,7 @@ class HazardReportController extends Controller
         ->leftJoin('users as us4', 'hz.penerima', 'us4.nik')
         ->leftJoin('ref_shift as sh', 'hz.shift', 'sh.id')
         ->leftJoin('ref_departemen as dep', 'hz.departemen', 'dep.id')
+        ->leftJoin('ref_departemen as dep2', 'us1.departemen_id', 'dep2.id')
         ->select(
             'hz.id',
             'hz.uuid',
@@ -54,6 +57,7 @@ class HazardReportController extends Controller
             'hz.kepada',
             'sh.keterangan as shift',
             'dep.keterangan as nama_departemen',
+            'dep2.keterangan as departemen_pelapor',
             'hz.tanggal_pelaporan',
             'hz.lokasi',
             'hz.bahaya',
@@ -66,14 +70,39 @@ class HazardReportController extends Controller
             'hz.pelapor as nik_pelapor',
             'us2.name as nama_pelapor',
             'hz.scc as nik_scc',
-            'us2.name as nama_scc',
+            'us3.name as nama_scc',
             'hz.penerima as nik_penerima',
-            'us2.name as nama_penerima',
+            'us4.name as nama_penerima',
+            'hz.dokumentasi_1',
+            'hz.dokumentasi_2',
+            'hz.dokumentasi_perbaikan_1',
+            'hz.dokumentasi_perbaikan_2',
             'hz.created_at',
             'hz.verified_scc',
         )
         ->whereBetween(DB::raw('CONVERT(varchar, hz.tanggal_pelaporan, 23)'), [$startTimeFormatted, $endTimeFormatted])
-        ->where('hz.statusenabled', true)->get();
+        ->where('hz.statusenabled', true);
+
+        if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
+            $hazard->where(function ($query) {
+                $query->where('hz.departemen', Auth::user()->departemen_id)
+                    ->orWhere('hz.pic', Auth::user()->id);
+            });
+        }
+
+        if ($request->filled('status')) {
+            $hazard->where('status', $request->status);
+        }
+
+        $hazard = $hazard->get();
+
+        if ($request->get('export') === 'excel') {
+            $fileName = "($startTimeFormatted - $endTimeFormatted) Hazard Report.xlsx";
+            return Excel::download(
+            new HazardReportExport($hazard, $startTimeFormatted, $endTimeFormatted),
+            $fileName
+        );
+        }
         return view('safety.hazard-report.index', compact('hazard'));
     }
 
@@ -149,6 +178,7 @@ class HazardReportController extends Controller
                 $waController = new WhatsAppController();
 
                 $tanggalPelaporan = Carbon::parse($request->tanggal_pelaporan . ' ' . $request->jam_pelaporan)->locale('id');
+                $departemen = Departemen::where('id', $request->departemen)->value('keterangan');
                 $hariTanggal = $tanggalPelaporan->translatedFormat('l d F Y');
                 $jam = $tanggalPelaporan->format('H:i') . ' Wita';
 
@@ -172,7 +202,7 @@ class HazardReportController extends Controller
                 No. $nomorLaporan
 
                 - Kepada        : {$request->kepada}
-                - Prush/Dept.   : {$request->departemen}
+                - Prush/Dept.   : {$departemen}
                 - Hari/tgl.     : $hariTanggal
                 - Jam           : $jam
                 - Lokasi        : {$request->lokasi}

@@ -184,9 +184,9 @@
                         class="form-select form-select-sm"
                         style="max-width: 150px;"
                     >
-                        <option value="" {{ request('status') == '' ? 'selected' : '' }}>All</option>
-                        <option value="0" {{ request('status') == 'OPEN' ? 'selected' : '' }}>Open</option>
-                        <option value="1" {{ request('status') == 'CLOSE' ? 'selected' : '' }}>Close</option>
+                        <option value="" {{ request()->filled('status') ? '' : 'selected' }}>All</option>
+                        <option value="0" {{ request('status') == '1' ? 'selected' : '' }}>Open</option>
+                        <option value="1" {{ request('status') == '2' ? 'selected' : '' }}>Close</option>
                     </select>
 
                     <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>

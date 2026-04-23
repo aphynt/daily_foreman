@@ -437,7 +437,7 @@
                                     @else
 
                                     <div class="text-muted fst-italic">
-                                        Belum ada tanggapan dari SCC
+                                        Belum/tidak ada tanggapan dari SCC
                                     </div>
 
                                     @endif

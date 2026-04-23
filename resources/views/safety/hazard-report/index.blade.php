@@ -93,7 +93,7 @@
                     <div class="col-md-12">
                         <ul class="breadcrumb">
                             {{-- <li class="breadcrumb-item"><a href="javascript: void(0)">Home</a></li> --}}
-                            <li class="breadcrumb-item"><a href="javascript: void(0)">Daftar Laporan Inspeksi</a></li>
+                            <li class="breadcrumb-item"><a href="javascript: void(0)">Daftar Laporan Hazard</a></li>
                         </ul>
                     </div>
                     <div class="col-12">
@@ -102,24 +102,54 @@
                             {{-- FILTER TANGGAL --}}
                             <div class="d-flex align-items-center">
                                 <form action="" method="get">
-                                    <div class="input-group input-group-sm" id="pc-datepicker-10">
-                                        <input type="text"
+                                    <div class="input-group" id="pc-datepicker-10">
+                                        <input
+                                            type="text"
                                             class="form-control form-control-sm"
                                             placeholder="Start date"
                                             name="rangeStart"
-                                            style="max-width:160px"
-                                            id="range-start">
+                                            style="max-width: 200px;"
+                                            id="range-start"
+                                            value="{{ request('rangeStart') }}"
+                                        >
 
                                         <span class="input-group-text">s/d</span>
 
-                                        <input type="text"
+                                        <input
+                                            type="text"
                                             class="form-control form-control-sm"
                                             placeholder="End date"
                                             name="rangeEnd"
-                                            style="max-width:160px"
-                                            id="range-end">
+                                            style="max-width: 200px;"
+                                            id="range-end"
+                                            value="{{ request('rangeEnd') }}"
+                                        >
+
+                                        <span class="input-group-text">Status</span>
+                                        <select
+                                            name="status"
+                                            class="form-select form-select-sm"
+                                            style="max-width: 150px;"
+                                        >
+                                            <option value="" {{ request()->filled('status') ? '' : 'selected' }}>All</option>
+                                            <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Open</option>
+                                            <option value="2" {{ request('status') == '2' ? 'selected' : '' }}>Close</option>
+                                        </select>
 
                                         <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
+
+                                        {{-- @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) --}}
+                                        @if(Auth::user()->id == 3)
+                                            <button
+                                                type="submit"
+                                                name="export"
+                                                value="excel"
+                                                class="btn btn-success btn-sm d-inline-flex align-items-center justify-content-center gap-1 px-2"
+                                            >
+                                                <i class="fas fa-download"></i>
+                                                <span>Download</span>
+                                            </button>
+                                        @endif
                                     </div>
                                 </form>
                             </div>
