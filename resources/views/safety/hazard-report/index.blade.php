@@ -138,8 +138,8 @@
 
                                         <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
 
-                                        {{-- @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) --}}
-                                        @if(Auth::user()->id == 3)
+                                        @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT']))
+                                        {{-- @if(Auth::user()->id == 3) --}}
                                             <button
                                                 type="submit"
                                                 name="export"
@@ -229,6 +229,11 @@
                                     </div>
 
                                     <div class="col-6 mb-3">
+                                        <div class="info-label">Perusahaan</div>
+                                        <div class="info-value">{{ $item->perusahaan ?? '-' }}</div>
+                                    </div>
+
+                                    <div class="col-6 mb-3">
                                         <div class="info-label">Departemen</div>
                                         <div class="info-value">{{ $item->nama_departemen ?? '-' }}</div>
                                     </div>
@@ -289,6 +294,7 @@
                                         <th>Tanggal Pelaporan</th>
                                         <th>Jam Kejadian</th>
                                         <th>Shift</th>
+                                        <th>Perusahaan</th>
                                         <th>Kepada</th>
                                         <th>Departemen</th>
                                         <th>Lokasi</th>
@@ -306,6 +312,7 @@
                                         <td>{{ date('d-m-Y', strtotime($item->tanggal_pelaporan)) }}</td>
                                         <td>{{ date('H:i', strtotime($item->tanggal_pelaporan)) }}</td>
                                         <td>{{ $item->shift }}</td>
+                                        <td>{{ $item->perusahaan }}</td>
                                         <td>{{ $item->kepada }}</td>
                                         <td>{{ $item->nama_departemen }}</td>
                                         <td>{{ $item->lokasi }}</td>

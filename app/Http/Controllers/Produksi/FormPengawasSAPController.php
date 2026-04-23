@@ -575,6 +575,8 @@ MSG;
                     $verificationNumber = RefConf::where('id', 21)->value('value');
                 }else if($request->pic == 12){
                     $verificationNumber = RefConf::where('id', 22)->value('value');
+                }else if($request->pic == 9){
+                    $verificationNumber = RefConf::where('id', 24)->value('value');
                 }
 
 

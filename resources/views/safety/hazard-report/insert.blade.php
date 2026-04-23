@@ -202,6 +202,26 @@
                                     <input class="form-control" name="kepada" placeholder="Masukkan kepada siapa ditujukan..." required>
                                 </div>
                                 <div class="mb-3">
+                                    <label for="perusahaan" class="form-label">Perusahaan:</label>
+                                    <select class="form-select modern-select" data-trigger id="perusahaan" name="perusahaan" required>
+                                        <option value="">--Pilih perusahaan--</option>
+                                        <option value="PT. SIMS JAYA KALTIM">PT. SIMS JAYA KALTIM</option>
+                                        <option value="PT. ABM">PT. ABM</option>
+                                        <option value="PT. KJM">PT. KJM</option>
+                                        <option value="PT. SM">PT. SM</option>
+                                        <option value="PT. UT">PT. UT</option>
+                                        <option value="PT. TRAKINDO">PT. TRAKINDO</option>
+                                        <option value="PT. HEXINDO">PT. HEXINDO</option>
+                                        <option value="PT. IWACO">PT. IWACO</option>
+                                        <option value="PT. K2B">PT. K2B</option>
+                                        <option value="PT. HMSI">PT. HMSI</option>
+                                        <option value="PT. TRJA">PT. TRJA</option>
+                                        <option value="PT. KWN">PT. KWN</option>
+                                        <option value="PT. KRI">PT. KRI</option>
+                                        <option value="PT. BIMA EV">PT. BIMA EV</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
                                     <label for="departemen" class="form-label">Departemen:</label>
                                     <select class="form-select modern-select" data-trigger id="departemen" name="departemen" required>
                                         <option value="">--Pilih Departemen--</option>

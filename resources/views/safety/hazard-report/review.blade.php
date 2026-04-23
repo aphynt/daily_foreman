@@ -147,6 +147,26 @@
                                             <label class="form-label">Kepada:</label>
                                             <input class="form-control" value="{{ $data->kepada }}" readonly>
                                         </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Tingkat Risiko:</label>
+                                            <select name="perusahaan" class="form-select">
+                                                <option value="">-- Pilih Tingkat Risiko --</option>
+                                                <option value="PT. SIMS JAYA KALTIM" {{ old('perusahaan', $data->perusahaan) == 'PT. SIMS JAYA KALTIM' ? 'selected' : '' }}>PT. SIMS JAYA KALTIM</option>
+                                                <option value="PT. ABM" {{ old('perusahaan', $data->perusahaan) == 'PT. ABM' ? 'selected' : '' }}>PT. ABM</option>
+                                                <option value="PT. KJM" {{ old('perusahaan', $data->perusahaan) == 'PT. KJM' ? 'selected' : '' }}>PT. KJM</option>
+                                                <option value="PT. SM" {{ old('perusahaan', $data->perusahaan) == 'PT. SM' ? 'selected' : '' }}>PT. SM</option>
+                                                <option value="PT. UT" {{ old('perusahaan', $data->perusahaan) == 'PT. UT' ? 'selected' : '' }}>PT. UT</option>
+                                                <option value="PT. TRAKINDO" {{ old('perusahaan', $data->perusahaan) == 'PT. TRAKINDO' ? 'selected' : '' }}>PT. TRAKINDO</option>
+                                                <option value="PT. HEXINDO" {{ old('perusahaan', $data->perusahaan) == 'PT. HEXINDO' ? 'selected' : '' }}>PT. HEXINDO</option>
+                                                <option value="PT. IWACO" {{ old('perusahaan', $data->perusahaan) == 'PT. IWACO' ? 'selected' : '' }}>PT. IWACO</option>
+                                                <option value="PT. K2B" {{ old('perusahaan', $data->perusahaan) == 'PT. K2B' ? 'selected' : '' }}>PT. K2B</option>
+                                                <option value="PT. HMSI" {{ old('perusahaan', $data->perusahaan) == 'PT. HMSI' ? 'selected' : '' }}>PT. HMSI</option>
+                                                <option value="PT. TRJA" {{ old('perusahaan', $data->perusahaan) == 'PT. TRJA' ? 'selected' : '' }}>PT. TRJA</option>
+                                                <option value="PT. KWN" {{ old('perusahaan', $data->perusahaan) == 'PT. KWN' ? 'selected' : '' }}>PT. KWN</option>
+                                                <option value="PT. KRI" {{ old('perusahaan', $data->perusahaan) == 'PT. KRI' ? 'selected' : '' }}>PT. KRI</option>
+                                                <option value="PT. BIMA EV" {{ old('perusahaan', $data->perusahaan) == 'PT. BIMA EV' ? 'selected' : '' }}>PT. BIMA EV</option>
+                                            </select>
+                                        </div>
 
                                     </div>
 

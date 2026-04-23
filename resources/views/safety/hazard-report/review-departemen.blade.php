@@ -124,6 +124,12 @@
                             <input class="form-control" value="{{ $data->kepada }}" readonly>
                         </div>
 
+                        <div class="mb-3">
+                            <label class="form-label">Perusahaan:</label>
+                            <input class="form-control" value="{{ $data->perusahaan }}" readonly>
+                        </div>
+
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Shift:</label>
