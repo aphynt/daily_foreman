@@ -226,7 +226,9 @@
                                     <select class="form-select modern-select" data-trigger id="departemen" name="departemen" required>
                                         <option value="">--Pilih Departemen--</option>
                                         @foreach ($dep as $d)
-                                            <option value="{{ $d->id }}">{{ $d->keterangan }}</option>
+                                            @if ($d->id != 13 && strtoupper($d->keterangan) != 'BOD')
+                                                <option value="{{ $d->id }}">{{ $d->keterangan }}</option>
+                                            @endif
                                         @endforeach
                                     </select>
                                 </div>
