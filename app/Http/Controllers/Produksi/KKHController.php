@@ -227,7 +227,7 @@ class KKHController extends Controller
         $filteredRecords = $kkh->count();
 
         $kkhRows = $kkh
-            ->orderBy('kkh.tgl')
+            ->orderBy('kkh.fit_or')
             ->offset($offset)
             ->limit($length)
             ->get();
@@ -272,7 +272,8 @@ class KKHController extends Controller
             $allowedToVerify = false;
 
             if (!$verifPengawas) {
-                $lolosTahapP3k = (!$butuhP3k) || $verifP3k;
+                //$lolosTahapP3k = (!$butuhP3k) || $verifP3k;
+                $lolosTahapP3k = true;
 
                 if ($lolosTahapP3k && $jabatanPengisi !== $currentUserRole) {
                     if ($isOperator) {
@@ -490,7 +491,7 @@ class KKHController extends Controller
         $filteredRecords = $kkh->count();
 
         $kkhRows = $kkh
-            ->orderBy('kkh.tgl')
+            ->orderBy('kkh.fit_or')
             ->offset($offset)
             ->limit($length)
             ->get();
@@ -539,7 +540,8 @@ class KKHController extends Controller
             $allowedToVerify = false;
 
             if (!$verifPengawas) {
-                $lolosTahapP3k = (!$butuhP3k) || $verifP3k;
+                //$lolosTahapP3k = (!$butuhP3k) || $verifP3k;
+                $lolosTahapP3k = true;
 
                 if ($lolosTahapP3k && $jabatanPengisi !== $currentUserRole) {
                     if ($isOperator) {
@@ -683,7 +685,7 @@ class KKHController extends Controller
                 //         ELSE 'YA'
                 //     END as FIT_BEKERJA
                 // "),
-                DB::raw("CASE WHEN kkh.fit_or IS NULL OR kkh.fit_or = 0 THEN 'TIDAK' ELSE 'YA' END as FIT_BEKERJA"),
+                DB::raw("CASE WHEN kkh.fit_or IS NULL OR kkh.fit_or = 0 THEN 'Perlu Verifikasi' ELSE 'Ya' END as FIT_BEKERJA"),
                 DB::raw('UPPER(kkh.keluhan) as KELUHAN'),
                 'kkh.masalah_pribadi as MASALAH_PRIBADI',
                 'kkh.verifikasi as VERIFIKASI',

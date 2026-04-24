@@ -189,9 +189,9 @@
                     data: 'FIT_BEKERJA',
                     render: function(data) {
                         if (data == 0 || data === null || data === '') {
-                            return '<span style="color:red;">TIDAK</span>';
+                            return '<span style="color:red;">Perlu Verifikasi</span>';
                         }
-                        return '<span style="color:green;">YA</span>';
+                        return '<span style="color:green;">Ya</span>';
                     }
                 },
                 { data: 'KELUHAN' },
@@ -279,7 +279,7 @@
                             return `<span class="badge bg-secondary w-100">Menunggu Pengawas</span>`;
                         }
 
-                        return `Selesai`;
+                        return ``;
                     }
                 }
             ],
