@@ -1611,17 +1611,17 @@
         });
     });
 
-    document.getElementById('saveTemuanTindakLanjut').addEventListener('click', async () => {
-        const fileInputFotoTemuan = document.getElementById('foto_temuan');
-        let foto_temuan = fileInputFotoTemuan.files[0];
-        if (foto_temuan) {
-            foto_temuan = await compressImage(foto_temuan, 800, 0.7);
-        }else{
-            foto_temuan = null;
-        }
-        const deskripsi_temuan = document.getElementById('deskripsi_temuan').value;
-        const tindak_lanjut = document.getElementById('tindak_lanjut').value;
-        const status = document.getElementById('status').value;
+    document.getElementById('saveTemuanTindakLanjut').addEventListener('click', async function () {
+        const form = document.getElementById('formTemuanTindakLanjut');
+
+        const fileInputFotoTemuan = form.querySelector('#foto_temuan');
+        const deskripsiInput = form.querySelector('#deskripsi_temuan');
+        const tindakLanjutInput = form.querySelector('#tindak_lanjut');
+        const statusInput = form.querySelector('#status');
+
+        const deskripsi_temuan = deskripsiInput.value.trim();
+        const tindak_lanjut = tindakLanjutInput.value.trim();
+        const status = statusInput.value;
 
         if (!deskripsi_temuan) {
             Swal.fire({
@@ -1629,7 +1629,14 @@
                 title: 'Gagal',
                 text: 'Kolom deskripsi temuan harus diisi!'
             });
+            deskripsiInput.focus();
             return;
+        }
+
+        let foto_temuan = fileInputFotoTemuan.files[0] || null;
+
+        if (foto_temuan) {
+            foto_temuan = await compressImage(foto_temuan, 800, 0.7);
         }
 
         temuanTindakLanjutCount++;
