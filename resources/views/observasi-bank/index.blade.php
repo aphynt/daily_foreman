@@ -97,12 +97,10 @@
                                         <th rowspan="2">Nama Pekerjaan</th>
                                         <th rowspan="2">Referensi</th>
                                         <th rowspan="2">Lokasi</th>
-                                        <th colspan="2">Pengawas</th>
+                                        <th rowspan="2">Pengawas</th>
                                         <th rowspan="2">Aksi</th>
                                     </tr>
                                     <tr>
-                                        <th>NIK</th>
-                                        <th>Nama</th>
                                         <th>NIK</th>
                                         <th>Nama</th>
                                     </tr>
@@ -119,8 +117,7 @@
                                             <td>{{ $item->nama_pekerjaan }}</td>
                                             <td>{{ $item->referensi }}</td>
                                             <td>{{ $item->lokasi }}</td>
-                                            <td>{{ $item->nik_pengawas1 }}</td>
-                                                <td>{{ $item->nama_pengawas1 }}</td>
+                                            <td>{{ $item->nama_pengawas1 }}</td>
 
                                             <td>
                                                 <a href="{{ route('observasibank.preview', $item->uuid) }}" class="avtar avtar-s btn btn-primary btn-sm">

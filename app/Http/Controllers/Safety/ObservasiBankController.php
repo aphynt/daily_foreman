@@ -43,7 +43,7 @@ class ObservasiBankController extends Controller
         $baseQuery = DB::table('se_observasi_bank as bank')
         ->leftJoin('users as us', 'bank.pic', '=', 'us.id')
         ->leftJoin('ref_departemen as dep', 'bank.departemen_id', '=', 'dep.id')
-        ->leftJoin('users as us1', 'bank.pengawas1', '=', 'us1.nik')
+        // ->leftJoin('users as us1', 'bank.pengawas1', '=', 'us1.nik')
         // ->leftJoin('users as us2', 'bank.inspektor2', '=', 'us2.nik')
         // ->leftJoin('users as us3', 'bank.inspektor3', '=', 'us3.nik')
         // ->leftJoin('users as us4', 'bank.inspektor4', '=', 'us4.nik')
@@ -65,7 +65,7 @@ class ObservasiBankController extends Controller
             'bank.lokasi',
             'bank.jam',
             'bank.pengawas1 as nik_pengawas1',
-            'us1.name as nama_pengawas1',
+            'bank.nama_pengawas1',
         )
         ->where('bank.statusenabled', true)
         ->whereBetween(DB::raw('CONVERT(varchar, bank.tanggal, 23)'), [$startTimeFormatted, $endTimeFormatted]);
@@ -116,6 +116,24 @@ class ObservasiBankController extends Controller
         try {
 
             $data = $request->all();
+            $pengawas1 = null;
+            $namaPengawas1 = null;
+
+            $pengawasMode = $data['pengawas1_mode'] ?? 'auto';
+
+            if ($pengawasMode === 'manual') {
+                $pengawas1 = null;
+                $namaPengawas1 = $data['nama_pengawas1_manual'] ?? null;
+            } else {
+                $pengawasValue = $data['pengawas1_auto'] ?? null;
+
+                if (!empty($pengawasValue)) {
+                    $pengawasParts = explode('|', $pengawasValue, 2);
+
+                    $pengawas1 = $pengawasParts[0] ?? null;
+                    $namaPengawas1 = $pengawasParts[1] ?? null;
+                }
+            }
             $saveFile = function ($fieldName, $relativeFolder) use ($request) {
                 if (!$request->hasFile($fieldName)) {
                     return null;
@@ -254,7 +272,8 @@ class ObservasiBankController extends Controller
                 'pekerja3' => $data['pekerja3'] ?? null,
 
                 // XII. VALIDASI PENGAWAS
-                'pengawas1' => $data['pengawas1'] ?? null,
+                'pengawas1' => $pengawas1,
+                'nama_pengawas1' => $namaPengawas1,
 
                 'dokumentasi_foto_1' => $dokumentasiFoto1,
                 'dokumentasi_foto_2' => $dokumentasiFoto2,
@@ -281,14 +300,14 @@ class ObservasiBankController extends Controller
             ->leftJoin('users as us1', 'ob.petugas1', '=', 'us1.nik')
             ->leftJoin('users as us2', 'ob.petugas2', '=', 'us2.nik')
             ->leftJoin('users as us3', 'ob.petugas3', '=', 'us3.nik')
-            ->leftJoin('users as us4', 'ob.pengawas1', '=', 'us4.nik')
+            // ->leftJoin('users as us4', 'ob.pengawas1', '=', 'us4.nik')
             ->select(
                 'ob.*',
                 'dep.keterangan as departemen',
                 'us1.name as nama_petugas1',
                 'us2.name as nama_petugas2',
                 'us3.name as nama_petugas3',
-                'us4.name as nama_pengawas1',
+                // 'us4.name as nama_pengawas1',
             )
             ->where('ob.uuid', $uuid)
             ->where('ob.statusenabled', 1)

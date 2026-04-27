@@ -90,7 +90,7 @@
                                     </div>
                                     <div class="col-md-6 col-12 px-2 py-2">
                                         <label>Departemen</label>
-                                        <select class="form-control form-control-sm pb-2" id="exampleFormControlSelect1" name="departemen_id" data-trigger>
+                                        <select class="form-control form-control-sm pb-2" id="exampleFormControlSelect1" name="departemen_id" required data-trigger>
                                             <option selected disabled></option>
                                             @foreach ($users['departemen'] as $dep)
                                                 <option value="{{ $dep->id }}">{{ $dep->keterangan }}</option>
@@ -112,6 +112,10 @@
                                     </div>
                                     <div class="col-md-6 col-12 px-2 py-2">
                                         <label>Lokasi</label>
+                                        <input type="text" class="form-control form-control-sm" name="lokasi" >
+                                    </div>
+                                    {{-- <div class="col-md-6 col-12 px-2 py-2">
+                                        <label>Lokasi</label>
                                         <select class="form-control form-control-sm pb-2" id="lokasi" name="lokasi" data-trigger="" required>
                                             <option selected disabled></option>
                                             <option value="JALAN HAULING">JALAN HAULING</option>
@@ -124,12 +128,12 @@
                                             <option value="OFFICE">OFFICE</option>
                                             <option value="LAIN-LAIN">LAIN-LAIN</option>
                                         </select>
-                                    </div>
+                                    </div> --}}
 
-                                    <div class="col-md-6 col-12 px-2 py-2" id="lokasi_lain_container" style="display:none;">
+                                    {{-- <div class="col-md-6 col-12 px-2 py-2" id="lokasi_lain_container" style="display:none;">
                                         <label>Lokasi Lainnya</label>
                                         <input type="text" class="form-control form-control-sm" id="lokasi_lain" name="lokasi_lain" placeholder="Masukkan lokasi lainnya">
-                                    </div>
+                                    </div> --}}
                                 </div>
                                 <div class="mb-3">
                                     <div class="note-warning">
@@ -783,19 +787,72 @@
                                 <hr>
                                 <div class="row mb-3">
                                     <h5>XII. Validasi Pengawas / Penanggung Jawab</h5>
+
+                                    @php
+                                        $defaultPengawasValue = Auth::user()->nik . '|' . Auth::user()->name;
+                                        $oldPengawasMode = old('pengawas1_mode', 'auto');
+                                        $oldPengawasValue = old('pengawas1_auto', $defaultPengawasValue);
+                                    @endphp
+
                                     <div class="col-md-12 col-12 px-2 py-2">
+
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input"
+                                                type="radio"
+                                                name="pengawas1_mode"
+                                                id="pengawas1_mode_auto"
+                                                value="auto"
+                                                {{ $oldPengawasMode == 'auto' ? 'checked' : '' }}>
+
+                                            <label class="form-check-label" for="pengawas1_mode_auto">
+                                                Otomatis / Pilih dari daftar
+                                            </label>
+                                        </div>
+
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input"
+                                                type="radio"
+                                                name="pengawas1_mode"
+                                                id="pengawas1_mode_manual"
+                                                value="manual"
+                                                {{ $oldPengawasMode == 'manual' ? 'checked' : '' }}>
+
+                                            <label class="form-check-label" for="pengawas1_mode_manual">
+                                                Masukkan Manual
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 col-12 px-2 py-2" id="pengawas_auto_container">
                                         <label>Pengawas</label>
-                                        <select class="form-control form-control-sm" name="pengawas1" data-trigger>
-                                            <option value="{{ Auth::user()->nik }}" selected>{{ Auth::user()->name }} ({{ Auth::user()->nik }})</option>
+                                        <select class="form-control form-control-sm" name="pengawas1_auto" id="pengawas1_auto" data-trigger>
+                                            <option value="{{ $defaultPengawasValue }}"
+                                                {{ $oldPengawasValue == $defaultPengawasValue ? 'selected' : '' }}>
+                                                {{ Auth::user()->name }} ({{ Auth::user()->nik }})
+                                            </option>
+
                                             @foreach ($users['pengawas'] as $pengawas)
-                                                <option value="{{ $pengawas->nik }}"
-                                                    {{ old('pengawas') == $pengawas->nik ? 'selected' : '' }}>
+                                                @php
+                                                    $pengawasValue = $pengawas->nik . '|' . $pengawas->name;
+                                                @endphp
+
+                                                <option value="{{ $pengawasValue }}"
+                                                    {{ $oldPengawasValue == $pengawasValue ? 'selected' : '' }}>
                                                     {{ $pengawas->name }} ({{ $pengawas->nik }})
                                                 </option>
                                             @endforeach
                                         </select>
                                     </div>
 
+                                    <div class="col-md-12 col-12 px-2 py-2" id="pengawas_manual_container" style="display:none;">
+                                        <label>Nama Pengawas</label>
+                                        <input type="text"
+                                            class="form-control form-control-sm"
+                                            name="nama_pengawas1_manual"
+                                            id="nama_pengawas1_manual"
+                                            value="{{ old('nama_pengawas1_manual') }}"
+                                            placeholder="Masukkan nama pengawas">
+                                    </div>
                                 </div>
                                 <hr>
                                 <div class="row mb-3">
@@ -847,25 +904,61 @@
 
 @include('layout.footer')
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const lokasi = document.getElementById('lokasi');
-        const container = document.getElementById('lokasi_lain_container');
-        const lokasiLain = document.getElementById('lokasi_lain');
+document.addEventListener('DOMContentLoaded', function () {
+    const modeAuto = document.getElementById('pengawas1_mode_auto');
+    const modeManual = document.getElementById('pengawas1_mode_manual');
 
-        function toggleLokasiLain() {
-            if (lokasi.value === 'LAIN-LAIN') {
-                container.style.display = 'block';
-                lokasiLain.required = true;
-            } else {
-                container.style.display = 'none';
-                lokasiLain.required = false;
-                lokasiLain.value = '';
-            }
+    const autoContainer = document.getElementById('pengawas_auto_container');
+    const manualContainer = document.getElementById('pengawas_manual_container');
+
+    const selectAuto = document.getElementById('pengawas1_auto');
+    const inputManual = document.getElementById('nama_pengawas1_manual');
+
+    function togglePengawasMode() {
+        if (modeManual.checked) {
+            autoContainer.style.display = 'none';
+            manualContainer.style.display = 'block';
+
+            selectAuto.disabled = true;
+            inputManual.disabled = false;
+            inputManual.required = true;
+        } else {
+            autoContainer.style.display = 'block';
+            manualContainer.style.display = 'none';
+
+            selectAuto.disabled = false;
+            inputManual.disabled = true;
+            inputManual.required = false;
+            inputManual.value = '';
         }
+    }
 
-        lokasi.addEventListener('change', toggleLokasiLain);
-        toggleLokasiLain();
-    });
+    modeAuto.addEventListener('change', togglePengawasMode);
+    modeManual.addEventListener('change', togglePengawasMode);
+
+    togglePengawasMode();
+});
+</script>
+<script>
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     const lokasi = document.getElementById('lokasi');
+    //     const container = document.getElementById('lokasi_lain_container');
+    //     const lokasiLain = document.getElementById('lokasi_lain');
+
+    //     function toggleLokasiLain() {
+    //         if (lokasi.value === 'LAIN-LAIN') {
+    //             container.style.display = 'block';
+    //             lokasiLain.required = true;
+    //         } else {
+    //             container.style.display = 'none';
+    //             lokasiLain.required = false;
+    //             lokasiLain.value = '';
+    //         }
+    //     }
+
+    //     lokasi.addEventListener('change', toggleLokasiLain);
+    //     toggleLokasiLain();
+    // });
 
     //1
     document.getElementById('perilaku_lain_check').addEventListener('change', function () {
