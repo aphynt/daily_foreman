@@ -221,9 +221,13 @@ class P2HController extends Controller
 
         $searchValue = $request->search['value'] ?? null;
 
+
+        $shiftP2H = $request->input('shiftP2H');
+
         $shiftNo = null;
-        if (!empty($request->shift) && in_array($request->shift, ['Pagi', 'Malam'])) {
-            $shiftNo = $request->shiftP2H;
+
+        if (in_array((int) $shiftP2H, [6, 7], true)) {
+            $shiftNo = (int) $shiftP2H;
         }
 
         $cluster = in_array($request->cluster, ['EX', 'HD', 'MG', 'BD']) ? $request->cluster : null;
