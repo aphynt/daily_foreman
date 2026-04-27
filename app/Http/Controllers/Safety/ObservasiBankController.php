@@ -76,13 +76,10 @@ class ObservasiBankController extends Controller
         }
 
         $baseQuery = $baseQuery->where(function($query) {
-            $query->where('bank.pengawas1', Auth::user()->nik)
+            $query->where('bank.pic', Auth::user()->id)
                     ->orWhere('bank.petugas1', Auth::user()->nik)
                     ->orWhere('bank.petugas2', Auth::user()->nik)
-                    ->orWhere('bank.petugas3', Auth::user()->nik)
-                    ->orWhere('bank.pekerja1', Auth::user()->nik)
-                    ->orWhere('bank.pekerja2', Auth::user()->nik)
-                    ->orWhere('bank.pekerja3', Auth::user()->nik);
+                    ->orWhere('bank.petugas3', Auth::user()->nik);
         });
 
         $bank = $baseQuery->get();
