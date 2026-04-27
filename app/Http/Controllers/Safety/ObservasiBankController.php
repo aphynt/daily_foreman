@@ -97,7 +97,7 @@ class ObservasiBankController extends Controller
         $penanggungjawab = User::whereIn('role', ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'])->orderBy('name')->get();
         $petugas = User::whereIn('role', ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'])->orderBy('name')->get();
         $pekerja = User::whereIn('departemen_id', [9])->orderBy('name')->get();
-        $pengawas = User::whereIn('departemen_id', [9])->orderBy('name')->get();
+        $pengawas = User::whereIn('role', ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'])->orderBy('name')->get();
 
         $users = [
             'departemen' => $departemen,
