@@ -49,6 +49,7 @@ class AttendanceController extends Controller
                     'status'           => $row['status'] ?? null,
                     'quantity'         => $row['quantity'] ?? 0,
                     'remarks'          => $row['remarks'] ?? null,
+                    'order_type'       => $row['order_type'] ?? null,
                     'created_by'       => $row['created_by'] ?? null,
                     'rating'           => $row['rating'] ?? null,
                     'attendance_date'  => $row['attendance_date'] ?? null,
