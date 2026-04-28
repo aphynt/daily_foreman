@@ -48,7 +48,7 @@ class FormPengawasSAPController extends Controller
         $pic = DB::table('users as us')
         ->leftJoin('ref_departemen as dep', 'dep.id', 'us.departemen_id')
         ->select('us.nik', 'us.name', 'dep.keterangan as departemen')
-        ->whereNotIn('us.role', ['ADMIN', 'MANAGEMENT'])
+        ->whereNotIn('us.role', ['ADMIN'])
         ->where('us.statusenabled', true)->get();
         $departemen = Departemen::where('statusenabled', true)->get();
         $departemenSelected = Departemen::where('id', Auth::user()->departemen_id)->first();
