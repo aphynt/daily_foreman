@@ -192,16 +192,24 @@ class FormPengawasBatuBaraController extends Controller
         ->where('dr.statusenabled', true);
 
 
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        $roleBypass = getConfigArrayById(5);
+        // /** @var \App\Models\User $user */
+        // $user = Auth::user();
+        // $roleBypass = getConfigArrayById(5);
 
-        $daily = $daily->where(function ($query) use ($user, $roleBypass) {
+        // $daily = $daily->where(function ($query) use ($user, $roleBypass) {
 
-            if (! $user->hasRoleId($roleBypass)) {
-                $query->where('dr.nik_foreman', $user->nik)
-                    ->orWhere('dr.nik_supervisor', $user->nik)
-                    ->orWhere('dr.nik_superintendent', $user->nik);
+        //     if (! $user->hasRoleId($roleBypass)) {
+        //         $query->where('dr.nik_foreman', $user->nik)
+        //             ->orWhere('dr.nik_supervisor', $user->nik)
+        //             ->orWhere('dr.nik_superintendent', $user->nik);
+        //     }
+        // });
+
+        $daily = $daily->where(function($query) {
+            if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
+                $query->where('dr.nik_foreman', Auth::user()->nik)
+                  ->orWhere('dr.nik_supervisor', Auth::user()->nik)
+                  ->orWhere('dr.nik_superintendent', Auth::user()->nik);
             }
         });
 
@@ -975,10 +983,8 @@ class FormPengawasBatuBaraController extends Controller
     public function saveAsDraft(Request $request)
     {
 
-        DB::beginTransaction();
-
         try {
-
+                return DB::transaction(function () use ($request) {
                 $typeDraft = true;
                 if($request->actionType == 'finish'){
                     $typeDraft = false;
@@ -1121,26 +1127,14 @@ class FormPengawasBatuBaraController extends Controller
                     );
                 }
             }
-            DB::commit();
                 return response()->json([
                     'success' => true,
                     'message' => 'Draft saved successfully!',
                     'uuid' => $dailyReport->uuid,
                     'data' => $dailyReport,
                 ]);
+            });
         } catch (\Throwable $th) {
-
-        DB::rollBack();
-            \Illuminate\Support\Facades\Log::error('ERROR SAVE DRAFT BB', [
-                'message'   => $th->getMessage(),
-                'file'      => $th->getFile(),
-                'line'      => $th->getLine(),
-                'trace'     => $th->getTraceAsString(),
-                'request'   => $request->all(),
-                'user_id'   => Auth::user()->id,
-                'url'       => $request->fullUrl(),
-                'ip'        => $request->ip(),
-            ]);
 
             return response()->json(['error' => 'Failed to save draft: ' . $th->getMessage()], 500);
         }
