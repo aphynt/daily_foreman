@@ -267,7 +267,14 @@
         </div>
 
         {{-- FORM UPDATE DEPARTEMEN --}}
-        @if(Auth::user()->departemen_id == $data->departemen && $data->verified_scc == 'accept')
+        @if(
+            $data->verified_scc == 'accept' &&
+            (
+                (Auth::user()->departemen_id == $data->departemen &&
+                in_array(Auth::user()->role, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']))
+                || Auth::user()->id == 3
+            )
+        )
             <form method="POST"
                   action="{{ route('hazard-report.update.departemen', $data->uuid) }}"
                   enctype="multipart/form-data"

@@ -42,7 +42,7 @@ class AuthController extends Controller
             }
         }
 
-        return redirect()->back()->with('login', 'NIK atau password salah');
+        return redirect()->back()->with('info', 'NIK atau password salah');
 
         // return back()->withErrors([
         //     'nik' => 'NIK atau password salah.',

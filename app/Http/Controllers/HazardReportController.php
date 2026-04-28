@@ -322,17 +322,21 @@ class HazardReportController extends Controller
         ->where('hz.uuid', $uuid)->first();
 
         if (($data->verified_scc == null || $data->verified_scc == '') && Auth::user()->id == 3) {
+
+
             return view('safety.hazard-report.review', compact('data', 'shift', 'dep'));
         }
 
         if (
             $data->verified_scc == 'accept' &&
             $data->status == 1 &&
-            Auth::user()->departemen_id == $data->departemen
+            (
+                (Auth::user()->departemen_id == $data->departemen && in_array(Auth::user()->role, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']))
+                || Auth::user()->id == 3
+            )
         ) {
             return view('safety.hazard-report.review-departemen', compact('data', 'shift', 'dep'));
         }
-
         return view('safety.hazard-report.show', compact('data'));
 
     }

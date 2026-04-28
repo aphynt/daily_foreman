@@ -349,6 +349,7 @@
 </head>
 
 <body>
+    @include('layout.alert.general')
     <div class="auth-main">
         <div class="auth-wrapper v1">
             <div class="auth-form">

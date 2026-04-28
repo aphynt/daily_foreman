@@ -462,7 +462,10 @@
                                     </div>
                                     @if($data->verified_scc == 'accept' && !$data->verified_penerima)
 
-                                        @if (Auth::user()->departemen_id == $data->departemen)
+                                        @if (
+                                            Auth::user()->departemen_id == $data->departemen &&
+                                            in_array(Auth::user()->role, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'])
+                                        )
                                         <form method="POST" action="{{ route('hazard-report.close') }}"
                                             enctype="multipart/form-data">
                                             @csrf
