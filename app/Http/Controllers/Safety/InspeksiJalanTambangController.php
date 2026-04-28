@@ -103,7 +103,8 @@ class InspeksiJalanTambangController extends Controller
         $query->whereIn('departemen_id', [9])
                 ->orWhereIn('id', [
                     8043, 8044, 8045, 8046, 8047, 8048, 8049,
-                    8050, 8051, 8052, 8053, 8054, 8055, 8056, 8058, 8059
+                    8050, 8051, 8052, 8053, 8054, 8055, 8056, 8058, 8059, 8062,
+                    8063, 8066, 8067, 8068, 8069, 8070
                 ]);
         })
         ->orderBy('name')->get();
