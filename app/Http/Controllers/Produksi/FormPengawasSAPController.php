@@ -405,61 +405,69 @@ MSG;
 
     public function show(Request $request)
     {
+        $start = $request->filled('rangeStart')
+            ? Carbon::parse($request->rangeStart)->startOfDay()
+            : now()->startOfDay();
 
-        if (empty($request->rangeStart) || empty($request->rangeEnd)){
-            $time = new DateTime();
-            $startDate = $time->format('Y-m-d');
-            $endDate = $time->format('Y-m-d');
-
-            $start = new DateTime("$request->rangeStart");
-            $end = new DateTime("$request->rangeEnd");
-
-        }else{
-            $start = new DateTime("$request->rangeStart");
-            $end = new DateTime("$request->rangeEnd");
-        }
-
+        $end = $request->filled('rangeEnd')
+            ? Carbon::parse($request->rangeEnd)->endOfDay()
+            : now()->endOfDay();
 
         $startTimeFormatted = $start->format('Y-m-d');
         $endTimeFormatted = $end->format('Y-m-d');
 
+        $filters = [
+            'start' => $start->format('Y-m-d H:i:s'),
+            'end' => $end->format('Y-m-d H:i:s'),
+            'status' => $request->status,
+            'role' => Auth::user()->role,
+            'departemen_id' => Auth::user()->departemen_id,
+            'user_id' => Auth::user()->id,
+        ];
+
+        if ($request->get('export') === 'excel') {
+            $fileName = "($startTimeFormatted - $endTimeFormatted) PICA Inspeksi Keselamatan Pertambangan.xlsx";
+
+            return Excel::download(new InspeksiPICAExport($filters), $fileName);
+        }
+
         $report = DB::table('prd_sap_report as sr')
-        ->leftJoin('users as us', 'sr.foreman_id', 'us.id')
-        ->leftJoin('ref_departemen as dep', 'sr.departemen_pic', 'dep.id')
-        ->leftJoin('ref_shift as sh', 'sr.shift', 'sh.id')
-        ->select(
-            'sr.uuid',
-            'sr.statusenabled',
-            'sr.created_at',
-            'sr.jam_kejadian',
-            'sh.keterangan as shift',
-            'us.nik as nik_pic',
-            'us.name as pic',
-            'sr.area',
-            'sr.temuan',
-            'sr.risiko',
-            'sr.level',
-            'sr.inspektor1',
-            'sr.inspektor2',
-            'sr.inspektor3',
-            'sr.inspektor4',
-            'sr.inspektor5',
-            'sr.file_temuan',
-            'sr.file_temuan2',
-            'sr.file_temuan3',
-            'sr.file_tindakLanjut',
-            'sr.file_tindakLanjut2',
-            'sr.file_tindakLanjut3',
-            'sr.tingkat_risiko',
-            'sr.due_date',
-            'sr.tanggal_perbaikan',
-            'sr.pengendalian',
-            'sr.tindak_lanjut',
-            'sr.is_finish',
-            'dep.keterangan as departemen',
-        )
-        ->whereBetween(DB::raw('CONVERT(varchar, sr.created_at, 23)'), [$startTimeFormatted, $endTimeFormatted])
-        ->where('sr.statusenabled', 1);
+            ->leftJoin('users as us', 'sr.foreman_id', 'us.id')
+            ->leftJoin('ref_departemen as dep', 'sr.departemen_pic', 'dep.id')
+            ->leftJoin('ref_shift as sh', 'sr.shift', 'sh.id')
+            ->select(
+                'sr.uuid',
+                'sr.statusenabled',
+                'sr.created_at',
+                'sr.jam_kejadian',
+                'sh.keterangan as shift',
+                'us.nik as nik_pic',
+                'us.name as pic',
+                'sr.area',
+                'sr.temuan',
+                'sr.risiko',
+                'sr.level',
+                'sr.inspektor1',
+                'sr.inspektor2',
+                'sr.inspektor3',
+                'sr.inspektor4',
+                'sr.inspektor5',
+                'sr.file_temuan',
+                'sr.file_temuan2',
+                'sr.file_temuan3',
+                'sr.file_tindakLanjut',
+                'sr.file_tindakLanjut2',
+                'sr.file_tindakLanjut3',
+                'sr.tingkat_risiko',
+                'sr.due_date',
+                'sr.tanggal_perbaikan',
+                'sr.pengendalian',
+                'sr.tindak_lanjut',
+                'sr.is_finish',
+                'dep.keterangan as departemen'
+            )
+            ->whereBetween('sr.created_at', [$filters['start'], $filters['end']])
+            ->where('sr.statusenabled', 1);
 
         if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
             $report->where(function ($query) {
@@ -469,15 +477,10 @@ MSG;
         }
 
         if ($request->filled('status')) {
-            $report->where('is_finish', $request->status);
+            $report->where('sr.is_finish', $request->status);
         }
 
         $report = $report->orderBy('sr.created_at', 'DESC')->get();
-
-        if ($request->get('export') === 'excel') {
-            $fileName = "($startTimeFormatted - $endTimeFormatted) PICA Inspeksi Keselamatan Pertambangan.xlsx";
-            return Excel::download(new InspeksiPICAExport($report), $fileName);
-        }
 
         return view('form-sap.daftar.index', compact('report'));
     }
