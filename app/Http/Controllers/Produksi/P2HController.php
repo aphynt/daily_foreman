@@ -102,7 +102,7 @@ class P2HController extends Controller
             ->leftJoin('focus.dbo.PRS_PERSONAL as mec', 'p2h.VERIFIED_MEKANIK', '=', 'mec.NRP')
             ->leftJoin('focus.dbo.PRS_PERSONAL as gl', 'p2h.VERIFIED_FOREMAN', '=', 'gl.NRP')
             ->leftJoin('focus.dbo.PRS_PERSONAL as spv', 'p2h.VERIFIED_SUPERVISOR', '=', 'spv.NRP');
-            if (in_array(Auth::user()->role, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK'])) {
+            if (in_array(Auth::user()->position, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK'])) {
             $supportQuery->where('VAL_NOTOK', '>=', '1');
         }
 
@@ -128,16 +128,16 @@ class P2HController extends Controller
             $supportQuery->where('A.OPR_SHIFTDATE', $tanggalP2H);
         }
 
-        if(in_array(Auth::user()->role, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK']) and Auth::user()->section == 'WHEEL') {
+        if(in_array(Auth::user()->position, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK']) and Auth::user()->section == 'WHEEL') {
             $supportQuery->where(function($query) {
                 $query->where('A.VHC_ID', 'like', 'MG%')
                     ->orWhere('A.VHC_ID', 'like', 'HD%');
             });
-        }elseif(in_array(Auth::user()->role, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK']) and in_array(Auth::user()->section, ['TRACK EXCA'])) {
+        }elseif(in_array(Auth::user()->position, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK']) and in_array(Auth::user()->section, ['TRACK EXCA'])) {
             $supportQuery->where(function($query) {
                 $query->where('A.VHC_ID', 'like', 'EX%');
             });
-        }elseif(in_array(Auth::user()->role, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK']) and in_array(Auth::user()->section, ['TRACK DOZER'])) {
+        }elseif(in_array(Auth::user()->position, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK']) and in_array(Auth::user()->section, ['TRACK DOZER'])) {
             $supportQuery->where(function($query) {
                 $query->where('A.VHC_ID', 'like', 'BD%');
             });
@@ -234,7 +234,7 @@ class P2HController extends Controller
 
 
         $userRoleList = ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK'];
-        $isForeman = in_array(Auth::user()->role, $userRoleList) ? 1 : 0;
+        $isForeman = in_array(Auth::user()->position, $userRoleList) ? 1 : 0;
 
         $userSection = null;
         if ($isForeman) {
@@ -379,7 +379,15 @@ class P2HController extends Controller
                 ->first();
 
             // Tentukan siapa yang memverifikasi
-            $updateData = match (Auth::user()->role) {
+            $updateData = match (Auth::user()->position) {
+                'FOREMAN MEKANIK',
+                'PJS FOREMAN MEKANIK',
+                'JR FOREMAN MEKANIK',
+                'SUPERVISOR MEKANIK',
+                'LEADER MEKANIK' => [
+                    'VERIFIED_MEKANIK' => Auth::user()->nik,
+                    'DATEVERIFIED_MEKANIK' => now(),
+                ],
                 'FOREMAN' => [
                     'VERIFIED_FOREMAN' => Auth::user()->nik,
                     'DATEVERIFIED_FOREMAN' => now(),
@@ -942,28 +950,37 @@ class P2HController extends Controller
                     ]
                 );
             }
-        $updateData = [];
-        if (Auth::user()->role == 'FOREMAN') {
-            $updateData = [
-                'VERIFIED_FOREMAN' => Auth::user()->nik,
-                'DATEVERIFIED_FOREMAN' => Carbon::now(),
-            ];
-        } elseif (Auth::user()->role == 'SUPERVISOR') {
-            $updateData = [
-                'VERIFIED_SUPERVISOR' => Auth::user()->nik,
-                'DATEVERIFIED_SUPERVISOR' => Carbon::now(),
-            ];
-        } elseif (Auth::user()->role == 'SUPERINTENDENT') {
-            $updateData = [
-                'VERIFIED_SUPERINTENDENT' => Auth::user()->nik,
-                'DATEVERIFIED_SUPERINTENDENT' => Carbon::now(),
-            ];
-        } else {
-            $updateData = [
+        $updateData = match (Auth::user()->position) {
+            // 1. MEKANIK (Prioritas Atas)
+            'FOREMAN MEKANIK',
+            'PJS FOREMAN MEKANIK',
+            'JR FOREMAN MEKANIK',
+            'SUPERVISOR MEKANIK',
+            'LEADER MEKANIK' => [
                 'VERIFIED_MEKANIK' => Auth::user()->nik,
                 'DATEVERIFIED_MEKANIK' => Carbon::now(),
-            ];
-        }
+            ],
+
+            // 2. PRODUKSI
+            'FOREMAN' => [
+                'VERIFIED_FOREMAN' => Auth::user()->nik,
+                'DATEVERIFIED_FOREMAN' => Carbon::now(),
+            ],
+            'SUPERVISOR' => [
+                'VERIFIED_SUPERVISOR' => Auth::user()->nik,
+                'DATEVERIFIED_SUPERVISOR' => Carbon::now(),
+            ],
+            'SUPERINTENDENT' => [
+                'VERIFIED_SUPERINTENDENT' => Auth::user()->nik,
+                'DATEVERIFIED_SUPERINTENDENT' => Carbon::now(),
+            ],
+
+            // 3. DEFAULT (Jika posisi tidak terdaftar, dianggap Mekanik)
+            default => [
+                'VERIFIED_MEKANIK' => Auth::user()->nik,
+                'DATEVERIFIED_MEKANIK' => Carbon::now(),
+            ],
+        };
 
         ChecklistP2H::where('UUID', $checkdataP2H->UUID)->update($updateData);
 
