@@ -352,11 +352,12 @@
 
                                 <div class="mb-3">
                                     <label for="area" class="form-label">Area</label>
-                                    <select class="form-select" id="area" name="area" data-trigger required>
+                                    <input class="form-control" id="area" placeholder="Masukkan area" name="area" required>
+                                    {{-- <select class="form-select" id="area" name="area" data-trigger required>
                                         @foreach ($area as $ar)
                                             <option value="{{ $ar->id }}">{{ $ar->keterangan }}</option>
                                         @endforeach
-                                    </select>
+                                    </select> --}}
                                 </div>
 
                                 <div class="mb-3">

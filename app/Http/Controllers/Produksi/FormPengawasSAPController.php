@@ -145,7 +145,6 @@ class FormPengawasSAPController extends Controller
                 $noLaporan = $report->id ?? '-';
                 $hariTanggal = Carbon::parse($report->created_at)->locale('id')->translatedFormat('l d F Y');
                 $departemen = Departemen::where('id', $request->departemen)->value('keterangan');
-                $area = Area::where('id', $request->area)->value('keterangan');
                 $jam = !empty($request->jamKejadian)
                     ? Carbon::parse($request->jamKejadian)->format('H:i') . ' WITA'
                     : Carbon::now()->format('H:i') . ' WITA';
@@ -174,7 +173,7 @@ ID. {$noLaporan}
 · Dept/PIC Terkait : {$departemen}
 · Hari/Tgl : {$hariTanggal}
 · Jam : {$jam}
-· Lokasi : {$area}
+· Lokasi : {$request->area}
 
 #TEMUAN / BAHAYA
 {$temuan}
@@ -355,14 +354,12 @@ MSG;
         ->leftJoin('users as us', 'sr.foreman_id', 'us.id')
         ->leftJoin('ref_departemen as dep', 'sr.departemen_pic', 'dep.id')
         ->leftJoin('ref_shift as sh', 'sr.shift', 'sh.id')
-        ->leftJoin('ref_region as ar', 'sr.area', 'ar.id')
         ->select(
             'sr.*',
             'sh.keterangan as shift',
             'us.nik as nik_pembuat',
             'us.name as pembuat',
             'dep.keterangan as nama_pic',
-            'ar.keterangan as area',
         )
         ->where('sr.statusenabled', true)
         ->where('sr.uuid', $uuid)->first();
@@ -430,7 +427,6 @@ MSG;
         ->leftJoin('users as us', 'sr.foreman_id', 'us.id')
         ->leftJoin('ref_departemen as dep', 'sr.departemen_pic', 'dep.id')
         ->leftJoin('ref_shift as sh', 'sr.shift', 'sh.id')
-        ->leftJoin('ref_region as ar', 'sr.area', 'ar.id')
         ->select(
             'sr.uuid',
             'sr.statusenabled',
@@ -439,7 +435,7 @@ MSG;
             'sh.keterangan as shift',
             'us.nik as nik_pic',
             'us.name as pic',
-            'ar.keterangan as area',
+            'sr.area',
             'sr.temuan',
             'sr.risiko',
             'sr.level',
@@ -583,7 +579,6 @@ MSG;
                 $dueDate = $report->created_at
                     ? Carbon::parse($report->created_at)->addDays(7)->format('d-m-Y')
                     : '-';
-                $area = Area::where('id', $report->area)->value('keterangan');
 
                 $verificationMessage = <<<MSG
                 🔔 *Notifikasi Tindak Lanjut PICA Report*
@@ -594,7 +589,7 @@ MSG;
 
                 Detail temuan:
                 - No. Report: {$report->id}
-                - Area: {$area}
+                - Area: {$report->area}
                 - Temuan: {$request->temuan}
                 - Tingkat Risiko: {$request->tingkatRisiko}
                 - Due Date: {$dueDate}
