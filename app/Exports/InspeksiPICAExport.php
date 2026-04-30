@@ -40,6 +40,7 @@ class InspeksiPICAExport implements
                 'sr.uuid',
                 'sr.statusenabled',
                 'sr.created_at',
+                'sr.tanggal_kejadian',
                 'sr.jam_kejadian',
                 'sh.keterangan as shift',
                 'us.nik as nik_pic',
@@ -125,8 +126,8 @@ class InspeksiPICAExport implements
 
         return [
             $this->no++,
-            $item->created_at
-                ? Carbon::parse($item->created_at)->format('d-M-y')
+            $item->tanggal_kejadian
+                ? Carbon::parse($item->tanggal_kejadian)->format('d-M-y')
                 : null,
             $item->area,
             $inspectors ?: '-',
@@ -137,7 +138,7 @@ class InspeksiPICAExport implements
             $item->created_at
                 ? Carbon::parse($item->created_at)->addDays(7)->format('d-M-y')
                 : null,
-            'Produksi',
+            $item->departemen,
             $isClose && $item->tanggal_perbaikan
                 ? Carbon::parse($item->tanggal_perbaikan)->format('d-M-y')
                 : null,

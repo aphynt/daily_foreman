@@ -471,7 +471,7 @@
                                         <label class="form-label">Tanggal Pelaporan</label>
                                         <input type="text"
                                                class="form-control readonly-field"
-                                               value="{{ !empty($report->created_at) ? date('d-m-Y', strtotime($report->created_at)) : '-' }}"
+                                               value="{{ !empty($report->tanggal_kejadian) ? date('d-m-Y', strtotime($report->tanggal_kejadian)) : '-' }}"
                                                readonly>
                                     </div>
 

@@ -361,8 +361,12 @@
                                 </div>
 
                                 <div class="mb-3">
+                                    <label for="pc-datepicker-1" class="form-label">Tanggal Kejadian</label>
+                                    <input type="date" class="form-control form-control-sm pb-2" id="date" name="tanggalKejadian" required>
+                                </div>
+                                <div class="mb-3">
                                     <label for="pc-timepicker-1" class="form-label">Jam Kejadian</label>
-                                    <input type="text" id="pc-timepicker-1" class="form-control" value="" name="jamKejadian" placeholder="Pilih atau masukkan jam kejadian">
+                                    <input type="time" class="form-control form-control-sm pb-2" id="time" name="jamKejadian" required>
                                 </div>
 
 
@@ -494,6 +498,25 @@
 @include('layout.footer')
 
 <script>
+    window.onload = function() {
+        var currentDate = new Date();
+
+        // Format tanggal Indonesia (DD-MM-YYYY)
+        var dd = ("0" + currentDate.getDate()).slice(-2); // Menambahkan 0 jika tanggal < 10
+        var mm = ("0" + (currentDate.getMonth() + 1)).slice(-2); // Menambahkan 0 jika bulan < 10
+        var yyyy = currentDate.getFullYear();
+        var formattedDate = yyyy + "-" + mm + "-" + dd; // Tanggal untuk input type="date" (YYYY-MM-DD)
+
+        // Format waktu (HH:MM)
+        var hours = ("0" + currentDate.getHours()).slice(-2); // Menambahkan 0 jika jam < 10
+        var minutes = ("0" + currentDate.getMinutes()).slice(-2); // Menambahkan 0 jika menit < 10
+        var formattedTime = hours + ":" + minutes;
+
+        // Isi input dengan tanggal dan waktu saat ini
+        document.getElementById("date").value = formattedDate;
+        document.getElementById("time").value = formattedTime;
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         const formSAP = document.getElementById('laporanForm');
         const submitSAP = document.getElementById('submitSAP');

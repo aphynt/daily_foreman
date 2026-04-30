@@ -508,7 +508,7 @@
                                 <div class="col-md-3">
                                     <div class="field-block">
                                         <label class="field-label">Tanggal Pelaporan</label>
-                                        <input type="text" class="field-value" value="{{ !empty($report->created_at) ? date('d-m-Y', strtotime($report->created_at)) : '-' }}" readonly>
+                                        <input type="text" class="field-value" value="{{ !empty($report->tanggal_kejadian) ? date('d-m-Y', strtotime($report->tanggal_kejadian)) : '-' }}" readonly>
                                     </div>
                                 </div>
 

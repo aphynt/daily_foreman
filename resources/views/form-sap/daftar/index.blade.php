@@ -152,61 +152,79 @@
                     </div>
 
                     <div class="col-12">
-    <div class="mb-3 row d-flex align-items-center">
-        <div class="col-sm-12 col-md-10 mb-2">
-            <form action="" method="get">
-                <div class="input-group" id="pc-datepicker-10">
-                    <input
-                        type="text"
-                        class="form-control form-control-sm"
-                        placeholder="Start date"
-                        name="rangeStart"
-                        style="max-width: 200px;"
-                        id="range-start"
-                        value="{{ request('rangeStart') }}"
-                    >
+                        <div class="mb-3 d-flex flex-wrap flex-md-nowrap align-items-center justify-content-between gap-2">
 
-                    <span class="input-group-text">s/d</span>
+                            {{-- FILTER TANGGAL --}}
+                            <div class="d-flex align-items-center">
+                                <form action="" method="get">
+                                    <div class="input-group input-group-sm" id="pc-datepicker-8">
+                                        <input type="text"
+                                            class="form-control form-control-sm"
+                                            placeholder="Start date"
+                                            name="rangeStart"
+                                            style="max-width:160px"
+                                            id="range-start">
 
-                    <input
-                        type="text"
-                        class="form-control form-control-sm"
-                        placeholder="End date"
-                        name="rangeEnd"
-                        style="max-width: 200px;"
-                        id="range-end"
-                        value="{{ request('rangeEnd') }}"
-                    >
+                                        <span class="input-group-text">s/d</span>
 
-                    <span class="input-group-text">Status</span>
-                    <select
-                        name="status"
-                        class="form-select form-select-sm"
-                        style="max-width: 150px;"
-                    >
-                        <option value="" {{ request()->filled('status') ? '' : 'selected' }}>All</option>
-                        <option value="0" {{ request('status') == '1' ? 'selected' : '' }}>Open</option>
-                        <option value="1" {{ request('status') == '2' ? 'selected' : '' }}>Close</option>
-                    </select>
+                                        <input type="text"
+                                            class="form-control form-control-sm"
+                                            placeholder="End date"
+                                            name="rangeEnd"
+                                            style="max-width:160px"
+                                            id="range-end">
 
-                    <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
+                                        <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
+                                        @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT']))
+                                            <button
+                                                type="submit"
+                                                name="export"
+                                                value="excel"
+                                                class="btn btn-success btn-sm d-inline-flex align-items-center justify-content-center gap-1 px-2"
+                                            >
+                                                <i class="fas fa-download"></i>
+                                                <span>Download</span>
+                                            </button>
+                                        @endif
+                                    </div>
+                                </form>
+                            </div>
 
-                    @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT']))
-                        <button
-                            type="submit"
-                            name="export"
-                            value="excel"
-                            class="btn btn-success btn-sm d-inline-flex align-items-center justify-content-center gap-1 px-2"
-                        >
-                            <i class="fas fa-download"></i>
-                            <span>Download</span>
-                        </button>
-                    @endif
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+                            {{-- ACTION BUTTON --}}
+                            <div class="d-flex flex-wrap gap-2">
+
+                                {{-- Kembali --}}
+                                <a href="{{ url()->previous() }}">
+                                    <span class="badge bg-secondary px-3 py-2" style="font-size:14px">
+                                        <i class="fas fa-arrow-left"></i> Kembali
+                                    </span>
+                                </a>
+
+                                {{-- FOREMAN & SUPERVISOR --}}
+                                @if (canAccess('form-pengawas-sap.index'))
+                                    <a href="{{ route('form-pengawas-sap.index') }}">
+                                        <span class="badge bg-success px-3 py-2" style="font-size:14px">
+                                            <i class="fas fa-plus"></i> Isi Inpeksi
+                                        </span>
+                                    </a>
+                                @endif
+
+                                {{-- ADMIN & MANAGEMENT --}}
+                                {{--
+                                @if (canAccess('inspeksi.workshop.bundlepdf'))
+                                    <a href="{{ route('inspeksi.workshop.bundlepdf') }}" target="_blank">
+                                        <span class="badge bg-primary px-3 py-2" style="font-size:14px">
+                                            <i class="fas fa-download"></i> Bundle PDF
+                                        </span>
+                                    </a>
+                                @endif
+                                --}}
+
+                            </div>
+
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -255,7 +273,8 @@
                                         <tr>
                                             <td class="text-center-cell">{{ $loop->iteration }}</td>
                                             <td class="text-center-cell">
-                                                {{ $item->created_at ? date('d-m-Y H:i', strtotime($item->created_at)) : '-' }}
+                                                {{ \Carbon\Carbon::parse($item->tanggal_kejadian)->format('d-m-Y') ?? '-' }}
+                                                {{ \Carbon\Carbon::parse($item->jam_kejadian)->format('H:i') ?? '-' }}
                                             </td>
                                             <td class="text-cell">{{ $item->level ?? '-' }}</td>
                                             <td class="text-cell">{{ $item->area ?? '-' }}</td>
