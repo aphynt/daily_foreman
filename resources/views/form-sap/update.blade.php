@@ -536,9 +536,11 @@
                                     <div class="col-md-4">
                                         <label class="form-label">PIC Departemen</label>
                                         <select class="form-select" id="pic" name="pic" required>
-                                            <option value="{{ $report->pic }}" selected>{{ $report->nama_pic }}</option>
                                             @foreach ($data['departemen'] as $dep)
-                                                <option value="{{ $dep->id }}">{{ $dep->keterangan }}</option>
+                                                <option value="{{ $dep->id }}"
+                                                    {{ old('pic', $report->departemen_pic) == $dep->id ? 'selected' : '' }}>
+                                                    {{ $dep->keterangan }}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>

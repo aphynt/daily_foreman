@@ -383,44 +383,44 @@
     });
 
     $('#cbtn-selectors').DataTable({
-        dom: 'Bfrtip',
-        pageLength: 25,
-        autoWidth: false,
-        scrollX: false,
-        columnDefs: [
-            { targets: [0, 1, 6, 8, 10, 11, 12], className: 'text-center align-middle' },
-            { targets: [12], orderable: false, searchable: false }
-        ],
-        buttons: [
-            {
-                extend: 'copyHtml5',
-                exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11]
-                }
+    dom: 'Bfrtip',
+    pageLength: 25,
+    autoWidth: false,
+    scrollX: false,
+    columnDefs: [
+        { targets: [0, 1, 6, 8, 10, 11, 12], className: 'text-center align-middle' },
+        { targets: [12], orderable: false, searchable: false }
+    ],
+    buttons: [
+        {
+            extend: 'copyHtml5',
+            exportOptions: {
+                columns: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11]
+            }
+        },
+        {
+            extend: 'excelHtml5',
+            exportOptions: {
+                columns: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11]
+            }
+        },
+        {
+            extend: 'pdfHtml5',
+            orientation: 'landscape',
+            pageSize: 'A4',
+            exportOptions: {
+                columns: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11]
             },
-            {
-                extend: 'excelHtml5',
-                exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11]
-                }
-            },
-            {
-                extend: 'pdfHtml5',
-                orientation: 'landscape',
-                pageSize: 'A4',
-                exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11]
-                },
-                customize: function (doc) {
-                    doc.content[1].margin = [10, 10, 10, 10];
-                    doc.styles.tableHeader.alignment = 'center';
-                    doc.styles.tableHeader.fontSize = 9;
-                    doc.defaultStyle.fontSize = 8;
-                }
-            },
-            'colvis'
-        ]
-    });
+            customize: function (doc) {
+                doc.content[1].margin = [10, 10, 10, 10];
+                doc.styles.tableHeader.alignment = 'center';
+                doc.styles.tableHeader.fontSize = 9;
+                doc.defaultStyle.fontSize = 8;
+            }
+        },
+        'colvis'
+    ]
+});
 
     $('#excel-bg').DataTable({
         dom: 'Bfrtip',
@@ -448,3 +448,4 @@
         }]
     });
 </script>
+

@@ -69,7 +69,8 @@ class FormPengawasSAPController extends Controller
             $fileTindakLanjut2 = null;
             $fileTindakLanjut3 = null;
 
-            $finishing = !empty($request->tindakLanjut);
+            // $finishing = !empty($request->tindakLanjut);
+            $finishing = false;
 
             $saveFile = function ($fieldName, $relativeFolder) use ($request) {
                 if (!$request->hasFile($fieldName)) {
@@ -328,6 +329,7 @@ MSG;
                 'file_tindakLanjut' => $fileTindakLanjut,
                 'file_tindakLanjut2' => $fileTindakLanjut2,
                 'file_tindakLanjut3' => $fileTindakLanjut3,
+                'tanggal_perbaikan' => Carbon::now(),
 
                 'is_finish' => true,
             ];
@@ -550,11 +552,7 @@ MSG;
                 $fileTindakLanjut3 = $newFileTindakLanjut3;
             }
 
-            if(Auth::user()->id == 3){
-                $finishing = 0;
-            }else{
-                $finishing = 1;
-                $waController = new WhatsAppController();
+            $waController = new WhatsAppController();
 
                 if($request->pic == 2){
                     $verificationNumber = RefConf::where('id', 14)->value('value');
@@ -617,7 +615,6 @@ MSG;
                     'number' => $verificationNumber,
                     'result' => $verificationWaResult
                 ]);
-            }
 
             $dataUpdate = [
                 'temuan' => $request->temuan,
@@ -634,8 +631,6 @@ MSG;
                 'file_tindakLanjut' => $fileTindakLanjut,
                 'file_tindakLanjut2' => $fileTindakLanjut2,
                 'file_tindakLanjut3' => $fileTindakLanjut3,
-
-                'is_finish' => $finishing,
             ];
 
             $report->update($dataUpdate);

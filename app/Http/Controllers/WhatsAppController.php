@@ -22,7 +22,7 @@ class WhatsAppController extends Controller
         ];
 
         try {
-            $response = Http::get($url, $params);
+            $response = Http::post($url, $params);
 
             if ($response->successful()) {
                 return $response->json();
