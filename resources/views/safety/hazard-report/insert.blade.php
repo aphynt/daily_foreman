@@ -392,7 +392,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 try {
                     return new File([obj], originalName, { type: obj.type || 'image/jpeg', lastModified: Date.now() });
                 } catch (err) {
-
                     obj.name = originalName;
                     return obj;
                 }
@@ -433,8 +432,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
             submitSAP.disabled = true;
             const originalText = submitSAP.innerText;
-            submitSAP.innerText = 'Processing...';
+            submitSAP.innerText = 'Memproses...';
 
+            const oldAlerts = formSAP.querySelectorAll('.alert');
+            oldAlerts.forEach(el => el.remove());
 
             const safetyTimer = setTimeout(() => {
                 submitSAP.disabled = false;
@@ -442,8 +443,8 @@ document.addEventListener("DOMContentLoaded", function () {
             }, 30000);
 
             try {
-                const inputTemuan = formSAP.querySelector('input[name="file_temuan"]');
-                const inputTindak = formSAP.querySelector('input[name="file_tindakLanjut"]');
+                const inputTemuan = formSAP.querySelector('input[name="dokumentasi_1"]');
+                const inputTindak = formSAP.querySelector('input[name="dokumentasi_2"]');
 
                 const options = {
                     maxSizeMB: 1.0,
@@ -458,6 +459,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (inputTemuan && inputTemuan.files && inputTemuan.files.length > 0) {
                     compressedTemuan = await compressFileWithLib(inputTemuan.files[0], options);
                 }
+
                 if (inputTindak && inputTindak.files && inputTindak.files.length > 0) {
                     compressedTindak = await compressFileWithLib(inputTindak.files[0], options);
                 }
@@ -465,10 +467,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (compressedTemuan) replaceInputFile(inputTemuan, compressedTemuan);
                 if (compressedTindak) replaceInputFile(inputTindak, compressedTindak);
 
-                // pemberitahuan kecil ke user
                 const alertDiv = document.createElement('div');
-                alertDiv.className = 'alert alert-info mt-2';
-                alertDiv.innerText = 'Gambar dikompres (client-side). Mengirim form...';
+                alertDiv.className = 'alert alert-info mt-3';
+                alertDiv.innerText = 'Gambar sedang dioptimalkan dan form akan segera dikirim...';
                 formSAP.prepend(alertDiv);
 
                 clearTimeout(safetyTimer);
@@ -480,8 +481,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 submitSAP.innerText = originalText;
 
                 const errDiv = document.createElement('div');
-                errDiv.className = 'alert alert-danger mt-2';
-                errDiv.innerText = 'Terjadi kesalahan saat memproses gambar. Mengirim form tanpa kompresi.';
+                errDiv.className = 'alert alert-danger mt-3';
+                errDiv.innerText = 'Terjadi kendala saat memproses gambar. Form tetap dikirim tanpa kompresi.';
                 formSAP.prepend(errDiv);
 
                 formSAP.submit();
