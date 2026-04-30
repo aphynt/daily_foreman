@@ -686,7 +686,7 @@
                                 </div>
 
                                 <div class="action-row">
-                                    @if($report->foreman_id == Auth::user()->id || Auth::user()->id == 3)
+                                    @if($report->departemen_pic == Auth::user()->departemen_id || Auth::user()->id == 3)
                                     <div class="submit-wrap">
                                         <div class="submit-panel">
                                             <button type="submit" class="btn-finish" id="submitSAP">
