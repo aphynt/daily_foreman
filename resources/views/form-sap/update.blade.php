@@ -561,7 +561,6 @@
                                     <span class="section-badge">2</span>
                                     <div>
                                         <h5>Temuan & Analisis</h5>
-                                        <p>Bagian ini disamakan dengan form utama agar alur pengisian tetap konsisten.</p>
                                     </div>
                                 </div>
 
@@ -595,7 +594,6 @@
                                     <span class="section-badge">3</span>
                                     <div>
                                         <h5>Foto Temuan</h5>
-                                        <p>Support hingga 3 foto, sama seperti form input awal.</p>
                                     </div>
                                 </div>
 

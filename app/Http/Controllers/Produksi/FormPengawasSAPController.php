@@ -473,10 +473,25 @@ MSG;
             ->whereBetween('sr.created_at', [$filters['start'], $filters['end']])
             ->where('sr.statusenabled', 1);
 
-        if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
-            $report->where(function ($query) {
-                $query->where('sr.departemen_pic', Auth::user()->departemen_id)
-                    ->orWhere('sr.foreman_id', Auth::user()->id);
+        // if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
+        //     $report->where(function ($query) {
+        //         $query->where('sr.departemen_pic', Auth::user()->departemen_id)
+        //             ->orWhere('sr.foreman_id', Auth::user()->id);
+        //     });
+        // }
+
+        $user = Auth::user();
+
+        if (!in_array($user->role, ['ADMIN', 'MANAGEMENT'])) {
+            $report->where(function ($query) use ($user) {
+
+                if (in_array($user->role, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'])) {
+                    $query->where('sr.departemen_pic', $user->departemen_id)
+                        ->orWhere('sr.foreman_id', $user->id);
+                } else {
+                    $query->where('sr.foreman_id', $user->id);
+                }
+
             });
         }
 

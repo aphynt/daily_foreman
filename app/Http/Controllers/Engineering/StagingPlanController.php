@@ -67,7 +67,11 @@ class StagingPlanController extends Controller
             $stagingQuery->where('sp.pit_id', $filterPit);
         }
 
-        $staging = $stagingQuery->get();
+        if (Auth::user()->role == 'WORKER') {
+            $staging = collect();
+        } else {
+            $staging = $stagingQuery->get();
+        }
 
         return view('staging-plan.index', compact('shift', 'staging', 'pit'));
     }
