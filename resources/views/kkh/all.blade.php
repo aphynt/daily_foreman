@@ -271,9 +271,9 @@
                             `;
                         }
 
-                        if (butuhP3k && !verifP3k) {
-                            return `<span class="badge bg-warning text-dark w-100">Menunggu Klinik</span>`;
-                        }
+                        // if (butuhP3k && !verifP3k) {
+                        //     return `<span class="badge bg-warning text-dark w-100">Menunggu Klinik</span>`;
+                        // }
 
                         if (!verifPengawas) {
                             return `<span class="badge bg-secondary w-100">Menunggu Pengawas</span>`;

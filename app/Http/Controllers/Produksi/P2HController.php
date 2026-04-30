@@ -312,7 +312,11 @@ class P2HController extends Controller
             'p2h.DATEVERIFIED_SUPERINTENDENT',
         )
         ->whereBetween(DB::raw('CAST(p2h.OPR_REPORTTIME AS DATE)'), [$startTimeFormatted, $endTimeFormatted])
-        ->whereNotNull('p2h.VERIFIED_FOREMAN')
+        ->where(function ($query) {
+            $query->whereNotNull('p2h.VERIFIED_FOREMAN')  // Jika Foreman tidak null
+                ->orWhereNull('p2h.VERIFIED_SUPERVISOR') // Supervisor boleh null
+                ->orWhereNull('p2h.VERIFIED_SUPERINTENDENT'); // Superintendent boleh null
+        })
         ->where('p2h.STATUSENABLED', true);
         // $data = $data->where(function($query) {
         //     if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
@@ -378,33 +382,43 @@ class P2HController extends Controller
                 ->where('OPR_REPORTTIME', $first->OPR_REPORTTIME)
                 ->first();
 
-            // Tentukan siapa yang memverifikasi
-            $updateData = match (Auth::user()->position) {
-                'FOREMAN MEKANIK',
-                'PJS FOREMAN MEKANIK',
-                'JR FOREMAN MEKANIK',
-                'SUPERVISOR MEKANIK',
-                'LEADER MEKANIK' => [
-                    'VERIFIED_MEKANIK' => Auth::user()->nik,
+            $user = Auth::user();
+
+            $role = $user->role;
+            $departemenId = (int) $user->departemen_id;
+
+            if ($departemenId === 11) {
+
+                // Departemen mekanik
+                $updateData = [
+                    'VERIFIED_MEKANIK' => $user->nik,
                     'DATEVERIFIED_MEKANIK' => now(),
-                ],
-                'FOREMAN' => [
-                    'VERIFIED_FOREMAN' => Auth::user()->nik,
-                    'DATEVERIFIED_FOREMAN' => now(),
-                ],
-                'SUPERVISOR' => [
-                    'VERIFIED_SUPERVISOR' => Auth::user()->nik,
-                    'DATEVERIFIED_SUPERVISOR' => now(),
-                ],
-                'SUPERINTENDENT' => [
-                    'VERIFIED_SUPERINTENDENT' => Auth::user()->nik,
-                    'DATEVERIFIED_SUPERINTENDENT' => now(),
-                ],
-                default => [
-                    'VERIFIED_MEKANIK' => Auth::user()->nik,
-                    'DATEVERIFIED_MEKANIK' => now(),
-                ],
-            };
+                ];
+
+            } elseif ($departemenId === 8) {
+                $updateData = match ($role) {
+                    'FOREMAN' => [
+                        'VERIFIED_FOREMAN' => $user->nik,
+                        'DATEVERIFIED_FOREMAN' => now(),
+                    ],
+
+                    'SUPERVISOR' => [
+                        'VERIFIED_SUPERVISOR' => $user->nik,
+                        'DATEVERIFIED_SUPERVISOR' => now(),
+                    ],
+
+                    'SUPERINTENDENT' => [
+                        'VERIFIED_SUPERINTENDENT' => $user->nik,
+                        'DATEVERIFIED_SUPERINTENDENT' => now(),
+                    ],
+
+                    default => abort(403, 'Role tidak memiliki akses verifikasi untuk departemen ini.'),
+                };
+
+            } else {
+
+                abort(403, 'Departemen tidak memiliki akses verifikasi.');
+            }
 
             if ($checkdataP2H) {
                 $checkdataP2H->update($updateData);

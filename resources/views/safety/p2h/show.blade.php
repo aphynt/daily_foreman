@@ -85,8 +85,8 @@
                                         <td>
                                             {{ $item->VERIFIED_FOREMAN ? $item->NAMAFOREMAN : $item->NAMASUPERVISOR }}
                                         </td>
-                                        <td>{{ $item->VERIFIED_SUPERVISOR }}</td>
-                                        <td>{{ $item->NAMASUPERVISOR }}</td>
+                                        <td>{{ $item->VERIFIED_SUPERINTENDENT }}</td>
+                                        <td>{{ $item->NAMASUPERINTENDENT }}</td>
                                         <td>
                                             <a href="{{ route('p2h.preview', $item->UUID) }}"><span class="badge bg-success">Preview</span></a>
                                         </td>
@@ -117,12 +117,14 @@
     // [ HTML5 Export Buttons ]
     $('#basic-btn').DataTable({
         dom: 'Bfrtip',
+        pageLength: 50,
         buttons: ['copy', 'csv', 'excel', 'print']
     });
 
     // [ Column Selectors ]
     $('#cbtn-selectors').DataTable({
         dom: 'Bfrtip',
+        pageLength: 50,
         buttons: [{
                 extend: 'copyHtml5',
                 exportOptions: {
