@@ -272,8 +272,8 @@ class KKHController extends Controller
             $allowedToVerify = false;
 
             if (!$verifPengawas) {
-                //$lolosTahapP3k = (!$butuhP3k) || $verifP3k;
-                $lolosTahapP3k = true;
+                $lolosTahapP3k = (!$butuhP3k) || $verifP3k;
+                // $lolosTahapP3k = true;
 
                 if ($lolosTahapP3k && $jabatanPengisi !== $currentUserRole) {
                     if ($isOperator) {
@@ -540,8 +540,8 @@ class KKHController extends Controller
             $allowedToVerify = false;
 
             if (!$verifPengawas) {
-                //$lolosTahapP3k = (!$butuhP3k) || $verifP3k;
-                $lolosTahapP3k = true;
+                $lolosTahapP3k = (!$butuhP3k) || $verifP3k;
+                // $lolosTahapP3k = true;
 
                 if ($lolosTahapP3k && $jabatanPengisi !== $currentUserRole) {
                     if ($isOperator) {
