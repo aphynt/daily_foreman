@@ -52,7 +52,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="dt-responsive table-responsive">
-                            <table id="dataP2H" class="table table-striped table-hover table-bordered nowrap">
+                            <table id="cbtn-selectors" class="table table-striped table-hover table-bordered nowrap">
                                 <thead style="text-align: center; vertical-align: middle;">
                                     <tr>
                                         <th rowspan="2">Unit</th>
@@ -105,10 +105,40 @@
 
 </script>
 <script>
+
     $(document).ready(function () {
         const userRole = "{{ Auth::user()->position }}";
 
-        const table = $('#dataP2H').DataTable({
+        const table = $('#cbtn-selectors').DataTable({
+            dom: 'Bfrtip',
+            pageLength: 50,
+            buttons: [{
+                    extend: 'copyHtml5',
+                    exportOptions: {
+                        columns: [0, ':visible']
+                    }
+                },
+                {
+                    extend: 'excelHtml5',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                },
+                {
+                    extend: 'pdfHtml5',
+                    orientation: 'landscape', // Set orientation menjadi landscape
+                    pageSize: 'A4', // Ukuran halaman (opsional, default A4)
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+                    },
+                    customize: function (doc) {
+                        // Menyesuaikan margin atau pengaturan tambahan
+                        doc.content[1].margin = [10, 10, 10, 10]; // Atur margin [kiri, atas, kanan, bawah]
+                    }
+                },
+                'colvis'
+            ],
+
             processing: true,
             serverSide: true,
             ajax: {
@@ -207,7 +237,6 @@
                 }
             ],
             order: [[0, 'desc']],
-            pageLength: 25,
             lengthMenu: [10, 15, 25, 50]
         });
 
@@ -217,7 +246,7 @@
         });
 
         // Delegated event handler untuk tombol Verifikasi
-        $('#dataP2H').on('click', '.btn-verifikasi', function () {
+        $('#cbtn-selectors').on('click', '.btn-verifikasi', function () {
             const btn = $(this);
             const row = {
                 VHC_ID: btn.data('vhc_id'),
@@ -245,7 +274,7 @@
             },
             success: function (response) {
                 // alert("Verifikasi berhasil!");
-                $('#dataP2H').DataTable().ajax.reload(null, false);
+                $('#cbtn-selectors').DataTable().ajax.reload(null, false);
             },
             error: function (xhr) {
                 Swal.fire('Gagal', 'Terjadi kesalahan saat memverifikasi.', 'error');
