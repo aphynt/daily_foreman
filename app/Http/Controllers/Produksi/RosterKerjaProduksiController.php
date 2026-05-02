@@ -32,8 +32,9 @@ class RosterKerjaProduksiController extends Controller
         ->leftJoin('users as us', 'rs.nik', '=', 'us.nik')
         ->select('rs.*', 'us.name as nama', 'us.position as jabatan')
         ->where('rs.statusenabled', true)
-        ->whereRaw('CAST(rs.bulan AS INT) = ?', [$bulan])  // Pastikan bulan adalah numerik
+        ->whereRaw('CAST(rs.bulan AS INT) = ?', [$bulan])
         ->whereRaw('CAST(rs.tahun AS INT) = ?', [$tahun])
+        ->orderBy('us.id')
         ->get();
 
         // dd($roster);

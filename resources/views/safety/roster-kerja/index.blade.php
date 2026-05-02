@@ -1,4 +1,4 @@
-@include('layout.head', ['title' => 'Roster Kerja Produksi'])
+@include('layout.head', ['title' => 'Roster Kerja Safety'])
 @include('layout.sidebar')
 @include('layout.header')
 @php
@@ -12,7 +12,7 @@
                     <div class="col-md-12">
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="javascript: void(0)">Home</a></li>
-                            <li class="breadcrumb-item"><a href="javascript: void(0)">Roster Kerja Produksi</a></li>
+                            <li class="breadcrumb-item"><a href="javascript: void(0)">Roster Kerja Safety</a></li>
                         </ul>
                     </div>
                     <div class="col-12">
@@ -74,7 +74,7 @@
                             </div>
                         </form>
 
-                        @include('produksi.roster-kerja.modal.import')
+                        @include('safety.roster-kerja.modal.import')
                     </div>
                 </div>
             </div>

@@ -370,7 +370,7 @@
 
 <script>
     (function () {
-        new DateRangePicker(document.querySelector('#pc-datepicker-10'), {
+        new DateRangePicker(document.querySelector('#pc-datepicker-8'), {
             buttonClass: 'btn'
         });
     })();

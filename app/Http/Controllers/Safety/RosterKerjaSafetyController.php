@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Safety;
 
 use App\Http\Controllers\Controller;
-use App\Exports\RosterKerjaExport;
-use App\Imports\RosterKerjaImport;
+use App\Exports\RosterKerjaSafetyExport;
+use App\Imports\RosterKerjaSafetyImport;
 use App\Models\RosterKerja;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -34,6 +34,7 @@ class RosterKerjaSafetyController extends Controller
         ->where('rs.statusenabled', true)
         ->whereRaw('CAST(rs.bulan AS INT) = ?', [$bulan])  // Pastikan bulan adalah numerik
         ->whereRaw('CAST(rs.tahun AS INT) = ?', [$tahun])
+        ->orderBy('us.id')
         ->get();
 
         // dd($roster);
@@ -46,7 +47,7 @@ class RosterKerjaSafetyController extends Controller
         // Validasi file yang di-upload
         try {
             $request->validate([
-                'file' => 'required|mimes:xlsx,xls,csv|max:10240', // Maksimum 10MB
+                'file' => 'required|mimes:xlsx,xls,csv|max:10240',
                 'tahun' => 'required|numeric',
                 'bulan' => 'required|numeric',
             ]);
@@ -55,7 +56,7 @@ class RosterKerjaSafetyController extends Controller
             $bulan = $request->input('bulan');
 
             $file = $request->file('file');
-            Excel::import(new RosterKerjaImport($tahun, $bulan), $file);
+            Excel::import(new RosterKerjaSafetyImport($tahun, $bulan), $file);
 
             return redirect()->back()->with('success', 'Berhasil import excel');
         } catch (\Throwable $th) {
@@ -72,7 +73,7 @@ class RosterKerjaSafetyController extends Controller
         session(['requestRosterKerjaSafety' => ['tahun' => $tahun, 'bulan' => $bulan]]);
 
 
-        return Excel::download(new RosterKerjaExport($tahun, $bulan), 'Roster Kerja-'.$bulan.'-'.$tahun.'.xlsx');
+        return Excel::download(new RosterKerjaSafetyExport($tahun, $bulan), 'Roster Kerja-'.$bulan.'-'.$tahun.'.xlsx');
     }
 
     public function templateExcel(Request $request)
@@ -87,6 +88,6 @@ class RosterKerjaSafetyController extends Controller
         // dd($bulan);
 
 
-        return Excel::download(new RosterKerjaExport($tahun, $bulan), 'Roster Kerja-'.$bulan.'-'.$tahun.'.xlsx');
+        return Excel::download(new RosterKerjaSafetyExport($tahun, $bulan), 'Roster Kerja-'.$bulan.'-'.$tahun.'.xlsx');
     }
 }
