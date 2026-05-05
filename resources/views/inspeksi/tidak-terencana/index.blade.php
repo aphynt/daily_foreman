@@ -96,6 +96,8 @@
                                         <th rowspan="2">Hari/Tanggal</th>
                                         <th rowspan="2">Waktu</th>
                                         <th rowspan="2">Kode Pelanggaran</th>
+                                        <th rowspan="2">Dokumentasi 1</th>
+                                        <th rowspan="2">Dokumentasi 2</th>
                                         <th colspan="2">PIC</th>
                                         <th>Aksi</th>
                                     </tr>
@@ -113,6 +115,20 @@
                                             <td>{{ date('d-m-Y', strtotime($item->tanggal)) }}
                                             <td>{{ date('H:i', strtotime($item->waktu)) }}
                                             <td>{{ $item->pelanggaran }}</td>
+                                            <td>
+                                                @if($item->dokumentasi_foto_1 != '-')
+                                                    <a href="{{ $item->dokumentasi_foto_1 }}" target="_blank">Lihat Foto</a>
+                                                    @else
+                                                    -
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($item->dokumentasi_foto_2 != '-')
+                                                    <a href="{{ $item->dokumentasi_foto_2 }}" target="_blank">Lihat Foto</a>
+                                                    @else
+                                                    -
+                                                @endif
+                                            </td>
                                             <td>{{ $item->pic_nik }}</td>
                                             <td>{{ $item->pic_nama }}</td>
                                             <td>

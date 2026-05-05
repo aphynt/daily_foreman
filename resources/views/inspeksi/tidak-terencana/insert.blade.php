@@ -149,7 +149,7 @@
             <div class="col-sm-12">
                 <div class="card inspection-card">
                     <div class="card-body">
-                        <form action="{{ route('inspeksi.tidakterencana.post') }}" method="POST" id="submitformInspeksiGoldenRules">
+                        <form action="{{ route('inspeksi.tidakterencana.post') }}" method="POST" id="submitformInspeksiGoldenRules" enctype="multipart/form-data">
                             @csrf
 
                             <div class="modern-note mb-4">
@@ -361,6 +361,23 @@
                                 <div class="mt-3" id="lainnyaWrapper" style="display: none;">
                                     <label class="form-label">Isi Pelanggaran Lainnya</label>
                                     <input type="text" class="form-control form-control-sm" name="pelanggaran_lainnya" id="pelanggaran_lainnya" placeholder="Tulis pelanggaran lainnya">
+                                </div>
+                            </div>
+
+                            <div class="field-card">
+                                <div class="section-label">Dokumentasi</div>
+                                <div class="row">
+                                    <div class="col-md-6 col-12 mb-3">
+                                        <label class="form-label">Dokumentasi 1</label>
+                                        <input type="file" class="form-control form-control-sm" name="dokumentasi_foto_1" accept="image/*">
+                                        <div class="upload-note">Format disarankan: JPG, PNG, WEBP.</div>
+                                    </div>
+
+                                    <div class="col-md-6 col-12 mb-3">
+                                        <label class="form-label">Dokumentasi 2</label>
+                                        <input type="file" class="form-control form-control-sm" name="dokumentasi_foto_2" accept="image/*">
+                                            <div class="upload-note">Opsional, isi jika ada dokumentasi tambahan.</div>
+                                    </div>
                                 </div>
                             </div>
 

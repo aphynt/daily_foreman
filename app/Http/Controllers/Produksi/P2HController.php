@@ -206,7 +206,7 @@ class P2HController extends Controller
         } elseif ($limit == -1) {
 
             $pageNumber = 1;
-            $pageSize = 100000;
+            $pageSize = 2;
         }
 
         $shiftDate = null;
@@ -387,7 +387,7 @@ class P2HController extends Controller
             $role = $user->role;
             $departemenId = (int) $user->departemen_id;
 
-            if ($departemenId === 11) {
+            if ($departemenId == 11) {
 
                 // Departemen mekanik
                 $updateData = [
@@ -395,7 +395,7 @@ class P2HController extends Controller
                     'DATEVERIFIED_MEKANIK' => now(),
                 ];
 
-            } elseif ($departemenId === 8) {
+            } elseif ($departemenId == 8) {
                 $updateData = match ($role) {
                     'FOREMAN' => [
                         'VERIFIED_FOREMAN' => $user->nik,

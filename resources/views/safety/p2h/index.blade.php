@@ -60,11 +60,14 @@
                                         <th rowspan="2">NIK Operator</th>
                                         <th rowspan="2">Nama Operator</th>
                                         <th rowspan="2">Not OK</th>
-                                        <th rowspan="2">Mekanik</th>
-                                        <th colspan="2">Produksi</th>
+                                        <th colspan="2">Mekanik</th>
+                                        <th colspan="3">Produksi</th>
                                         <th rowspan="2">Aksi</th>
                                     </tr>
                                     <tr>
+                                        <th>Tanggal</th>
+                                        <th>Status</th>
+                                        <th>Tanggal</th>
                                         <th>NIK</th>
                                         <th>Nama</th>
                                     </tr>
@@ -168,7 +171,57 @@
                     data: null,
                     render: function (_, __, row) {
                         if (!row) return '-';
+
+                        // Ambil tanggal yang sesuai
+                        var date = row.DATEVERIFIED_MEKANIK;
+
+                        // Jika tidak ada tanggal, return '-'
+                        if (!date) return '-';
+
+                        // Ubah format tanggal menggunakan JavaScript Date
+                        var formattedDate = new Date(date);
+
+                        // Mendapatkan tahun, bulan, tanggal, jam, dan menit dengan format yang diinginkan
+                        var year = formattedDate.getFullYear();
+                        var month = (formattedDate.getMonth() + 1).toString().padStart(2, '0');
+                        var day = formattedDate.getDate().toString().padStart(2, '0');
+                        var hours = formattedDate.getHours().toString().padStart(2, '0');
+                        var minutes = formattedDate.getMinutes().toString().padStart(2, '0');
+
+                        // Kembalikan dalam format 'yyyy-MM-dd HH:mm'
+                        return `${year}-${month}-${day} ${hours}:${minutes}`;
+                    }
+                },
+                {
+                    data: null,
+                    render: function (_, __, row) {
+                        if (!row) return '-';
                         return row.NAMAMEKANIK ? `<span class="badge w-10" style="font-size:14px;background-color:#6f42c1">Sudah diverifikasi</span>` : '-';
+                    }
+                },
+                {
+                    data: null,
+                    render: function (_, __, row) {
+                        if (!row) return '-';
+
+                        // Ambil tanggal yang sesuai
+                        var date = row.DATEVERIFIED_FOREMAN || row.DATEVERIFIED_SUPERVISOR;
+
+                        // Jika tidak ada tanggal, return '-'
+                        if (!date) return '-';
+
+                        // Ubah format tanggal menggunakan JavaScript Date
+                        var formattedDate = new Date(date);
+
+                        // Mendapatkan tahun, bulan, tanggal, jam, dan menit dengan format yang diinginkan
+                        var year = formattedDate.getFullYear();
+                        var month = (formattedDate.getMonth() + 1).toString().padStart(2, '0');
+                        var day = formattedDate.getDate().toString().padStart(2, '0');
+                        var hours = formattedDate.getHours().toString().padStart(2, '0');
+                        var minutes = formattedDate.getMinutes().toString().padStart(2, '0');
+
+                        // Kembalikan dalam format 'yyyy-MM-dd HH:mm'
+                        return `${year}-${month}-${day} ${hours}:${minutes}`;
                     }
                 },
                 {

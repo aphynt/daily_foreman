@@ -63,6 +63,8 @@ class InspeksiTidakTerencanaController extends Controller
                 'pelanggaran' => $items->map(function ($row) {
                     return trim($row->pelanggaran . ' ' . $row->pelanggaran_detail);
                 })->implode(' | '),
+                'dokumentasi_foto_1' => $items->pluck('dokumentasi_foto_1')->filter()->unique()->implode(', ') ?: '-',
+                'dokumentasi_foto_2' => $items->pluck('dokumentasi_foto_2')->filter()->unique()->implode(', ') ?: '-',
 
                 // PIC hasil join users
                 'pic_nik' => $items->pluck('pic_nik')->filter()->unique()->implode(', ') ?: '-',
@@ -232,6 +234,27 @@ class InspeksiTidakTerencanaController extends Controller
 
             $pelanggaranDetail = implode("\n", $pelanggaranDetailItems);
 
+            $saveFile = function ($fieldName, $relativeFolder) use ($request) {
+                if (!$request->hasFile($fieldName)) {
+                    return null;
+                }
+
+                $file = $request->file($fieldName);
+                $destinationPath = public_path($relativeFolder);
+
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0755, true);
+                }
+
+                $fileName = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
+                $file->move($destinationPath, $fileName);
+
+                return url($relativeFolder . '/' . $fileName);
+            };
+
+            $dokumentasiFoto1 = $saveFile('dokumentasi_foto_1', 'storage/inspeksi_tidakterencana/dokumentasi');
+            $dokumentasiFoto2 = $saveFile('dokumentasi_foto_2', 'storage/inspeksi_tidakterencana/dokumentasi');
+
             InspeksiTidakTerencana::create([
                 'uuid'                    => (string) Uuid::uuid4()->toString(),
                 'pic'                     => Auth::user()->id,
@@ -246,6 +269,8 @@ class InspeksiTidakTerencanaController extends Controller
                 'pelanggaran'             => $pelanggaranString,
                 'pelanggaran_lainnya'     => $request->pelanggaran_lainnya,
                 'pelanggaran_detail'      => $pelanggaranDetail,
+                'dokumentasi_foto_1'      => $dokumentasiFoto1,
+                'dokumentasi_foto_2'      => $dokumentasiFoto2,
                 'keterangan'              => $request->keterangan,
             ]);
 
