@@ -343,14 +343,12 @@ class HazardReportController extends Controller
 
     public function updateDepartemen(Request $request, $uuid)
     {
+
         DB::beginTransaction();
 
         try {
             $data = HazardReport::where('uuid', $uuid)->firstOrFail();
 
-            if (Auth::user()->departemen_id != $data->departemen) {
-                return redirect()->back()->with('info', 'Anda tidak berhak mengupdate data ini.');
-            }
 
             if ($data->verified_scc != 'accept') {
                 return redirect()->back()->with('info', 'Hazard belum di-accept oleh SCC.');

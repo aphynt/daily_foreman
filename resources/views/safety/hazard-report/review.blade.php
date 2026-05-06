@@ -148,9 +148,9 @@
                                             <input class="form-control" value="{{ $data->kepada }}" readonly>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label">Tingkat Risiko:</label>
+                                            <label class="form-label">Perusahaan:</label>
                                             <select name="perusahaan" class="form-select">
-                                                <option value="">-- Pilih Tingkat Risiko --</option>
+                                                <option value="">-- Pilih Perusahaan --</option>
                                                 <option value="PT. SIMS JAYA KALTIM" {{ old('perusahaan', $data->perusahaan) == 'PT. SIMS JAYA KALTIM' ? 'selected' : '' }}>PT. SIMS JAYA KALTIM</option>
                                                 <option value="PT. ABM" {{ old('perusahaan', $data->perusahaan) == 'PT. ABM' ? 'selected' : '' }}>PT. ABM</option>
                                                 <option value="PT. KJM" {{ old('perusahaan', $data->perusahaan) == 'PT. KJM' ? 'selected' : '' }}>PT. KJM</option>
@@ -212,6 +212,7 @@
                                             <label class="form-label">Tingkat Risiko:</label>
                                             <select name="tingkat_risiko" class="form-select">
                                                 <option value="">-- Pilih Tingkat Risiko --</option>
+                                                <option value="Tidak Signifikan" {{ old('tingkat_risiko', $data->tingkat_risiko) == 'Tidak Signifikan' ? 'selected' : '' }}>Tidak Signifikan</option>
                                                 <option value="Rendah" {{ old('tingkat_risiko', $data->tingkat_risiko) == 'Rendah' ? 'selected' : '' }}>Rendah</option>
                                                 <option value="Sedang" {{ old('tingkat_risiko', $data->tingkat_risiko) == 'Sedang' ? 'selected' : '' }}>Sedang</option>
                                                 <option value="Tinggi" {{ old('tingkat_risiko', $data->tingkat_risiko) == 'Tinggi' ? 'selected' : '' }}>Tinggi</option>
