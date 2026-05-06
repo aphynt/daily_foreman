@@ -385,9 +385,9 @@ class P2HController extends Controller
                 ->where('OPR_REPORTTIME', $first->OPR_REPORTTIME)
                 ->first();
 
-            $user = Auth::user()->role;
+            $user = Auth::user();
 
-            $role = strtoupper(trim($user));
+            $role = strtoupper(trim(Auth::user()->role));
             $departemenId = (int) $user->departemen_id;
 
             if ($departemenId == 11) {
