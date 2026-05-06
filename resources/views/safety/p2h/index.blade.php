@@ -68,13 +68,14 @@
                                         <th rowspan="2">NIK Operator</th>
                                         <th rowspan="2">Nama Operator</th>
                                         <th rowspan="2">Not OK</th>
-                                        <th colspan="2">Mekanik</th>
+                                        <th colspan="3">Mekanik</th>
                                         <th colspan="3">Produksi</th>
                                         <th rowspan="2">Aksi</th>
                                     </tr>
                                     <tr>
                                         <th>Tanggal</th>
-                                        <th>Status</th>
+                                        <th>NIK</th>
+                                        <th>Nama</th>
                                         <th>Tanggal</th>
                                         <th>NIK</th>
                                         <th>Nama</th>
@@ -205,7 +206,14 @@
                     data: null,
                     render: function (_, __, row) {
                         if (!row) return '-';
-                        return row.NAMAMEKANIK ? `Sudah diverifikasi` : '-';
+                        return row.VERIFIED_MEKANIK ? row.VERIFIED_MEKANIK : '-';
+                    }
+                },
+                {
+                    data: null,
+                    render: function (_, __, row) {
+                        if (!row) return '-';
+                        return row.NAMAMEKANIK ? row.NAMAMEKANIK : '-';
                     }
                 },
                 {
