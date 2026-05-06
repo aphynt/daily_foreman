@@ -232,6 +232,8 @@ class P2HController extends Controller
 
         $cluster = in_array($request->cluster, ['EX', 'HD', 'MG', 'BD']) ? $request->cluster : null;
 
+        $statusVerifikasi = in_array($request->statusVerifikasi, ['Belum Diverifikasi', 'Sudah Diverifikasi']) ? $request->statusVerifikasi : null;
+
 
         $userRoleList = ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK'];
         $isForeman = in_array(Auth::user()->position, $userRoleList) ? 1 : 0;
@@ -247,6 +249,7 @@ class P2HController extends Controller
             $shiftNo,
             $shiftDate,
             $cluster,
+            $statusVerifikasi,
             $userSection,
             $isForeman
         ]);
@@ -382,9 +385,9 @@ class P2HController extends Controller
                 ->where('OPR_REPORTTIME', $first->OPR_REPORTTIME)
                 ->first();
 
-            $user = Auth::user();
+            $user = Auth::user()->role;
 
-            $role = $user->role;
+            $role = strtoupper(trim($user));
             $departemenId = (int) $user->departemen_id;
 
             if ($departemenId == 11) {
@@ -964,7 +967,8 @@ class P2HController extends Controller
                     ]
                 );
             }
-        $updateData = match (Auth::user()->position) {
+        $position = strtoupper(trim(Auth::user()->position));
+        $updateData = match ($position) {
             // 1. MEKANIK (Prioritas Atas)
             'FOREMAN MEKANIK',
             'PJS FOREMAN MEKANIK',

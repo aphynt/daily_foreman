@@ -593,6 +593,10 @@ MSG;
                     $verificationNumber = RefConf::where('id', 24)->value('value');
                 }
 
+                $tanggalReport = $report->created_at
+                    ? Carbon::parse($report->created_at)->format('d-m-Y')
+                    : '-';
+
 
                 $dueDate = $report->created_at
                     ? Carbon::parse($report->created_at)->addDays(7)->format('d-m-Y')
@@ -610,6 +614,7 @@ MSG;
                 - Area: {$report->area}
                 - Temuan: {$request->temuan}
                 - Tingkat Risiko: {$request->tingkatRisiko}
+                - Tanggal Submit: {$tanggalReport}
                 - Due Date: {$dueDate}
 
                 Mohon segera melakukan tindak lanjut atas temuan tersebut dan memperbarui progres perbaikannya.

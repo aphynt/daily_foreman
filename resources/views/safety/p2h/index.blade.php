@@ -15,11 +15,11 @@
                     </div>
                     <div class="col-12">
                         <div class="mb-3 row">
-                            <div class="col-12 col-md-3 mb-2">
+                            <div class="col-12 col-md-2 mb-2">
                                 <label for="tanggalP2H">Tanggal</label>
                                 <input type="text" id="tanggalP2H" class="form-control" name="tanggalP2H">
                             </div>
-                            <div class="col-12 col-md-3 mb-2">
+                            <div class="col-12 col-md-2 mb-2">
                                 <label for="shiftP2H">Shift</label>
                                 <select class="form-select" id="shiftP2H" name="shiftP2H">
                                     <option value="Semua">Semua</option>
@@ -28,7 +28,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-12 col-md-3 mb-2">
+                            <div class="col-12 col-md-2 mb-2">
                                 <label for="cluster">Vehicle Type</label>
                                 <select class="form-select" name="cluster" id="cluster">
                                     <option value="Semua">Semua</option>
@@ -36,6 +36,14 @@
                                     <option value="HD">HD</option>
                                     <option value="MG">MG</option>
                                     <option value="BD">BD</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-2 mb-2">
+                                <label for="statusVerifikasi">Status Verifikasi</label>
+                                <select class="form-select" name="statusVerifikasi" id="statusVerifikasi">
+                                    <option value="Semua">Semua</option>
+                                    <option value="Belum Diverifikasi">Belum Diverifikasi</option>
+                                    <option value="Sudah Diverifikasi">Sudah Diverifikasi</option>
                                 </select>
                             </div>
                             <div class="col-12 col-md-2 mb-2 d-flex align-items-end">
@@ -151,6 +159,7 @@
                     d.tanggalP2H = $('#tanggalP2H').val();
                     d.shiftP2H = $('#shiftP2H').val();
                     d.cluster = $('#cluster').val();
+                    d.statusVerifikasi = $('#statusVerifikasi').val();
                     delete d.columns;
                     delete d.order;
                 },
@@ -196,7 +205,7 @@
                     data: null,
                     render: function (_, __, row) {
                         if (!row) return '-';
-                        return row.NAMAMEKANIK ? `<span class="badge w-10" style="font-size:14px;background-color:#6f42c1">Sudah diverifikasi</span>` : '-';
+                        return row.NAMAMEKANIK ? `Sudah diverifikasi` : '-';
                     }
                 },
                 {

@@ -169,7 +169,6 @@ class HazardReportController extends Controller
                 'tingkat_risiko'            => $request->tingkat_risiko,
                 'pengendalian_awal'         => $request->pengendalian_awal,
                 'tindakan_perbaikan'        => $request->tindakan_perbaikan,
-                'lokasi'                    => $request->lokasi,
                 'dokumentasi_1'             => $dokumentasi_1,
                 'dokumentasi_2'             => $dokumentasi_2,
                 'pelapor'                   => Auth::user()->nik,
