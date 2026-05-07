@@ -760,6 +760,33 @@
                                         </select>
                                     </div>
 
+                                    {{-- PATUGAS 4 --}}
+                                    <div class="col-md-12 col-12 px-2 py-2">
+                                        <label>Petugas / Observer 4</label>
+                                        <select class="form-control form-control-sm" name="petugas4" data-trigger>
+                                            <option value="" disabled selected></option>
+                                            @foreach ($users['petugas'] as $petugas)
+                                                <option value="{{ $petugas->nik }}"
+                                                    {{ old('petugas4') == $petugas->nik ? 'selected' : '' }}>
+                                                    {{ $petugas->name }} ({{ $petugas->nik }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-12 col-12 px-2 py-2">
+                                        <label>Petugas / Observer 5</label>
+                                        <select class="form-control form-control-sm" name="petugas5" data-trigger>
+                                            <option value="" disabled selected></option>
+                                            @foreach ($users['petugas'] as $petugas)
+                                                <option value="{{ $petugas->nik }}"
+                                                    {{ old('petugas5') == $petugas->nik ? 'selected' : '' }}>
+                                                    {{ $petugas->name }} ({{ $petugas->nik }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
                                 </div>
                                 <hr>
                                 <div class="row mb-3">
@@ -781,6 +808,18 @@
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Pekerja 3</label>
                                         <input type="text" class="form-control form-control-sm" name="pekerja3">
+                                    </div>
+
+                                    {{-- PATUGAS 4 --}}
+                                    <div class="col-md-12 col-12 px-2 py-2">
+                                        <label>Pekerja 4</label>
+                                        <input type="text" class="form-control form-control-sm" name="pekerja4">
+                                    </div>
+
+                                    {{-- PATUGAS 5 --}}
+                                    <div class="col-md-12 col-12 px-2 py-2">
+                                        <label>Pekerja 5</label>
+                                        <input type="text" class="form-control form-control-sm" name="pekerja5">
                                     </div>
 
                                 </div>

@@ -81,6 +81,16 @@
     .btn-hapus:hover{
         background:#dc2626;
     }
+
+    .text-wrap-cell {
+        white-space: normal !important;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        max-width: 180px;
+        min-width: 140px;
+        vertical-align: top;
+    }
+
 </style>
 
 
@@ -286,7 +296,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="dt-responsive table-responsive">
-                            <table id="cbtn-selectors" class="table table-striped table-hover table-bordered nowrap">
+                            <table id="cbtn-selectors" class="table table-striped table-hover table-bordered">
                                 <thead style="text-align: center; vertical-align: middle;">
                                     <tr>
                                         <th>No</th>
@@ -313,9 +323,9 @@
                                         <td>{{ date('H:i', strtotime($item->tanggal_pelaporan)) }}</td>
                                         <td>{{ $item->shift }}</td>
                                         <td>{{ $item->perusahaan }}</td>
-                                        <td>{{ $item->kepada }}</td>
+                                        <td class="text-wrap-cell">{{ $item->kepada }}</td>
                                         <td>{{ $item->nama_departemen }}</td>
-                                        <td>{{ $item->lokasi }}</td>
+                                        <td class="text-wrap-cell">{{ $item->lokasi }}</td>
                                         <td>
                                             @if ($item->verified_scc == 'reject')
                                                 <span class="badge bg-danger">Reject</span>

@@ -582,6 +582,16 @@
                                     <label>Petugas / Observer 3</label>
                                     <input type="text" class="form-control form-control-sm preview-input" value="{{ $report->nama_petugas3 ?? '-' }}" readonly>
                                 </div>
+
+                                <div class="col-md-12 col-12 px-2 py-2">
+                                    <label>Petugas / Observer 4</label>
+                                    <input type="text" class="form-control form-control-sm preview-input" value="{{ $report->nama_petugas4 ?? '-' }}" readonly>
+                                </div>
+
+                                <div class="col-md-12 col-12 px-2 py-2">
+                                    <label>Petugas / Observer 5</label>
+                                    <input type="text" class="form-control form-control-sm preview-input" value="{{ $report->nama_petugas5 ?? '-' }}" readonly>
+                                </div>
                             </div>
 
                             <hr>
@@ -602,6 +612,16 @@
                                 <div class="col-md-12 col-12 px-2 py-2">
                                     <label>Pekerja 3</label>
                                     <input type="text" class="form-control form-control-sm preview-input" value="{{ $report->pekerja3 ?? '-' }}" readonly>
+                                </div>
+
+                                <div class="col-md-12 col-12 px-2 py-2">
+                                    <label>Pekerja 4</label>
+                                    <input type="text" class="form-control form-control-sm preview-input" value="{{ $report->pekerja4 ?? '-' }}" readonly>
+                                </div>
+
+                                <div class="col-md-12 col-12 px-2 py-2">
+                                    <label>Pekerja 5</label>
+                                    <input type="text" class="form-control form-control-sm preview-input" value="{{ $report->pekerja5 ?? '-' }}" readonly>
                                 </div>
                             </div>
 

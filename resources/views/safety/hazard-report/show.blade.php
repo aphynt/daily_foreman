@@ -219,7 +219,7 @@
                                     @if (in_array(Auth::user()->id, [1, 3]))
                                         <div class="col-md-6 mb-3">
                                         <label class="form-label">Pembuat:</label>
-                                        <input class="form-control" value="{{ $data->pic_name }}" readonly>
+                                        <input class="form-control" value="{{ $data->pic_nik }} | {{ $data->pic_name }}" readonly>
                                     </div>
                                     @endif
                                     <div class="col-md-6 mb-3">

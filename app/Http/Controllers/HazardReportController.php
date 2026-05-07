@@ -84,12 +84,25 @@ class HazardReportController extends Controller
         ->whereBetween(DB::raw('CONVERT(varchar, hz.tanggal_pelaporan, 23)'), [$startTimeFormatted, $endTimeFormatted])
         ->where('hz.statusenabled', true);
 
-        if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
+        if (!in_array(Auth::user()->id, [1, 3])) {
             $hazard->where(function ($query) {
-                $query->where('hz.departemen', Auth::user()->departemen_id)
-                    ->orWhere('hz.pic', Auth::user()->id);
+                $query
+                // ->where('hz.departemen', Auth::user()->departemen_id)
+                    ->where('hz.verified_scc', 'accept')
+                    ->orWhere('hz.pic', Auth::user()->id)
+                    ;
             });
         }
+
+        // if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
+        //     $hazard->where(function ($query) {
+        //         $query
+        //         // ->where('hz.departemen', Auth::user()->departemen_id)
+        //             ->where('hz.verified_scc', 'accept')
+        //             ->orWhere('hz.pic', Auth::user()->id)
+        //             ;
+        //     });
+        // }
 
         if ($request->filled('status')) {
             $hazard->where('status', $request->status);
@@ -282,6 +295,7 @@ class HazardReportController extends Controller
         ->select(
             'hz.id',
             'hz.uuid',
+            'us1.nik as pic_nik',
             'us1.name as pic_name',
             'hz.statusenabled',
             'hz.no_inspeksi',

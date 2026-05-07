@@ -79,7 +79,9 @@ class ObservasiBankController extends Controller
             $query->where('bank.pic', Auth::user()->id)
                     ->orWhere('bank.petugas1', Auth::user()->nik)
                     ->orWhere('bank.petugas2', Auth::user()->nik)
-                    ->orWhere('bank.petugas3', Auth::user()->nik);
+                    ->orWhere('bank.petugas3', Auth::user()->nik)
+                    ->orWhere('bank.petugas4', Auth::user()->nik)
+                    ->orWhere('bank.petugas5', Auth::user()->nik);
         });
 
         $bank = $baseQuery->get();
@@ -262,11 +264,15 @@ class ObservasiBankController extends Controller
                 'petugas1' => $data['petugas1'] ?? null,
                 'petugas2' => $data['petugas2'] ?? null,
                 'petugas3' => $data['petugas3'] ?? null,
+                'petugas4' => $data['petugas4'] ?? null,
+                'petugas5' => $data['petugas5'] ?? null,
 
                 // XI. PEKERJA YANG DI OBSERVASI
                 'pekerja1' => $data['pekerja1'] ?? null,
                 'pekerja2' => $data['pekerja2'] ?? null,
                 'pekerja3' => $data['pekerja3'] ?? null,
+                'pekerja4' => $data['pekerja4'] ?? null,
+                'pekerja5' => $data['pekerja5'] ?? null,
 
                 // XII. VALIDASI PENGAWAS
                 'pengawas1' => $pengawas1,
@@ -297,6 +303,8 @@ class ObservasiBankController extends Controller
             ->leftJoin('users as us1', 'ob.petugas1', '=', 'us1.nik')
             ->leftJoin('users as us2', 'ob.petugas2', '=', 'us2.nik')
             ->leftJoin('users as us3', 'ob.petugas3', '=', 'us3.nik')
+            ->leftJoin('users as us4', 'ob.petugas4', '=', 'us4.nik')
+            ->leftJoin('users as us5', 'ob.petugas5', '=', 'us5.nik')
             // ->leftJoin('users as us4', 'ob.pengawas1', '=', 'us4.nik')
             ->select(
                 'ob.*',
@@ -304,6 +312,8 @@ class ObservasiBankController extends Controller
                 'us1.name as nama_petugas1',
                 'us2.name as nama_petugas2',
                 'us3.name as nama_petugas3',
+                'us4.name as nama_petugas4',
+                'us5.name as nama_petugas5',
                 // 'us4.name as nama_pengawas1',
             )
             ->where('ob.uuid', $uuid)
