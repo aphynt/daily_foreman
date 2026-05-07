@@ -91,10 +91,10 @@ class ObservasiBankController extends Controller
     {
         $pit = Area::where('statusenabled', true)->get();
         $departemen = Departemen::where('statusenabled', true)->get();
-        $penanggungjawab = User::whereIn('role', ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'])->orderBy('name')->get();
-        $petugas = User::whereIn('role', ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'])->orderBy('name')->get();
+        $penanggungjawab = User::whereIn('role', ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT', 'MANAGEMENT'])->orderBy('name')->get();
+        $petugas = User::whereIn('role', ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT', 'MANAGEMENT'])->orderBy('name')->get();
         $pekerja = User::whereIn('departemen_id', [9])->orderBy('name')->get();
-        $pengawas = User::whereIn('role', ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'])->orderBy('name')->get();
+        $pengawas = User::whereIn('role', ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT', 'MANAGEMENT'])->orderBy('name')->get();
 
         $users = [
             'departemen' => $departemen,

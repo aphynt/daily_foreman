@@ -312,7 +312,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Catatan SCC</label>
+                                <label class="form-label">Tanggapan Safety</label>
                                 <textarea name="catatan_verified_scc" class="form-control">{{ old('catatan_verified_scc', $data->catatan_verified_scc) }}</textarea>
                             </div>
 
@@ -345,15 +345,15 @@
 
                         <div class="row">
 
-                            <!-- TANGGAPAN SCC -->
+                            <!-- TANGGAPAN Safety -->
                             <div class="col-md-6 mb-3">
                                 <div class="border rounded p-3 h-100">
 
                                     <div class="fw-bold mb-2 text-primary">
-                                        <i class="fas fa-user-shield me-1"></i> Tanggapan SCC
+                                        <i class="fas fa-user-shield me-1"></i> Tanggapan Safety
                                     </div>
 
-                                    @if(!$data->verified_scc)
+                                    {{-- @if(!$data->verified_scc)
                                         @if (Auth::user()->id == 3)
                                             <form method="POST" action="{{ route('hazard-report.verify.scc') }}">
                                                 @csrf
@@ -375,7 +375,7 @@
                                                 </div>
                                             </form>
                                         @endif
-                                    @endif
+                                    @endif --}}
 
                                     @if($data->catatan_verified_scc)
                                         <div class="d-flex gap-3">
@@ -409,7 +409,7 @@
                                         </div>
                                     @else
                                         <div class="text-muted fst-italic">
-                                            Belum/tidak ada tanggapan dari SCC
+                                            Belum/tidak ada tanggapan dari Safety
                                         </div>
                                     @endif
                                 </div>

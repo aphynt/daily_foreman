@@ -223,10 +223,10 @@
             </div>
         </div>
 
-        {{-- TANGGAPAN SCC (READONLY) --}}
+        {{-- TANGGAPAN Safety (READONLY) --}}
         <div class="card card-modern mb-4">
             <div class="card-body">
-                <div class="section-title mb-3">Tanggapan SCC</div>
+                <div class="section-title mb-3">Tanggapan Safety</div>
 
                 @if($data->catatan_verified_scc)
                     <div class="d-flex gap-3">
@@ -260,7 +260,7 @@
                     </div>
                 @else
                     <div class="text-muted fst-italic">
-                        Belum/tidak ada tanggapan dari SCC
+                        Belum/tidak ada tanggapan dari Safety
                     </div>
                 @endif
             </div>
