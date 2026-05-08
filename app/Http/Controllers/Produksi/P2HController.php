@@ -410,12 +410,12 @@ class P2HController extends Controller
                         'DATEVERIFIED_SUPERVISOR' => now(),
                     ],
 
-                    'SUPERINTENDENT' => [
-                        'VERIFIED_SUPERINTENDENT' => $user->nik,
-                        'DATEVERIFIED_SUPERINTENDENT' => now(),
-                    ],
+                    // 'SUPERINTENDENT' => [
+                    //     'VERIFIED_SUPERINTENDENT' => $user->nik,
+                    //     'DATEVERIFIED_SUPERINTENDENT' => now(),
+                    // ],
 
-                    default => abort(403, 'Role tidak memiliki akses verifikasi untuk departemen ini.'),
+                    default => abort(403, 'Anda tidak memiliki akses verifikasi untuk fitur ini.'),
                 };
 
             } else {

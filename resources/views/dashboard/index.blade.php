@@ -275,6 +275,7 @@
                 canAccess('inspeksi.ogs') ||
                 canAccess('inspeksi.slurrypump') ||
                 canAccess('inspeksi.workshop') ||
+                canAccess('inspeksi.tidakterencana') ||
                 canAccess('observasibank')
             )
             <div class="col-md-12">
@@ -299,6 +300,7 @@
                             @if (canAccess('inspeksi.ogs'))<a href="{{ route('inspeksi.ogs') }}" class="list-group-item">Inspeksi Area OGS</a>@endif
                             @if (canAccess('inspeksi.slurrypump'))<a href="{{ route('inspeksi.slurrypump') }}" class="list-group-item">Inspeksi Slurry Pump</a>@endif
                             @if (canAccess('inspeksi.workshop'))<a href="{{ route('inspeksi.workshop') }}" class="list-group-item">Inspeksi Workshop</a>@endif
+                            @if (canAccess('inspeksi.tidakterencana'))<a href="{{ route('inspeksi.tidakterencana') }}" class="list-group-item">Inspeksi Tidak Terencana dan Kepatuhan Golden Rules</a>@endif
                             @if (canAccess('observasibank'))<a href="{{ route('observasibank') }}" class="list-group-item">Observasi Bank</a>@endif
                         </div>
                     </div>

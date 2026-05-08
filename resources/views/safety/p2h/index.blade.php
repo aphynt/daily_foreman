@@ -347,8 +347,27 @@
                 $('#cbtn-selectors').DataTable().ajax.reload(null, false);
             },
             error: function (xhr) {
-                Swal.fire('Gagal', 'Terjadi kesalahan saat memverifikasi.', 'error');
-                // alert("Verifikasi gagal: " + xhr.responseText);
+                let title = 'Gagal';
+                let message = 'Terjadi kesalahan saat memverifikasi data.';
+
+                if (xhr.responseJSON) {
+                    title = xhr.responseJSON.error || 'Gagal';
+                    message = xhr.responseJSON.message || message;
+                } else {
+                    try {
+                        let response = JSON.parse(xhr.responseText);
+                        title = response.error || 'Gagal';
+                        message = response.message || message;
+                    } catch (e) {
+                        message = xhr.responseText || message;
+                    }
+                }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: title,
+                    text: message
+                });
             }
         });
     };
