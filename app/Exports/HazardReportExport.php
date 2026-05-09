@@ -109,7 +109,11 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
 
             $fotoPerbaikan,
 
-            $this->normalizeStatus($item->status ?? null),
+            $this->normalizeStatus(
+                $item->status ?? null,
+                $item->verified_scc ?? null,
+                $item->verified_penerima ?? null
+            ),
         ];
     }
 
@@ -225,7 +229,12 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
                     $riskText = strtoupper((string) $sheet->getCell('K' . $row)->getValue());
                     $this->applyRiskStyle($sheet, 'K' . $row, $riskText);
 
-                    $status = $this->normalizeStatus($sheet->getCell('P' . $row)->getValue());
+                    $status = trim((string) $sheet->getCell('P' . $row)->getValue());
+
+                    if ($status !== 'Close') {
+                        $status = 'Open';
+                    }
+
                     $sheet->setCellValue('P' . $row, $status);
                     $this->applyStatusStyle($sheet, 'P' . $row, $status);
 
@@ -327,11 +336,17 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
         }
     }
 
-    protected function normalizeStatus($status): string
+    protected function normalizeStatus($status, $verifiedScc = null, $verifiedPenerima = null): string
     {
         $status = strtoupper(trim((string) $status));
+        $verifiedScc = strtoupper(trim((string) $verifiedScc));
+        $verifiedPenerima = strtoupper(trim((string) $verifiedPenerima));
 
-        if (in_array($status, ['1', '2', 'CLOSE', 'CLOSED', 'SELESAI', 'FINISH', 'FINISHED'], true)) {
+        if (
+            $status === '2' &&
+            $verifiedScc === 'ACCEPT' &&
+            $verifiedPenerima === 'ACCEPT'
+        ) {
             return 'Close';
         }
 
