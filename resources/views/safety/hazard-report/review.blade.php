@@ -145,7 +145,7 @@
                                         @endif
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Kepada:</label>
-                                            <input class="form-control" value="{{ $data->kepada }}" readonly>
+                                            <input class="form-control" value="{{ $data->kepada }}" name="kepada">
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Perusahaan:</label>
@@ -316,7 +316,8 @@
                                 <textarea name="catatan_verified_scc" class="form-control">{{ old('catatan_verified_scc', $data->catatan_verified_scc) }}</textarea>
                             </div>
 
-                            <div class="d-flex gap-2">
+                            @if ($data->status == 0)
+                                <div class="d-flex gap-2">
                                 <button type="submit" name="aksi" value="update" id="btnUpdateHazard" class="btn btn-primary">
                                     <i class="fas fa-save me-1"></i> Update
                                 </button>
@@ -329,6 +330,7 @@
                                     <i class="fas fa-times-circle me-1"></i> Tolak
                                 </button>
                             </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -383,18 +385,40 @@
                                                 <strong>{{ $data->nama_scc }}</strong>
 
                                                 <div class="mt-1">
-                                                    @if($data->verified_scc == 'accept' || $data->verified_scc == 1)
-                                                        <span class="badge bg-success">
-                                                            <i class="fas fa-check-circle me-1"></i> Accepted
-                                                        </span>
-                                                    @elseif($data->verified_scc == 'reject' || $data->verified_scc == 0)
+                                                    @if ($data->verified_scc == 'reject')
                                                         <span class="badge bg-danger">
-                                                            <i class="fas fa-times-circle me-1"></i> Rejected
+                                                        <i class="fas fa-times-circle me-1"></i> Rejected
+                                                        </span>
+                                                    @elseif($data->verified_scc == 'accept')
+                                                        <span class="badge bg-success">
+                                                        <i class="fas fa-check-circle me-1"></i> Accepted
+                                                        </span>
+                                                    @elseif($data->status == 2 && $data->verified_scc == 'accept')
+                                                        <span class="badge bg-info">
+                                                        <i class="fas fa-clock me-1"></i> Close
+                                                        </span>
+                                                    @elseif($data->status == 0 && $data->verified_scc == null)
+                                                        <span class="badge bg-info">
+                                                        <i class="fas fa-clock me-1"></i> Need Review Safety
+                                                        </span>
+                                                    @elseif($data->status == 2 && $data->verified_penerima == 'accept' && $data->verified_scc == null)
+                                                        <span class="badge bg-info">
+                                                        <i class="fas fa-clock me-1"></i> Need Review Safety
+                                                        </span>
+                                                        <br><br>
+                                                       <h3>
+                                                            <a href="{{ route('hazard-report.close', $data->uuid) }}">
+                                                                <span class="badge bg-success">
+                                                                    <i class="fas fa-lock me-1"></i> Close It
+                                                                </span>
+                                                            </a>
+                                                        </h3>
+                                                    @elseif($data->status == 2 && $data->verified_penerima == 'accept' && $data->verified_scc == 'accept')
+                                                        <span class="badge bg-success">
+                                                        <i class="fas fa-clock me-1"></i> Close
                                                         </span>
                                                     @else
-                                                        <span class="badge bg-secondary">
-                                                            <i class="fas fa-clock me-1"></i> Review
-                                                        </span>
+                                                        No Status
                                                     @endif
                                                 </div>
 
@@ -452,9 +476,9 @@
 
                                     @if($data->status == 2)
                                         <div class="mt-3">
-                                            <div class="fw-bold mb-2 text-success">
+                                            {{-- <div class="fw-bold mb-2 text-success">
                                                 <i class="fas fa-check-circle"></i> Hazard Closed
-                                            </div>
+                                            </div> --}}
 
                                             <div class="row">
                                                 @if($data->dokumentasi_perbaikan_1)

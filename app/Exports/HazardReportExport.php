@@ -8,18 +8,20 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class HazardReportExport implements FromCollection, WithHeadings, WithEvents, WithCustomStartCell
+class HazardReportExport implements FromCollection, WithHeadings, WithMapping, WithEvents, WithCustomStartCell
 {
     protected Collection $data;
     protected string $startDate;
     protected string $endDate;
+    protected array $temporaryImages = [];
 
     public function __construct($data, string $startDate, string $endDate)
     {
@@ -31,6 +33,11 @@ class HazardReportExport implements FromCollection, WithHeadings, WithEvents, Wi
     public function startCell(): string
     {
         return 'A2';
+    }
+
+    public function collection()
+    {
+        return $this->data;
     }
 
     public function headings(): array
@@ -75,30 +82,35 @@ class HazardReportExport implements FromCollection, WithHeadings, WithEvents, Wi
         ];
     }
 
-    public function collection()
+    public function map($item): array
     {
-        return $this->data->map(function ($item) {
-            return [
-                $item->id ?? '-',
-                'PT.SIMS',
-                $item->departemen_pelapor ?? '-',
-                $item->nama_pelapor ?? '-',
+        $fotoTemuan = ($item->dokumentasi_1 ?? null) ?: ($item->dokumentasi_2 ?? null);
+        $fotoPerbaikan = ($item->dokumentasi_perbaikan_1 ?? null) ?: ($item->dokumentasi_perbaikan_2 ?? null);
 
-                $item->perusahaan ?? '-',
-                $item->nama_departemen ?? '-', // dept PIC
+        return [
+            $item->id ?? '-',
+            'PT.SIMS',
+            $item->departemen_pelapor ?? '-',
+            $item->nama_pelapor ?? '-',
 
-                $item->lokasi ?? '-',
-                $this->formatDate($item->tanggal_pelaporan ?? null),
-                $item->bahaya ?? '-',
-                $item->risiko ?? '-',
-                strtoupper((string) ($item->tingkat_risiko ?? '-')),
-                '',
-                $item->tindakan_perbaikan ?? '-',
-                $item->pengendalian_awal ?? '-',
-                '',
-                $this->normalizeStatus($item->status ?? null),
-            ];
-        });
+            $item->perusahaan ?? '-',
+            $item->nama_departemen ?? '-',
+
+            $item->lokasi ?? '-',
+            $this->formatDate($item->tanggal_pelaporan ?? null),
+            $item->bahaya ?? '-',
+            $item->risiko ?? '-',
+            strtoupper((string) ($item->tingkat_risiko ?? '-')),
+
+            $fotoTemuan,
+
+            $item->tindakan_perbaikan ?? '-',
+            $item->pengendalian_awal ?? '-',
+
+            $fotoPerbaikan,
+
+            $this->normalizeStatus($item->status ?? null),
+        ];
     }
 
     public function registerEvents(): array
@@ -107,8 +119,6 @@ class HazardReportExport implements FromCollection, WithHeadings, WithEvents, Wi
             AfterSheet::class => function (AfterSheet $event) {
                 /** @var Worksheet $sheet */
                 $sheet = $event->sheet->getDelegate();
-
-                $highestRow = 3 + $this->data->count();
 
                 $sheet->mergeCells('A1:P1');
                 $sheet->setCellValue('A1', '"' . $this->buildTitle() . '"');
@@ -136,8 +146,6 @@ class HazardReportExport implements FromCollection, WithHeadings, WithEvents, Wi
 
                 $sheet->getRowDimension(1)->setRowHeight(42);
 
-                $sheet->mergeCells('A1:P1');
-
                 $sheet->mergeCells('A2:A3');
                 $sheet->mergeCells('B2:D2');
                 $sheet->mergeCells('E2:F2');
@@ -152,22 +160,7 @@ class HazardReportExport implements FromCollection, WithHeadings, WithEvents, Wi
                 $sheet->mergeCells('O2:O3');
                 $sheet->mergeCells('P2:P3');
 
-                $sheet->getColumnDimension('A')->setWidth(6);
-                $sheet->getColumnDimension('B')->setWidth(16);
-                $sheet->getColumnDimension('C')->setWidth(15);
-                $sheet->getColumnDimension('D')->setWidth(20);
-                $sheet->getColumnDimension('E')->setWidth(16);
-                $sheet->getColumnDimension('F')->setWidth(18);
-                $sheet->getColumnDimension('G')->setWidth(24);
-                $sheet->getColumnDimension('H')->setWidth(14);
-                $sheet->getColumnDimension('I')->setWidth(42);
-                $sheet->getColumnDimension('J')->setWidth(36);
-                $sheet->getColumnDimension('K')->setWidth(18);
-                $sheet->getColumnDimension('L')->setWidth(35);
-                $sheet->getColumnDimension('M')->setWidth(30);
-                $sheet->getColumnDimension('N')->setWidth(28);
-                $sheet->getColumnDimension('O')->setWidth(35);
-                $sheet->getColumnDimension('P')->setWidth(12);
+                $this->setColumnWidths($sheet);
 
                 $sheet->getRowDimension(2)->setRowHeight(28);
                 $sheet->getRowDimension(3)->setRowHeight(28);
@@ -194,6 +187,8 @@ class HazardReportExport implements FromCollection, WithHeadings, WithEvents, Wi
                     ],
                 ]);
 
+                $highestRow = $sheet->getHighestRow();
+
                 if ($highestRow >= 4) {
                     $sheet->getStyle("A4:P{$highestRow}")->applyFromArray([
                         'alignment' => [
@@ -208,44 +203,96 @@ class HazardReportExport implements FromCollection, WithHeadings, WithEvents, Wi
                         ],
                     ]);
 
-                    $sheet->getStyle("A4:G{$highestRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                    $sheet->getStyle("K4:L{$highestRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                    $sheet->getStyle("O4:P{$highestRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle("A4:G{$highestRow}")
+                        ->getAlignment()
+                        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+                    $sheet->getStyle("K4:L{$highestRow}")
+                        ->getAlignment()
+                        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+                    $sheet->getStyle("O4:P{$highestRow}")
+                        ->getAlignment()
+                        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 }
 
-                foreach ($this->data->values() as $index => $item) {
-                    $row = 4 + $index;
-
-                    $sheet->getRowDimension($row)->setRowHeight(72);
+                for ($row = 4; $row <= $highestRow; $row++) {
+                    $sheet->getRowDimension($row)->setRowHeight(85);
 
                     $sheet->getStyle('C' . $row)->getFont()->setBold(true);
                     $sheet->getStyle('F' . $row)->getFont()->setBold(true);
 
-                    $riskText = strtoupper((string) ($item->tingkat_risiko ?? ''));
+                    $riskText = strtoupper((string) $sheet->getCell('K' . $row)->getValue());
                     $this->applyRiskStyle($sheet, 'K' . $row, $riskText);
 
-                    $status = $this->normalizeStatus($item->status ?? null);
+                    $status = $this->normalizeStatus($sheet->getCell('P' . $row)->getValue());
+                    $sheet->setCellValue('P' . $row, $status);
                     $this->applyStatusStyle($sheet, 'P' . $row, $status);
 
-                    $fotoTemuan = $item->dokumentasi_1 ?: $item->dokumentasi_2;
-                    $fotoPerbaikan = $item->dokumentasi_perbaikan_1 ?: $item->dokumentasi_perbaikan_2;
+                    $fotoTemuan = $sheet->getCell('L' . $row)->getValue();
 
-                    $this->addImageFromSource(
-                        $sheet,
-                        $fotoTemuan,
-                        'L' . $row,
-                        'Foto Temuan ' . $row
-                    );
+                    if (!empty($fotoTemuan)) {
+                        $imagePath = $this->makeOptimizedImage($fotoTemuan);
 
-                    $this->addImageFromSource(
-                        $sheet,
-                        $fotoPerbaikan,
-                        'O' . $row,
-                        'Foto Perbaikan ' . $row
-                    );
+                        if ($imagePath) {
+                            $this->addImageToSheet(
+                                $sheet,
+                                $imagePath,
+                                'L' . $row,
+                                'Foto Temuan ' . $row
+                            );
+
+                            $sheet->setCellValue('L' . $row, '');
+                        }
+                    }
+
+                    $fotoPerbaikan = $sheet->getCell('O' . $row)->getValue();
+
+                    if (!empty($fotoPerbaikan)) {
+                        $imagePath = $this->makeOptimizedImage($fotoPerbaikan);
+
+                        if ($imagePath) {
+                            $this->addImageToSheet(
+                                $sheet,
+                                $imagePath,
+                                'O' . $row,
+                                'Foto Perbaikan ' . $row
+                            );
+
+                            $sheet->setCellValue('O' . $row, '');
+                        }
+                    }
                 }
+
+                register_shutdown_function(function () {
+                    foreach ($this->temporaryImages as $path) {
+                        if (is_file($path)) {
+                            @unlink($path);
+                        }
+                    }
+                });
             },
         ];
+    }
+
+    protected function setColumnWidths(Worksheet $sheet): void
+    {
+        $sheet->getColumnDimension('A')->setWidth(8);
+        $sheet->getColumnDimension('B')->setWidth(16);
+        $sheet->getColumnDimension('C')->setWidth(15);
+        $sheet->getColumnDimension('D')->setWidth(20);
+        $sheet->getColumnDimension('E')->setWidth(16);
+        $sheet->getColumnDimension('F')->setWidth(18);
+        $sheet->getColumnDimension('G')->setWidth(24);
+        $sheet->getColumnDimension('H')->setWidth(14);
+        $sheet->getColumnDimension('I')->setWidth(42);
+        $sheet->getColumnDimension('J')->setWidth(36);
+        $sheet->getColumnDimension('K')->setWidth(18);
+        $sheet->getColumnDimension('L')->setWidth(35);
+        $sheet->getColumnDimension('M')->setWidth(30);
+        $sheet->getColumnDimension('N')->setWidth(28);
+        $sheet->getColumnDimension('O')->setWidth(35);
+        $sheet->getColumnDimension('P')->setWidth(12);
     }
 
     protected function buildTitle(): string
@@ -269,7 +316,7 @@ class HazardReportExport implements FromCollection, WithHeadings, WithEvents, Wi
 
     protected function formatDate($value): ?string
     {
-        if (blank($value)) {
+        if (empty($value)) {
             return null;
         }
 
@@ -282,9 +329,9 @@ class HazardReportExport implements FromCollection, WithHeadings, WithEvents, Wi
 
     protected function normalizeStatus($status): string
     {
-        $status = strtoupper((string) $status);
+        $status = strtoupper(trim((string) $status));
 
-        if (in_array($status, ['2', 'CLOSE', 'CLOSED'], true)) {
+        if (in_array($status, ['1', '2', 'CLOSE', 'CLOSED', 'SELESAI', 'FINISH', 'FINISHED'], true)) {
             return 'Close';
         }
 
@@ -298,17 +345,17 @@ class HazardReportExport implements FromCollection, WithHeadings, WithEvents, Wi
         $fillColor = null;
         $fontColor = '000000';
 
-        if (str_contains($riskText, 'LOW')) {
-            $fillColor = '00B050';
+        if (str_contains($riskText, 'EXTREME')) {
+            $fillColor = 'C00000';
+            $fontColor = 'FFFFFF';
+        } elseif (str_contains($riskText, 'HIGH')) {
+            $fillColor = '1F1FBF';
             $fontColor = 'FFFFFF';
         } elseif (str_contains($riskText, 'MEDIUM')) {
             $fillColor = 'FFD966';
             $fontColor = '000000';
-        } elseif (str_contains($riskText, 'HIGH')) {
-            $fillColor = '1F1FBF';
-            $fontColor = 'FFFFFF';
-        } elseif (str_contains($riskText, 'EXTREME')) {
-            $fillColor = 'C00000';
+        } elseif (str_contains($riskText, 'LOW')) {
+            $fillColor = '00B050';
             $fontColor = 'FFFFFF';
         }
 
@@ -346,7 +393,7 @@ class HazardReportExport implements FromCollection, WithHeadings, WithEvents, Wi
             ],
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => $isClose ? '198754' : 'FF1100'],
+                'startColor' => ['rgb' => $isClose ? '198754' : 'DC3545'],
             ],
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
@@ -355,56 +402,220 @@ class HazardReportExport implements FromCollection, WithHeadings, WithEvents, Wi
         ]);
     }
 
-    protected function addImageFromSource(Worksheet $sheet, ?string $source, string $cell, string $name): void
+    protected function addImageToSheet(
+        Worksheet $sheet,
+        string $imagePath,
+        string $cell,
+        string $name
+    ): void {
+        $drawing = new Drawing();
+        $drawing->setName($name);
+        $drawing->setDescription($name);
+        $drawing->setPath($imagePath);
+        $drawing->setHeight(75);
+        $drawing->setCoordinates($cell);
+        $drawing->setOffsetX(5);
+        $drawing->setOffsetY(5);
+        $drawing->setWorksheet($sheet);
+    }
+
+    protected function makeOptimizedImage(?string $source): ?string
     {
-        if (blank($source)) {
-            return;
+        if (empty($source)) {
+            return null;
         }
 
-        try {
-            $imageData = null;
+        $originalPath = $this->resolveImageSource($source);
 
-            if (filter_var($source, FILTER_VALIDATE_URL)) {
-                $imageData = @file_get_contents($source);
-            } else {
-                $source = ltrim($source, '/');
+        if (!$originalPath || !is_file($originalPath)) {
+            return null;
+        }
 
-                $candidates = [
-                    public_path($source),
-                    storage_path('app/public/' . $source),
-                    storage_path('app/' . $source),
-                    $source,
-                ];
+        $imageInfo = @getimagesize($originalPath);
 
-                foreach ($candidates as $path) {
-                    if (file_exists($path)) {
-                        $imageData = @file_get_contents($path);
-                        break;
+        if (!$imageInfo) {
+            return null;
+        }
+
+        [$width, $height] = $imageInfo;
+        $mime = $imageInfo['mime'] ?? null;
+
+        switch ($mime) {
+            case 'image/jpeg':
+                $sourceImage = @imagecreatefromjpeg($originalPath);
+                break;
+
+            case 'image/png':
+                $sourceImage = @imagecreatefrompng($originalPath);
+                break;
+
+            case 'image/webp':
+                $sourceImage = function_exists('imagecreatefromwebp')
+                    ? @imagecreatefromwebp($originalPath)
+                    : false;
+                break;
+
+            default:
+                return null;
+        }
+
+        if (!$sourceImage) {
+            return null;
+        }
+
+        $maxWidth = 300;
+        $maxHeight = 190;
+
+        $ratio = min($maxWidth / $width, $maxHeight / $height, 1);
+
+        $newWidth = max(1, (int) floor($width * $ratio));
+        $newHeight = max(1, (int) floor($height * $ratio));
+
+        $newImage = imagecreatetruecolor($newWidth, $newHeight);
+
+        $white = imagecolorallocate($newImage, 255, 255, 255);
+        imagefill($newImage, 0, 0, $white);
+
+        imagecopyresampled(
+            $newImage,
+            $sourceImage,
+            0,
+            0,
+            0,
+            0,
+            $newWidth,
+            $newHeight,
+            $width,
+            $height
+        );
+
+        $tempPath = storage_path('app/temp_hazard_export_image_' . uniqid() . '.jpg');
+
+        imagejpeg($newImage, $tempPath, 70);
+
+        imagedestroy($sourceImage);
+        imagedestroy($newImage);
+
+        $this->temporaryImages[] = $tempPath;
+
+        return $tempPath;
+    }
+
+    protected function resolveImageSource(string $source): ?string
+    {
+        $source = trim($source);
+
+        if ($source === '') {
+            return null;
+        }
+
+        if (preg_match('/^https?:\/\//i', $source)) {
+            $parsed = parse_url($source);
+
+            if (!empty($parsed['path'])) {
+                $decodedPath = rawurldecode($parsed['path']);
+
+                $publicStoragePath = public_path(ltrim($decodedPath, '/'));
+
+                if (is_file($publicStoragePath)) {
+                    return $publicStoragePath;
+                }
+
+                if (str_starts_with($decodedPath, '/storage/')) {
+                    $relativeStoragePath = substr($decodedPath, strlen('/storage/'));
+                    $storagePath = storage_path('app/public/' . $relativeStoragePath);
+
+                    if (is_file($storagePath)) {
+                        return $storagePath;
                     }
                 }
             }
 
-            if (!$imageData) {
-                return;
-            }
-
-            $image = @imagecreatefromstring($imageData);
-            if ($image === false) {
-                return;
-            }
-
-            $drawing = new MemoryDrawing();
-            $drawing->setName($name);
-            $drawing->setDescription($name);
-            $drawing->setImageResource($image);
-            $drawing->setRenderingFunction(MemoryDrawing::RENDERING_JPEG);
-            $drawing->setMimeType(MemoryDrawing::MIMETYPE_DEFAULT);
-            $drawing->setHeight(88);
-            $drawing->setCoordinates($cell);
-            $drawing->setOffsetX(5);
-            $drawing->setOffsetY(5);
-            $drawing->setWorksheet($sheet);
-        } catch (\Throwable $e) {
+            return $this->downloadImageToTemporaryFile($source);
         }
+
+        $source = ltrim($source, '/');
+
+        $candidates = [
+            public_path($source),
+            public_path('storage/' . $source),
+            storage_path('app/public/' . $source),
+            storage_path('app/' . $source),
+            base_path($source),
+        ];
+
+        foreach ($candidates as $path) {
+            if (is_file($path)) {
+                return $path;
+            }
+        }
+
+        return null;
+    }
+
+    protected function downloadImageToTemporaryFile(string $url): ?string
+    {
+        $url = $this->normalizeImageUrl($url);
+
+        $tempPath = storage_path('app/temp_hazard_download_image_' . uniqid() . '.tmp');
+
+        $file = @fopen($tempPath, 'wb');
+
+        if (!$file) {
+            return null;
+        }
+
+        $ch = curl_init($url);
+
+        curl_setopt_array($ch, [
+            CURLOPT_FILE => $file,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_FAILONERROR => true,
+            CURLOPT_USERAGENT => 'Mozilla/5.0',
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
+        ]);
+
+        $success = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        curl_close($ch);
+        fclose($file);
+
+        if (!$success || $httpCode >= 400 || !is_file($tempPath) || filesize($tempPath) <= 0) {
+            @unlink($tempPath);
+            return null;
+        }
+
+        $this->temporaryImages[] = $tempPath;
+
+        return $tempPath;
+    }
+
+    protected function normalizeImageUrl(string $url): string
+    {
+        $url = trim($url);
+
+        $parts = parse_url($url);
+
+        if (!$parts || empty($parts['scheme']) || empty($parts['host'])) {
+            return $url;
+        }
+
+        $scheme = $parts['scheme'];
+        $host = $parts['host'];
+        $port = isset($parts['port']) ? ':' . $parts['port'] : '';
+
+        $path = $parts['path'] ?? '';
+        $query = isset($parts['query']) ? '?' . $parts['query'] : '';
+        $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
+
+        $encodedPath = implode('/', array_map(function ($segment) {
+            return rawurlencode(rawurldecode($segment));
+        }, explode('/', $path)));
+
+        return $scheme . '://' . $host . $port . $encodedPath . $query . $fragment;
     }
 }

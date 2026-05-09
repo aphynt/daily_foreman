@@ -187,7 +187,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::put('/hazard-report/update/{uuid}', [HazardReportController::class, 'update'])->name('hazard-report.update');
     Route::get('/hazard-report/delete/{uuid}', [HazardReportController::class, 'delete'])->name('hazard-report.delete');
     Route::put('/hazard-report/update-departemen/{uuid}', [HazardReportController::class, 'updateDepartemen'])->name('hazard-report.update.departemen');
-    Route::post('/hazard-report/close', [HazardReportController::class, 'closeHazard'])->name('hazard-report.close');
+    Route::get('/hazard-report/close/{uuid}', [HazardReportController::class, 'closeHazard'])->name('hazard-report.close');
     Route::post('/hazard-report/verifySCC', [HazardReportController::class, 'verifySCC'])->name('hazard-report.verify.scc');
 
     //Laporan Kata Sandi

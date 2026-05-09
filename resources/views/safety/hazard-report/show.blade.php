@@ -415,19 +415,33 @@
 
                                             {{-- STATUS SCC --}}
                                             <div class="mt-1">
-                                                @if($data->verified_scc == 'accept' || $data->verified_scc == 1)
-                                                    <span class="badge bg-success">
-                                                        <i class="fas fa-check-circle me-1"></i> Accepted
-                                                    </span>
-                                                @elseif($data->verified_scc == 'reject' || $data->verified_scc == 0)
-                                                    <span class="badge bg-danger">
+                                            @if ($data->verified_scc == 'reject')
+                                                        <span class="badge bg-danger">
                                                         <i class="fas fa-times-circle me-1"></i> Rejected
-                                                    </span>
-                                                @else
-                                                    <span class="badge bg-secondary">
-                                                        <i class="fas fa-clock me-1"></i> Review
-                                                    </span>
-                                                @endif
+                                                        </span>
+                                                    @elseif($data->verified_scc == 'accept')
+                                                        <span class="badge bg-success">
+                                                        <i class="fas fa-check-circle me-1"></i> Accepted
+                                                        </span>
+                                                    @elseif($data->status == 2 && $data->verified_scc == 'accept')
+                                                        <span class="badge bg-info">
+                                                        <i class="fas fa-clock me-1"></i> Close
+                                                        </span>
+                                                    @elseif($data->status == 0 && $data->verified_scc == null)
+                                                        <span class="badge bg-info">
+                                                        <i class="fas fa-clock me-1"></i> Need Review Safety
+                                                        </span>
+                                                    @elseif($data->status == 2 && $data->verified_penerima == 'accept' && $data->verified_scc == null)
+                                                        <span class="badge bg-info">
+                                                        <i class="fas fa-clock me-1"></i> Need Review Safety
+                                                        </span>
+                                                    @elseif($data->status == 2 && $data->verified_penerima == 'accept' && $data->verified_scc == 'accept')
+                                                        <span class="badge bg-success">
+                                                        <i class="fas fa-clock me-1"></i> Close
+                                                        </span>
+                                                    @else
+                                                        No Status
+                                                    @endif
                                             </div>
 
                                             <div class="text-muted small mt-1">
@@ -497,10 +511,6 @@
                                     @if($data->status == 2)
 
                                     <div class="mt-3">
-
-                                        <div class="fw-bold mb-2 text-success">
-                                            <i class="fas fa-check-circle"></i> Hazard Closed
-                                        </div>
 
                                         <div class="row">
 

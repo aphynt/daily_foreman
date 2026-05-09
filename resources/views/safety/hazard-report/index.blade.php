@@ -331,17 +331,27 @@
                                                 <span class="badge bg-danger">Reject</span>
                                             @elseif($item->verified_scc == 'accept')
                                                 <span class="badge bg-success">Accepted</span>
+                                            @elseif($item->status == 2 && $item->verified_scc == 'accept')
+                                                <span class="badge bg-info">Close</span>
+                                            @elseif($item->status == 0 && $item->verified_scc == null)
+                                                <span class="badge bg-info">Need Review Safety</span>
+                                            @elseif($item->status == 2 && $item->verified_penerima != null && $item->verified_scc == null)
+                                            <span class="badge bg-info">Need Review</span>
                                             @else
-                                                <span class="badge bg-info">Review</span>
+                                                No Status
                                             @endif
                                         </td>
                                         <td>
-                                            @if ($item->status == 0)
-                                                <span class="badge bg-warning">Reviewed</span>
-                                            @elseif($item->status == 1)
-                                                <span class="badge bg-info">Open</span>
-                                            @else
+                                            @if ($item->status == 0 && $item->verified_penerima == null)
+                                                -
+                                            @elseif($item->status == 1 && $item->verified_penerima == null)
+                                                <span class="badge bg-warning">Open</span>
+                                            @elseif($item->status == 2 && $item->verified_scc == null)
+                                                <span class="badge bg-info">Need Review Safety</span>
+                                            @elseif($item->status == 2 && $item->verified_scc != null)
                                                 <span class="badge bg-success">Close</span>
+                                            @else
+                                                No Status
                                             @endif
                                         </td>
 
@@ -352,7 +362,7 @@
                                                     <i class="fas fa-eye me-1"></i> Lihat
                                                 </a>
 
-                                                @if (Auth::user()->role == 'ADMIN')
+                                                @if ($item->verified_scc == null || $item->verified_scc == '')
                                                     <button class="btn btn-sm btn-danger rounded-pill px-3 shadow-sm"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#deleteHazardReport{{ $item->uuid }}">

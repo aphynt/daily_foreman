@@ -118,15 +118,23 @@
                             <label class="form-label">No Inspeksi:</label>
                             <input class="form-control" value="{{ $data->no_inspeksi }}" readonly>
                         </div>
-
+                        @if (in_array(Auth::user()->id, [1, 3]))
                         <div class="mb-3">
-                            <label class="form-label">Kepada:</label>
-                            <input class="form-control" value="{{ $data->kepada }}" readonly>
-                        </div>
+                            <label class="form-label">Pembuat:</label>
+                            <input class="form-control" value="{{ $data->pic_nik }} | {{ $data->pic_name }}" readonly>
+                         </div>
+                        @endif
 
-                        <div class="mb-3">
-                            <label class="form-label">Perusahaan:</label>
-                            <input class="form-control" value="{{ $data->perusahaan }}" readonly>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Kepada:</label>
+                                <input class="form-control" value="{{ $data->kepada }}" readonly>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Perusahaan:</label>
+                                <input class="form-control" value="{{ $data->perusahaan }}" readonly>
+                            </div>
                         </div>
 
 
@@ -234,7 +242,7 @@
                             <strong>{{ $data->nama_scc }}</strong>
 
                             <div class="mt-1">
-                                @if($data->verified_scc == 'accept' || $data->verified_scc == 1)
+                                {{-- @if($data->verified_scc == 'accept' || $data->verified_scc == 1)
                                     <span class="badge bg-success">
                                         <i class="fas fa-check-circle me-1"></i> Accepted
                                     </span>
@@ -246,7 +254,28 @@
                                     <span class="badge bg-secondary">
                                         <i class="fas fa-clock me-1"></i> Review
                                     </span>
+                                @endif --}}
+
+                                @if ($data->verified_scc == 'reject')
+                                    <span class="badge bg-danger">
+                                    <i class="fas fa-times-circle me-1"></i> Rejected
+                                    </span>
+                                @elseif($data->verified_scc == 'accept')
+                                    <span class="badge bg-success">
+                                    <i class="fas fa-check-circle me-1"></i> Accepted
+                                    </span>
+                                @elseif($data->status == 2 && $data->verified_penerima == 'accept')
+                                    <span class="badge bg-info">
+                                    <i class="fas fa-clock me-1"></i> Close
+                                    </span>
+                                @elseif($data->status == 0 && $data->verified_scc == null)
+                                    <span class="badge bg-info">
+                                    <i class="fas fa-clock me-1"></i> Need Review Safety
+                                    </span>
+                                @else
+                                    No Status
                                 @endif
+
                             </div>
 
                             <div class="text-muted small mt-1">

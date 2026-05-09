@@ -80,6 +80,7 @@ class HazardReportController extends Controller
             'hz.dokumentasi_perbaikan_2',
             'hz.created_at',
             'hz.verified_scc',
+            'hz.verified_penerima',
         )
         ->whereBetween(DB::raw('CONVERT(varchar, hz.tanggal_pelaporan, 23)'), [$startTimeFormatted, $endTimeFormatted])
         ->where('hz.statusenabled', true);
@@ -386,8 +387,15 @@ class HazardReportController extends Controller
                 $dokumentasi_perbaikan_2 = url('storage/hazard_report/dokumentasi_perbaikan_2/' . $fileName);
             }
 
+            $verifiedSCC = null;
+
+            if(Auth::user()->id == 3){
+                $verifiedSCC = 'accept';
+            }
+
             $data->update([
                 'verified_penerima'          => 'accept',
+                'verified_scc'               => $verifiedSCC,
                 'status'                     => 2,
                 'catatan_verified_penerima'  => $request->catatan_verified_penerima,
                 'verified_datetime_penerima' => Carbon::now(),
@@ -407,6 +415,7 @@ class HazardReportController extends Controller
 
     public function update(Request $request, $uuid)
     {
+        // dd($request->all());
         DB::beginTransaction();
 
         try {
@@ -444,20 +453,20 @@ class HazardReportController extends Controller
             $aksi = $request->aksi;
 
             $updateData = [
-                'kepada'             => $request->kepada,
-                'perusahaan'         => $request->perusahaan,
-                'departemen'         => $request->departemen,
-                'shift'              => $request->shift,
+                'kepada'             => $request->has('kepada') ? $request->kepada : $data->kepada,
+                'perusahaan'         => $request->has('perusahaan') ? $request->perusahaan : $data->perusahaan,
+                'departemen'         => $request->has('departemen') ? $request->departemen : $data->departemen,
+                'shift'              => $request->has('shift') ? $request->shift : $data->shift,
                 'tanggal_pelaporan'  => $tanggal_pelaporan,
-                'lokasi'             => $request->lokasi,
-                'bahaya'             => $request->bahaya,
-                'risiko'             => $request->risiko,
-                'tingkat_risiko'     => $request->tingkat_risiko,
-                'pengendalian_awal'  => $request->pengendalian_awal,
-                'tindakan_perbaikan' => $request->tindakan_perbaikan,
+                'lokasi'             => $request->has('lokasi') ? $request->lokasi : $data->lokasi,
+                'bahaya'             => $request->has('bahaya') ? $request->bahaya : $data->bahaya,
+                'risiko'             => $request->has('risiko') ? $request->risiko : $data->risiko,
+                'tingkat_risiko'     => $request->has('tingkat_risiko') ? $request->tingkat_risiko : $data->tingkat_risiko,
+                'pengendalian_awal'  => $request->has('pengendalian_awal') ? $request->pengendalian_awal : $data->pengendalian_awal,
+                'tindakan_perbaikan' => $request->has('tindakan_perbaikan') ? $request->tindakan_perbaikan : $data->tindakan_perbaikan,
                 'dokumentasi_1'      => $dokumentasi_1,
                 'dokumentasi_2'      => $dokumentasi_2,
-                'catatan_verified_scc' => $request->catatan_verified_scc,
+                'catatan_verified_scc' => $request->has('catatan_verified_scc') ? $request->catatan_verified_scc : $data->catatan_verified_scc,
             ];
 
             if ($aksi == 'terima') {
@@ -509,6 +518,8 @@ class HazardReportController extends Controller
                     return count($lines) ? "- " . implode("\n- ", $lines) : "-";
                 };
 
+                $kepadaText = $request->has('kepada') ? $request->kepada : $data->kepada;
+
                 $risikoText = $formatBulletList($request->risiko);
                 $pengendalianAwalText = $formatBulletList($request->pengendalian_awal);
                 $tindakanPerbaikanText = $formatBulletList($request->tindakan_perbaikan);
@@ -518,7 +529,7 @@ class HazardReportController extends Controller
 
                 No. $nomorLaporan
 
-                - Kepada        : {$request->kepada}
+                - Kepada        : {$kepadaText}
                 - Prush/Dept.   : {$departemen}
                 - Hari/tgl.     : $hariTanggal
                 - Jam           : $jam
@@ -593,39 +604,16 @@ class HazardReportController extends Controller
         return back();
     }
 
-    public function closeHazard(Request $request)
+    public function closeHazard($uuid)
     {
-        $data = HazardReport::where('uuid', $request->uuid)->first();
+        $data = HazardReport::where('uuid', $uuid)->first();
 
-        $dokumentasi_perbaikan_1 = null;
-        $dokumentasi_perbaikan_2 = null;
+        HazardReport::where('uuid', $uuid)->update([
+                'verified_penerima' => 'accept',
+                'verified_scc' => 'accept',
+                'status' => 2,
+            ]);
 
-        if ($request->dokumentasi_perbaikan_1 != null) {
-            $file = $request->file('dokumentasi_perbaikan_1');
-            $destinationPath = public_path('storage/hazard_report/dokumentasi_perbaikan_1');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->move($destinationPath, $fileName);
-            $dokumentasi_perbaikan_1 = url('storage/hazard_report/dokumentasi_perbaikan_1/' . $fileName);
-        }
-        if ($request->dokumentasi_perbaikan_2 != null) {
-            $file = $request->file('dokumentasi_perbaikan_2');
-            $destinationPath = public_path('storage/hazard_report/dokumentasi_perbaikan_2');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->move($destinationPath, $fileName);
-            $dokumentasi_perbaikan_2 = url('storage/hazard_report/dokumentasi_perbaikan_2/' . $fileName);
-        }
-
-
-        $data->penerima = Auth::user()->nik;
-        $data->verified_penerima = Auth::user()->nik;
-        $data->catatan_verified_penerima = $request->catatan_penerima;
-        $data->verified_datetime_penerima = now();
-        $data->dokumentasi_perbaikan_1 = $dokumentasi_perbaikan_1;
-        $data->dokumentasi_perbaikan_2 = $dokumentasi_perbaikan_2;
-        $data->status = 2;
-
-        $data->save();
-
-        return back();
+        return redirect()->route('hazard-report.index')->with('success', 'Hazard Report berhasil diupdate');
     }
 }

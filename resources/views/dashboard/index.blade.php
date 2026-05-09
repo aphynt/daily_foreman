@@ -52,6 +52,30 @@
                 </div>
                 @endif
                 @if (Auth::user()->role != 'WORKER')
+                    @if (canAccess('form-pengawas-sap.index'))
+                    <div class="col-4 col-md-4 col-xxl-4">
+                        <a href="{{ route('form-pengawas-sap.index') }}" class="text-decoration-none">
+                            <div class="card mb-3">
+                                <div class="card-body text-center" style="padding-left:2px; padding-right:2px;">
+                                    <img class="img-fluid card-img-top" src="{{ asset('dashboard/assets') }}/images/widget/pencil.png" style="max-width: 20px">
+                                    <h6 class="card-title" style="font-size:11px">Inspeksi PICA</h6>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    @endif
+                    @if (canAccess('observasibank'))
+                    <div class="col-4 col-md-4 col-xxl-4">
+                        <a href="{{ route('observasibank') }}" class="text-decoration-none">
+                            <div class="card mb-3">
+                                <div class="card-body text-center" style="padding-left:2px; padding-right:2px;">
+                                    <img class="img-fluid card-img-top" src="{{ asset('dashboard/assets') }}/images/widget/pencil.png" style="max-width: 20px">
+                                    <h6 class="card-title" style="font-size:11px">Observasi BANK</h6>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    @endif
                     @if (canAccess('form-pengawas-new.index'))
                     <div class="col-4 col-md-4 col-xxl-4">
                         <a href="{{ route('form-pengawas-new.index') }}" class="text-decoration-none">
@@ -93,6 +117,19 @@
                     </div>
                     @endif
 
+                    @if (canAccess('inspeksi.tidakterencana'))
+                    <div class="col-4 col-md-4 col-xxl-4">
+                        <a href="{{ route('inspeksi.tidakterencana') }}" class="text-decoration-none">
+                            <div class="card mb-3">
+                                <div class="card-body text-center" style="padding-left:2px; padding-right:2px;">
+                                    <img class="img-fluid card-img-top" src="{{ asset('dashboard/assets') }}/images/widget/pencil.png" style="max-width: 20px">
+                                    <h6 class="card-title" style="font-size:11px">Sweeping</h6>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    @endif
+
                     @if (canAccess('ert.index'))
                     <div class="col-4 col-md-4 col-xxl-4">
                         <a href="{{ route('ert.index') }}" class="text-decoration-none">
@@ -119,18 +156,7 @@
                     </div>
                     @endif
 
-                    @if (canAccess('form-pengawas-sap.index'))
-                    <div class="col-4 col-md-4 col-xxl-4">
-                        <a href="{{ route('form-pengawas-sap.index') }}" class="text-decoration-none">
-                            <div class="card mb-3">
-                                <div class="card-body text-center" style="padding-left:2px; padding-right:2px;">
-                                    <img class="img-fluid card-img-top" src="{{ asset('dashboard/assets') }}/images/widget/pencil.png" style="max-width: 20px">
-                                    <h6 class="card-title" style="font-size:11px">Form Inspeksi PICA</h6>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    @endif
+
                 @endif
             @else
 
