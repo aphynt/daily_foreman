@@ -362,7 +362,7 @@
                                                     <i class="fas fa-eye me-1"></i> Lihat
                                                 </a>
 
-                                                @if ($item->verified_scc == null || $item->verified_scc == '')
+                                                @if ($item->verified_scc == null || $item->verified_scc == '' || Auth::user()->id == 3)
                                                     <button class="btn btn-sm btn-danger rounded-pill px-3 shadow-sm"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#deleteHazardReport{{ $item->uuid }}">
