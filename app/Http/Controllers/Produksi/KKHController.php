@@ -183,9 +183,11 @@ class KKHController extends Controller
             $kkh->where('kkh.shift_kkh', $shift);
         }
 
+
         if ($request->filled('departemen') && $request->departemen !== 'Semua') {
             $kkh->where('dp.ID_Departemen', $request->departemen);
         }
+
 
         $cluster = $request->cluster;
 
@@ -201,13 +203,22 @@ class KKHController extends Controller
             $role = 'SUPERVISOR';
         }
 
+
+        if ($departemenId == 12) {
+            $departemenId = 17;
+        }
+
         $canSeeAll =
             in_array($role, ['ADMIN', 'MANAGEMENT']) ||
-            (in_array($role, ['SUPERVISOR', 'SUPERINTENDENT']) && $departemenId === 9);
+            (in_array($role, ['SUPERVISOR', 'SUPERINTENDENT']) && $departemenId == 9);
 
         if (!$canSeeAll) {
             $kkh->whereRaw('CAST(hr.ID_Departemen AS INT) = ?', [$departemenId]);
         }
+
+
+
+
 
         if ($cluster == 'HD' || $cluster == 'EX') {
             $niks = AssignmentOperator::where('CLASS', $cluster)->pluck('NIK');
@@ -478,6 +489,11 @@ class KKHController extends Controller
         }
 
         $petugasP3kIds = [5];
+
+        if ($departemenId == 12) {
+            $departemenId = 17;
+        }
+
 
         $canSeeAll =
             in_array($role, ['ADMIN', 'MANAGEMENT']) ||
