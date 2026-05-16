@@ -245,7 +245,7 @@
                                         <th style="width: 220px;">Uraian Temuan</th>
                                         {{-- <th style="width: 110px;">Dokumentasi Temuan</th> --}}
                                         <th style="width: 95px;">Tingkat Risiko</th>
-                                        <th style="width: 220px;">Rekomendasi Tindak Lanjut</th>
+                                        <th style="width: 220px;">Tindak Lanjut Perbaikan</th>
                                         <th style="width: 95px;">Due Date</th>
                                         <th style="width: 110px;">PIC</th>
                                         <th style="width: 105px;">Tanggal Perbaikan</th>

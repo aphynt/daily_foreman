@@ -597,16 +597,28 @@ class KKHController extends Controller
 
     public function verifikasi(Request $request)
     {
-
-        // return $request->all();
         $rowID = $request->rowID;
+        $statusLayak = $request->status_layak ?? null; // dikirim dari modal pengawas, 1 atau 0
+
+        // Ambil data baris untuk cek keluhan dan verifikasi P3K
+        $row = DB::connection('kkh')->table('web_kkh')->where('id', $rowID)->first();
+
+        $fitOr = 0; // default
+
+        if (strtoupper($row->keluhan) === 'FIT') {
+            // Keluhan FIT, pengawas langsung verifikasi
+            $fitOr = 1;
+        } elseif ($statusLayak !== null) {
+            // Bukan FIT dan modal pengawas muncul
+            $fitOr = $statusLayak; // 1 = Layak, 0 = Tidak Layak
+        }
 
         DB::connection('kkh')->table('web_kkh')
             ->where('id', $rowID)
             ->update([
                 'ferivikasi_pengawas' => true,
                 'nik_pengawas' => Auth::user()->nik,
-                'fit_or' => 1,
+                'fit_or' => $fitOr,
             ]);
 
         return response()->json(['status' => 'ok']);

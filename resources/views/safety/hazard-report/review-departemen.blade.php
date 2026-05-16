@@ -220,7 +220,7 @@
                 <div class="section-title mb-3">Rekomendasi Tindakan</div>
 
                 <div class="mb-3">
-                    <label class="form-label">Pengendalian Awal:</label>
+                    <label class="form-label">Pengendalian Awal  Saat Ini:</label>
                     <textarea class="form-control" readonly>{{ $data->pengendalian_awal }}</textarea>
                 </div>
 

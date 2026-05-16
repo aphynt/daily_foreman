@@ -127,6 +127,7 @@ class FormPengawasSAPController extends Controller
                 'risiko' => $request->risiko,
                 'departemen_pic' => $request->departemen,
                 'pengendalian' => $request->pengendalian,
+                'tindakan_perbaikan' => $request->tindakan_perbaikan,
 
                 'file_temuan' => $fileTemuan,
                 'file_temuan2' => $fileTemuan2,
@@ -183,7 +184,7 @@ ID. {$noLaporan}
 #RISIKO
 {$risiko}
 
-#PENGENDALIAN AWAL
+#PENGENDALIAN AWAL SAAT INI
 {$pengendalian}
 
 #TINDAKAN LANJUT YANG PERLU DILAKUKAN
@@ -320,6 +321,7 @@ MSG;
                 'risiko' => $request->risiko,
                 'tingkat_risiko' => $request->tingkatRisiko,
                 'pengendalian' => $request->pengendalian,
+                'tindakan_perbaikan' => $request->tindakan_perbaikan,
                 'departemen_pic' => $request->pic,
 
                 'file_temuan' => $fileTemuan,
@@ -466,6 +468,7 @@ MSG;
                 'sr.due_date',
                 'sr.tanggal_perbaikan',
                 'sr.pengendalian',
+                'sr.tindakan_perbaikan',
                 'sr.tindak_lanjut',
                 'sr.is_finish',
                 'dep.keterangan as departemen'
@@ -487,7 +490,13 @@ MSG;
 
                 if (in_array($user->role, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'])) {
                     $query->where('sr.departemen_pic', $user->departemen_id)
-                        ->orWhere('sr.foreman_id', $user->id);
+                        ->orWhere('sr.foreman_id', $user->id)
+                        ->orWhere('sr.inspektor1', $user->name)
+                        ->orWhere('sr.inspektor2', $user->name)
+                        ->orWhere('sr.inspektor3', $user->name)
+                        ->orWhere('sr.inspektor4', $user->name)
+                        ->orWhere('sr.inspektor5', $user->name)
+                        ;
                 } else {
                     $query->where('sr.foreman_id', $user->id);
                 }
@@ -642,6 +651,7 @@ MSG;
                 'risiko' => $request->risiko,
                 'tingkat_risiko' => $request->tingkatRisiko,
                 'pengendalian' => $request->pengendalian,
+                'tindakan_perbaikan' => $request->tindakan_perbaikan,
                 'departemen_pic' => $request->pic,
 
                 'file_temuan' => $fileTemuan,

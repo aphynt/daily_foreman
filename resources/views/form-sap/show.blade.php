@@ -542,7 +542,7 @@
 
                                 <div class="col-md-6">
                                     <div class="field-block">
-                                        <label class="field-label">PIC Departemen</label>
+                                        <label class="field-label">PIC Tindak Lanjut</label>
                                         <input type="text" class="field-value" value="{{ $report->nama_pic ?? '-' }}" readonly>
                                     </div>
                                 </div>
@@ -613,8 +613,13 @@
                             </div>
 
                             <div class="field-block">
-                                <label class="field-label">Pengendalian Awal</label>
+                                <label class="field-label">Pengendalian Awal Saat Ini</label>
                                 <textarea class="field-textarea" readonly>{{ $report->pengendalian ?? '-' }}</textarea>
+                            </div>
+
+                            <div class="field-block">
+                                <label class="field-label">Rekomendasi Tindakan Perbaikan</label>
+                                <textarea class="field-textarea" readonly>{{ $report->tindakan_perbaikan ?? '-' }}</textarea>
                             </div>
                         </div>
 

@@ -418,7 +418,7 @@
 
 
                                 <div class="mb-0">
-                                    <label for="departemen" class="form-label">PIC Departemen</label>
+                                    <label for="departemen" class="form-label">PIC Tindak Lanjut</label>
                                     <select class="form-select" id="departemen" name="departemen" data-trigger required>
                                         <option value="{{ $departemenSelected?->id ?? null }}">
                                             {{ $departemenSelected?->keterangan ?? 'Pilih Departemen' }}
@@ -444,9 +444,14 @@
                                     <textarea class="form-control" placeholder="Jelaskan potensi risiko dari temuan ini" name="risiko"></textarea>
                                 </div>
 
-                                <div class="mb-0">
-                                    <label class="form-label">Pengendalian Awal</label>
-                                    <textarea class="form-control" placeholder="Jelaskan pengendalian awal yang sudah ada atau yang disarankan" name="pengendalian"></textarea>
+                                <div class="mb-3">
+                                    <label class="form-label">Pengendalian Awal Saat Ini (yang Sudah Dilakukan)</label>
+                                    <textarea class="form-control" placeholder="Tuliskan pengendalian awal yang saat ini sudah dilakukan" name="pengendalian"></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Rekomendasi Tindakan Perbaikan</label>
+                                    <textarea class="form-control" placeholder="Tuliskan rekomendasi tindakan perbaikan yang disarankan" name="tindakan_perbaikan"></textarea>
                                 </div>
                             </div>
 
@@ -455,7 +460,7 @@
                                     <span class="form-section-badge">5</span>
                                     <div>
                                         <h5>Tindak Lanjut</h5>
-                                        <p>Isi rencana atau bukti tindakan perbaikan.</p>
+                                        <p>Diisi apabila sudah ada tindak lanjut</p>
                                     </div>
                                 </div>
 

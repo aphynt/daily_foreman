@@ -117,6 +117,7 @@
     </div>
 </section>
 @include('kkh.modal.verifikasiP3K')
+@include('kkh.modal.verifikasiPengawas')
 
 @include('layout.footer')
 <script>
@@ -137,6 +138,51 @@
 
 </script>
 <script>
+    let modalVerifikasiPengawas;
+
+    $(document).ready(function() {
+        modalVerifikasiPengawas = new bootstrap.Modal(document.getElementById('modalVerifikasiPengawas'));
+    });
+
+    $(document).on('click', '.btn-verifikasi-pengawas-modal', function(e) {
+        e.preventDefault();
+
+        const rowID = $(this).data('id');
+
+        $('#pengawas_row_id').val(rowID);
+        $('#pengawas_status_layak').val('');
+        $('#catatan_pengawas_modal').val('');
+
+        modalVerifikasiPengawas.show();
+    });
+
+    $(document).on('click', '.btn-pilih-kelayakan', function(e) {
+        e.preventDefault();
+
+        const statusLayak = $(this).data('status');
+
+        $('#pengawas_status_layak').val(statusLayak);
+
+        $.ajax({
+            url: "{{ route('kkh.verifikasi') }}",
+            method: 'POST',
+            data: {
+                _token: "{{ csrf_token() }}",
+                rowID: $('#pengawas_row_id').val(),
+                status_layak: $('#pengawas_status_layak').val(),
+                catatan_pengawas: $('#catatan_pengawas_modal').val()
+            },
+            success: function(response) {
+                modalVerifikasiPengawas.hide();
+                table.ajax.reload(null, false);
+            },
+            error: function(xhr) {
+                console.error(xhr);
+                table.ajax.reload(null, false);
+            }
+        });
+    });
+
     var table;
     $(document).ready(function() {
         var userRole = "{{ Auth::user()->role }}";
@@ -243,30 +289,55 @@
 
                         if (canVerifyP3k) {
                             return `
-                                <div class="d-grid gap-1">
-                                    <button class="btn-verifikasi-p3k badge w-100"
+                                <div class="d-flex gap-2">
+                                    <button class="btn-verifikasi-p3k btn flex-fill text-white fw-semibold"
                                         data-id="${row.id}"
                                         data-fit="1"
-                                        style="font-size:13px;background-color:#15803d;color:white;">
-                                        Klinik FIT
+                                        style="background-color:#15803d; font-size:13px;">
+                                        FIT
                                     </button>
 
-                                    <button class="btn-verifikasi-p3k badge w-100"
+                                    <button class="btn-verifikasi-p3k btn flex-fill text-white fw-semibold"
                                         data-id="${row.id}"
                                         data-fit="0"
-                                        style="font-size:13px;background-color:#b91c1c;color:white;">
-                                        Klinik TIDAK FIT
+                                        style="background-color:#b91c1c; font-size:13px;">
+                                        TIDAK FIT
                                     </button>
                                 </div>
+
+                                <!-- Opsional: CSS hover agar lebih interaktif -->
+                                <style>
+                                    .btn-verifikasi-p3k:hover {
+                                        transform: translateY(-2px);
+                                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                                        transition: all 0.2s ease-in-out;
+                                    }
+                                </style>
                             `;
                         }
 
                         if (canVerifyPengawas) {
+                            const keluhanBukanFIT = row.KELUHAN !== 'FIT';
+                            const sudahVerifikasiP3K = Number(row.verif_p3k) === 1;
+                            const pengawasBelumVerifikasi = Number(row.ferivikasi_pengawas) === 0;
+
+                            const modalHarusMuncul = keluhanBukanFIT && sudahVerifikasiP3K && pengawasBelumVerifikasi;
+
+                            if (modalHarusMuncul) {
+                                return `
+                                    <button class="btn-verifikasi-pengawas-modal badge w-100"
+                                        data-id="${row.id}"
+                                        style="font-size:14px;background-color:#001932;color:white;">
+                                        Verifikasi
+                                    </button>
+                                `;
+                            }
+
                             return `
                                 <button class="btn-verifikasi-pengawas badge w-100"
                                     data-id="${row.id}"
                                     style="font-size:14px;background-color:#001932;color:white;">
-                                    Verifikasi Pengawas
+                                    Verifikasi
                                 </button>
                             `;
                         }

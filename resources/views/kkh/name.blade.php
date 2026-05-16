@@ -76,7 +76,6 @@
                                         <th rowspan="2">Masalah Pribadi</th>
                                         <th colspan="2">Verifikasi P3K</th>
                                         <th colspan="2">Verifikasi Pengawas</th>
-                                        <th rowspan="2">Aksi</th>
                                     </tr>
                                     <tr>
                                         <th>NIK</th>
@@ -249,68 +248,6 @@
                     data: 'NAMA_PENGAWAS',
                     render: function(data) {
                         return data && data !== '' ? data : '-';
-                    }
-                },
-                {
-                    data: null,
-                    render: function(data, type, row) {
-                        const verifP3k = Number(row.verif_p3k) === 1;
-                        const verifPengawas = Number(row.ferivikasi_pengawas) === 1;
-
-                        const butuhP3k =
-                            row.BUTUH_P3K === true ||
-                            row.BUTUH_P3K === 1 ||
-                            row.BUTUH_P3K === '1';
-
-                        const canVerifyP3k =
-                            row.CAN_VERIFY_P3K === true ||
-                            row.CAN_VERIFY_P3K === 1 ||
-                            row.CAN_VERIFY_P3K === '1';
-
-                        const canVerifyPengawas =
-                            row.CAN_VERIFY_PENGAWAS === true ||
-                            row.CAN_VERIFY_PENGAWAS === 1 ||
-                            row.CAN_VERIFY_PENGAWAS === '1';
-
-                        if (canVerifyP3k) {
-                            return `
-                                <div class="d-grid gap-1">
-                                    <button class="btn-verifikasi-p3k badge w-100"
-                                        data-id="${row.id}"
-                                        data-fit="1"
-                                        style="font-size:13px;background-color:#15803d;color:white;">
-                                        Klinik FIT
-                                    </button>
-
-                                    <button class="btn-verifikasi-p3k badge w-100"
-                                        data-id="${row.id}"
-                                        data-fit="0"
-                                        style="font-size:13px;background-color:#b91c1c;color:white;">
-                                        Klinik TIDAK FIT
-                                    </button>
-                                </div>
-                            `;
-                        }
-
-                        if (canVerifyPengawas) {
-                            return `
-                                <button class="btn-verifikasi-pengawas badge w-100"
-                                    data-id="${row.id}"
-                                    style="font-size:14px;background-color:#001932;color:white;">
-                                    Verifikasi Pengawas
-                                </button>
-                            `;
-                        }
-
-                        if (butuhP3k && !verifP3k) {
-                            return `<span class="badge bg-warning text-dark w-100">Menunggu Klinik</span>`;
-                        }
-
-                        if (!verifPengawas) {
-                            return `<span class="badge bg-secondary w-100">Menunggu Pengawas</span>`;
-                        }
-
-                        return ``;
                     }
                 }
             ],

@@ -251,7 +251,7 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label>Jam Kejadian</label>
+                                    <label>Waktu</label>
                                     <input type="text" id="pc-timepicker-1"
                                         class="form-control"
                                         value="{{ date('h:i A') }}"
@@ -263,11 +263,11 @@
                                     <input class="form-control" name="lokasi" placeholder="Masukkan detail lokasi..."  required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Upload Bukti 1:</label>
+                                    <label class="form-label">Upload Foto Temuan:</label>
                                     <input type="file" class="form-control" name="dokumentasi_1" accept="image/*" required/>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Upload Bukti 2 :</label>
+                                    <label class="form-label">Upload Foto Temuan (Posisi yang Berbeda):</label>
                                     <p>(jika ada)</p>
                                     <input type="file" class="form-control" name="dokumentasi_2" accept="image/*"  />
                                 </div>
@@ -307,8 +307,8 @@
 
                                 <div class="section-title">Rekomendasi Tindakan</div>
                                 <div class="mb-3">
-                                        <label class="form-label">Pengendalian Awal:</label>
-                                        <textarea class="form-control" placeholder="Masukkan pengendalian awal..." name="pengendalian_awal"></textarea>
+                                        <label class="form-label">Pengendalian Awal Saat ini (yang Sudah Dilakukan):</label>
+                                        <textarea class="form-control" placeholder="Masukkan pengendalian awal saat ini..." name="pengendalian_awal"></textarea>
                                     </div>
                                 <div class="mb-3">
                                     <label class="form-label">Rekomendasi Tindakan Perbaikan</label>

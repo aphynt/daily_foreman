@@ -210,13 +210,16 @@
                                         {{ date('d M Y', strtotime($item->tanggal_pelaporan)) }}
                                         • {{ date('H:i', strtotime($item->tanggal_pelaporan)) }}
                                         </span>
-
-                                            @if ($item->status == 0)
-                                                <span class="badge bg-warning">Review</span>
-                                            @elseif($item->status == 1)
-                                                <span class="badge bg-info">Open</span>
-                                            @else
+                                            @if ($item->status == 0 && $item->verified_penerima == null)
+                                                <span class="badge bg-info">Progress</span>
+                                            @elseif($item->status == 1 && $item->verified_penerima == null)
+                                                <span class="badge bg-warning">Open</span>
+                                            @elseif($item->status == 2 && $item->verified_scc == null)
+                                                <span class="badge bg-info">Need Review Safety</span>
+                                            @elseif($item->status == 2 && $item->verified_scc != null)
                                                 <span class="badge bg-success">Close</span>
+                                            @else
+                                                No Status
                                             @endif
 
                                     </div>
@@ -249,13 +252,13 @@
                                     </div>
 
                                     <div class="col-6 mb-3">
-                                        <div class="info-label">Kepada</div>
-                                        <div class="info-value">{{ $item->kepada ?? '-' }}</div>
-                                    </div>
-
-                                    <div class="col-6 mb-3">
                                         <div class="info-label">Lokasi</div>
                                         <div class="info-value">{{ $item->lokasi ?? '-' }}</div>
+                                     </div>
+
+                                    <div class="col-6 mb-3">
+                                        <div class="info-label">Bahaya</div>
+                                        <div class="info-value">{{ $item->bahaya ?? '-' }}</div>
                                      </div>
 
                                 </div>
@@ -302,12 +305,12 @@
                                         <th>No</th>
                                         <th>No. Inspeksi</th>
                                         <th>Tanggal Pelaporan</th>
-                                        <th>Jam Kejadian</th>
+                                        <th>Waktu</th>
                                         <th>Shift</th>
                                         <th>Perusahaan</th>
-                                        <th>Kepada</th>
                                         <th>Departemen</th>
                                         <th>Lokasi</th>
+                                        <th>Bahaya</th>
                                         <th>Status SCC</th>
                                         <th>Status Penerima</th>
                                         <th>Aksi</th>
@@ -323,9 +326,9 @@
                                         <td>{{ date('H:i', strtotime($item->tanggal_pelaporan)) }}</td>
                                         <td>{{ $item->shift }}</td>
                                         <td>{{ $item->perusahaan }}</td>
-                                        <td class="text-wrap-cell">{{ $item->kepada }}</td>
                                         <td>{{ $item->nama_departemen }}</td>
                                         <td class="text-wrap-cell">{{ $item->lokasi }}</td>
+                                        <td class="text-wrap-cell">{{ $item->bahaya }}</td>
                                         <td>
                                             @if ($item->verified_scc == 'reject')
                                                 <span class="badge bg-danger">Reject</span>

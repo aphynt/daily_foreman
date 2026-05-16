@@ -342,7 +342,7 @@
 
 
                                 <div class="mb-3">
-                                    <label class="form-label">Pengendalian Awal:</label>
+                                    <label class="form-label">Pengendalian Awal Saat Ini:</label>
                                     <textarea class="form-control" readonly>{{ $data->pengendalian_awal }}</textarea>
                                 </div>
 
@@ -517,12 +517,20 @@
                                             @if($data->dokumentasi_perbaikan_1)
                                             <div class="col-6">
                                                 <img src="{{ $data->dokumentasi_perbaikan_1 }}" class="img-thumbnail">
+                                                <a href="{{ $data->dokumentasi_perbaikan_1 }}" target="_blank"
+                                                            class="btn btn-sm btn-outline-primary mt-2 w-100">
+                                                            <i class="fas fa-search"></i> Lihat Foto
+                                                        </a>
                                             </div>
                                             @endif
 
                                             @if($data->dokumentasi_perbaikan_2)
                                             <div class="col-6">
                                                 <img src="{{ $data->dokumentasi_perbaikan_2 }}" class="img-thumbnail">
+                                                <a href="{{ $data->dokumentasi_perbaikan_2 }}" target="_blank"
+                                                            class="btn btn-sm btn-outline-primary mt-2 w-100">
+                                                            <i class="fas fa-search"></i> Lihat Foto
+                                                        </a>
                                             </div>
                                             @endif
 

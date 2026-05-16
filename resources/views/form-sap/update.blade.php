@@ -534,7 +534,7 @@
                                     </div>
 
                                     <div class="col-md-4">
-                                        <label class="form-label">PIC Departemen</label>
+                                        <label class="form-label">PIC Tindak Lanjut</label>
                                         <select class="form-select" id="pic" name="pic" required>
                                             @foreach ($data['departemen'] as $dep)
                                                 <option value="{{ $dep->id }}"
@@ -580,12 +580,20 @@
                                               placeholder="Masukkan risiko">{{ old('risiko', $report->risiko) }}</textarea>
                                 </div>
 
-                                <div class="mb-0">
-                                    <label class="form-label">Pengendalian Awal</label>
+                                <div class="mb-3">
+                                    <label class="form-label">Pengendalian Awal Saat Ini</label>
                                     <textarea class="form-control"
                                               rows="5"
                                               name="pengendalian"
-                                              placeholder="Masukkan pengendalian">{{ old('pengendalian', $report->pengendalian) }}</textarea>
+                                              placeholder="Masukkan pengendalian saat ini">{{ old('pengendalian', $report->pengendalian) }}</textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Rekomendasi Tindakan Perbaikan</label>
+                                    <textarea class="form-control"
+                                              rows="5"
+                                              name="pengendalian"
+                                              placeholder="Masukkan rekomendasi tindakan perbaikan">{{ old('pengendalian', $report->tindakan_perbaikan) }}</textarea>
                                 </div>
                             </div>
 
