@@ -6,23 +6,34 @@ if (! function_exists('canAccess')) {
     function canAccess(string $routeName): bool
     {
         $user = Auth::user();
-        if (! $user || ! $user->roleRel) return false;
+        if (! $user) return false;
 
+        // Ambil route dari user
+        $userRoutes = $user->allowed_routes ?? [];
+        if (is_string($userRoutes)) {
+            $userRoutes = json_decode($userRoutes, true) ?? [];
+        }
+
+        // Ambil route dari role
         $roleRoutes = $user->roleRel->allowed_routes ?? [];
         if (is_string($roleRoutes)) {
             $roleRoutes = json_decode($roleRoutes, true) ?? [];
         }
 
-        if (in_array('*', $roleRoutes)) {
-            return true;
-        }
-
+        // Ambil route dari departemen
         $deptRoutes = $user->departemenRel->menu_routes ?? [];
         if (is_string($deptRoutes)) {
             $deptRoutes = json_decode($deptRoutes, true) ?? [];
         }
 
-        return in_array($routeName, $roleRoutes) || in_array($routeName, $deptRoutes);
-    }
+        // Gabungkan semua
+        $allowedRoutes = array_unique(array_merge($userRoutes, $roleRoutes, $deptRoutes));
 
+        // Jika ada '*', beri akses semua
+        if (in_array('*', $allowedRoutes)) {
+            return true;
+        }
+
+        return in_array($routeName, $allowedRoutes);
+    }
 }

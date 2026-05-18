@@ -111,7 +111,7 @@
                                                     <i class="fas fa-info-circle me-1"></i> Detail
                                                 </a>
 
-                                                @if ($group->verified_diterima == null)
+                                                @if ($group->verified_diterima == null && Auth::user()->departemen_id == 8)
                                                     <button type="button"
                                                         class="badge text-center ms-1 btn-verifikasi"
                                                         style="font-size:14px; background-color:#198754; color:white; width: 120px;"
