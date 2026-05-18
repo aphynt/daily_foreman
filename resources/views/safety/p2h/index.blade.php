@@ -123,7 +123,7 @@
 
         const table = $('#cbtn-selectors').DataTable({
             dom: 'Bfrtip',
-            pageLength: 50,
+            paging: false,
             buttons: [{
                     extend: 'copyHtml5',
                     exportOptions: {
@@ -152,7 +152,7 @@
             ],
 
             processing: true,
-            serverSide: true,
+            serverSide: false,
             ajax: {
                 url: '{{ route('p2h.api') }}',
                 method: 'GET',
@@ -306,8 +306,7 @@
                     }
                 }
             ],
-            order: [[0, 'desc']],
-            lengthMenu: [10, 15, 25, 50]
+            order: [[4, 'desc']],
         });
 
         // Tombol pencarian manual

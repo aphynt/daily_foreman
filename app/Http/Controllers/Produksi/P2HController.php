@@ -198,7 +198,7 @@ class P2HController extends Controller
         $offset = $request->input('start', 0);
 
         $pageNumber = ($limit > 0) ? ($offset / $limit) + 1 : 1;
-        $pageSize = ($limit > 0) ? $limit : 50;
+        $pageSize = ($limit > 0) ? $limit : 500;
         $extraFetch = 3;
         $fetchSize = $pageSize * $extraFetch;
 
@@ -300,14 +300,18 @@ class P2HController extends Controller
         $totalRecords = $results->count();
 
         // --- Sorting ---
-        $results = $results->sortBy(function($row) {
-            $priority = (!$row->NAMAFOREMAN) ? 0 : ((!$row->NAMASUPERVISOR) ? 1 : 2);
-            $valNotOk = -($row->VAL_NOTOK ?? 0);
-            return [$priority, $valNotOk];
+       $results = $results->sort(function ($a, $b) {
+            // 1. VAL_NOTOK descending (utamakan yang bukan 0)
+            if ($a->VAL_NOTOK != $b->VAL_NOTOK) {
+                return $b->VAL_NOTOK <=> $a->VAL_NOTOK;
+            }
+
+            // 2. VHC_ID ascending
+            return strcmp($a->VHC_ID, $b->VHC_ID);
         })->values();
 
         // --- Slice untuk pagination DataTables ---
-        $results = $results->slice(0, $pageSize)->values();
+        // $results = $results->slice(0, $pageSize)->values();
 
         return response()->json([
             'draw' => intval($request->input('draw')),
