@@ -197,64 +197,117 @@ class P2HController extends Controller
         $limit = $request->input('length', 10);
         $offset = $request->input('start', 0);
 
+        $pageNumber = ($limit > 0) ? ($offset / $limit) + 1 : 1;
+        $pageSize = ($limit > 0) ? $limit : 50;
+        $extraFetch = 3;
+        $fetchSize = $pageSize * $extraFetch;
 
-        $pageNumber = 1;
-        $pageSize = $limit;
-
-        if ($limit != -1 && $limit != 0) {
-            $pageNumber = ($offset / $limit) + 1;
-        } elseif ($limit == -1) {
-
-            $pageNumber = 1;
-            $pageSize = 2;
-        }
-
-        $shiftDate = null;
-        if (!empty($request->tanggalP2H)) {
-            try {
-                $dateObj = new DateTime($request->tanggalP2H);
-                $shiftDate = $dateObj->format('Y-m-d');
-            } catch (\Exception $e) {
-                $shiftDate = null;
-            }
-        }
-
-        $searchValue = $request->search['value'] ?? null;
-
-
+        $shiftDate = !empty($request->tanggalP2H) ? date('Y-m-d', strtotime($request->tanggalP2H)) : null;
+        $searchValueTrim = $request->search['value'] ?? null;
         $shiftP2H = $request->input('shiftP2H');
+        $shiftNo = in_array((int)$shiftP2H, [6,7], true) ? (int)$shiftP2H : null;
+        $cluster = in_array($request->cluster, ['EX','HD','MG','BD']) ? $request->cluster : null;
 
-        $shiftNo = null;
+        $userRoleList = ['FOREMAN MEKANIK','PJS FOREMAN MEKANIK','JR FOREMAN MEKANIK','SUPERVISOR MEKANIK','LEADER MEKANIK'];
+        $isForeman = in_array(Auth::user()->position, $userRoleList);
+        $userSection = $isForeman ? Auth::user()->section : null;
 
-        if (in_array((int) $shiftP2H, [6, 7], true)) {
-            $shiftNo = (int) $shiftP2H;
-        }
+        // --- Users SQL Server ---
+        $users = DB::connection('daily_foreman')->table('users')->get()->keyBy('NIK');
 
-        $cluster = in_array($request->cluster, ['EX', 'HD', 'MG', 'BD']) ? $request->cluster : null;
+        // --- Ambil checklist IDs dari PostgreSQL ---
+        $checklistIds = DB::connection('p2h')->table('opr_oprchecklist')
+            ->select('vhc_id','opr_reporttime','opr_nrp','opr_shiftno','opr_shiftdate','mtr_hourmeter')
+            ->when($shiftNo, fn($q) => $q->where('opr_shiftno', $shiftNo))
+            ->when($shiftDate, fn($q) => $q->whereDate('opr_shiftdate', $shiftDate))
+            ->when($cluster, fn($q) => $q->where('vhc_id','like',$cluster.'%'))
+            ->when($searchValueTrim, fn($q) => $q->where(function($q2) use ($searchValueTrim){
+                $q2->where('opr_nrp','ilike',"%{$searchValueTrim}%")
+                ->orWhere('vhc_id','ilike',"%{$searchValueTrim}%");
+            }))
+            ->get();
 
-        $statusVerifikasi = in_array($request->statusVerifikasi, ['Belum Diverifikasi', 'Sudah Diverifikasi']) ? $request->statusVerifikasi : null;
+        $oprTimes = $checklistIds->pluck('opr_reporttime')
+            ->map(fn($t) => Carbon::parse($t)->format('Y-m-d H:i:s'))
+            ->unique()
+            ->toArray();
 
+        // --- Ambil p2h data dari SQL Server ---
+        $p2hData = DB::connection('daily_foreman')
+            ->table('prd_opr_checklistp2h')
+            ->whereIn('VHC_ID', $checklistIds->pluck('vhc_id')->unique()->toArray())
+            ->where(function($query) use ($oprTimes) {
+                foreach ($oprTimes as $time) {
+                    $query->orWhereRaw("CONVERT(varchar(19), OPR_REPORTTIME, 120) = ?", [$time]);
+                }
+            })
+            ->get()
+            ->keyBy(fn($row) => trim($row->VHC_ID) . '_' . Carbon::parse($row->OPR_REPORTTIME)->format('Y-m-d H:i:s'));
 
-        $userRoleList = ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK'];
-        $isForeman = in_array(Auth::user()->position, $userRoleList) ? 1 : 0;
+        // --- Mapping checklist PostgreSQL ---
+        $results = $checklistIds->map(function($row) use ($users, $p2hData, $isForeman, $userSection) {
+            $vhcId = $row->vhc_id ?? null;
+            $vhcPrefix = substr($vhcId, 0, 2); // ambil 2 huruf pertama
 
-        $userSection = null;
-        if ($isForeman) {
-            $userSection = Auth::user()->section;
-        }
-        $results = DB::select('EXEC APP_GET_P2H ?, ?, ?, ?, ?, ?, ?, ?', [
-            $pageNumber,
-            $pageSize,
-            $searchValue,
-            $shiftNo,
-            $shiftDate,
-            $cluster,
-            $statusVerifikasi,
-            $userSection,
-            $isForeman
-        ]);
+            $oprReportTime = $row->opr_reporttime ?? null;
+            if (!$vhcId || !$oprReportTime) return null;
 
-        $totalRecords = count($results) > 0 ? $results[0]->TotalCount : 0;
+            $opr_nrp_fix = (substr($row->opr_nrp ?? '', -2) === 'S1') ? substr($row->opr_nrp,0,-1) : ($row->opr_nrp ?? '');
+            $key = trim($vhcId) . '_' . Carbon::parse($oprReportTime)->format('Y-m-d H:i:s');
+            $p2h = $p2hData[$key] ?? null;
+
+            $personal = $users[$opr_nrp_fix] ?? null;
+            $mekanik = $p2h?->VERIFIED_MEKANIK ? ($users[$p2h->VERIFIED_MEKANIK] ?? null) : null;
+            $foreman = $p2h?->VERIFIED_FOREMAN ? ($users[$p2h->VERIFIED_FOREMAN] ?? null) : null;
+            $supervisor = $p2h?->VERIFIED_SUPERVISOR ? ($users[$p2h->VERIFIED_SUPERVISOR] ?? null) : null;
+
+            // Filter section untuk mekanik
+            $sectionOk = true;
+            if ($isForeman && $userSection) {
+                if ($userSection==='WHEEL' && !str_starts_with($vhcId,'MG%') && !str_starts_with($vhcId,'HD%')) $sectionOk=false;
+                if ($userSection==='TRACK EXCA' && !str_starts_with($vhcId,'EX')) $sectionOk=false;
+                if ($userSection==='TRACK DOZER' && !str_starts_with($vhcId,'BD')) $sectionOk=false;
+            }
+
+            return (object)[
+                'VHC_ID' => $vhcId,
+                'VHC_PREFIX' => $vhcPrefix,
+                'OPR_REPORTTIME' => $oprReportTime,
+                'OPR_NRP' => $opr_nrp_fix,
+                'PERSONALNAME' => $personal?->NAME ?? null,
+                'VAL_NOTOK' => DB::connection('p2h')->table('opr_oprchecklistitem')
+                                    ->where('vhc_id',$vhcId)
+                                    ->where('opr_reporttime',$oprReportTime)
+                                    ->where('checklistval',0)
+                                    ->count(),
+                'DATEVERIFIED_MEKANIK' => $p2h?->DATEVERIFIED_MEKANIK ?? null,
+                'VERIFIED_MEKANIK' => $p2h?->VERIFIED_MEKANIK ?? null,
+                'NAMAMEKANIK' => $mekanik?->NAME ?? null,
+                'DATEVERIFIED_FOREMAN' => $p2h?->DATEVERIFIED_FOREMAN ?? $p2h?->DATEVERIFIED_SUPERVISOR ?? null,
+                'VERIFIED_FOREMAN' => $p2h?->VERIFIED_FOREMAN ?? $p2h?->VERIFIED_SUPERVISOR ?? null,
+                'NAMAFOREMAN' => $foreman?->NAME ?? $supervisor?->NAME ?? null,
+                'DATEVERIFIED_SUPERVISOR' => $p2h?->DATEVERIFIED_SUPERVISOR ?? null,
+                'VERIFIED_SUPERVISOR' => $p2h?->VERIFIED_SUPERVISOR ?? null,
+                'NAMASUPERVISOR' => $supervisor?->NAME ?? null,
+                'MTR_HOURMETER' => $row->mtr_hourmeter ?? null,
+                'OPR_SHIFTDATE' => $row->opr_shiftdate ?? null,
+                'OPR_SHIFTNO' => $row->opr_shiftno ?? null,
+                'IS_FOREMAN_ROW' => $isForeman && !$sectionOk,
+                'SECTION_OK' => $sectionOk
+            ];
+        })->filter()->values();
+
+        $totalRecords = $results->count();
+
+        // --- Sorting ---
+        $results = $results->sortBy(function($row) {
+            $priority = (!$row->NAMAFOREMAN) ? 0 : ((!$row->NAMASUPERVISOR) ? 1 : 2);
+            $valNotOk = -($row->VAL_NOTOK ?? 0);
+            return [$priority, $valNotOk];
+        })->values();
+
+        // --- Slice untuk pagination DataTables ---
+        $results = $results->slice(0, $pageSize)->values();
 
         return response()->json([
             'draw' => intval($request->input('draw')),
@@ -339,87 +392,115 @@ class P2HController extends Controller
         $request->validate([
             'VHC_ID' => 'required|string',
             'OPR_REPORTTIME' => 'required|date',
-            // 'MTR_HOURMETER' => 'required|numeric',
             'OPR_NRP' => 'required|string'
         ]);
 
-        DB::beginTransaction(); //  Mulai transaksi
+        DB::beginTransaction(); // Mulai transaksi
 
         try {
-            $detail = DB::connection('focus')->table('FOCUS.dbo.OPR_OPRCHECKLISTITEM as A')
-                ->select(
-                    'A.ID',
-                    'A.CHECKLISTGROUPID',
-                    'A.CHECKLISTITEMID',
-                    'B.CHECKLISTITEMDESCRIPTION',
-                    'A.CHECKLISTNOTES',
-                    'A.CHECKLISTVAL',
-                    'A.OPR_REPORTTIME',
-                    'A.OPR_SHIFTDATE',
-                    'A.OPR_SHIFTNO',
-                    'A.VHC_ID',
-                )
-                ->leftJoin('FOCUS.dbo.FLT_EQUCHECKLISTITEM as B', function($join) {
-                    $join->on('A.EQU_TYPEID', '=', 'B.EQU_TYPEID')
-                        ->on('A.CHECKLISTGROUPID', '=', 'B.CHECKLISTGROUPID')
-                        ->on('A.CHECKLISTITEMID', '=', 'B.CHECKLISTITEMID');
-                })
-                ->leftJoin('FOCUS.dbo.FLT_EQUCHECKLISTGROUP as C', function($join) {
-                    $join->on('A.EQU_TYPEID', '=', 'C.EQU_TYPEID')
-                        ->on('A.CHECKLISTGROUPID', '=', 'C.CHECKLISTGROUPID');
-                })
-                ->where('A.VHC_ID', $request['VHC_ID'])
-                ->whereRaw("DATEADD(ms, -DATEPART(ms, A.OPR_REPORTTIME), A.OPR_REPORTTIME) = ?", [$request['OPR_REPORTTIME']])
-                ->orderBy('A.CHECKLISTGROUPID')
-                ->orderBy('B.CHECKLISTITEMDESCRIPTION')
+            // Ambil semua checklist items dari SQL Server
+            $checklistItems = DB::connection('focus')
+                ->table('FLT_EQUCHECKLISTITEM')
+                ->select('checklistgroupid','checklistitemid','checklistitemdescription')
                 ->get();
 
-            if ($detail->isEmpty()) {
-                return response()->json(['error' => 'Data tidak ditemukan'], 404);
+            // Mapping checklist items agar selalu ada default string
+            $checklistMap = [];
+            foreach ($checklistItems as $item) {
+                $groupId = strtoupper(trim((string)$item->checklistgroupid));
+                $itemId = trim((string)$item->checklistitemid);
+                $checklistMap[$groupId][$itemId] = $item->checklistitemdescription;
             }
+
+            // Ambil detail dari PostgreSQL
+            $oprReportTime = (new \DateTime($request['OPR_REPORTTIME']))->format('Y-m-d H:i:s');
+            $detail = DB::connection('p2h')->table('opr_oprchecklistitem as a')
+                ->select('a.id','a.equ_typeid','a.checklistgroupid','a.checklistitemid','a.checklistnotes','a.checklistval','a.opr_reporttime','a.opr_shiftdate','a.opr_shiftno','a.vhc_id')
+                ->where('a.vhc_id', $request['VHC_ID'])
+                ->whereRaw("date_trunc('second', a.opr_reporttime) = ?", [$oprReportTime])
+                ->orderBy('a.checklistgroupid')
+                ->get();
+
+            $groupKeys = array_keys($checklistMap);
+                usort($groupKeys, function ($a, $b) {
+                    return strlen($b) <=> strlen($a);
+                });
+
+                $detail = $detail->map(function ($row) use ($checklistMap, $groupKeys) {
+                    $groupId = strtoupper(trim((string) $row->checklistgroupid));
+                    $itemId = trim((string) $row->checklistitemid);
+
+                    $description = null;
+
+                    // 1. Coba exact match dulu
+                    if (isset($checklistMap[$groupId][$itemId])) {
+                        $description = $checklistMap[$groupId][$itemId];
+                    }
+
+                    // 2. Kalau belum ketemu, coba group match
+                    if ($description === null) {
+                        foreach ($groupKeys as $groupKey) {
+                            if (
+                                ($groupId === $groupKey || str_contains($groupId, $groupKey))
+                                && isset($checklistMap[$groupKey][$itemId])
+                            ) {
+                                $description = $checklistMap[$groupKey][$itemId];
+                                break;
+                            }
+                        }
+                    }
+
+                    // 3. Kalau tetap belum ketemu, fallback by itemId
+                    if ($description === null) {
+                        foreach ($groupKeys as $groupKey) {
+                            if (isset($checklistMap[$groupKey][$itemId])) {
+                                $description = $checklistMap[$groupKey][$itemId];
+                                break;
+                            }
+                        }
+                    }
+
+                    $row->checklistitemdescription = $description ?? null;
+
+                    return $row;
+                })
+                // Hilangkan item double berdasarkan group + deskripsi
+                ->unique(function ($row) {
+                    return strtoupper(trim((string) $row->checklistgroupid)) . '|' .
+                        strtoupper(trim((string) $row->checklistitemdescription));
+                })
+                ->values();
 
             $first = $detail->first();
 
-            $checkdataP2H = ChecklistP2H::where('VHC_ID', $first->VHC_ID)
-                ->where('OPR_SHIFTNO', $first->OPR_SHIFTNO)
-                ->where('OPR_REPORTTIME', $first->OPR_REPORTTIME)
+            // Ambil atau create header P2H
+            $checkdataP2H = ChecklistP2H::where('vhc_id', $first->vhc_id)
+                ->where('opr_shiftno', $first->opr_shiftno)
+                ->where('opr_reporttime', $first->opr_reporttime)
                 ->first();
 
             $user = Auth::user();
-
-            $role = strtoupper(trim(Auth::user()->role));
+            $role = strtoupper(trim($user->role));
             $departemenId = (int) $user->departemen_id;
 
             if ($departemenId == 11) {
-
-                // Departemen mekanik
                 $updateData = [
-                    'VERIFIED_MEKANIK' => $user->nik,
-                    'DATEVERIFIED_MEKANIK' => now(),
+                    'verified_mekanik' => $user->nik,
+                    'dateverified_mekanik' => now(),
                 ];
-
             } elseif ($departemenId == 8) {
                 $updateData = match ($role) {
                     'FOREMAN' => [
-                        'VERIFIED_FOREMAN' => $user->nik,
-                        'DATEVERIFIED_FOREMAN' => now(),
+                        'verified_foreman' => $user->nik,
+                        'dateverified_foreman' => now(),
                     ],
-
                     'SUPERVISOR' => [
-                        'VERIFIED_SUPERVISOR' => $user->nik,
-                        'DATEVERIFIED_SUPERVISOR' => now(),
+                        'verified_supervisor' => $user->nik,
+                        'dateverified_supervisor' => now(),
                     ],
-
-                    // 'SUPERINTENDENT' => [
-                    //     'VERIFIED_SUPERINTENDENT' => $user->nik,
-                    //     'DATEVERIFIED_SUPERINTENDENT' => now(),
-                    // ],
-
                     default => abort(403, 'Anda tidak memiliki akses verifikasi untuk fitur ini.'),
                 };
-
             } else {
-
                 abort(403, 'Departemen tidak memiliki akses verifikasi.');
             }
 
@@ -428,37 +509,55 @@ class P2HController extends Controller
                 $dataP2H = $checkdataP2H;
             } else {
                 $dataP2H = ChecklistP2H::create(array_merge([
-                    'UUID' => (string) Uuid::uuid4()->toString(),
-                    'STATUSENABLED' => true,
-                    'CREATED_BY' => Auth::user()->id,
-                    'VHC_ID' => $first->VHC_ID,
-                    'MTR_HOURMETER' => $request['MTR_HOURMETER'],
-                    'OPR_SHIFTNO' => $first->OPR_SHIFTNO,
-                    'OPR_REPORTTIME' => $first->OPR_REPORTTIME,
-                    'OPR_SHIFTDATE' => $first->OPR_SHIFTDATE,
-                    'VERIFIED_OPERATOR' => $request['OPR_NRP'],
-                    'DATEVERIFIED_OPERATOR' => $first->OPR_REPORTTIME,
+                    'uuid' => (string) Uuid::uuid4()->toString(),
+                    'statusenabled' => true,
+                    'created_by' => $user->id,
+                    'vhc_id' => $first->vhc_id,
+                    'mtr_hourmeter' => $request['MTR_HOURMETER'] ?? null,
+                    'opr_shiftno' => $first->opr_shiftno,
+                    'opr_reporttime' => $first->opr_reporttime,
+                    'opr_shiftdate' => $first->opr_shiftdate,
+                    'verified_operator' => $request['OPR_NRP'],
+                    'dateverified_operator' => $first->opr_reporttime,
                 ], $updateData));
             }
 
+            // Insert detail P2H
             foreach ($detail as $item) {
                 ChecklistP2HDetail::create([
-                    'UUID' => (string) Uuid::uuid4()->toString(),
-                    'UUID_OPR_CHECKLISTP2H' => $dataP2H->UUID,
-                    'GROUPID' => $item->CHECKLISTGROUPID,
-                    'ITEMDESCRIPTION' => $item->CHECKLISTITEMDESCRIPTION,
-                    'VALUE' => $item->CHECKLISTVAL,
-                    'NOTES' => $item->CHECKLISTNOTES,
-                    'CREATED_BY' => Auth::user()->id,
-                    'STATUSENABLED' => true,
-                    // 'UPDATED_AT' => now(),
+                    'uuid' => (string) Uuid::uuid4()->toString(),
+                    'uuid_opr_checklistp2h' => $dataP2H->uuid,
+                    'groupid' => $item->checklistgroupid,
+                    'itemdescription' => $item->checklistitemdescription,
+                    'value' => $item->checklistval,
+                    'notes' => $item->checklistnotes,
+                    'created_by' => $user->id,
+                    'statusenabled' => true,
                 ]);
             }
 
-            DB::commit(); // Sukses, commit transaksi
+            // foreach ($detail as $item) {
+            //     ChecklistP2HDetail::updateOrCreate(
+            //         [
+            //             // Kunci pencarian agar tidak double
+            //             'uuid_opr_checklistp2h' => $dataP2H->uuid,
+            //             'groupid' => $item->checklistgroupid,
+            //             'itemdescription' => $item->checklistitemdescription,
+            //         ],
+            //         [
+            //             // Data yang di-update jika sudah ada
+            //             'value' => $item->checklistval,
+            //             'notes' => $item->checklistnotes,
+            //             'created_by' => $user->id,
+            //             'statusenabled' => true,
+            //         ]
+            //     );
+            // }
+
+            DB::commit();
             return response()->json(['status' => 'ok']);
         } catch (\Exception $e) {
-            DB::rollBack(); // ❌ Gagal, rollback
+            DB::rollBack();
             return response()->json([
                 'error' => 'Gagal memverifikasi data',
                 'message' => $e->getMessage()
@@ -654,50 +753,90 @@ class P2HController extends Controller
 
     public function detail(Request $request)
     {
-       $detail = DB::connection('focus')->table('FOCUS.dbo.OPR_OPRCHECKLISTITEM as A')
-        ->select(
-            'A.ID',
-            'A.CHECKLISTGROUPID',
-            'A.CHECKLISTITEMID',
-            'B.CHECKLISTITEMDESCRIPTION',
-            'A.CHECKLISTNOTES',
-            'A.CHECKLISTVAL',
-            'A.CHECKLISTVAL as VAL',
-            'A.OPR_REPORTTIME',
-            'A.OPR_SHIFTDATE',
-            'A.OPR_SHIFTNO',
-            'A.VHC_ID',
-        )
-        ->leftJoin('FOCUS.dbo.FLT_EQUCHECKLISTITEM as B', function($join) {
-            $join->on('A.EQU_TYPEID', '=', 'B.EQU_TYPEID')
-                ->on('A.CHECKLISTGROUPID', '=', 'B.CHECKLISTGROUPID')
-                ->on('A.CHECKLISTITEMID', '=', 'B.CHECKLISTITEMID');
+       // --- Ambil semua group description dari SQL Server ---
+        $groups = DB::connection('focus')
+            ->table('FLT_EQUCHECKLISTGROUP')
+            ->select('EQU_TYPEID','CHECKLISTGROUPID','CHECKLISTGROUPDESCRIPTION')
+            ->get()
+            ->keyBy(fn($row) => strtoupper(trim($row->EQU_TYPEID)) . '_' . strtoupper(trim($row->CHECKLISTGROUPID)));
+
+        // --- Ambil semua item description dari SQL Server ---
+        $checklistItems = DB::connection('focus')
+            ->table('FLT_EQUCHECKLISTITEM')
+            ->select('EQU_TYPEID','CHECKLISTGROUPID','CHECKLISTITEMID','CHECKLISTITEMDESCRIPTION')
+            ->get();
+
+        // Mapping item description ke array 2 dimensi [group][item]
+        $checklistMap = [];
+        foreach ($checklistItems as $item) {
+            $groupKey = strtoupper(trim((string)$item->CHECKLISTGROUPID));
+            $itemKey  = trim((string)$item->CHECKLISTITEMID);
+            $checklistMap[$groupKey][$itemKey] = $item->CHECKLISTITEMDESCRIPTION;
+        }
+
+        // --- Ambil detail dari PostgreSQL ---
+        $oprReportTime = (new \DateTime($request['OPR_REPORTTIME']))->format('Y-m-d H:i:s');
+
+        $detail = DB::connection('p2h')
+            ->table('opr_oprchecklistitem as a')
+            ->select('a.id','a.equ_typeid','a.checklistgroupid','a.checklistitemid','a.checklistnotes','a.checklistval','a.opr_reporttime','a.opr_shiftdate','a.opr_shiftno','a.vhc_id')
+            ->where('a.vhc_id', $request['VHC_ID'])
+            ->when($oprReportTime, fn($q) => $q->whereRaw("date_trunc('second', a.opr_reporttime) = ?", [$oprReportTime]))
+            ->orderBy('a.checklistgroupid')
+            ->get();
+
+        // --- Mapping description + fallback + hilangkan duplikasi ---
+        $groupKeys = array_keys($checklistMap);
+        usort($groupKeys, fn($a,$b) => strlen($b) <=> strlen($a)); // panjang dulu untuk substring match
+
+        $detail = $detail->map(function($row) use ($groups, $checklistMap, $groupKeys) {
+            $groupId = strtoupper(trim((string)$row->checklistgroupid));
+            $itemId  = trim((string)$row->checklistitemid);
+
+            $description = null;
+
+            // 1️⃣ Exact match
+            if (isset($checklistMap[$groupId][$itemId])) {
+                $description = $checklistMap[$groupId][$itemId];
+            }
+
+            // 2️⃣ Substring match di groupKeys
+            if ($description === null) {
+                foreach ($groupKeys as $grpKey) {
+                    if ((str_contains($groupId, $grpKey)) && isset($checklistMap[$grpKey][$itemId])) {
+                        $description = $checklistMap[$grpKey][$itemId];
+                        break;
+                    }
+                }
+            }
+
+            // 3️⃣ Fallback by itemId
+            if ($description === null) {
+                foreach ($groupKeys as $grpKey) {
+                    if (isset($checklistMap[$grpKey][$itemId])) {
+                        $description = $checklistMap[$grpKey][$itemId];
+                        break;
+                    }
+                }
+            }
+
+            $row->checklistitemdescription = $description ?? 'Deskripsi tidak tersedia';
+            return $row;
         })
-        ->leftJoin('FOCUS.dbo.FLT_EQUCHECKLISTGROUP as C', function($join) {
-            $join->on('A.EQU_TYPEID', '=', 'C.EQU_TYPEID')
-                ->on('A.CHECKLISTGROUPID', '=', 'C.CHECKLISTGROUPID');
-        })
-        ->where('A.VHC_ID', $request['VHC_ID'])
-        ->whereRaw("DATEADD(ms, -DATEPART(ms, A.OPR_REPORTTIME), A.OPR_REPORTTIME) = ?", [$request['OPR_REPORTTIME']])
-        ->orderBy('A.CHECKLISTGROUPID')
-        ->orderBy('B.CHECKLISTITEMDESCRIPTION')
-        ->get();
+        // Hilangkan item double berdasarkan kombinasi group + description
+        ->unique(fn($row) => strtoupper(trim((string)$row->checklistgroupid)) . '|' . strtoupper(trim((string)$row->checklistitemdescription)))
+        ->values();
 
-        // dd($detail);
-
-
-
+        // --- Hitung jumlah item AA/A yang val=0 ---
         $jumlahAATerisi = $detail->filter(function ($item) {
-            // return $item->CHECKLISTVAL == 0 && $item->CHECKLISTGROUPID == 'AA';
-            //Kode A atau AA harus muncul
-            return $item->CHECKLISTVAL == 0 && ($item->CHECKLISTGROUPID == 'AA' || $item->CHECKLISTGROUPID == 'A');
+            return $item->checklistval == 0 && ($item->checklistgroupid == 'AA' || $item->checklistgroupid == 'A');
         })->count();
 
-        // dd($jumlahAATerisi);
-
-        $checkdataP2H = ChecklistP2H::where('VHC_ID', $detail->first()->VHC_ID)
-        ->where('OPR_SHIFTNO', $detail->first()->OPR_SHIFTNO)
-        ->where('OPR_REPORTTIME', $detail->first()->OPR_REPORTTIME)->first();
+        // Ambil data P2H
+        $checkdataP2H = ChecklistP2H::where('VHC_ID', $detail->first()->vhc_id)
+            ->where('OPR_SHIFTNO', $detail->first()->opr_shiftno)
+            ->where('OPR_REPORTTIME', $detail->first()->opr_reporttime)
+            ->first();
 
         $verifikasiMekanik = false;
         $detailP2H = "";
@@ -745,24 +884,23 @@ class P2HController extends Controller
                         'SOURCE' => 'P2H',
                     ];
                 });
-
                 // Langkah 2: Tambahkan flag 'SOURCE' ke $detail untuk penanda asal data
                 $normalizedDetail = $detail->map(function ($item) {
                     return (object)[
-                    'ID' => $item->ID,
-                    'CHECKLISTGROUPID' => $item->CHECKLISTGROUPID,
-                    'CHECKLISTITEMID' => $item->CHECKLISTITEMID,
-                    'CHECKLISTITEMDESCRIPTION' => $item->CHECKLISTITEMDESCRIPTION,
-                    'CHECKLISTNOTES' => $item->CHECKLISTNOTES,
-                    'CHECKLISTVAL' => $item->CHECKLISTVAL,
-                    'VAL' => $item->VAL,
+                    'ID' => $item->id,
+                    'CHECKLISTGROUPID' => $item->checklistgroupid,
+                    'CHECKLISTITEMID' => $item->checklistitemid,
+                    'CHECKLISTITEMDESCRIPTION' => $item->checklistitemdescription,
+                    'CHECKLISTNOTES' => $item->checklistnotes,
+                    'CHECKLISTVAL' => $item->checklistval,
+                    'VAL' => $item->checklistval,
                     'CATATAN_MEKANIK' => null,  // Ditambahkan manual karena tidak ada di query
                     'KBJ' => null,
                     'JAWABAN' => null,
-                    'OPR_REPORTTIME' => $item->OPR_REPORTTIME,
-                    'OPR_SHIFTDATE' => $item->OPR_SHIFTDATE,
-                    'OPR_SHIFTNO' => $item->OPR_SHIFTNO,
-                    'VHC_ID' => $item->VHC_ID,
+                    'OPR_REPORTTIME' => $item->opr_reporttime,
+                    'OPR_SHIFTDATE' => $item->opr_shiftdate,
+                    'OPR_SHIFTNO' => $item->opr_shiftno,
+                    'VHC_ID' => $item->vhc_id,
                     'SOURCE' => 'DETAIL',
                 ];
                 });
@@ -795,25 +933,37 @@ class P2HController extends Controller
             }
         }
 
-        // dd($detailP2H);
 
         if($checkdataP2H == null){
             ChecklistP2H::create([
                 'UUID' => (string) Uuid::uuid4()->toString(),
                 'STATUSENABLED' => true,
                 'CREATED_BY' => Auth::user()->id,
-                'VHC_ID' => $detail->first()->VHC_ID,
+                'VHC_ID' => $detail->first()->vhc_id,
                 'MTR_HOURMETER' => $request['MTR_HOURMETER'],
-                'OPR_SHIFTNO' => $detail->first()->OPR_SHIFTNO,
-                'OPR_REPORTTIME' => $detail->first()->OPR_REPORTTIME,
-                'OPR_SHIFTDATE' => $detail->first()->OPR_SHIFTDATE,
+                'OPR_SHIFTNO' => $detail->first()->opr_shiftno,
+                'OPR_REPORTTIME' => $detail->first()->opr_reporttime,
+                'OPR_SHIFTDATE' => $detail->first()->opr_shiftdate,
                 'VERIFIED_OPERATOR' => $request['OPR_NRP'],
-                'DATEVERIFIED_OPERATOR' => $detail->first()->OPR_REPORTTIME,
+                'DATEVERIFIED_OPERATOR' => $detail->first()->opr_reporttime,
             ]);
         }
-        // dd($detail);
+        $detail = $detail->map(function ($row) {
+            return (object)[
+                'ID' => $row->id,
+                'EQU_TYPEID' => strtoupper($row->equ_typeid ?? ''),
+                'CHECKLISTGROUPID' => strtoupper($row->checklistgroupid ?? ''),
+                'CHECKLISTITEMID' => $row->checklistitemid,
+                'CHECKLISTNOTES' => $row->checklistnotes,
+                'CHECKLISTVAL' => $row->checklistval,
+                'OPR_REPORTTIME' => $row->opr_reporttime,
+                'OPR_SHIFTDATE' => $row->opr_shiftdate,
+                'OPR_SHIFTNO' => $row->opr_shiftno,
+                'VHC_ID' => strtoupper($row->vhc_id ?? ''),
+                'CHECKLISTITEMDESCRIPTION' => strtoupper($row->checklistitemdescription ?? null),
+            ];
+        });
 
-        // dd($verifikasiMekanik);
 
         if(substr($detail->first()->VHC_ID, 0, 2) == 'EX'){
             return view('safety.p2h.detail.ex', compact('detail', 'jumlahAATerisi', 'verifikasiMekanik', 'detailP2H', 'checkdataP2H'));
@@ -838,11 +988,11 @@ class P2HController extends Controller
         $data = DB::table('prd_opr_checklistp2h as p2h')
         ->leftJoin('prd_opr_checklistp2h_list as ph', 'p2h.UUID', '=', 'ph.UUID_OPR_CHECKLISTP2H')
         ->leftJoin('focus.focus.dbo.FLT_SHIFT as sh', 'p2h.OPR_SHIFTNO', '=', 'sh.SHIFTNO')
-        ->leftJoin('focus.focus.dbo.PRS_PERSONAL as opr', 'p2h.VERIFIED_OPERATOR', '=', 'opr.NRP')
-        ->leftJoin('focus.focus.dbo.PRS_PERSONAL as gl', 'p2h.VERIFIED_FOREMAN', '=', 'gl.NRP')
-        ->leftJoin('focus.focus.dbo.PRS_PERSONAL as spv', 'p2h.VERIFIED_SUPERVISOR', '=', 'spv.NRP')
-        ->leftJoin('focus.focus.dbo.PRS_PERSONAL as spt', 'p2h.VERIFIED_SUPERINTENDENT', '=', 'spt.NRP')
-        ->leftJoin('focus.focus.dbo.PRS_PERSONAL as mec', 'p2h.VERIFIED_MEKANIK', '=', 'mec.NRP')
+        ->leftJoin('users as opr', 'p2h.VERIFIED_OPERATOR', '=', 'opr.nik')
+        ->leftJoin('users as gl', 'p2h.VERIFIED_FOREMAN', '=', 'gl.nik')
+        ->leftJoin('users as spv', 'p2h.VERIFIED_SUPERVISOR', '=', 'spv.nik')
+        ->leftJoin('users as spt', 'p2h.VERIFIED_SUPERINTENDENT', '=', 'spt.nik')
+        ->leftJoin('users as mec', 'p2h.VERIFIED_MEKANIK', '=', 'mec.nik')
         ->select(
             'p2h.UUID',
             'p2h.STATUSENABLED',
@@ -853,17 +1003,17 @@ class P2HController extends Controller
             'p2h.VERIFIED_OPERATOR',
             'p2h.DATEVERIFIED_OPERATOR',
             'p2h.VERIFIED_MEKANIK',
-            'opr.PERSONALNAME as NAMAOPERATOR',
+            'opr.name as NAMAOPERATOR',
             'p2h.DATEVERIFIED_MEKANIK',
-            'mec.PERSONALNAME as NAMAMEKANIK',
+            'mec.name as NAMAMEKANIK',
             'p2h.VERIFIED_FOREMAN',
-            'gl.PERSONALNAME as NAMAFOREMAN',
+            'gl.name as NAMAFOREMAN',
             'p2h.DATEVERIFIED_FOREMAN',
             'p2h.VERIFIED_SUPERVISOR',
-            'spv.PERSONALNAME as NAMASUPERVISOR',
+            'spv.name as NAMASUPERVISOR',
             'p2h.DATEVERIFIED_SUPERVISOR',
             'p2h.VERIFIED_SUPERINTENDENT',
-            'spt.PERSONALNAME as NAMASUPERINTENDENT',
+            'spt.name as NAMASUPERINTENDENT',
             'p2h.DATEVERIFIED_SUPERINTENDENT',
             'ph.GROUPID',
             'ph.ITEMDESCRIPTION',
