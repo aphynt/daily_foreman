@@ -213,7 +213,10 @@ class P2HController extends Controller
         $userSection = $isForeman ? Auth::user()->section : null;
 
         // --- Users SQL Server ---
-        $users = DB::connection('daily_foreman')->table('users')->get()->keyBy('NIK');
+        $users = DB::connection('daily_foreman')
+            ->table('users')
+            ->get()
+            ->keyBy(fn($u) => trim($u->nik));
 
         // --- Ambil checklist IDs dari PostgreSQL ---
         $checklistIds = DB::connection('p2h')->table('opr_oprchecklist')
@@ -234,15 +237,22 @@ class P2HController extends Controller
 
         // --- Ambil p2h data dari SQL Server ---
         $p2hData = DB::connection('daily_foreman')
-            ->table('prd_opr_checklistp2h')
-            ->whereIn('VHC_ID', $checklistIds->pluck('vhc_id')->unique()->toArray())
-            ->where(function($query) use ($oprTimes) {
-                foreach ($oprTimes as $time) {
-                    $query->orWhereRaw("CONVERT(varchar(19), OPR_REPORTTIME, 120) = ?", [$time]);
-                }
-            })
-            ->get()
-            ->keyBy(fn($row) => trim($row->VHC_ID) . '_' . Carbon::parse($row->OPR_REPORTTIME)->format('Y-m-d H:i:s'));
+        ->table('prd_opr_checklistp2h as p')
+        ->leftJoin('users as uForeman', 'uForeman.nik', '=', 'p.VERIFIED_FOREMAN')
+        ->leftJoin('users as uSupervisor', 'uSupervisor.nik', '=', 'p.VERIFIED_SUPERVISOR')
+        ->whereIn('p.VHC_ID', $checklistIds->pluck('vhc_id')->unique()->toArray())
+        ->where(function($query) use ($oprTimes) {
+            foreach ($oprTimes as $time) {
+                $query->orWhereRaw("CONVERT(varchar(19), p.OPR_REPORTTIME, 120) = ?", [$time]);
+            }
+        })
+        ->select([
+            'p.*',
+            'uForeman.name as NAME_FOREMAN',
+            'uSupervisor.name as NAME_SUPERVISOR'
+        ])
+        ->get()
+        ->keyBy(fn($row) => trim($row->VHC_ID) . '_' . Carbon::parse($row->OPR_REPORTTIME)->format('Y-m-d H:i:s'));
 
         // --- Mapping checklist PostgreSQL ---
         $results = $checklistIds->map(function($row) use ($users, $p2hData, $isForeman, $userSection) {
@@ -258,8 +268,12 @@ class P2HController extends Controller
 
             $personal = $users[$opr_nrp_fix] ?? null;
             $mekanik = $p2h?->VERIFIED_MEKANIK ? ($users[$p2h->VERIFIED_MEKANIK] ?? null) : null;
-            $foreman = $p2h?->VERIFIED_FOREMAN ? ($users[$p2h->VERIFIED_FOREMAN] ?? null) : null;
-            $supervisor = $p2h?->VERIFIED_SUPERVISOR ? ($users[$p2h->VERIFIED_SUPERVISOR] ?? null) : null;
+            $foremanNik = trim($p2h?->VERIFIED_FOREMAN ?? '');
+            $supervisorNik = trim($p2h?->VERIFIED_SUPERVISOR ?? '');
+
+            $foreman = $foremanNik !== '' ? ($users[$foremanNik] ?? null) : null;
+            $supervisor = $supervisorNik !== '' ? ($users[$supervisorNik] ?? null) : null;
+
 
             // Filter section untuk mekanik
             $sectionOk = true;
@@ -282,13 +296,13 @@ class P2HController extends Controller
                                     ->count(),
                 'DATEVERIFIED_MEKANIK' => $p2h?->DATEVERIFIED_MEKANIK ?? null,
                 'VERIFIED_MEKANIK' => $p2h?->VERIFIED_MEKANIK ?? null,
-                'NAMAMEKANIK' => $mekanik?->NAME ?? null,
+                'NAMAMEKANIK' => $p2h?->NAME_MEKANIK ?? null,
                 'DATEVERIFIED_FOREMAN' => $p2h?->DATEVERIFIED_FOREMAN ?? $p2h?->DATEVERIFIED_SUPERVISOR ?? null,
                 'VERIFIED_FOREMAN' => $p2h?->VERIFIED_FOREMAN ?? $p2h?->VERIFIED_SUPERVISOR ?? null,
-                'NAMAFOREMAN' => $foreman?->NAME ?? $supervisor?->NAME ?? null,
+                'NAMAFOREMAN' => $p2h?->NAME_FOREMAN ?? $p2h?->NAME_SUPERVISOR ?? null,
                 'DATEVERIFIED_SUPERVISOR' => $p2h?->DATEVERIFIED_SUPERVISOR ?? null,
                 'VERIFIED_SUPERVISOR' => $p2h?->VERIFIED_SUPERVISOR ?? null,
-                'NAMASUPERVISOR' => $supervisor?->NAME ?? null,
+                'NAMASUPERVISOR' => $p2h?->NAME_SUPERVISOR ?? null,
                 'MTR_HOURMETER' => $row->mtr_hourmeter ?? null,
                 'OPR_SHIFTDATE' => $row->opr_shiftdate ?? null,
                 'OPR_SHIFTNO' => $row->opr_shiftno ?? null,
