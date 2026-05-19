@@ -238,6 +238,8 @@ class P2HController extends Controller
         // --- Ambil p2h data dari SQL Server ---
         $p2hData = DB::connection('daily_foreman')
         ->table('prd_opr_checklistp2h as p')
+        ->leftJoin('users as uOperator', 'uOperator.nik', '=', 'p.VERIFIED_OPERATOR')
+        ->leftJoin('users as uMekanik', 'uMekanik.nik', '=', 'p.VERIFIED_MEKANIK')
         ->leftJoin('users as uForeman', 'uForeman.nik', '=', 'p.VERIFIED_FOREMAN')
         ->leftJoin('users as uSupervisor', 'uSupervisor.nik', '=', 'p.VERIFIED_SUPERVISOR')
         ->whereIn('p.VHC_ID', $checklistIds->pluck('vhc_id')->unique()->toArray())
@@ -248,16 +250,17 @@ class P2HController extends Controller
         })
         ->select([
             'p.*',
+            'uOperator.name as NAME_OPERATOR',
+            'uMekanik.name as NAME_MEKANIK',
             'uForeman.name as NAME_FOREMAN',
             'uSupervisor.name as NAME_SUPERVISOR'
         ])
         ->get()
         ->keyBy(fn($row) => trim($row->VHC_ID) . '_' . Carbon::parse($row->OPR_REPORTTIME)->format('Y-m-d H:i:s'));
 
-        // --- Mapping checklist PostgreSQL ---
         $results = $checklistIds->map(function($row) use ($users, $p2hData, $isForeman, $userSection) {
             $vhcId = $row->vhc_id ?? null;
-            $vhcPrefix = substr($vhcId, 0, 2); // ambil 2 huruf pertama
+            $vhcPrefix = substr($vhcId, 0, 2);
 
             $oprReportTime = $row->opr_reporttime ?? null;
             if (!$vhcId || !$oprReportTime) return null;
@@ -266,21 +269,11 @@ class P2HController extends Controller
             $key = trim($vhcId) . '_' . Carbon::parse($oprReportTime)->format('Y-m-d H:i:s');
             $p2h = $p2hData[$key] ?? null;
 
-            $personal = $users[$opr_nrp_fix] ?? null;
-            $mekanik = $p2h?->VERIFIED_MEKANIK ? ($users[$p2h->VERIFIED_MEKANIK] ?? null) : null;
-            $foremanNik = trim($p2h?->VERIFIED_FOREMAN ?? '');
-            $supervisorNik = trim($p2h?->VERIFIED_SUPERVISOR ?? '');
-
-            $foreman = $foremanNik !== '' ? ($users[$foremanNik] ?? null) : null;
-            $supervisor = $supervisorNik !== '' ? ($users[$supervisorNik] ?? null) : null;
-
-
-            // Filter section untuk mekanik
             $sectionOk = true;
             if ($isForeman && $userSection) {
-                if ($userSection==='WHEEL' && !str_starts_with($vhcId,'MG%') && !str_starts_with($vhcId,'HD%')) $sectionOk=false;
-                if ($userSection==='TRACK EXCA' && !str_starts_with($vhcId,'EX')) $sectionOk=false;
-                if ($userSection==='TRACK DOZER' && !str_starts_with($vhcId,'BD')) $sectionOk=false;
+                if ($userSection =='WHEEL' && !str_starts_with($vhcId,'MG%') && !str_starts_with($vhcId,'HD%')) $sectionOk=false;
+                if ($userSection =='TRACK EXCA' && !str_starts_with($vhcId,'EX')) $sectionOk=false;
+                if ($userSection =='TRACK DOZER' && !str_starts_with($vhcId,'BD')) $sectionOk=false;
             }
 
             return (object)[
@@ -288,7 +281,7 @@ class P2HController extends Controller
                 'VHC_PREFIX' => $vhcPrefix,
                 'OPR_REPORTTIME' => $oprReportTime,
                 'OPR_NRP' => $opr_nrp_fix,
-                'PERSONALNAME' => $personal?->NAME ?? null,
+                'PERSONALNAME' => $p2h?->NAME_OPERATOR ?? null,
                 'VAL_NOTOK' => DB::connection('p2h')->table('opr_oprchecklistitem')
                                     ->where('vhc_id',$vhcId)
                                     ->where('opr_reporttime',$oprReportTime)
@@ -323,9 +316,6 @@ class P2HController extends Controller
             // 2. VHC_ID ascending
             return strcmp($a->VHC_ID, $b->VHC_ID);
         })->values();
-
-        // --- Slice untuk pagination DataTables ---
-        // $results = $results->slice(0, $pageSize)->values();
 
         return response()->json([
             'draw' => intval($request->input('draw')),
