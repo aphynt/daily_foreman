@@ -93,25 +93,23 @@ class FormPengawasBatuBaraController extends Controller
         //     DB::raw("CASE WHEN ROLETYPE = 3 THEN 'SUPERVISOR' WHEN ROLETYPE = 4 THEN 'SUPERINTENDENT' ELSE 'UNKNOWN' END as JABATAN ")
         // )->whereIn('ROLETYPE', [3, 4])->get();
 
-        $rolesupervisor = getConfigArrayById(4);
         $supervisor = User::select(
-            'nik as NRP',
-            'name as PERSONALNAME',
-            'role as JABATAN'
-            )->whereIn('role_id', $rolesupervisor)
+                'nik as NRP',
+                'name as PERSONALNAME',
+                'role as JABATAN'
+            )
+            ->where('role', 'SUPERVISOR')
             ->where('departemen_id', 8)
             ->where('id', '!=', 95)
             ->where('statusenabled', true)
             ->get();
-
-        $roleSuperintendent = getConfigArrayById(3);
 
         $superintendent = User::select(
                 'nik as NRP',
                 'name as PERSONALNAME',
                 'role as JABATAN'
             )
-            ->whereIn('role_id', $roleSuperintendent)
+            ->whereIn('role', ['SUPERINTENDENT', 'SUPERVISOR'])
             ->where('departemen_id', 8)
             ->whereNotIn('id', [95, 96])
             ->where('statusenabled', true)

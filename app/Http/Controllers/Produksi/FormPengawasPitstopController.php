@@ -28,17 +28,17 @@ class FormPengawasPitstopController extends Controller
             ->get();
 
         // $supervisor = Personal::select('ID', 'NRP', 'USERNAME', 'PERSONALNAME', 'EPIGONIUSERNAME', 'ROLETYPE', 'SYS_CREATEDBY', 'SYS_UPDATEDBY')->where('ROLETYPE', 3)->get();
-        $roleSupervisor = getConfigArrayById(4) ?? [];
-
         $supervisor = User::select(
                 'nik as NRP',
                 'name as PERSONALNAME',
                 'role as JABATAN'
             )
-            ->whereIn('role_id', $roleSupervisor)
+            ->where('role', 'SUPERVISOR')
+            ->where('departemen_id', 8)
             ->where('id', '!=', 95)
             ->where('statusenabled', true)
             ->get();
+
         $shift = Shift::where('statusenabled', true)->get();
         $area = Area::where('statusenabled', true)->get();
         $operator = Personal::select('ID', 'NRP', 'USERNAME', 'PERSONALNAME', 'EPIGONIUSERNAME', 'ROLETYPE', 'SYS_CREATEDBY', 'SYS_UPDATEDBY')->where('ROLETYPE', 0)->get();

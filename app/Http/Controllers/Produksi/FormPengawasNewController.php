@@ -153,27 +153,23 @@ class FormPengawasNewController extends Controller
 
         /**@var \App\Models\User $user */
 
-        $roleSupervisor = getConfigArrayById(4) ?? [];
-
         $supervisor = User::select(
                 'nik as NRP',
                 'name as PERSONALNAME',
                 'role as JABATAN'
             )
-            ->whereIn('role_id', $roleSupervisor)
+            ->where('role', 'SUPERVISOR')
             ->where('departemen_id', 8)
             ->where('id', '!=', 95)
             ->where('statusenabled', true)
             ->get();
-
-        $roleSuperintendent = getConfigArrayById(3) ?? [];
 
         $superintendent = User::select(
                 'nik as NRP',
                 'name as PERSONALNAME',
                 'role as JABATAN'
             )
-            ->whereIn('role_id', $roleSuperintendent)
+            ->whereIn('role', ['SUPERINTENDENT', 'SUPERVISOR'])
             ->where('departemen_id', 8)
             ->whereNotIn('id', [95, 96])
             ->where('statusenabled', true)
