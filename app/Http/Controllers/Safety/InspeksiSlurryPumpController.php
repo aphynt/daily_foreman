@@ -86,7 +86,11 @@ class InspeksiSlurryPumpController extends Controller
 
         $baseQuery = $baseQuery->where(function($query) {
             $query->where('sp.penanggungjawab', Auth::user()->nik)
-                    ->orWhere('sp.inspektor1', Auth::user()->nik);
+                    ->orWhere('sp.inspektor1', Auth::user()->nik)
+                    ->orWhere('sp.inspektor2', Auth::user()->nik)
+                    ->orWhere('sp.inspektor3', Auth::user()->nik)
+                    ->orWhere('sp.inspektor4', Auth::user()->nik)
+                    ->orWhere('sp.inspektor5', Auth::user()->nik);
         });
 
         $sp = $baseQuery->get();
@@ -151,14 +155,37 @@ class InspeksiSlurryPumpController extends Controller
                 'pit'              => $data['pit'] ?? null,
                 'penanggungjawab' => $data['penanggungjawab'] ?? null,
 
+                'fasilitas_11_check' => $data['fasilitas_11_check'] ?? null,
+                'fasilitas_11_action' => $data['fasilitas_11_action'] ?? null,
+                'fasilitas_11_due' => $data['fasilitas_11_due'] ?? null,
 
-                'kelengkapan_11_check' => $data['kelengkapan_11_check'] ?? null,
-                'kelengkapan_11_action' => $data['kelengkapan_11_action'] ?? null,
-                'kelengkapan_11_due' => $data['kelengkapan_11_due'] ?? null,
+                'fasilitas_12_check' => $data['fasilitas_12_check'] ?? null,
+                'fasilitas_12_action' => $data['fasilitas_12_action'] ?? null,
+                'fasilitas_12_due' => $data['fasilitas_12_due'] ?? null,
 
-                'kelengkapan_12_check' => $data['kelengkapan_12_check'] ?? null,
-                'kelengkapan_12_action' => $data['kelengkapan_12_action'] ?? null,
-                'kelengkapan_12_due' => $data['kelengkapan_12_due'] ?? null,
+                'fasilitas_13_check' => $data['fasilitas_13_check'] ?? null,
+                'fasilitas_13_action' => $data['fasilitas_13_action'] ?? null,
+                'fasilitas_13_due' => $data['fasilitas_13_due'] ?? null,
+
+                'fasilitas_14_check' => $data['fasilitas_14_check'] ?? null,
+                'fasilitas_14_action' => $data['fasilitas_14_action'] ?? null,
+                'fasilitas_14_due' => $data['fasilitas_14_due'] ?? null,
+
+                'fasilitas_15_check' => $data['fasilitas_15_check'] ?? null,
+                'fasilitas_15_action' => $data['fasilitas_15_action'] ?? null,
+                'fasilitas_15_due' => $data['fasilitas_15_due'] ?? null,
+
+                'fasilitas_16_check' => $data['fasilitas_16_check'] ?? null,
+                'fasilitas_16_action' => $data['fasilitas_16_action'] ?? null,
+                'fasilitas_16_due' => $data['fasilitas_16_due'] ?? null,
+
+                'fasilitas_17_check' => $data['fasilitas_17_check'] ?? null,
+                'fasilitas_17_action' => $data['fasilitas_17_action'] ?? null,
+                'fasilitas_17_due' => $data['fasilitas_17_due'] ?? null,
+
+                'fasilitas_18_check' => $data['fasilitas_18_check'] ?? null,
+                'fasilitas_18_action' => $data['fasilitas_18_action'] ?? null,
+                'fasilitas_18_due' => $data['fasilitas_18_due'] ?? null,
 
                 'kondisi_21_check' => $data['kondisi_21_check'] ?? null,
                 'kondisi_21_action' => $data['kondisi_21_action'] ?? null,
@@ -184,129 +211,66 @@ class InspeksiSlurryPumpController extends Controller
                 'kondisi_26_action' => $data['kondisi_26_action'] ?? null,
                 'kondisi_26_due' => $data['kondisi_26_due'] ?? null,
 
-                'sticker_31_check' => $data['sticker_31_check'] ?? null,
-                'sticker_31_action' => $data['sticker_31_action'] ?? null,
-                'sticker_31_due' => $data['sticker_31_due'] ?? null,
+                'kondisi_27_check' => $data['kondisi_27_check'] ?? null,
+                'kondisi_27_action' => $data['kondisi_27_action'] ?? null,
+                'kondisi_27_due' => $data['kondisi_27_due'] ?? null,
 
-                'sticker_32_check' => $data['sticker_32_check'] ?? null,
-                'sticker_32_action' => $data['sticker_32_action'] ?? null,
-                'sticker_32_due' => $data['sticker_32_due'] ?? null,
+                'kondisi_28_check' => $data['kondisi_28_check'] ?? null,
+                'kondisi_28_action' => $data['kondisi_28_action'] ?? null,
+                'kondisi_28_due' => $data['kondisi_28_due'] ?? null,
 
-                'sticker_33_check' => $data['sticker_33_check'] ?? null,
-                'sticker_33_action' => $data['sticker_33_action'] ?? null,
-                'sticker_33_due' => $data['sticker_33_due'] ?? null,
+                'kondisi_29_check' => $data['kondisi_29_check'] ?? null,
+                'kondisi_29_action' => $data['kondisi_29_action'] ?? null,
+                'kondisi_29_due' => $data['kondisi_29_due'] ?? null,
 
-                'sticker_34_check' => $data['sticker_34_check'] ?? null,
-                'sticker_34_action' => $data['sticker_34_action'] ?? null,
-                'sticker_34_due' => $data['sticker_34_due'] ?? null,
+                'kondisi_210_check' => $data['kondisi_210_check'] ?? null,
+                'kondisi_210_action' => $data['kondisi_210_action'] ?? null,
+                'kondisi_210_due' => $data['kondisi_210_due'] ?? null,
 
-                'sticker_35_check' => $data['sticker_35_check'] ?? null,
-                'sticker_35_action' => $data['sticker_35_action'] ?? null,
-                'sticker_35_due' => $data['sticker_35_due'] ?? null,
+                'kondisi_211_check' => $data['kondisi_211_check'] ?? null,
+                'kondisi_211_action' => $data['kondisi_211_action'] ?? null,
+                'kondisi_211_due' => $data['kondisi_211_due'] ?? null,
 
-                'sticker_36_check' => $data['sticker_36_check'] ?? null,
-                'sticker_36_action' => $data['sticker_36_action'] ?? null,
-                'sticker_36_due' => $data['sticker_36_due'] ?? null,
+                'kondisi_212_check' => $data['kondisi_212_check'] ?? null,
+                'kondisi_212_action' => $data['kondisi_212_action'] ?? null,
+                'kondisi_212_due' => $data['kondisi_212_due'] ?? null,
 
-                'sticker_37_check' => $data['sticker_37_check'] ?? null,
-                'sticker_37_action' => $data['sticker_37_action'] ?? null,
-                'sticker_37_due' => $data['sticker_37_due'] ?? null,
+                'kondisi_213_check' => $data['kondisi_213_check'] ?? null,
+                'kondisi_213_action' => $data['kondisi_213_action'] ?? null,
+                'kondisi_213_due' => $data['kondisi_213_due'] ?? null,
 
-                'sticker_38_check' => $data['sticker_38_check'] ?? null,
-                'sticker_38_action' => $data['sticker_38_action'] ?? null,
-                'sticker_38_due' => $data['sticker_38_due'] ?? null,
+                'kondisi_214_check' => $data['kondisi_214_check'] ?? null,
+                'kondisi_214_action' => $data['kondisi_214_action'] ?? null,
+                'kondisi_214_due' => $data['kondisi_214_due'] ?? null,
 
-                'sticker_39_check' => $data['sticker_39_check'] ?? null,
-                'sticker_39_action' => $data['sticker_39_action'] ?? null,
-                'sticker_39_due' => $data['sticker_39_due'] ?? null,
+                'perahu_31_check' => $data['perahu_31_check'] ?? null,
+                'perahu_31_action' => $data['perahu_31_action'] ?? null,
+                'perahu_31_due' => $data['perahu_31_due'] ?? null,
 
-                'lampu_41_check' => $data['lampu_41_check'] ?? null,
-                'lampu_41_action' => $data['lampu_41_action'] ?? null,
-                'lampu_41_due' => $data['lampu_41_due'] ?? null,
+                'perahu_32_check' => $data['perahu_32_check'] ?? null,
+                'perahu_32_action' => $data['perahu_32_action'] ?? null,
+                'perahu_32_due' => $data['perahu_32_due'] ?? null,
 
-                'lampu_42_check' => $data['lampu_42_check'] ?? null,
-                'lampu_42_action' => $data['lampu_42_action'] ?? null,
-                'lampu_42_due' => $data['lampu_42_due'] ?? null,
+                'perahu_33_check' => $data['perahu_33_check'] ?? null,
+                'perahu_33_action' => $data['perahu_33_action'] ?? null,
+                'perahu_33_due' => $data['perahu_33_due'] ?? null,
 
-                'lampu_43_check' => $data['lampu_43_check'] ?? null,
-                'lampu_43_action' => $data['lampu_43_action'] ?? null,
-                'lampu_43_due' => $data['lampu_43_due'] ?? null,
+                'perahu_34_check' => $data['perahu_34_check'] ?? null,
+                'perahu_34_action' => $data['perahu_34_action'] ?? null,
+                'perahu_34_due' => $data['perahu_34_due'] ?? null,
 
-                'lampu_44_check' => $data['lampu_44_check'] ?? null,
-                'lampu_44_action' => $data['lampu_44_action'] ?? null,
-                'lampu_44_due' => $data['lampu_44_due'] ?? null,
+                'pengawas_41_check' => $data['pengawas_41_check'] ?? null,
+                'pengawas_41_action' => $data['pengawas_41_action'] ?? null,
+                'pengawas_41_due' => $data['pengawas_41_due'] ?? null,
 
-                'lampu_45_check' => $data['lampu_45_check'] ?? null,
-                'lampu_45_action' => $data['lampu_45_action'] ?? null,
-                'lampu_45_due' => $data['lampu_45_due'] ?? null,
+                'pengawas_42_check' => $data['pengawas_42_check'] ?? null,
+                'pengawas_42_action' => $data['pengawas_42_action'] ?? null,
+                'pengawas_42_due' => $data['pengawas_42_due'] ?? null,
 
-                'lampu_46_check' => $data['lampu_46_check'] ?? null,
-                'lampu_46_action' => $data['lampu_46_action'] ?? null,
-                'lampu_46_due' => $data['lampu_46_due'] ?? null,
+                'pengawas_43_check' => $data['pengawas_43_check'] ?? null,
+                'pengawas_43_action' => $data['pengawas_43_action'] ?? null,
+                'pengawas_43_due' => $data['pengawas_43_due'] ?? null,
 
-                'lampu_47_check' => $data['lampu_47_check'] ?? null,
-                'lampu_47_action' => $data['lampu_47_action'] ?? null,
-                'lampu_47_due' => $data['lampu_47_due'] ?? null,
-
-                'mesin_51_check' => $data['mesin_51_check'] ?? null,
-                'mesin_51_action' => $data['mesin_51_action'] ?? null,
-                'mesin_51_due' => $data['mesin_51_due'] ?? null,
-
-                'mesin_52_check' => $data['mesin_52_check'] ?? null,
-                'mesin_52_action' => $data['mesin_52_action'] ?? null,
-                'mesin_52_due' => $data['mesin_52_due'] ?? null,
-
-                'mesin_53_check' => $data['mesin_53_check'] ?? null,
-                'mesin_53_action' => $data['mesin_53_action'] ?? null,
-                'mesin_53_due' => $data['mesin_53_due'] ?? null,
-
-                'mesin_54_check' => $data['mesin_54_check'] ?? null,
-                'mesin_54_action' => $data['mesin_54_action'] ?? null,
-                'mesin_54_due' => $data['mesin_54_due'] ?? null,
-
-                'mesin_55_check' => $data['mesin_55_check'] ?? null,
-                'mesin_55_action' => $data['mesin_55_action'] ?? null,
-                'mesin_55_due' => $data['mesin_55_due'] ?? null,
-
-                'mesin_56_check' => $data['mesin_56_check'] ?? null,
-                'mesin_56_action' => $data['mesin_56_action'] ?? null,
-                'mesin_56_due' => $data['mesin_56_due'] ?? null,
-
-                'mesin_57_check' => $data['mesin_57_check'] ?? null,
-                'mesin_57_action' => $data['mesin_57_action'] ?? null,
-                'mesin_57_due' => $data['mesin_57_due'] ?? null,
-
-                'mesin_58_check' => $data['mesin_58_check'] ?? null,
-                'mesin_58_action' => $data['mesin_58_action'] ?? null,
-                'mesin_58_due' => $data['mesin_58_due'] ?? null,
-
-                'mesin_59_check' => $data['mesin_59_check'] ?? null,
-                'mesin_59_action' => $data['mesin_59_action'] ?? null,
-                'mesin_59_due' => $data['mesin_59_due'] ?? null,
-
-                'mesin_510_check' => $data['mesin_510_check'] ?? null,
-                'mesin_510_action' => $data['mesin_510_action'] ?? null,
-                'mesin_510_due' => $data['mesin_510_due'] ?? null,
-
-                'lain_61_check' => $data['lain_61_check'] ?? null,
-                'lain_61_action' => $data['lain_61_action'] ?? null,
-                'lain_61_due' => $data['lain_61_due'] ?? null,
-
-                'lain_62_check' => $data['lain_62_check'] ?? null,
-                'lain_62_action' => $data['lain_62_action'] ?? null,
-                'lain_62_due' => $data['lain_62_due'] ?? null,
-
-                'lain_63_check' => $data['lain_63_check'] ?? null,
-                'lain_63_action' => $data['lain_63_action'] ?? null,
-                'lain_63_due' => $data['lain_63_due'] ?? null,
-
-                'lain_64_check' => $data['lain_64_check'] ?? null,
-                'lain_64_action' => $data['lain_64_action'] ?? null,
-                'lain_64_due' => $data['lain_64_due'] ?? null,
-
-                'lain_65_check' => $data['lain_65_check'] ?? null,
-                'lain_65_action' => $data['lain_65_action'] ?? null,
-                'lain_65_due' => $data['lain_65_due'] ?? null,
                 'additional_notes' => $data['additional_notes'] ?? null,
             ];
 
@@ -354,15 +318,20 @@ class InspeksiSlurryPumpController extends Controller
             'ar.keterangan as pit',
             'sp.inspektor1 as nik_inspektor1',
             'us1.name as nama_inspektor1',
+            'us1.position as jabatan_inspektor1',
             'sp.inspektor2 as nik_inspektor2',
             'us2.name as nama_inspektor2',
+            'us2.position as jabatan_inspektor2',
             'sp.inspektor3 as nik_inspektor3',
             'us3.name as nama_inspektor3',
+            'us3.position as jabatan_inspektor3',
             'sp.inspektor4 as nik_inspektor4',
             'us4.name as nama_inspektor4',
             'sp.inspektor5 as nik_inspektor5',
+            'us4.position as jabatan_inspektor4',
             'us5.name as nama_inspektor5',
             'sp.penanggungjawab as nik_penanggungjawab',
+            'us5.position as jabatan_inspektor5',
             'us6.name as nama_penanggungjawab',
             )
         ->where('sp.statusenabled', true)

@@ -381,35 +381,35 @@
                                                 <td>1</td>
                                                 <td>{{ $ogs->nama_inspektor1 }}</td>
                                                 <td>{{ $ogs->nik_inspektor1 }}</td>
-                                                <td></td>
+                                                <td>{{ $ogs->jabatan_inspektor1 }}</td>
                                                 <td><img src="{{ $ogs->verified_inspektor1 }}" style="max-width: 70px;"></td>
                                             </tr>
                                             <tr>
                                                 <td>2</td>
                                                 <td>{{ $ogs->nama_inspektor2 }}</td>
                                                 <td>{{ $ogs->nik_inspektor2 }}</td>
-                                                <td></td>
+                                                <td>{{ $ogs->jabatan_inspektor2 }}</td>
                                                 <td><img src="{{ $ogs->verified_inspektor2 }}" style="max-width: 70px;"></td>
                                             </tr>
                                             <tr>
                                                 <td>3</td>
                                                 <td>{{ $ogs->nama_inspektor3 }}</td>
                                                 <td>{{ $ogs->nik_inspektor3 }}</td>
-                                                <td></td>
+                                                <td>{{ $ogs->jabatan_inspektor3 }}</td>
                                                 <td><img src="{{ $ogs->verified_inspektor3 }}" style="max-width: 70px;"></td>
                                             </tr>
                                             <tr>
                                                 <td>4</td>
                                                 <td>{{ $ogs->nama_inspektor4 }}</td>
                                                 <td>{{ $ogs->nik_inspektor4 }}</td>
-                                                <td></td>
+                                                <td>{{ $ogs->jabatan_inspektor4 }}</td>
                                                 <td><img src="{{ $ogs->verified_inspektor4 }}" style="max-width: 70px;"></td>
                                             </tr>
                                             <tr>
                                                 <td>5</td>
                                                 <td>{{ $ogs->nama_inspektor5 }}</td>
                                                 <td>{{ $ogs->nik_inspektor5 }}</td>
-                                                <td></td>
+                                                <td>{{ $ogs->jabatan_inspektor5 }}</td>
                                                 <td><img src="{{ $ogs->verified_inspektor5 }}" style="max-width: 70px;"></td>
                                             </tr>
                                         </tbody>

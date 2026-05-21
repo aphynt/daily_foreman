@@ -1,7 +1,45 @@
 @include('layout.head', ['title' => 'Daftar P2H'])
 @include('layout.sidebar')
 @include('layout.header')
+<style>
 
+    #cbtn-selectors thead tr:first-child th:first-child {
+        position: sticky;
+        left: 0;
+        background-color: #f8f9fa !important;
+        z-index: 5;
+    }
+
+    #cbtn-selectors tbody tr td:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 3;
+    }
+
+
+    #cbtn-selectors tbody tr:nth-child(odd) td:first-child {
+        background-color: #ffffff !important;
+    }
+
+    #cbtn-selectors tbody tr:nth-child(even) td:first-child {
+        background-color: #f9f9f9 !important;
+    }
+
+    #cbtn-selectors tbody tr:hover td:first-child {
+        background-color: #eceff1 !important;
+    }
+
+    #cbtn-selectors thead tr:first-child th:first-child::after,
+    #cbtn-selectors tbody tr td:first-child::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        border-right: 2px solid rgba(102, 100, 100, 0.15);
+    }
+</style>
 <section class="pc-container">
     <div class="pc-content">
         <div class="page-header">
@@ -120,6 +158,7 @@
 
     $(document).ready(function () {
         const userRole = "{{ Auth::user()->position }}";
+        const userDepartemen = "{{ Auth::user()->departemen_id }}";
 
         const table = $('#cbtn-selectors').DataTable({
             dom: 'Bfrtip',
@@ -289,16 +328,21 @@
                                     </a>
                                 `;
                             } else {
-                                return `
-                                    <button class="btn-verifikasi badge w-100 border-0"
-                                        data-vhc_id="${row.VHC_ID}"
-                                        data-opr_time="${row.OPR_REPORTTIME}"
-                                        data-hm="${row.MTR_HOURMETER}"
-                                        data-nrp="${row.OPR_NRP}"
-                                        style="font-size:14px;background-color:#001932;color:white">
-                                        Verifikasi
-                                    </button>
-                                `;
+                                if (userDepartemen == 8) {
+                                    return `
+                                        <button class="btn-verifikasi badge w-100 border-0"
+                                            data-vhc_id="${row.VHC_ID}"
+                                            data-opr_time="${row.OPR_REPORTTIME}"
+                                            data-hm="${row.MTR_HOURMETER}"
+                                            data-nrp="${row.OPR_NRP}"
+                                            style="font-size:14px;background-color:#001932;color:white">
+                                            Verifikasi
+                                        </button>
+                                    `;
+                                } else {
+                                    // Jika bukan departemen 8 dan VAL_NOTOK < 1, tidak menampilkan tombol apa-apa (atau sesuaikan kebutuhan)
+                                    return '';
+                                }
                             }
                         }
 

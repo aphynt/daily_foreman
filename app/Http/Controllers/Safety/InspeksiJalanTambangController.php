@@ -368,22 +368,27 @@ class InspeksiJalanTambangController extends Controller
         ->leftJoin('users as us5', 'jt.inspektor5', '=', 'us5.nik')
         ->leftJoin('users as us6', 'jt.penanggungjawab', '=', 'us6.nik')
 
-        ->select(
+         ->select(
             'jt.*',
             'ar.keterangan as pit',
             'us.name as nama_pic',
             'ar.keterangan as pit',
             'jt.inspektor1 as nik_inspektor1',
             'us1.name as nama_inspektor1',
+            'us1.position as jabatan_inspektor1',
             'jt.inspektor2 as nik_inspektor2',
             'us2.name as nama_inspektor2',
+            'us2.position as jabatan_inspektor2',
             'jt.inspektor3 as nik_inspektor3',
             'us3.name as nama_inspektor3',
+            'us3.position as jabatan_inspektor3',
             'jt.inspektor4 as nik_inspektor4',
             'us4.name as nama_inspektor4',
             'jt.inspektor5 as nik_inspektor5',
+            'us4.position as jabatan_inspektor4',
             'us5.name as nama_inspektor5',
             'jt.penanggungjawab as nik_penanggungjawab',
+            'us5.position as jabatan_inspektor5',
             'us6.name as nama_penanggungjawab',
             )
         ->where('jt.statusenabled', true)

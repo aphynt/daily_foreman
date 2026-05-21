@@ -1,7 +1,6 @@
 @include('layout.head', ['title' => 'Daftar Laporan KKH Per Tanggal'])
 @include('layout.sidebar')
 @include('layout.header')
-
 <section class="pc-container">
     <div class="pc-content">
         <div class="page-header">
@@ -64,6 +63,14 @@
                                     <option value="Unit Support">Unit Support</option>
                                 </select>
                             </div>
+                            <div class="col-6 col-md-2 mb-2">
+                                <label for="statusVerifikasi">Status Verifikasi</label>
+                                <select class="form-select" name="statusVerifikasi" id="statusVerifikasi">
+                                    <option value="Semua">Semua</option>
+                                    <option value="Perlu Diverifikasi">Perlu Diverifikasi</option>
+                                    <option value="Sudah Diverifikasi">Sudah Diverifikasi</option>
+                                </select>
+                            </div>
                             <div class="col-12 col-md-2 mb-2 d-flex align-items-end">
                                 <button id="cariKKH" class="btn btn-primary w-100" style="padding-top:10px;padding-bottom:10px;">Tampilkan</button>
                             </div>
@@ -81,22 +88,22 @@
                             <table id="dataKKH" class="table table-striped table-hover table-bordered nowrap">
                                 <thead style="text-align: center; vertical-align: middle;">
                                     <tr>
-                                        <th rowspan="2">Hari/Tanggal</th>
-                                        <th rowspan="2">Jam Pulang</th>
                                         <th colspan="2">Pengisi</th>
+                                        <th rowspan="2">Hari/Tanggal</th>
+                                        <th rowspan="2" style="white-space: normal !important; min-width: 20px;">Jam Pulang</th>
                                         <th rowspan="2">Shift</th>
                                         <th colspan="3">Jam Tidur</th>
-                                        <th rowspan="2">Jam Berangkat</th>
+                                        <th rowspan="2" style="white-space: normal !important; min-width: 20px;">Jam Berangkat</th>
                                         <th rowspan="2">Fit Bekerja</th>
                                         <th rowspan="2">Keluhan</th>
-                                        <th rowspan="2">Masalah Pribadi</th>
+                                        <th rowspan="2" style="white-space: normal !important; min-width: 20px;">Masalah Pribadi</th>
                                         <th colspan="2">Verifikasi P3K</th>
                                         <th colspan="2">Verifikasi Pengawas</th>
                                         <th rowspan="2">Aksi</th>
                                     </tr>
                                     <tr>
                                         <th>NIK</th>
-                                        <th>Nama</th>
+                                        <th style="white-space: normal !important; min-width: 20px;">Nama</th>
                                         <th>Mulai</th>
                                         <th>Bangun</th>
                                         <th>Total</th>
@@ -203,16 +210,19 @@
                     d.shift = shift;
                     var departemen = $('#departemen').val();
                     d.departemen = departemen;
+                    var statusVerifikasi = $('#statusVerifikasi').val();
+                    d.statusVerifikasi = statusVerifikasi;
                     delete d.columns;
                     // delete d.search;
                     delete d.order;
                 },
             },
             columns: [
-                { data: 'TANGGAL_DIBUAT' },
-                { data: 'JAM_PULANG' },
                 { data: 'NIK_PENGISI' },
                 { data: 'NAMA_PENGISI' },
+                { data: 'TANGGAL_DIBUAT' },
+                { data: 'JAM_PULANG' },
+
                 { data: 'SHIFT' },
                 { data: 'JAM_TIDUR' },
                 { data: 'JAM_BANGUN' },
@@ -241,31 +251,25 @@
                     }
                 },
                 { data: 'KELUHAN' },
-                { data: 'MASALAH_PRIBADI' },
-                {
-                    data: 'PETUGAS_P3K',
+                { data: 'MASALAH_PRIBADI',
                     render: function(data) {
-                        return data && data !== '' ? data : '-';
+                        if (data !== null && data !== undefined && String(data).trim() !== '') {
+                            return `<div style="white-space: normal !important; word-break: break-word; min-width: 200px; max-width: 300px;">${data}</div>`;
+                        }
+                        return '-';
                     }
                 },
-                {
-                    data: 'CATATAN_P3K',
+                { data: 'PETUGAS_P3K' },
+                { data: 'CATATAN_P3K',
                     render: function(data) {
-                        return data && data !== '' ? data : '-';
+                        if (data !== null && data !== undefined && String(data).trim() !== '') {
+                            return `<div style="white-space: normal !important; word-break: break-word; min-width: 200px; max-width: 300px;">${data}</div>`;
+                        }
+                        return '-';
                     }
                 },
-                {
-                    data: 'NIK_PENGAWAS',
-                    render: function(data) {
-                        return data && data !== '' ? data : '-';
-                    }
-                },
-                {
-                    data: 'NAMA_PENGAWAS',
-                    render: function(data) {
-                        return data && data !== '' ? data : '-';
-                    }
-                },
+                { data: 'NIK_PENGAWAS' },
+                { data: 'NAMA_PENGAWAS' },
                 {
                     data: null,
                     render: function(data, type, row) {

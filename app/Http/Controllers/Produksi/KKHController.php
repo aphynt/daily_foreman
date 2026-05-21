@@ -183,6 +183,13 @@ class KKHController extends Controller
             $kkh->where('kkh.shift_kkh', $shift);
         }
 
+        $statusVerifikasi = $request->statusVerifikasi;
+        if ($statusVerifikasi == 'Perlu Diverifikasi') {
+            $kkh->where('kkh.ferivikasi_pengawas', 0);
+        } elseif ($statusVerifikasi == 'Sudah Diverifikasi') {
+            $kkh->where('kkh.ferivikasi_pengawas', 1);
+        }
+
 
         if ($request->filled('departemen') && $request->departemen !== 'Semua') {
             $kkh->where('dp.ID_Departemen', $request->departemen);
@@ -598,19 +605,16 @@ class KKHController extends Controller
     public function verifikasi(Request $request)
     {
         $rowID = $request->rowID;
-        $statusLayak = $request->status_layak ?? null; // dikirim dari modal pengawas, 1 atau 0
+        $statusLayak = $request->status_layak ?? null;
 
-        // Ambil data baris untuk cek keluhan dan verifikasi P3K
         $row = DB::connection('kkh')->table('web_kkh')->where('id', $rowID)->first();
 
-        $fitOr = 0; // default
+        $fitOr = 0;
 
         if (strtoupper($row->keluhan) === 'FIT') {
-            // Keluhan FIT, pengawas langsung verifikasi
             $fitOr = 1;
         } elseif ($statusLayak !== null) {
-            // Bukan FIT dan modal pengawas muncul
-            $fitOr = $statusLayak; // 1 = Layak, 0 = Tidak Layak
+            $fitOr = $statusLayak;
         }
 
         DB::connection('kkh')->table('web_kkh')

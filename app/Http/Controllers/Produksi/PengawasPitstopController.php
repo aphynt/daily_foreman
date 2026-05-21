@@ -78,7 +78,7 @@ class PengawasPitstopController extends Controller
                 'name as PERSONALNAME',
                 'role as JABATAN'
             )
-            ->whereIn('role_id', $roleSupervisor)
+            ->where('role', 'SUPERVISOR')
             ->where('departemen_id', 8)
             ->where('id', '!=', 95)
             ->where('statusenabled', true)

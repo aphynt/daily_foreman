@@ -54,18 +54,18 @@
                                 </div>
                                 <hr>
                                 <hr>
-                                <h5>1. Apakah dimensi front loading memadai?</h5>
+                                <h5>1. Kondisi area dan Fasilitas Sump</h5>
                                 <hr>
                                 <!-- Form dengan radio button -->
                                 <div class="mb-3">
-                                    <label>1.1 Lebar front loading minimal 2x turning radius hauler terbesar di area tersebut:</label>
+                                    <label>1.1 Apakah kondisi highwall / low wall tidak ada potensi longsoran:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="dimensi_11_check" value="S" required /> Sesuai
+                                            <input type="radio" name="fasilitas_11_check" value="S" required /> Sesuai
                                         </label>
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="dimensi_11_check" value="TS" /> Tidak Sesuai
+                                            <input type="radio" name="fasilitas_11_check" value="TS" /> Tidak Sesuai
                                         </label>
                                     </div>
 
@@ -76,7 +76,7 @@
                                         <div class="col-12 col-md-8">
                                             <label>Tindak Lanjut Perbaikan</label>
                                             <input type="text"
-                                                name="dimensi_11_action"
+                                                name="fasilitas_11_action"
                                                 class="form-control form-control-sm">
                                         </div>
 
@@ -84,7 +84,7 @@
                                         <div class="col-12 col-md-4 mt-2 mt-md-0">
                                             <label>Due Date</label>
                                             <input type="date"
-                                                name="dimensi_11_due"
+                                                name="fasilitas_11_due"
                                                 class="form-control form-control-sm">
                                         </div>
 
@@ -92,109 +92,184 @@
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>1.2 Jalan masuk ke area loading point cukup lebar (3,5 x lebar unit terbesar):</label>
+                                    <label>1.2 Apakah ada ramp jalan yang menuju ke sump:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="dimensi_12_check" value="S" required /> Sesuai
+                                            <input type="radio" name="fasilitas_12_check" value="S" required /> Sesuai
                                         </label>
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="dimensi_12_check" value="TS" /> Tidak Sesuai
+                                            <input type="radio" name="fasilitas_12_check" value="TS" /> Tidak Sesuai
                                         </label>
                                     </div>
 
                                     <div class="row mt-2">
                                         <div class="col-12 col-md-8">
                                             <label>Tindak Lanjut Perbaikan</label>
-                                            <input type="text" name="dimensi_12_action" class="form-control form-control-sm">
+                                            <input type="text" name="fasilitas_12_action" class="form-control form-control-sm">
                                         </div>
 
                                         <div class="col-12 col-md-4 mt-2 mt-md-0">
                                             <label>Due Date</label>
-                                            <input type="date" name="dimensi_12_due" class="form-control form-control-sm">
+                                            <input type="date" name="fasilitas_12_due" class="form-control form-control-sm">
                                         </div>
                                     </div>
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>1.3 Jalan masuk dilengkapi dengan tanggul pengaman di sisi kiri & kanan:</label>
+                                    <label>1.3 Apakah jalan ke Ponton / rakit dalam kondisi bersih / bebas hambatan:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="dimensi_13_check" value="S" required /> Sesuai
+                                            <input type="radio" name="fasilitas_13_check" value="S" required /> Sesuai
                                         </label>
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="dimensi_13_check" value="TS" /> Tidak Sesuai
+                                            <input type="radio" name="fasilitas_13_check" value="TS" /> Tidak Sesuai
                                         </label>
                                     </div>
 
                                     <div class="row mt-2">
                                         <div class="col-12 col-md-8">
                                             <label>Tindak Lanjut Perbaikan</label>
-                                            <input type="text" name="dimensi_13_action" class="form-control form-control-sm">
+                                            <input type="text" name="fasilitas_13_action" class="form-control form-control-sm">
                                         </div>
 
                                         <div class="col-12 col-md-4 mt-2 mt-md-0">
                                             <label>Due Date</label>
-                                            <input type="date" name="dimensi_13_due" class="form-control form-control-sm">
+                                            <input type="date" name="fasilitas_13_due" class="form-control form-control-sm">
                                         </div>
                                     </div>
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>1.4 Grade jalan maksimal 8%:</label>
+                                    <label>1.4 Apakah ada rambu wajib pelampung di area sump yang di pasang pada jarak minimal 5 meter dari tepi kolam:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="dimensi_14_check" value="S" required /> Sesuai
+                                            <input type="radio" name="fasilitas_14_check" value="S" required /> Sesuai
                                         </label>
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="dimensi_14_check" value="TS" /> Tidak Sesuai
+                                            <input type="radio" name="fasilitas_14_check" value="TS" /> Tidak Sesuai
                                         </label>
                                     </div>
 
                                     <div class="row mt-2">
                                         <div class="col-12 col-md-8">
                                             <label>Tindak Lanjut Perbaikan</label>
-                                            <input type="text" name="dimensi_14_action" class="form-control form-control-sm">
+                                            <input type="text" name="fasilitas_14_action" class="form-control form-control-sm">
                                         </div>
 
                                         <div class="col-12 col-md-4 mt-2 mt-md-0">
                                             <label>Due Date</label>
-                                            <input type="date" name="dimensi_14_due" class="form-control form-control-sm">
+                                            <input type="date" name="fasilitas_14_due" class="form-control form-control-sm">
                                         </div>
                                     </div>
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>1.5 Terdapat rambu-rambu jalan yang memadai:</label>
+                                    <label>1.5 Apakah tersedia rambu dilarang berenang di area sump:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="dimensi_15_check" value="S" required /> Sesuai
+                                            <input type="radio" name="fasilitas_15_check" value="S" required /> Sesuai
                                         </label>
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="dimensi_15_check" value="TS" /> Tidak Sesuai
+                                            <input type="radio" name="fasilitas_15_check" value="TS" /> Tidak Sesuai
                                         </label>
                                     </div>
 
                                     <div class="row mt-2">
                                         <div class="col-12 col-md-8">
                                             <label>Tindak Lanjut Perbaikan</label>
-                                            <input type="text" name="dimensi_15_action" class="form-control form-control-sm">
+                                            <input type="text" name="fasilitas_15_action" class="form-control form-control-sm">
                                         </div>
 
                                         <div class="col-12 col-md-4 mt-2 mt-md-0">
                                             <label>Due Date</label>
-                                            <input type="date" name="dimensi_15_due" class="form-control form-control-sm">
+                                            <input type="date" name="fasilitas_15_due" class="form-control form-control-sm">
                                         </div>
                                     </div>
                                 </div>
                                 <hr>
-                                <h5>2. Apakah kondisi fisik front loading memadai?</h5>
+                                <div class="mb-3">
+                                    <label>1.6 Apakah tersedia pondok pengawas di area sump:</label>
+
+                                    <div class="d-flex justify-content-start">
+                                        <label class="me-3 px-2 py-2">
+                                            <input type="radio" name="fasilitas_16_check" value="S" required /> Sesuai
+                                        </label>
+                                        <label class="me-3 px-2 py-2">
+                                            <input type="radio" name="fasilitas_16_check" value="TS" /> Tidak Sesuai
+                                        </label>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-12 col-md-8">
+                                            <label>Tindak Lanjut Perbaikan</label>
+                                            <input type="text" name="fasilitas_16_action" class="form-control form-control-sm">
+                                        </div>
+
+                                        <div class="col-12 col-md-4 mt-2 mt-md-0">
+                                            <label>Due Date</label>
+                                            <input type="date" name="fasilitas_16_due" class="form-control form-control-sm">
+                                        </div>
+                                    </div>
+                                </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>2.1 Tempat dudukan alat gali/muat stabil dan aman:</label>
+                                    <label>1.7 Apakah di ringboy tersedia dengan  tali minimal 25 m:</label>
+
+                                    <div class="d-flex justify-content-start">
+                                        <label class="me-3 px-2 py-2">
+                                            <input type="radio" name="fasilitas_17_check" value="S" required /> Sesuai
+                                        </label>
+                                        <label class="me-3 px-2 py-2">
+                                            <input type="radio" name="fasilitas_17_check" value="TS" /> Tidak Sesuai
+                                        </label>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-12 col-md-8">
+                                            <label>Tindak Lanjut Perbaikan</label>
+                                            <input type="text" name="fasilitas_17_action" class="form-control form-control-sm">
+                                        </div>
+
+                                        <div class="col-12 col-md-4 mt-2 mt-md-0">
+                                            <label>Due Date</label>
+                                            <input type="date" name="fasilitas_17_due" class="form-control form-control-sm">
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="mb-3">
+                                    <label>1.8 Apakah ringboy ditempatkan pada posisi aman dan mudah di jangkau:</label>
+
+                                    <div class="d-flex justify-content-start">
+                                        <label class="me-3 px-2 py-2">
+                                            <input type="radio" name="fasilitas_18_check" value="S" required /> Sesuai
+                                        </label>
+                                        <label class="me-3 px-2 py-2">
+                                            <input type="radio" name="fasilitas_18_check" value="TS" /> Tidak Sesuai
+                                        </label>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-12 col-md-8">
+                                            <label>Tindak Lanjut Perbaikan</label>
+                                            <input type="text" name="fasilitas_18_action" class="form-control form-control-sm">
+                                        </div>
+
+                                        <div class="col-12 col-md-4 mt-2 mt-md-0">
+                                            <label>Due Date</label>
+                                            <input type="date" name="fasilitas_18_due" class="form-control form-control-sm">
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <h5>2. Kondisi Pompa dan Pontoon</h5>
+                                <hr>
+                                <div class="mb-3">
+                                    <label>2.1 Apakah ponton dalam kondisi layak dan berfungsi dengan baik:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
@@ -219,7 +294,7 @@
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>2.2 Tempat dudukan alat gali/muat aman dari longsoran dan jatuhan batu:</label>
+                                    <label>2.2 Apakah pagar pengaman tersedia:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
@@ -244,7 +319,7 @@
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>2.3 Area untuk antrian unit truck cukup lebar dan kondisi aman:</label>
+                                    <label>2.3 Apakah tersedia High Boy / Ring Boy dengan tali minimal 25 m:</label>
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
                                             <input type="radio" name="kondisi_23_check" value="S" required /> Sesuai
@@ -268,7 +343,7 @@
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>2.4 Permukaan loading point rata, tidak undulasi, dibersihkan secara teratur:</label>
+                                    <label>2.4 Apakah tersedia pelampung / Life jacket dengan kondisi baik:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
@@ -293,7 +368,7 @@
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>2.5 Drainase baik, area loading point tidak ada genangan air:</label>
+                                    <label>2.5 Apakah APAR tersedia dengan kondisi baik:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
@@ -318,7 +393,7 @@
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>2.6 Untuk Top Loading, terdapat tanggul di belakang Ban Belakang Hauler:</label>
+                                    <label>2.6 Apakah pompa mengambang secara mendatar & tidak miring pada satu sisi:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
@@ -342,187 +417,312 @@
                                     </div>
                                 </div>
                                 <hr>
-                                <h5>3. Apakah fasilitas Front Loading memadai?</h5>
-                                <hr>
                                 <div class="mb-3">
-                                    <label>3.1 Tersedia lampu penerangan dengan pencahayaan 20 Lux:</label>
+                                    <label>2.7 Apakah lampu kerja tersedia:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="fasilitas_31_check" value="S" required /> Sesuai
+                                            <input type="radio" name="kondisi_27_check" value="S" required /> Sesuai
                                         </label>
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="fasilitas_31_check" value="TS" /> Tidak Sesuai
+                                            <input type="radio" name="kondisi_27_check" value="TS" /> Tidak Sesuai
                                         </label>
                                     </div>
 
                                     <div class="row mt-2">
                                         <div class="col-12 col-md-8">
                                             <label>Tindak Lanjut Perbaikan</label>
-                                            <input type="text" name="fasilitas_31_action" class="form-control form-control-sm">
+                                            <input type="text" name="kondisi_27_action" class="form-control form-control-sm">
                                         </div>
 
                                         <div class="col-12 col-md-4 mt-2 mt-md-0">
                                             <label>Due Date</label>
-                                            <input type="date" name="fasilitas_31_due" class="form-control form-control-sm">
+                                            <input type="date" name="kondisi_27_due" class="form-control form-control-sm">
                                         </div>
                                     </div>
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>3.2 Lampu penerangan diberi tanggulan setinggi 1 meter:</label>
+                                    <label>2.8 Apakah tersedia check list P2H pompa:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="fasilitas_32_check" value="S" required /> Sesuai
+                                            <input type="radio" name="kondisi_28_check" value="S" required /> Sesuai
                                         </label>
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="fasilitas_32_check" value="TS" /> Tidak Sesuai
+                                            <input type="radio" name="kondisi_28_check" value="TS" /> Tidak Sesuai
                                         </label>
                                     </div>
 
                                     <div class="row mt-2">
                                         <div class="col-12 col-md-8">
                                             <label>Tindak Lanjut Perbaikan</label>
-                                            <input type="text" name="fasilitas_32_action" class="form-control form-control-sm">
+                                            <input type="text" name="kondisi_28_action" class="form-control form-control-sm">
                                         </div>
 
                                         <div class="col-12 col-md-4 mt-2 mt-md-0">
                                             <label>Due Date</label>
-                                            <input type="date" name="fasilitas_32_due" class="form-control form-control-sm">
+                                            <input type="date" name="kondisi_28_due" class="form-control form-control-sm">
                                         </div>
                                     </div>
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>3.3 Kondisi lampu penerangan standard dan tidak ada ceceran bahan bakar:</label>
+                                    <label>2.9 Apakah semua pipa dan selang aman:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="fasilitas_33_check" value="S" required /> Sesuai
+                                            <input type="radio" name="kondisi_29_check" value="S" required /> Sesuai
                                         </label>
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="fasilitas_33_check" value="TS" /> Tidak Sesuai
+                                            <input type="radio" name="kondisi_29_check" value="TS" /> Tidak Sesuai
                                         </label>
                                     </div>
 
                                     <div class="row mt-2">
                                         <div class="col-12 col-md-8">
                                             <label>Tindak Lanjut Perbaikan</label>
-                                            <input type="text" name="fasilitas_33_action" class="form-control form-control-sm">
+                                            <input type="text" name="kondisi_29_action" class="form-control form-control-sm">
                                         </div>
 
                                         <div class="col-12 col-md-4 mt-2 mt-md-0">
                                             <label>Due Date</label>
-                                            <input type="date" name="fasilitas_33_due" class="form-control form-control-sm">
+                                            <input type="date" name="kondisi_29_due" class="form-control form-control-sm">
                                         </div>
                                     </div>
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>3.4 Tersedia tempat parkir LV yang lokasinya aman dari maneuver alat berat:</label>
+                                    <label>2.10 Apakah terdapat rambu pada jalan yang dilintasi pipa:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="fasilitas_34_check" value="S" required /> Sesuai
+                                            <input type="radio" name="kondisi_210_check" value="S" required /> Sesuai
                                         </label>
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="fasilitas_34_check" value="TS" /> Tidak Sesuai
+                                            <input type="radio" name="kondisi_210_check" value="TS" /> Tidak Sesuai
                                         </label>
                                     </div>
 
                                     <div class="row mt-2">
                                         <div class="col-12 col-md-8">
                                             <label>Tindak Lanjut Perbaikan</label>
-                                            <input type="text" name="fasilitas_34_action" class="form-control form-control-sm">
+                                            <input type="text" name="kondisi_210_action" class="form-control form-control-sm">
                                         </div>
 
                                         <div class="col-12 col-md-4 mt-2 mt-md-0">
                                             <label>Due Date</label>
-                                            <input type="date" name="fasilitas_34_due" class="form-control form-control-sm">
+                                            <input type="date" name="kondisi_210_due" class="form-control form-control-sm">
                                         </div>
                                     </div>
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>3.5 Tempat parkir LV dilengkapi tanggul pengaman:</label>
+                                    <label>2.11 Apakah terdapat kebocoran fuel / oli:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="fasilitas_35_check" value="S" required /> Sesuai
+                                            <input type="radio" name="kondisi_211_check" value="S" required /> Sesuai
                                         </label>
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="fasilitas_35_check" value="TS" /> Tidak Sesuai
+                                            <input type="radio" name="kondisi_211_check" value="TS" /> Tidak Sesuai
                                         </label>
                                     </div>
 
                                     <div class="row mt-2">
                                         <div class="col-12 col-md-8">
                                             <label>Tindak Lanjut Perbaikan</label>
-                                            <input type="text" name="fasilitas_35_action" class="form-control form-control-sm">
+                                            <input type="text" name="kondisi_211_action" class="form-control form-control-sm">
                                         </div>
 
                                         <div class="col-12 col-md-4 mt-2 mt-md-0">
                                             <label>Due Date</label>
-                                            <input type="date" name="fasilitas_35_due" class="form-control form-control-sm">
+                                            <input type="date" name="kondisi_211_due" class="form-control form-control-sm">
                                         </div>
                                     </div>
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>3.6 Terdapat rambu parkir untuk LV:</label>
+                                    <label>2.12 Apakah outlet bebas dari penghalang:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="fasilitas_36_check" value="S" required /> Sesuai
+                                            <input type="radio" name="kondisi_212_check" value="S" required /> Sesuai
                                         </label>
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="fasilitas_36_check" value="TS" /> Tidak Sesuai
+                                            <input type="radio" name="kondisi_212_check" value="TS" /> Tidak Sesuai
                                         </label>
                                     </div>
 
                                     <div class="row mt-2">
                                         <div class="col-12 col-md-8">
                                             <label>Tindak Lanjut Perbaikan</label>
-                                            <input type="text" name="fasilitas_36_action" class="form-control form-control-sm">
+                                            <input type="text" name="kondisi_212_action" class="form-control form-control-sm">
                                         </div>
 
                                         <div class="col-12 col-md-4 mt-2 mt-md-0">
                                             <label>Due Date</label>
-                                            <input type="date" name="fasilitas_36_due" class="form-control form-control-sm">
+                                            <input type="date" name="kondisi_212_due" class="form-control form-control-sm">
                                         </div>
                                     </div>
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>3.7 Tempat parkir tidak berada di bawah tebing ataupun di bibir tebing:</label>
+                                    <label>2.13 Apakah ada lampu rotary  di pompa dan berfungsi dengan baik:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="fasilitas_37_check" value="S" required /> Sesuai
+                                            <input type="radio" name="kondisi_213_check" value="S" required /> Sesuai
                                         </label>
                                         <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="fasilitas_37_check" value="TS" /> Tidak Sesuai
+                                            <input type="radio" name="kondisi_213_check" value="TS" /> Tidak Sesuai
                                         </label>
                                     </div>
 
                                     <div class="row mt-2">
                                         <div class="col-12 col-md-8">
                                             <label>Tindak Lanjut Perbaikan</label>
-                                            <input type="text" name="fasilitas_37_action" class="form-control form-control-sm">
+                                            <input type="text" name="kondisi_213_action" class="form-control form-control-sm">
                                         </div>
 
                                         <div class="col-12 col-md-4 mt-2 mt-md-0">
                                             <label>Due Date</label>
-                                            <input type="date" name="fasilitas_37_due" class="form-control form-control-sm">
+                                            <input type="date" name="kondisi_213_due" class="form-control form-control-sm">
                                         </div>
                                     </div>
                                 </div>
                                 <hr>
-                                <h5>4. Apakah pengawas front loading memadai?</h5>
+                                <div class="mb-3">
+                                    <label>2.14 Apakah tersedia swith emergency di pompa:</label>
+
+                                    <div class="d-flex justify-content-start">
+                                        <label class="me-3 px-2 py-2">
+                                            <input type="radio" name="kondisi_214_check" value="S" required /> Sesuai
+                                        </label>
+                                        <label class="me-3 px-2 py-2">
+                                            <input type="radio" name="kondisi_214_check" value="TS" /> Tidak Sesuai
+                                        </label>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-12 col-md-8">
+                                            <label>Tindak Lanjut Perbaikan</label>
+                                            <input type="text" name="kondisi_214_action" class="form-control form-control-sm">
+                                        </div>
+
+                                        <div class="col-12 col-md-4 mt-2 mt-md-0">
+                                            <label>Due Date</label>
+                                            <input type="date" name="kondisi_214_due" class="form-control form-control-sm">
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <h5>3. Perahu Penyeberangan</h5>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>4.1 Terdapat pengawas yang ditunjuk mengawasi aktivitas loading point:</label>
+                                    <label>3.1 Apakah tersedia perahu penyeberangan yang baik & layak menuju ponton:</label>
+
+                                    <div class="d-flex justify-content-start">
+                                        <label class="me-3 px-2 py-2">
+                                            <input type="radio" name="perahu_31_check" value="S" required /> Sesuai
+                                        </label>
+                                        <label class="me-3 px-2 py-2">
+                                            <input type="radio" name="perahu_31_check" value="TS" /> Tidak Sesuai
+                                        </label>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-12 col-md-8">
+                                            <label>Tindak Lanjut Perbaikan</label>
+                                            <input type="text" name="perahu_31_action" class="form-control form-control-sm">
+                                        </div>
+
+                                        <div class="col-12 col-md-4 mt-2 mt-md-0">
+                                            <label>Due Date</label>
+                                            <input type="date" name="perahu_31_due" class="form-control form-control-sm">
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="mb-3">
+                                    <label>3.2 Apakah ada rambu batas maksimal muatan perahu penyeberangan:</label>
+
+                                    <div class="d-flex justify-content-start">
+                                        <label class="me-3 px-2 py-2">
+                                            <input type="radio" name="perahu_32_check" value="S" required /> Sesuai
+                                        </label>
+                                        <label class="me-3 px-2 py-2">
+                                            <input type="radio" name="perahu_32_check" value="TS" /> Tidak Sesuai
+                                        </label>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-12 col-md-8">
+                                            <label>Tindak Lanjut Perbaikan</label>
+                                            <input type="text" name="perahu_32_action" class="form-control form-control-sm">
+                                        </div>
+
+                                        <div class="col-12 col-md-4 mt-2 mt-md-0">
+                                            <label>Due Date</label>
+                                            <input type="date" name="perahu_32_due" class="form-control form-control-sm">
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="mb-3">
+                                    <label>3.3 Apakah tersedia dayung di perahu penyebrangan:</label>
+
+                                    <div class="d-flex justify-content-start">
+                                        <label class="me-3 px-2 py-2">
+                                            <input type="radio" name="perahu_33_check" value="S" required /> Sesuai
+                                        </label>
+                                        <label class="me-3 px-2 py-2">
+                                            <input type="radio" name="perahu_33_check" value="TS" /> Tidak Sesuai
+                                        </label>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-12 col-md-8">
+                                            <label>Tindak Lanjut Perbaikan</label>
+                                            <input type="text" name="perahu_33_action" class="form-control form-control-sm">
+                                        </div>
+
+                                        <div class="col-12 col-md-4 mt-2 mt-md-0">
+                                            <label>Due Date</label>
+                                            <input type="date" name="perahu_33_due" class="form-control form-control-sm">
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="mb-3">
+                                    <label>3.4 Apakah tali untuk perahu penyebrangan kondisi layak:</label>
+
+                                    <div class="d-flex justify-content-start">
+                                        <label class="me-3 px-2 py-2">
+                                            <input type="radio" name="perahu_34_check" value="S" required /> Sesuai
+                                        </label>
+                                        <label class="me-3 px-2 py-2">
+                                            <input type="radio" name="perahu_34_check" value="TS" /> Tidak Sesuai
+                                        </label>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-12 col-md-8">
+                                            <label>Tindak Lanjut Perbaikan</label>
+                                            <input type="text" name="perahu_34_action" class="form-control form-control-sm">
+                                        </div>
+
+                                        <div class="col-12 col-md-4 mt-2 mt-md-0">
+                                            <label>Due Date</label>
+                                            <input type="date" name="perahu_34_due" class="form-control form-control-sm">
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <h5>4. Pengawasan dan Personil</h5>
+                                <hr>
+                                <div class="mb-3">
+                                    <label>4.1 Pengawas melakukan inspeksi awal shift:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
@@ -547,7 +747,7 @@
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>4.2 1 Pengawas maksimal mengawasi 3 front loading yang berdekatan dalam radius 300 meter antar front:</label>
+                                    <label>4.2 Pengawas dilengkapi dengan radio tangan:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
@@ -572,7 +772,7 @@
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <label>4.3 Pengawas mengisi form pemeriksaan area kerja di awal shift :</label>
+                                    <label>4.3 Personil minimal 2 orang yang bekerja di pontoon dan dilengkapi radio tangan:</label>
 
                                     <div class="d-flex justify-content-start">
                                         <label class="me-3 px-2 py-2">
@@ -592,183 +792,6 @@
                                         <div class="col-12 col-md-4 mt-2 mt-md-0">
                                             <label>Due Date</label>
                                             <input type="date" name="pengawas_43_due" class="form-control form-control-sm">
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="mb-3">
-                                    <label>4.4 Dilengkapi dengan radio komunikasi yang siap digunakan:</label>
-
-                                    <div class="d-flex justify-content-start">
-                                        <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="pengawas_44_check" value="S" required /> Sesuai
-                                        </label>
-                                        <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="pengawas_44_check" value="TS" /> Tidak Sesuai
-                                        </label>
-                                    </div>
-
-                                    <div class="row mt-2">
-                                        <div class="col-12 col-md-8">
-                                            <label>Tindak Lanjut Perbaikan</label>
-                                            <input type="text" name="pengawas_44_action" class="form-control form-control-sm">
-                                        </div>
-
-                                        <div class="col-12 col-md-4 mt-2 mt-md-0">
-                                            <label>Due Date</label>
-                                            <input type="date" name="pengawas_44_due" class="form-control form-control-sm">
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr>
-                                <h5>5. Apakah manuver truck dan alat berat memadai?</h5>
-                                <hr>
-                                <div class="mb-3">
-                                    <label>5.1 Manuver alat gali/alat muat leluasa untuk mengisi ke truck:</label>
-
-                                    <div class="d-flex justify-content-start">
-                                        <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="manuver_51_check" value="S" required /> Sesuai
-                                        </label>
-                                        <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="manuver_51_check" value="TS" /> Tidak Sesuai
-                                        </label>
-                                    </div>
-
-                                    <div class="row mt-2">
-                                        <div class="col-12 col-md-8">
-                                            <label>Tindak Lanjut Perbaikan</label>
-                                            <input type="text" name="manuver_51_action" class="form-control form-control-sm">
-                                        </div>
-
-                                        <div class="col-12 col-md-4 mt-2 mt-md-0">
-                                            <label>Due Date</label>
-                                            <input type="date" name="manuver_51_due" class="form-control form-control-sm">
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="mb-3">
-                                    <label>5.2 Manuver truck searah dengan jarum jam atau sesuai intruksi atasan:</label>
-
-                                    <div class="d-flex justify-content-start">
-                                        <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="manuver_52_check" value="S" required /> Sesuai
-                                        </label>
-                                        <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="manuver_52_check" value="TS" /> Tidak Sesuai
-                                        </label>
-                                    </div>
-
-                                    <div class="row mt-2">
-                                        <div class="col-12 col-md-8">
-                                            <label>Tindak Lanjut Perbaikan</label>
-                                            <input type="text" name="manuver_52_action" class="form-control form-control-sm">
-                                        </div>
-
-                                        <div class="col-12 col-md-4 mt-2 mt-md-0">
-                                            <label>Due Date</label>
-                                            <input type="date" name="manuver_52_due" class="form-control form-control-sm">
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="mb-3">
-                                    <label>5.3 Manuver dozer/grader secara berkala membersihkan lantai loading point:</label>
-
-                                    <div class="d-flex justify-content-start">
-                                        <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="manuver_53_check" value="S" required /> Sesuai
-                                        </label>
-                                        <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="manuver_53_check" value="TS" /> Tidak Sesuai
-                                        </label>
-                                    </div>
-
-                                    <div class="row mt-2">
-                                        <div class="col-12 col-md-8">
-                                            <label>Tindak Lanjut Perbaikan</label>
-                                            <input type="text" name="manuver_53_action" class="form-control form-control-sm">
-                                        </div>
-
-                                        <div class="col-12 col-md-4 mt-2 mt-md-0">
-                                            <label>Due Date</label>
-                                            <input type="date" name="manuver_53_due" class="form-control form-control-sm">
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="mb-3">
-                                    <label>5.4 Water truck secara berkala menyiram area loading Point:</label>
-
-                                    <div class="d-flex justify-content-start">
-                                        <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="manuver_54_check" value="S" required /> Sesuai
-                                        </label>
-                                        <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="manuver_54_check" value="TS" /> Tidak Sesuai
-                                        </label>
-                                    </div>
-
-                                    <div class="row mt-2">
-                                        <div class="col-12 col-md-8">
-                                            <label>Tindak Lanjut Perbaikan</label>
-                                            <input type="text" name="manuver_54_action" class="form-control form-control-sm">
-                                        </div>
-
-                                        <div class="col-12 col-md-4 mt-2 mt-md-0">
-                                            <label>Due Date</label>
-                                            <input type="date" name="manuver_54_due" class="form-control form-control-sm">
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="mb-3">
-                                    <label>5.5 Posisi antrian unit dump truck teratur (searah):</label>
-
-                                    <div class="d-flex justify-content-start">
-                                        <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="manuver_55_check" value="S" required /> Sesuai
-                                        </label>
-                                        <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="manuver_55_check" value="TS" /> Tidak Sesuai
-                                        </label>
-                                    </div>
-
-                                    <div class="row mt-2">
-                                        <div class="col-12 col-md-8">
-                                            <label>Tindak Lanjut Perbaikan</label>
-                                            <input type="text" name="manuver_55_action" class="form-control form-control-sm">
-                                        </div>
-
-                                        <div class="col-12 col-md-4 mt-2 mt-md-0">
-                                            <label>Due Date</label>
-                                            <input type="date" name="manuver_55_due" class="form-control form-control-sm">
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="mb-3">
-                                    <label>5.6 Jarak antri antar dump truck minimal 1.5 kali Panjang unit:</label>
-
-                                    <div class="d-flex justify-content-start">
-                                        <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="manuver_56_check" value="S" required /> Sesuai
-                                        </label>
-                                        <label class="me-3 px-2 py-2">
-                                            <input type="radio" name="manuver_56_check" value="TS" /> Tidak Sesuai
-                                        </label>
-                                    </div>
-
-                                    <div class="row mt-2">
-                                        <div class="col-12 col-md-8">
-                                            <label>Tindak Lanjut Perbaikan</label>
-                                            <input type="text" name="manuver_56_action" class="form-control form-control-sm">
-                                        </div>
-
-                                        <div class="col-12 col-md-4 mt-2 mt-md-0">
-                                            <label>Due Date</label>
-                                            <input type="date" name="manuver_56_due" class="form-control form-control-sm">
                                         </div>
                                     </div>
                                 </div>

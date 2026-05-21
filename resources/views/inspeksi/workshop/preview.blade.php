@@ -585,35 +585,35 @@
                                                 <td>1</td>
                                                 <td>{{ $ws->nama_inspektor1 }}</td>
                                                 <td>{{ $ws->nik_inspektor1 }}</td>
-                                                <td></td>
+                                                <td>{{ $ws->jabatan_inspektor1 }}</td>
                                                 <td><img src="{{ $ws->verified_inspektor1 }}" style="max-width: 70px;"></td>
                                             </tr>
                                             <tr>
                                                 <td>2</td>
                                                 <td>{{ $ws->nama_inspektor2 }}</td>
                                                 <td>{{ $ws->nik_inspektor2 }}</td>
-                                                <td></td>
+                                                <td>{{ $ws->jabatan_inspektor2 }}</td>
                                                 <td><img src="{{ $ws->verified_inspektor2 }}" style="max-width: 70px;"></td>
                                             </tr>
                                             <tr>
                                                 <td>3</td>
                                                 <td>{{ $ws->nama_inspektor3 }}</td>
                                                 <td>{{ $ws->nik_inspektor3 }}</td>
-                                                <td></td>
+                                                <td>{{ $ws->jabatan_inspektor3 }}</td>
                                                 <td><img src="{{ $ws->verified_inspektor3 }}" style="max-width: 70px;"></td>
                                             </tr>
                                             <tr>
                                                 <td>4</td>
                                                 <td>{{ $ws->nama_inspektor4 }}</td>
                                                 <td>{{ $ws->nik_inspektor4 }}</td>
-                                                <td></td>
+                                                <td>{{ $ws->jabatan_inspektor4 }}</td>
                                                 <td><img src="{{ $ws->verified_inspektor4 }}" style="max-width: 70px;"></td>
                                             </tr>
                                             <tr>
                                                 <td>5</td>
                                                 <td>{{ $ws->nama_inspektor5 }}</td>
                                                 <td>{{ $ws->nik_inspektor5 }}</td>
-                                                <td></td>
+                                                <td>{{ $ws->jabatan_inspektor5 }}</td>
                                                 <td><img src="{{ $ws->verified_inspektor5 }}" style="max-width: 70px;"></td>
                                             </tr>
                                         </tbody>

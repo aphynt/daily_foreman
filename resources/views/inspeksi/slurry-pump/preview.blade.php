@@ -23,7 +23,7 @@
                                     </div>
 
                                     <div class="col-6 text-end">
-                                        <h6>FM-SE-05/00/03/02/26</h6>
+                                        <h6>FM-SE-18/00/05/02/26</h6>
                                     </div>
                                 </div>
                             </div>
@@ -72,301 +72,228 @@
                                         <tbody>
                                             <tr style="font-weight: bold;">
                                                 <td>1</td>
-                                                <td colspan="4">Kelengkapan Dokumen</td>
+                                                <td colspan="4">Kondisi area dan Fasilitas Sump</td>
                                             </tr>
                                             <tr>
                                                 <td>1.1</td>
-                                                <td>Apakah Form P2H ada di lokasi dan sudah di isi</td>
-                                                <td style="text-align:center;">{{ $sp->kelengkapan_11_check }}</td>
-                                                {{-- <td>{{ $sp->kelengkapan_11_check === null ? '' : ($sp->kelengkapan_11_check === 'S' ? 'Setuju' : 'Tidak Setuju') }}</td> --}}
-                                                <td>{{ $sp->kelengkapan_11_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->kelengkapan_11_due ? \Carbon\Carbon::parse($sp->kelengkapan_11_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                                <td>Apakah kondisi highwall / low wall tidak ada potensi longsoran</td>
+                                                <td style="text-align:center;">{{ $sp->fasilitas_11_check }}</td>
+                                                {{-- <td>{{ $sp->fasilitas_11_check === null ? '' : ($sp->fasilitas_11_check === 'S' ? 'Setuju' : 'Tidak Setuju') }}</td> --}}
+                                                <td>{{ $sp->fasilitas_11_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->fasilitas_11_due ? \Carbon\Carbon::parse($sp->fasilitas_11_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
                                             </tr>
                                             <tr>
                                                 <td>1.2</td>
                                                 <td>Apakah dilokasi terdapat JSA dan IK atau SOP</td>
-                                                <td style="text-align:center;">{{ $sp->kelengkapan_12_check }}</td>
-                                                <td>{{ $sp->kelengkapan_12_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->kelengkapan_12_due ? \Carbon\Carbon::parse($sp->kelengkapan_12_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                                <td style="text-align:center;">{{ $sp->fasilitas_12_check }}</td>
+                                                <td>{{ $sp->fasilitas_12_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->fasilitas_12_due ? \Carbon\Carbon::parse($sp->fasilitas_12_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>1.3</td>
+                                                <td>Apakah jalan ke Ponton / rakit dalam kondisi bersih / bebas hambatan</td>
+                                                <td style="text-align:center;">{{ $sp->fasilitas_13_check }}</td>
+                                                {{-- <td>{{ $sp->fasilitas_13_check === null ? '' : ($sp->fasilitas_13_check === 'S' ? 'Setuju' : 'Tidak Setuju') }}</td> --}}
+                                                <td>{{ $sp->fasilitas_13_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->fasilitas_13_due ? \Carbon\Carbon::parse($sp->fasilitas_13_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>1.4</td>
+                                                <td>Apakah ada rambu wajib pelampung di area sump yang di pasang pada jarak minimal 5 meter dari tepi kolam?</td>
+                                                <td style="text-align:center;">{{ $sp->fasilitas_14_check }}</td>
+                                                <td>{{ $sp->fasilitas_14_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->fasilitas_14_due ? \Carbon\Carbon::parse($sp->fasilitas_14_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>1.5</td>
+                                                <td>Apakah tersedia rambu dilarang berenang di area sump?</td>
+                                                <td style="text-align:center;">{{ $sp->fasilitas_15_check }}</td>
+                                                {{-- <td>{{ $sp->fasilitas_15_check === null ? '' : ($sp->fasilitas_15_check === 'S' ? 'Setuju' : 'Tidak Setuju') }}</td> --}}
+                                                <td>{{ $sp->fasilitas_15_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->fasilitas_15_due ? \Carbon\Carbon::parse($sp->fasilitas_15_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>1.6</td>
+                                                <td>Apakah tersedia pondok pengawas di area sump?</td>
+                                                <td style="text-align:center;">{{ $sp->fasilitas_16_check }}</td>
+                                                <td>{{ $sp->fasilitas_16_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->fasilitas_16_due ? \Carbon\Carbon::parse($sp->fasilitas_16_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>1.7</td>
+                                                <td>Apakah di ringboy tersedia dengan  tali minimal 25 m?</td>
+                                                <td style="text-align:center;">{{ $sp->fasilitas_17_check }}</td>
+                                                {{-- <td>{{ $sp->fasilitas_17_check === null ? '' : ($sp->fasilitas_17_check === 'S' ? 'Setuju' : 'Tidak Setuju') }}</td> --}}
+                                                <td>{{ $sp->fasilitas_17_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->fasilitas_17_due ? \Carbon\Carbon::parse($sp->fasilitas_17_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>1.8</td>
+                                                <td>Apakah ringboy ditempatkan pada posisi aman dan mudah di jangkau?</td>
+                                                <td style="text-align:center;">{{ $sp->fasilitas_18_check }}</td>
+                                                <td>{{ $sp->fasilitas_18_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->fasilitas_18_due ? \Carbon\Carbon::parse($sp->fasilitas_18_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
                                             </tr>
                                             <tr style="font-weight: bold;">
                                                 <td>2</td>
-                                                <td colspan="4">Apakah kondisi fisik front loading memadai?</td>
+                                                <td colspan="4">Kondisi Pompa dan Pontoon</td>
                                             </tr>
                                             <tr>
                                                 <td>2.1</td>
-                                                <td>Kondisi Kebersihan Pontoon secara keseluruhan </td>
+                                                <td>Apakah ponton dalam kondisi layak dan berfungsi dengan baik?</td>
                                                 <td style="text-align:center;">{{ $sp->kondisi_21_check }}</td>
                                                 <td>{{ $sp->kondisi_21_action }}</td>
                                                 <td style="text-align:center;">{{ $sp->kondisi_21_due ? \Carbon\Carbon::parse($sp->kondisi_21_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
                                             </tr>
                                             <tr>
                                                 <td>2.2</td>
-                                                <td>Kondisi Rel tangan dan pegangan  ( keliling unti Pontoon )</td>
+                                                <td>Apakah pagar pengaman tersedia?</td>
                                                 <td style="text-align:center;">{{ $sp->kondisi_22_check }}</td>
                                                 <td>{{ $sp->kondisi_22_action }}</td>
                                                 <td style="text-align:center;">{{ $sp->kondisi_22_due ? \Carbon\Carbon::parse($sp->kondisi_22_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
                                             </tr>
                                             <tr>
                                                 <td>2.3</td>
-                                                <td>Kondisi Ring buoy dan tali ring buoy 15 meter </td>
+                                                <td>Apakah tersedia High Boy / Ring Boy dengan tali minimal 25 m?</td>
                                                 <td style="text-align:center;">{{ $sp->kondisi_23_check }}</td>
                                                 <td>{{ $sp->kondisi_23_action }}</td>
                                                 <td style="text-align:center;">{{ $sp->kondisi_23_due ? \Carbon\Carbon::parse($sp->kondisi_23_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
                                             </tr>
                                             <tr>
                                                 <td>2.4</td>
-                                                <td>Kondisi apar dan bracket di Pontoon </td>
+                                                <td>Apakah tersedia pelampung / Life jacket dengan kondisi baik?</td>
                                                 <td style="text-align:center;">{{ $sp->kondisi_24_check }}</td>
                                                 <td>{{ $sp->kondisi_24_action }}</td>
                                                 <td style="text-align:center;">{{ $sp->kondisi_24_due ? \Carbon\Carbon::parse($sp->kondisi_24_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
                                             </tr>
                                             <tr>
                                                 <td>2.5</td>
-                                                <td>Kondisi Tangga dan tempat pijakan Pontoon</td>
+                                                <td>Apakah APAR tersedia dengan kondisi baik?</td>
                                                 <td style="text-align:center;">{{ $sp->kondisi_25_check }}</td>
                                                 <td>{{ $sp->kondisi_25_action }}</td>
                                                 <td style="text-align:center;">{{ $sp->kondisi_25_due ? \Carbon\Carbon::parse($sp->kondisi_25_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
                                             </tr>
                                             <tr>
                                                 <td>2.6</td>
-                                                <td>Kondisi Plat tanda keselamatan terpasang di Pontoon</td>
+                                                <td>Apakah pompa mengambang secara mendatar & tidak miring pada satu sisi?</td>
                                                 <td style="text-align:center;">{{ $sp->kondisi_26_check }}</td>
                                                 <td>{{ $sp->kondisi_26_action }}</td>
                                                 <td style="text-align:center;">{{ $sp->kondisi_26_due ? \Carbon\Carbon::parse($sp->kondisi_26_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
                                             </tr>
+                                            <tr>
+                                                <td>2.7</td>
+                                                <td>Apakah lampu kerja tersedia?</td>
+                                                <td style="text-align:center;">{{ $sp->kondisi_27_check }}</td>
+                                                <td>{{ $sp->kondisi_27_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->kondisi_27_due ? \Carbon\Carbon::parse($sp->kondisi_27_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.8</td>
+                                                <td>Apakah tersedia check list P2H pompa?</td>
+                                                <td style="text-align:center;">{{ $sp->kondisi_28_check }}</td>
+                                                <td>{{ $sp->kondisi_28_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->kondisi_28_due ? \Carbon\Carbon::parse($sp->kondisi_28_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.9</td>
+                                                <td>Apakah semua pipa dan selang aman?</td>
+                                                <td style="text-align:center;">{{ $sp->kondisi_29_check }}</td>
+                                                <td>{{ $sp->kondisi_29_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->kondisi_29_due ? \Carbon\Carbon::parse($sp->kondisi_29_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.10</td>
+                                                <td>Apakah terdapat rambu pada jalan yang dilintasi pipa?</td>
+                                                <td style="text-align:center;">{{ $sp->kondisi_210_check }}</td>
+                                                <td>{{ $sp->kondisi_210_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->kondisi_210_due ? \Carbon\Carbon::parse($sp->kondisi_210_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.11</td>
+                                                <td>Apakah terdapat kebocoran fuel / oli?</td>
+                                                <td style="text-align:center;">{{ $sp->kondisi_212_check }}</td>
+                                                <td>{{ $sp->kondisi_212_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->kondisi_212_due ? \Carbon\Carbon::parse($sp->kondisi_212_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.12</td>
+                                                <td>Apakah outlet bebas dari penghalang?</td>
+                                                <td style="text-align:center;">{{ $sp->kondisi_212_check }}</td>
+                                                <td>{{ $sp->kondisi_212_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->kondisi_212_due ? \Carbon\Carbon::parse($sp->kondisi_212_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.13</td>
+                                                <td>Apakah ada lampu rotary  di pompa dan berfungsi dengan baik?</td>
+                                                <td style="text-align:center;">{{ $sp->kondisi_23_check }}</td>
+                                                <td>{{ $sp->kondisi_23_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->kondisi_23_due ? \Carbon\Carbon::parse($sp->kondisi_23_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.14</td>
+                                                <td>Apakah tersedia swith emergency di pompa?</td>
+                                                <td style="text-align:center;">{{ $sp->kondisi_214_check }}</td>
+                                                <td>{{ $sp->kondisi_214_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->kondisi_214_due ? \Carbon\Carbon::parse($sp->kondisi_214_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                            </tr>
+
+
                                             <tr style="font-weight: bold;">
                                                 <td>3</td>
-                                                <td colspan="4">Sticker dan Rambu</td>
+                                                <td colspan="4">Perahu Penyeberangan</td>
                                             </tr>
                                             <tr>
                                                 <td>3.1</td>
-                                                <td>Terdapat Logo perusahaan </td>
-                                                <td style="text-align:center;">{{ $sp->sticker_31_check }}</td>
-                                                <td>{{ $sp->sticker_31_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->sticker_31_due ? \Carbon\Carbon::parse($sp->sticker_31_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                                <td>Apakah tersedia perahu penyeberangan yang baik & layak menuju ponton?</td>
+                                                <td style="text-align:center;">{{ $sp->perahu_31_check }}</td>
+                                                <td>{{ $sp->perahu_31_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->perahu_31_due ? \Carbon\Carbon::parse($sp->perahu_31_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
                                             </tr>
                                             <tr>
                                                 <td>3.2</td>
-                                                <td>Terdapat No unit/lambung terpasang 4 sisi</td>
-                                                <td style="text-align:center;">{{ $sp->sticker_32_check }}</td>
-                                                <td>{{ $sp->sticker_32_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->sticker_32_due ? \Carbon\Carbon::parse($sp->sticker_32_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                                <td>Apakah ada rambu batas maksimal muatan perahu penyeberangan?</td>
+                                                <td style="text-align:center;">{{ $sp->perahu_32_check }}</td>
+                                                <td>{{ $sp->perahu_32_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->perahu_32_due ? \Carbon\Carbon::parse($sp->perahu_32_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
                                             </tr>
                                             <tr>
                                                 <td>3.3</td>
-                                                <td>Apakah Sudah terpasang sign LOTO</td>
-                                                <td style="text-align:center;">{{ $sp->sticker_33_check }}</td>
-                                                <td>{{ $sp->sticker_33_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->sticker_33_due ? \Carbon\Carbon::parse($sp->sticker_33_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                                <td>Apakah tersedia dayung di perahu penyebrangan?</td>
+                                                <td style="text-align:center;">{{ $sp->perahu_33_check }}</td>
+                                                <td>{{ $sp->perahu_33_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->perahu_33_due ? \Carbon\Carbon::parse($sp->perahu_33_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
                                             </tr>
                                             <tr>
                                                 <td>3.4</td>
-                                                <td>Apakah Emergency shut down sudah terpasang </td>
-                                                <td style="text-align:center;">{{ $sp->sticker_34_check }}</td>
-                                                <td>{{ $sp->sticker_34_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->sticker_34_due ? \Carbon\Carbon::parse($sp->sticker_34_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3.5</td>
-                                                <td>Apakah Stiker titik jepit  sudah terpasang </td>
-                                                <td style="text-align:center;">{{ $sp->sticker_35_check }}</td>
-                                                <td>{{ $sp->sticker_35_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->sticker_35_due ? \Carbon\Carbon::parse($sp->sticker_35_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3.6</td>
-                                                <td>Apakah rambu “Di larang merokok’’ sudah terpasang </td>
-                                                <td style="text-align:center;">{{ $sp->sticker_36_check }}</td>
-                                                <td>{{ $sp->sticker_36_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->sticker_36_due ? \Carbon\Carbon::parse($sp->sticker_36_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3.7</td>
-                                                <td>Apakah rambu ‘Di larang menggunakan handphone saat mengoperasikan alat’’ sudah terpasang </td>
-                                                <td style="text-align:center;">{{ $sp->sticker_37_check }}</td>
-                                                <td>{{ $sp->sticker_37_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->sticker_37_due ? \Carbon\Carbon::parse($sp->sticker_37_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3.8</td>
-                                                <td>Apakah rambu APD , pelampung , earmuff, kacamata, gloves, shoes, helmet sudah terpasang </td>
-                                                <td style="text-align:center;">{{ $sp->sticker_38_check }}</td>
-                                                <td>{{ $sp->sticker_38_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->sticker_38_due ? \Carbon\Carbon::parse($sp->sticker_38_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3.9</td>
-                                                <td>Apakah rambu Bahaya Mesin berputar dan permukaan panas sudah terpasang </td>
-                                                <td style="text-align:center;">{{ $sp->sticker_39_check }}</td>
-                                                <td>{{ $sp->sticker_39_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->sticker_39_due ? \Carbon\Carbon::parse($sp->sticker_39_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                                <td>Apakah tali untuk perahu penyebrangan kondisi layak?</td>
+                                                <td style="text-align:center;">{{ $sp->perahu_34_check }}</td>
+                                                <td>{{ $sp->perahu_34_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->perahu_34_due ? \Carbon\Carbon::parse($sp->perahu_34_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
                                             </tr>
                                             <tr style="font-weight: bold;">
                                                 <td>4</td>
-                                                <td colspan="4">Lampu dan aksesoris listrik</td>
+                                                <td colspan="4">Pengawasan dan Personil</td>
                                             </tr>
                                             <tr>
                                                 <td>4.1</td>
-                                                <td>Kondisi Lampu depan berfungsi dengan baik</td>
-                                                <td style="text-align:center;">{{ $sp->lampu_41_check }}</td>
-                                                <td>{{ $sp->lampu_41_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->lampu_41_due ? \Carbon\Carbon::parse($sp->lampu_41_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                                <td>Pengawas melakukan inspeksi awal shift</td>
+                                                <td style="text-align:center;">{{ $sp->pengawas_41_check }}</td>
+                                                <td>{{ $sp->pengawas_41_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->pengawas_41_due ? \Carbon\Carbon::parse($sp->pengawas_41_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
                                             </tr>
                                             <tr>
                                                 <td>4.2</td>
-                                                <td>Kondsi Lampu belakang berfungsi dengan baik</td>
-                                                <td style="text-align:center;">{{ $sp->lampu_42_check }}</td>
-                                                <td>{{ $sp->lampu_42_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->lampu_42_due ? \Carbon\Carbon::parse($sp->lampu_42_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                                <td>Pengawas dilengkapi dengan radio tangan</td>
+                                                <td style="text-align:center;">{{ $sp->pengawas_42_check }}</td>
+                                                <td>{{ $sp->pengawas_42_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->pengawas_42_due ? \Carbon\Carbon::parse($sp->pengawas_42_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
                                             </tr>
                                             <tr>
                                                 <td>4.3</td>
-                                                <td>Kondisi Lampu samping berfungsi dengan baik</td>
-                                                <td style="text-align:center;">{{ $sp->lampu_43_check }}</td>
-                                                <td>{{ $sp->lampu_43_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->lampu_43_due ? \Carbon\Carbon::parse($sp->lampu_43_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>4.4</td>
-                                                <td>Kondisi battery dan kabel-kabel baik</td>
-                                                <td style="text-align:center;">{{ $sp->lampu_44_check }}</td>
-                                                <td>{{ $sp->lampu_44_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->lampu_44_due ? \Carbon\Carbon::parse($sp->lampu_44_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>4.5</td>
-                                                <td>Kondisi cover dan kunci battery baik</td>
-                                                <td style="text-align:center;">{{ $sp->lampu_45_check }}</td>
-                                                <td>{{ $sp->lampu_45_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->lampu_45_due ? \Carbon\Carbon::parse($sp->lampu_45_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>4.6</td>
-                                                <td>Kondisi lampu rotary berfungsi dengan baik</td>
-                                                <td style="text-align:center;">{{ $sp->lampu_46_check }}</td>
-                                                <td>{{ $sp->lampu_46_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->lampu_46_due ? \Carbon\Carbon::parse($sp->lampu_46_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>4.7</td>
-                                                <td>Kondisi Kotak isolasi dan stop darurat baik</td>
-                                                <td style="text-align:center;">{{ $sp->lampu_47_check }}</td>
-                                                <td>{{ $sp->lampu_47_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->lampu_47_due ? \Carbon\Carbon::parse($sp->lampu_47_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr style="font-weight: bold;">
-                                                <td>5</td>
-                                                <td colspan="4">Mesin</td>
-                                            </tr>
-                                            <tr>
-                                                <td>5.1</td>
-                                                <td>Kondisi mesin dan kebersihan  baik</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_51_check }}</td>
-                                                <td>{{ $sp->mesin_51_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_51_due ? \Carbon\Carbon::parse($sp->mesin_51_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>5.2</td>
-                                                <td>Semua kondisi selang, cylinder, hydrolik, dan saluran baik</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_52_check }}</td>
-                                                <td>{{ $sp->mesin_52_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_52_due ? \Carbon\Carbon::parse($sp->mesin_52_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>5.3</td>
-                                                <td>Kondisi indicator panel dan fungsi pengukur baik</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_53_check }}</td>
-                                                <td>{{ $sp->mesin_53_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_53_due ? \Carbon\Carbon::parse($sp->mesin_53_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>5.4</td>
-                                                <td>Kondisi Cover engine baik</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_54_check }}</td>
-                                                <td>{{ $sp->mesin_54_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_54_due ? \Carbon\Carbon::parse($sp->mesin_54_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>5.5</td>
-                                                <td>Kondisi Cover radiator baik</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_55_check }}</td>
-                                                <td>{{ $sp->mesin_55_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_55_due ? \Carbon\Carbon::parse($sp->mesin_55_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>5.6</td>
-                                                <td>Kondisi Winch, Sling, hook & shackle baik</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_56_check }}</td>
-                                                <td>{{ $sp->mesin_56_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_56_due ? \Carbon\Carbon::parse($sp->mesin_56_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>5.7</td>
-                                                <td>Kondisi saringan selang hisap baik</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_57_check }}</td>
-                                                <td>{{ $sp->mesin_57_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_57_due ? \Carbon\Carbon::parse($sp->mesin_57_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>5.8</td>
-                                                <td>Kondisi Tutup bahan bakar, pengukur pada tangki baik</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_58_check }}</td>
-                                                <td>{{ $sp->mesin_58_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_58_due ? \Carbon\Carbon::parse($sp->mesin_58_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>5.9</td>
-                                                <td>Kondisi Tangga, tempat pijakan, dan pegangan ke atas engine baik</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_59_check }}</td>
-                                                <td>{{ $sp->mesin_59_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_59_due ? \Carbon\Carbon::parse($sp->mesin_59_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>5.10</td>
-                                                <td>Kondisi Pelindung knalpot dan tutup knalpot baik</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_510_check }}</td>
-                                                <td>{{ $sp->mesin_510_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->mesin_510_due ? \Carbon\Carbon::parse($sp->mesin_510_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr style="font-weight: bold;">
-                                                <td>6</td>
-                                                <td colspan="4">Lain-lain</td>
-                                            </tr>
-                                            <tr>
-                                                <td>6.1</td>
-                                                <td>Apakah Oil spill kit ( Absorbent ) tersedia </td>
-                                                <td style="text-align:center;">{{ $sp->lain_61_check }}</td>
-                                                <td>{{ $sp->lain_61_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->lain_61_due ? \Carbon\Carbon::parse($sp->lain_61_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>6.2</td>
-                                                <td>Apakah Tempat sampah/limbah B3 sementara tersedia</td>
-                                                <td style="text-align:center;">{{ $sp->lain_62_check }}</td>
-                                                <td>{{ $sp->lain_62_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->lain_62_due ? \Carbon\Carbon::parse($sp->lain_62_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>6.3</td>
-                                                <td>Radio komunikasi tersedia</td>
-                                                <td style="text-align:center;">{{ $sp->lain_63_check }}</td>
-                                                <td>{{ $sp->lain_63_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->lain_63_due ? \Carbon\Carbon::parse($sp->lain_63_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>6.4</td>
-                                                <td>Kondisi Life jacket baik</td>
-                                                <td style="text-align:center;">{{ $sp->lain_64_check }}</td>
-                                                <td>{{ $sp->lain_64_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->lain_64_due ? \Carbon\Carbon::parse($sp->lain_64_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>6.5</td>
-                                                <td>Kondisi perahu baik</td>
-                                                <td style="text-align:center;">{{ $sp->lain_65_check }}</td>
-                                                <td>{{ $sp->lain_65_action }}</td>
-                                                <td style="text-align:center;">{{ $sp->lain_65_due ? \Carbon\Carbon::parse($sp->lain_65_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
+                                                <td>Personil minimal 2 orang yang bekerja di pontoon dan dilengkapi radio tangan</td>
+                                                <td style="text-align:center;">{{ $sp->pengawas_43_check }}</td>
+                                                <td>{{ $sp->pengawas_43_action }}</td>
+                                                <td style="text-align:center;">{{ $sp->pengawas_43_due ? \Carbon\Carbon::parse($sp->pengawas_43_due)->locale('id')->isoFormat('D MMMM YYYY'): '' }}</td>
                                             </tr>
                                         </tbody>
 
@@ -396,35 +323,35 @@
                                                 <td>1</td>
                                                 <td>{{ $sp->nama_inspektor1 }}</td>
                                                 <td>{{ $sp->nik_inspektor1 }}</td>
-                                                <td></td>
+                                                <td>{{ $sp->jabatan_inspektor1 }}</td>
                                                 <td><img src="{{ $sp->verified_inspektor1 }}" style="max-width: 70px;"></td>
                                             </tr>
                                             <tr>
                                                 <td>2</td>
                                                 <td>{{ $sp->nama_inspektor2 }}</td>
                                                 <td>{{ $sp->nik_inspektor2 }}</td>
-                                                <td></td>
+                                                <td>{{ $sp->jabatan_inspektor2 }}</td>
                                                 <td><img src="{{ $sp->verified_inspektor2 }}" style="max-width: 70px;"></td>
                                             </tr>
                                             <tr>
                                                 <td>3</td>
                                                 <td>{{ $sp->nama_inspektor3 }}</td>
                                                 <td>{{ $sp->nik_inspektor3 }}</td>
-                                                <td></td>
+                                                <td>{{ $sp->jabatan_inspektor3 }}</td>
                                                 <td><img src="{{ $sp->verified_inspektor3 }}" style="max-width: 70px;"></td>
                                             </tr>
                                             <tr>
                                                 <td>4</td>
                                                 <td>{{ $sp->nama_inspektor4 }}</td>
                                                 <td>{{ $sp->nik_inspektor4 }}</td>
-                                                <td></td>
+                                                <td>{{ $sp->jabatan_inspektor4 }}</td>
                                                 <td><img src="{{ $sp->verified_inspektor4 }}" style="max-width: 70px;"></td>
                                             </tr>
                                             <tr>
                                                 <td>5</td>
                                                 <td>{{ $sp->nama_inspektor5 }}</td>
                                                 <td>{{ $sp->nik_inspektor5 }}</td>
-                                                <td></td>
+                                                <td>{{ $sp->jabatan_inspektor5 }}</td>
                                                 <td><img src="{{ $sp->verified_inspektor5 }}" style="max-width: 70px;"></td>
                                             </tr>
                                         </tbody>
