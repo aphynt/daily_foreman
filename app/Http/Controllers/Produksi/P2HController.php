@@ -44,8 +44,8 @@ class P2HController extends Controller
         $start = new DateTime($request->tanggalP2H);
         $tanggalP2H = $start->format('Y-m-d');
 
-        $offset = $request->input('start', 0);   // Offset
-        $length = $request->input('length', 10); // Default 10 items
+        $offset = $request->input('start', 0);
+        $length = $request->input('length', 10);
         $draw = $request->input('draw');
 
         $verifikator = DB::table('OPR_CHECKLISTP2H as p2h')
@@ -106,7 +106,6 @@ class P2HController extends Controller
             $supportQuery->where('VAL_NOTOK', '>=', '1');
         }
 
-        // Optional: filter berdasarkan kata kunci pencarian
         if ($request->search['value']) {
             $searchValue = '%' . $request->search['value'] . '%';
             $columnsToSearch = ['A.OPR_NRP', 'D.PERSONALNAME', 'A.VHC_ID'];
@@ -118,12 +117,10 @@ class P2HController extends Controller
             });
         }
 
-        // Filter shift jika ada
         if (!empty($request->shiftP2H)) {
             $supportQuery->where('A.OPR_SHIFTNO', $request->shiftP2H);
         }
 
-        // Filter tanggal jika ada
         if (!empty($request->tanggalP2H)) {
             $supportQuery->where('A.OPR_SHIFTDATE', $tanggalP2H);
         }
@@ -143,21 +140,14 @@ class P2HController extends Controller
             });
         }
 
-        //menampilkan hanya P2H yang diatas 0, dengan role sbb
-
-
-
-        // Hanya ambil data yang sudah diverifikasi oleh foreman atau supervisor
         $supportQuery->where(function($query) {
             $query->whereNotNull('p2h.VERIFIED_FOREMAN')
                   ->orWhereNotNull('p2h.VERIFIED_SUPERVISOR')
                   ->orWhereNotNull('VAL_NOTOK', '>=', '1');
         });
 
-        // Hitung total hasil filter
         $filteredRecords = $supportQuery->count();
 
-        // Ambil data dengan urutan dan paginasi
         $supportQuery = $supportQuery
             ->orderByDesc('VAL_NOTOK')
 
@@ -180,8 +170,6 @@ class P2HController extends Controller
         //         ->whereDate('p2h.OPR_REPORTTIME', DB::raw("CAST(A.OPR_SHIFTDATE AS DATE)"));
         // });
 
-
-        // Ambil data untuk halaman saat ini
 
         // Return JSON response
         return response()->json([
@@ -208,17 +196,15 @@ class P2HController extends Controller
         $shiftNo = in_array((int)$shiftP2H, [6,7], true) ? (int)$shiftP2H : null;
         $cluster = in_array($request->cluster, ['EX','HD','MG','BD']) ? $request->cluster : null;
 
-        $userRoleList = ['FOREMAN MEKANIK','PJS FOREMAN MEKANIK','JR FOREMAN MEKANIK','SUPERVISOR MEKANIK','LEADER MEKANIK'];
-        $isForeman = in_array(Auth::user()->position, $userRoleList);
+        $userRoleList = ['FOREMAN','PJS FOREMAN','SUPERVISOR','PJS SUPERVISOR'];
+        $isForeman = in_array(Auth::user()->role, $userRoleList) && Auth::user()->departemen_id == 11;
         $userSection = $isForeman ? Auth::user()->section : null;
 
-        // --- Users SQL Server ---
         $users = DB::connection('daily_foreman')
             ->table('users')
             ->get()
             ->keyBy(fn($u) => trim($u->nik));
 
-        // --- Ambil checklist IDs dari PostgreSQL ---
         $checklistIds = DB::connection('p2h')->table('opr_oprchecklist')
             ->select('vhc_id','opr_reporttime','opr_nrp','opr_shiftno','opr_shiftdate','mtr_hourmeter')
             ->when($shiftNo, fn($q) => $q->where('opr_shiftno', $shiftNo))
@@ -235,7 +221,15 @@ class P2HController extends Controller
             ->unique()
             ->toArray();
 
-        // --- Ambil p2h data dari SQL Server ---
+        $notOkCounts = DB::connection('p2h')->table('opr_oprchecklistitem')
+            ->select('vhc_id', 'opr_reporttime', DB::raw('count(*) as total_notok'))
+            ->whereIn('vhc_id', $checklistIds->pluck('vhc_id')->unique()->toArray())
+            ->whereIn('opr_reporttime', $checklistIds->pluck('opr_reporttime')->unique()->toArray())
+            ->where('checklistval', 0)
+            ->groupBy('vhc_id', 'opr_reporttime')
+            ->get()
+            ->keyBy(fn($item) => trim($item->vhc_id) . '_' . Carbon::parse($item->opr_reporttime)->format('Y-m-d H:i:s'));
+
         $p2hData = DB::connection('daily_foreman')
         ->table('prd_opr_checklistp2h as p')
         ->leftJoin('users as uOperator', 'uOperator.nik', '=', 'p.VERIFIED_OPERATOR')
@@ -258,7 +252,7 @@ class P2HController extends Controller
         ->get()
         ->keyBy(fn($row) => trim($row->VHC_ID) . '_' . Carbon::parse($row->OPR_REPORTTIME)->format('Y-m-d H:i:s'));
 
-        $results = $checklistIds->map(function($row) use ($users, $p2hData, $isForeman, $userSection) {
+        $results = $checklistIds->map(function($row) use ($users, $p2hData, $notOkCounts, $isForeman, $userSection) {
             $vhcId = $row->vhc_id ?? null;
             $vhcPrefix = substr($vhcId, 0, 2);
 
@@ -269,11 +263,23 @@ class P2HController extends Controller
             $key = trim($vhcId) . '_' . Carbon::parse($oprReportTime)->format('Y-m-d H:i:s');
             $p2h = $p2hData[$key] ?? null;
 
+            $valNotOk = $notOkCounts[$key]->total_notok ?? 0;
             $sectionOk = true;
+
             if ($isForeman && $userSection) {
-                if ($userSection =='WHEEL' && !str_starts_with($vhcId,'MG%') && !str_starts_with($vhcId,'HD%')) $sectionOk=false;
-                if ($userSection =='TRACK EXCA' && !str_starts_with($vhcId,'EX')) $sectionOk=false;
-                if ($userSection =='TRACK DOZER' && !str_starts_with($vhcId,'BD')) $sectionOk=false;
+                if ($userSection == 'WHEEL' && !str_starts_with($vhcId, 'MG') && !str_starts_with($vhcId, 'HD')) {
+                    $sectionOk = false;
+                }
+                if ($userSection == 'TRACK EXCA' && !str_starts_with($vhcId, 'EX')) {
+                    $sectionOk = false;
+                }
+                if ($userSection == 'TRACK DOZER' && !str_starts_with($vhcId, 'BD')) {
+                    $sectionOk = false;
+                }
+            }
+
+            if (!$sectionOk) {
+                return null;
             }
 
             return (object)[
@@ -282,11 +288,7 @@ class P2HController extends Controller
                 'OPR_REPORTTIME' => $oprReportTime,
                 'OPR_NRP' => $opr_nrp_fix,
                 'PERSONALNAME' => $p2h?->NAME_OPERATOR ?? null,
-                'VAL_NOTOK' => DB::connection('p2h')->table('opr_oprchecklistitem')
-                                    ->where('vhc_id',$vhcId)
-                                    ->where('opr_reporttime',$oprReportTime)
-                                    ->where('checklistval',0)
-                                    ->count(),
+                'VAL_NOTOK' => $valNotOk,
                 'DATEVERIFIED_MEKANIK' => $p2h?->DATEVERIFIED_MEKANIK ?? null,
                 'VERIFIED_MEKANIK' => $p2h?->VERIFIED_MEKANIK ?? null,
                 'NAMAMEKANIK' => $p2h?->NAME_MEKANIK ?? null,
@@ -308,12 +310,11 @@ class P2HController extends Controller
 
         // --- Sorting ---
        $results = $results->sort(function ($a, $b) {
-            // 1. VAL_NOTOK descending (utamakan yang bukan 0)
             if ($a->VAL_NOTOK != $b->VAL_NOTOK) {
                 return $b->VAL_NOTOK <=> $a->VAL_NOTOK;
             }
 
-            // 2. VHC_ID ascending
+
             return strcmp($a->VHC_ID, $b->VHC_ID);
         })->values();
 
@@ -377,9 +378,9 @@ class P2HController extends Controller
         )
         ->whereBetween(DB::raw('CAST(p2h.OPR_REPORTTIME AS DATE)'), [$startTimeFormatted, $endTimeFormatted])
         ->where(function ($query) {
-            $query->whereNotNull('p2h.VERIFIED_FOREMAN')  // Jika Foreman tidak null
-                ->orWhereNull('p2h.VERIFIED_SUPERVISOR') // Supervisor boleh null
-                ->orWhereNull('p2h.VERIFIED_SUPERINTENDENT'); // Superintendent boleh null
+            $query->whereNotNull('p2h.VERIFIED_FOREMAN')
+                ->orWhereNull('p2h.VERIFIED_SUPERVISOR')
+                ->orWhereNull('p2h.VERIFIED_SUPERINTENDENT');
         })
         ->where('p2h.STATUSENABLED', true);
         // $data = $data->where(function($query) {
@@ -403,16 +404,14 @@ class P2HController extends Controller
             'OPR_NRP' => 'required|string'
         ]);
 
-        DB::beginTransaction(); // Mulai transaksi
+        DB::beginTransaction();
 
         try {
-            // Ambil semua checklist items dari SQL Server
             $checklistItems = DB::connection('focus')
                 ->table('FLT_EQUCHECKLISTITEM')
                 ->select('checklistgroupid','checklistitemid','checklistitemdescription')
                 ->get();
 
-            // Mapping checklist items agar selalu ada default string
             $checklistMap = [];
             foreach ($checklistItems as $item) {
                 $groupId = strtoupper(trim((string)$item->checklistgroupid));
@@ -420,7 +419,6 @@ class P2HController extends Controller
                 $checklistMap[$groupId][$itemId] = $item->checklistitemdescription;
             }
 
-            // Ambil detail dari PostgreSQL
             $oprReportTime = (new \DateTime($request['OPR_REPORTTIME']))->format('Y-m-d H:i:s');
             $detail = DB::connection('p2h')->table('opr_oprchecklistitem as a')
                 ->select('a.id','a.equ_typeid','a.checklistgroupid','a.checklistitemid','a.checklistnotes','a.checklistval','a.opr_reporttime','a.opr_shiftdate','a.opr_shiftno','a.vhc_id')
@@ -440,12 +438,10 @@ class P2HController extends Controller
 
                     $description = null;
 
-                    // 1. Coba exact match dulu
                     if (isset($checklistMap[$groupId][$itemId])) {
                         $description = $checklistMap[$groupId][$itemId];
                     }
 
-                    // 2. Kalau belum ketemu, coba group match
                     if ($description === null) {
                         foreach ($groupKeys as $groupKey) {
                             if (
@@ -458,7 +454,6 @@ class P2HController extends Controller
                         }
                     }
 
-                    // 3. Kalau tetap belum ketemu, fallback by itemId
                     if ($description === null) {
                         foreach ($groupKeys as $groupKey) {
                             if (isset($checklistMap[$groupKey][$itemId])) {
@@ -472,7 +467,6 @@ class P2HController extends Controller
 
                     return $row;
                 })
-                // Hilangkan item double berdasarkan group + deskripsi
                 ->unique(function ($row) {
                     return strtoupper(trim((string) $row->checklistgroupid)) . '|' .
                         strtoupper(trim((string) $row->checklistitemdescription));
@@ -481,7 +475,6 @@ class P2HController extends Controller
 
             $first = $detail->first();
 
-            // Ambil atau create header P2H
             $checkdataP2H = ChecklistP2H::where('vhc_id', $first->vhc_id)
                 ->where('opr_shiftno', $first->opr_shiftno)
                 ->where('opr_reporttime', $first->opr_reporttime)
@@ -512,56 +505,78 @@ class P2HController extends Controller
                 abort(403, 'Departemen tidak memiliki akses verifikasi.');
             }
 
+            $oldDetailsMap = collect();
+
+
+            $oldVerifiedMekanik = null;
+            $oldDateVerifiedMekanik = null;
+
             if ($checkdataP2H) {
-                $checkdataP2H->update($updateData);
-                $dataP2H = $checkdataP2H;
-            } else {
-                $dataP2H = ChecklistP2H::create(array_merge([
-                    'uuid' => (string) Uuid::uuid4()->toString(),
-                    'statusenabled' => true,
-                    'created_by' => $user->id,
-                    'vhc_id' => $first->vhc_id,
-                    'mtr_hourmeter' => $request['MTR_HOURMETER'] ?? null,
-                    'opr_shiftno' => $first->opr_shiftno,
-                    'opr_reporttime' => $first->opr_reporttime,
-                    'opr_shiftdate' => $first->opr_shiftdate,
-                    'verified_operator' => $request['OPR_NRP'],
-                    'dateverified_operator' => $first->opr_reporttime,
-                ], $updateData));
+                $oldVerifiedMekanik = $checkdataP2H->verified_mekanik;
+                $oldDateVerifiedMekanik = $checkdataP2H->dateverified_mekanik;
+
+                $oldDetails = ChecklistP2HDetail::where('uuid_opr_checklistp2h', $checkdataP2H->UUID)
+                    ->select('groupid', 'itemdescription', 'value', 'notes', 'kbj', 'jawaban', 'catatan_mekanik')
+                    ->get();
+
+                // Petakan data anak lama berdasarkan kombinasi GroupID dan Deskripsi
+                $oldDetailsMap = $oldDetails->keyBy(fn($item) =>
+                    strtoupper(trim((string)$item->groupid)) . '|' . strtoupper(trim((string)$item->itemdescription))
+                );
+
+                // 3️⃣ Hapus data anak lama di tabel detail
+                ChecklistP2HDetail::where('uuid_opr_checklistp2h', $checkdataP2H->UUID)->delete();
+
+                // Hapus data induk lama
+                $checkdataP2H->delete();
             }
 
-            // Insert detail P2H
+            // 4️⃣ JALANKAN PROSES CREATE INDUK DENGAN MEMPERTAHANKAN VERIFIKASI MEKANIK LAMA
+            $dataP2H = ChecklistP2H::create(array_merge([
+                'uuid' => (string) Uuid::uuid4()->toString(),
+                'statusenabled' => true,
+                'created_by' => $user->id,
+                'vhc_id' => $first->vhc_id,
+                'mtr_hourmeter' => $request['MTR_HOURMETER'] ?? null,
+                'opr_shiftno' => $first->opr_shiftno,
+                'opr_reporttime' => $first->opr_reporttime,
+                'opr_shiftdate' => $first->opr_shiftdate,
+                'verified_operator' => $request['OPR_NRP'],
+                'dateverified_operator' => $first->opr_reporttime,
+
+                // Pertahankan data mekanik lama jika updateData saat ini (misal diisi oleh Dept 8) tidak membawa data mekanik baru
+                'verified_mekanik' => $oldVerifiedMekanik,
+                'dateverified_mekanik' => $oldDateVerifiedMekanik,
+            ], $updateData)); // $updateData dari Dept 11 otomatis menimpa nilai ini jika yang login adalah mekanik
+
+            // 5️⃣ INSERT DATA ANAK BARU DENGAN MEMPERTAHANKAN FIELD LAMA JIKA ADA
             foreach ($detail as $item) {
+                $groupKey = strtoupper(trim((string)$item->checklistgroupid));
+                $descKey  = strtoupper(trim((string)$item->checklistitemdescription));
+                $mapKey   = $groupKey . '|' . $descKey;
+
+                // Cari apakah ada data histori yang cocok di map data lama
+                $oldItem = $oldDetailsMap->get($mapKey);
+
                 ChecklistP2HDetail::create([
                     'uuid' => (string) Uuid::uuid4()->toString(),
                     'uuid_opr_checklistp2h' => $dataP2H->uuid,
                     'groupid' => $item->checklistgroupid,
                     'itemdescription' => $item->checklistitemdescription,
-                    'value' => $item->checklistval,
-                    'notes' => $item->checklistnotes,
+
+                    // Prioritas: Ambil data lama jika NOT NULL, jika kosong pakai data input baru
+                    'value' => $oldItem->value ?? $item->checklistval,
+                    'notes' => $oldItem->notes ?? $item->checklistnotes,
+
+                    // Field khusus mekanik dipertahankan sepenuhnya jika ada nilainya
+                    'kbj' => $oldItem->kbj ?? null,
+                    'jawaban' => $oldItem->jawaban ?? null,
+                    'catatan_mekanik' => $oldItem->catatan_mekanik ?? null,
+
                     'created_by' => $user->id,
                     'statusenabled' => true,
                 ]);
             }
-
-            // foreach ($detail as $item) {
-            //     ChecklistP2HDetail::updateOrCreate(
-            //         [
-            //             // Kunci pencarian agar tidak double
-            //             'uuid_opr_checklistp2h' => $dataP2H->uuid,
-            //             'groupid' => $item->checklistgroupid,
-            //             'itemdescription' => $item->checklistitemdescription,
-            //         ],
-            //         [
-            //             // Data yang di-update jika sudah ada
-            //             'value' => $item->checklistval,
-            //             'notes' => $item->checklistnotes,
-            //             'created_by' => $user->id,
-            //             'statusenabled' => true,
-            //         ]
-            //     );
-            // }
-
             DB::commit();
             return response()->json(['status' => 'ok']);
         } catch (\Exception $e) {
@@ -610,8 +625,6 @@ class P2HController extends Controller
 
 
         $jumlahAATerisi = $detail->filter(function ($item) {
-            // return $item->CHECKLISTVAL == 0 && $item->CHECKLISTGROUPID == 'AA';
-            //Kode A atau AA harus muncul
             return $item->CHECKLISTVAL == 0 && ($item->CHECKLISTGROUPID == 'AA' || $item->CHECKLISTGROUPID == 'A');
         })->count();
 
@@ -647,7 +660,6 @@ class P2HController extends Controller
                     )
                 ->where('UUID_OPR_CHECKLISTP2H', $checkdataP2H->UUID)->where('p2h.STATUSENABLED', true)->get();
 
-                                // Langkah 1: Normalisasi struktur $detailP2H agar fieldnya sepadan dengan $detail
                 $normalizedDetailP2H = $detailP2H->map(function ($item) {
                     return (object)[
                         'ID' => null,
@@ -668,7 +680,6 @@ class P2HController extends Controller
                     ];
                 });
 
-                // Langkah 2: Tambahkan flag 'SOURCE' ke $detail untuk penanda asal data
                 $normalizedDetail = $detail->map(function ($item) {
                     return (object)[
                     'ID' => $item->ID,
@@ -678,7 +689,7 @@ class P2HController extends Controller
                     'CHECKLISTNOTES' => $item->CHECKLISTNOTES,
                     'CHECKLISTVAL' => $item->CHECKLISTVAL,
                     'VAL' => $item->VAL,
-                    'CATATAN_MEKANIK' => null,  // Ditambahkan manual karena tidak ada di query
+                    'CATATAN_MEKANIK' => null,
                     'KBJ' => null,
                     'JAWABAN' => null,
                     'OPR_REPORTTIME' => $item->OPR_REPORTTIME,
@@ -689,7 +700,6 @@ class P2HController extends Controller
                 ];
                 });
 
-                // Langkah 3: Gabungkan dengan key unik berdasarkan field penting
                 $keyFn = fn($item) => implode('|', [
                     $item->CHECKLISTGROUPID,
                     $item->CHECKLISTITEMDESCRIPTION,
@@ -697,10 +707,8 @@ class P2HController extends Controller
                     $item->OPR_REPORTTIME
                 ]);
 
-                // Step 4: Buat collection awal dari $detailP2H
                 $combined = $normalizedDetailP2H->keyBy($keyFn);
 
-                // Step 5: Tambahkan dari $detail jika belum ada
                 $normalizedDetail->each(function ($item) use (&$combined, $keyFn) {
                     $key = $keyFn($item);
                     if (! $combined->has($key)) {
@@ -708,7 +716,6 @@ class P2HController extends Controller
                     }
                 });
 
-                // Final output
                 $detailP2H = $combined->values();
 
 
@@ -761,20 +768,17 @@ class P2HController extends Controller
 
     public function detail(Request $request)
     {
-       // --- Ambil semua group description dari SQL Server ---
         $groups = DB::connection('focus')
             ->table('FLT_EQUCHECKLISTGROUP')
             ->select('EQU_TYPEID','CHECKLISTGROUPID','CHECKLISTGROUPDESCRIPTION')
             ->get()
             ->keyBy(fn($row) => strtoupper(trim($row->EQU_TYPEID)) . '_' . strtoupper(trim($row->CHECKLISTGROUPID)));
 
-        // --- Ambil semua item description dari SQL Server ---
         $checklistItems = DB::connection('focus')
             ->table('FLT_EQUCHECKLISTITEM')
             ->select('EQU_TYPEID','CHECKLISTGROUPID','CHECKLISTITEMID','CHECKLISTITEMDESCRIPTION')
             ->get();
 
-        // Mapping item description ke array 2 dimensi [group][item]
         $checklistMap = [];
         foreach ($checklistItems as $item) {
             $groupKey = strtoupper(trim((string)$item->CHECKLISTGROUPID));
@@ -782,7 +786,6 @@ class P2HController extends Controller
             $checklistMap[$groupKey][$itemKey] = $item->CHECKLISTITEMDESCRIPTION;
         }
 
-        // --- Ambil detail dari PostgreSQL ---
         $oprReportTime = (new \DateTime($request['OPR_REPORTTIME']))->format('Y-m-d H:i:s');
 
         $detail = DB::connection('p2h')
@@ -793,9 +796,8 @@ class P2HController extends Controller
             ->orderBy('a.checklistgroupid')
             ->get();
 
-        // --- Mapping description + fallback + hilangkan duplikasi ---
         $groupKeys = array_keys($checklistMap);
-        usort($groupKeys, fn($a,$b) => strlen($b) <=> strlen($a)); // panjang dulu untuk substring match
+        usort($groupKeys, fn($a,$b) => strlen($b) <=> strlen($a));
 
         $detail = $detail->map(function($row) use ($groups, $checklistMap, $groupKeys) {
             $groupId = strtoupper(trim((string)$row->checklistgroupid));
@@ -803,12 +805,10 @@ class P2HController extends Controller
 
             $description = null;
 
-            // 1️⃣ Exact match
             if (isset($checklistMap[$groupId][$itemId])) {
                 $description = $checklistMap[$groupId][$itemId];
             }
 
-            // 2️⃣ Substring match di groupKeys
             if ($description === null) {
                 foreach ($groupKeys as $grpKey) {
                     if ((str_contains($groupId, $grpKey)) && isset($checklistMap[$grpKey][$itemId])) {
@@ -818,7 +818,6 @@ class P2HController extends Controller
                 }
             }
 
-            // 3️⃣ Fallback by itemId
             if ($description === null) {
                 foreach ($groupKeys as $grpKey) {
                     if (isset($checklistMap[$grpKey][$itemId])) {
@@ -831,16 +830,14 @@ class P2HController extends Controller
             $row->checklistitemdescription = $description ?? 'Deskripsi tidak tersedia';
             return $row;
         })
-        // Hilangkan item double berdasarkan kombinasi group + description
+
         ->unique(fn($row) => strtoupper(trim((string)$row->checklistgroupid)) . '|' . strtoupper(trim((string)$row->checklistitemdescription)))
         ->values();
 
-        // --- Hitung jumlah item AA/A yang val=0 ---
         $jumlahAATerisi = $detail->filter(function ($item) {
             return $item->checklistval == 0 && ($item->checklistgroupid == 'AA' || $item->checklistgroupid == 'A');
         })->count();
 
-        // Ambil data P2H
         $checkdataP2H = ChecklistP2H::where('VHC_ID', $detail->first()->vhc_id)
             ->where('OPR_SHIFTNO', $detail->first()->opr_shiftno)
             ->where('OPR_REPORTTIME', $detail->first()->opr_reporttime)
@@ -872,7 +869,6 @@ class P2HController extends Controller
                     )
                 ->where('UUID_OPR_CHECKLISTP2H', $checkdataP2H->UUID)->where('p2h.STATUSENABLED', true)->get();
 
-                                // Langkah 1: Normalisasi struktur $detailP2H agar fieldnya sepadan dengan $detail
                 $normalizedDetailP2H = $detailP2H->map(function ($item) {
                     return (object)[
                         'ID' => null,
@@ -892,7 +888,7 @@ class P2HController extends Controller
                         'SOURCE' => 'P2H',
                     ];
                 });
-                // Langkah 2: Tambahkan flag 'SOURCE' ke $detail untuk penanda asal data
+
                 $normalizedDetail = $detail->map(function ($item) {
                     return (object)[
                     'ID' => $item->id,
@@ -902,7 +898,7 @@ class P2HController extends Controller
                     'CHECKLISTNOTES' => $item->checklistnotes,
                     'CHECKLISTVAL' => $item->checklistval,
                     'VAL' => $item->checklistval,
-                    'CATATAN_MEKANIK' => null,  // Ditambahkan manual karena tidak ada di query
+                    'CATATAN_MEKANIK' => null,
                     'KBJ' => null,
                     'JAWABAN' => null,
                     'OPR_REPORTTIME' => $item->opr_reporttime,
@@ -913,7 +909,6 @@ class P2HController extends Controller
                 ];
                 });
 
-                // Langkah 3: Gabungkan dengan key unik berdasarkan field penting
                 $keyFn = fn($item) => implode('|', [
                     $item->CHECKLISTGROUPID,
                     $item->CHECKLISTITEMDESCRIPTION,
@@ -921,10 +916,9 @@ class P2HController extends Controller
                     $item->OPR_REPORTTIME
                 ]);
 
-                // Step 4: Buat collection awal dari $detailP2H
                 $combined = $normalizedDetailP2H->keyBy($keyFn);
 
-                // Step 5: Tambahkan dari $detail jika belum ada
+
                 $normalizedDetail->each(function ($item) use (&$combined, $keyFn) {
                     $key = $keyFn($item);
                     if (! $combined->has($key)) {
@@ -932,7 +926,6 @@ class P2HController extends Controller
                     }
                 });
 
-                // Final output
                 $detailP2H = $combined->values();
 
 
@@ -968,10 +961,9 @@ class P2HController extends Controller
                 'OPR_SHIFTDATE' => $row->opr_shiftdate,
                 'OPR_SHIFTNO' => $row->opr_shiftno,
                 'VHC_ID' => strtoupper($row->vhc_id ?? ''),
-                'CHECKLISTITEMDESCRIPTION' => strtoupper($row->checklistitemdescription ?? null),
+                'CHECKLISTITEMDESCRIPTION' => $row->checklistitemdescription ?? null,
             ];
         });
-
 
         if(substr($detail->first()->VHC_ID, 0, 2) == 'EX'){
             return view('safety.p2h.detail.ex', compact('detail', 'jumlahAATerisi', 'verifikasiMekanik', 'detailP2H', 'checkdataP2H'));
@@ -1113,7 +1105,7 @@ class P2HController extends Controller
                         'ITEMDESCRIPTION' => $descriptions[$i],
                     ],
                     [
-                        'UUID' => (string) Uuid::uuid4()->toString(), // <-- Tambahkan UUID
+                        'UUID' => (string) Uuid::uuid4()->toString(),
                         'VALUE' => $values[$i],
                         'NOTES' => $notes[$i],
                         'KBJ' => $kbjs[$i] ?? null,
@@ -1121,13 +1113,12 @@ class P2HController extends Controller
                         'JAWABAN' => $jawabans[$i] ?? null,
                         'CREATED_BY' => Auth::user()->id,
                         'STATUSENABLED' => true,
-                        'UPDATED_AT' => now(), // kalau pakai timestamps
+                        'UPDATED_AT' => now(),
                     ]
                 );
             }
         $position = strtoupper(trim(Auth::user()->position));
         $updateData = match ($position) {
-            // 1. MEKANIK (Prioritas Atas)
             'FOREMAN MEKANIK',
             'PJS FOREMAN MEKANIK',
             'JR FOREMAN MEKANIK',
@@ -1137,7 +1128,6 @@ class P2HController extends Controller
                 'DATEVERIFIED_MEKANIK' => Carbon::now(),
             ],
 
-            // 2. PRODUKSI
             'FOREMAN' => [
                 'VERIFIED_FOREMAN' => Auth::user()->nik,
                 'DATEVERIFIED_FOREMAN' => Carbon::now(),
@@ -1151,7 +1141,6 @@ class P2HController extends Controller
                 'DATEVERIFIED_SUPERINTENDENT' => Carbon::now(),
             ],
 
-            // 3. DEFAULT (Jika posisi tidak terdaftar, dianggap Mekanik)
             default => [
                 'VERIFIED_MEKANIK' => Auth::user()->nik,
                 'DATEVERIFIED_MEKANIK' => Carbon::now(),
@@ -1326,7 +1315,7 @@ class P2HController extends Controller
         if ($data->isEmpty()) {
             return redirect()->back()->with('info', 'Maaf, data tidak ditemukan');
         } else {
-            $item = $data->first(); // ambil data pertama
+            $item = $data->first();
 
             $qrTempFolder = storage_path('app/qr-temp');
                 if (!File::exists($qrTempFolder)) {

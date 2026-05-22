@@ -89,7 +89,7 @@ $detailFiltered = $detail->filter(function($item) {
                                         </div>
                                     </div>
                                 </div>
-                                @if ($jumlahAATerisi >= 1 && !$verifikasiMekanik && !in_array(Auth::user()->position, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK']))
+                                @if ($jumlahAATerisi >= 1)
                                     <div class="alert alert-danger" role="alert">Terdapat temuan kode A atau AA. Verifikasi harus dilakukan oleh Pengawas Mekanik terlebih dahulu.</div>
                                 @endif
                                 {{-- @dd($verifikasiMekanik) --}}
@@ -149,7 +149,7 @@ $detailFiltered = $detail->filter(function($item) {
                                             </div>
                                         </ul>
                                     </div>
-                                @elseif ($jumlahAATerisi >= 1 && $detailFiltered->count() > 0 && in_array(Auth::user()->position, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK']))
+                                @elseif ($jumlahAATerisi >= 1 && $detailFiltered->count() > 0 && in_array(Auth::user()->role, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']) && Auth::user()->departemen_id == 11)
                                     <div class="col-12">
                                         <div class="table-responsive">
                                             <table class="table table-hover mb-0">
@@ -209,11 +209,11 @@ $detailFiltered = $detail->filter(function($item) {
                                                         <th rowspan="2">Item</th>
                                                         <th rowspan="2">Value</th>
                                                         <th rowspan="2">CATATAN OPERATOR</th>
-                                                        @if (!$jumlahAATerisi >= 1 && !$verifikasiMekanik && !in_array(Auth::user()->position, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK']))
+                                                        @if (!$jumlahAATerisi >= 1 && !$verifikasiMekanik && !in_array(Auth::user()->role, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']) && Auth::user()->departemen_id != 11)
                                                         <th colspan="2">Komentar</th>
                                                         @endif
                                                     </tr>
-                                                    @if (!$jumlahAATerisi >= 1 && !$verifikasiMekanik && !in_array(Auth::user()->position, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK']))
+                                                    @if (!$jumlahAATerisi >= 1 && !$verifikasiMekanik && !in_array(Auth::user()->role, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']) && Auth::user()->departemen_id != 11)
                                                     <tr>
                                                         <th>KBJ</th>
                                                         <th>Jawaban</th>
@@ -238,7 +238,7 @@ $detailFiltered = $detail->filter(function($item) {
                                                             @endif
                                                         </td>
                                                         <td><input type="hidden" name="CHECKLISTNOTES[]" value="{{ $dt->CHECKLISTNOTES }}">{{ $dt->CHECKLISTNOTES }}</td>
-                                                        @if (!$jumlahAATerisi >= 1 && !$verifikasiMekanik && !in_array(Auth::user()->position, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK']))
+                                                        @if (!$jumlahAATerisi >= 1 && !$verifikasiMekanik && !in_array(Auth::user()->role, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']) && Auth::user()->departemen_id != 11)
                                                             <td><input type="text" class="form-control" style="min-width: 50px;" name="KBJ[]"></td>
                                                             <td><input type="text" class="form-control" style="min-width: 250px" name="JAWABAN[]"></td>
                                                         @endif
@@ -251,7 +251,7 @@ $detailFiltered = $detail->filter(function($item) {
                                         <div class="text-start">
                                             <hr class="mb-2 mt-1 border-secondary border-opacity-50">
                                         </div>
-                                       @if (!$jumlahAATerisi >= 1 && !$verifikasiMekanik && !in_array(Auth::user()->position, ['FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK', 'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK', 'LEADER MEKANIK']))
+                                       @if (!$jumlahAATerisi >= 1 && !$verifikasiMekanik && !in_array(Auth::user()->role, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']) && Auth::user()->departemen_id != 11)
 
                                         <ul class="list-inline ms-auto mb-0 d-flex justify-content-end flex-wrap">
                                             <div class="text-center mt-3">
@@ -264,6 +264,18 @@ $detailFiltered = $detail->filter(function($item) {
                                     </div>
                                 @endif
                             </form>
+                        </div>
+                        <div class="card-body p-3">
+                            <ul class="list-inline ms-auto mb-0 d-flex justify-content-end flex-wrap">
+                                <li class="list-inline-item align-bottom me-2">
+                                    <a href="#" onclick="window.history.back(); return false;" class="btn btn-secondary d-flex align-items-center fw-bold px-3 py-2" style="font-size: 15px; gap: 8px;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
+                                        </svg>
+                                        <span>Kembali</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>

@@ -86,7 +86,7 @@
                                                         <span class="badge bg-secondary">Reset Password</span>
                                                     </a>
 
-                                                    @if ($us->statusenabled)
+                                                    {{-- @if ($us->statusenabled)
                                                         <a href="#" data-bs-toggle="modal" data-bs-target="#statusEnabled{{ $us->id }}">
                                                             <span class="badge bg-warning">Nonaktifkan</span>
                                                         </a>
@@ -98,7 +98,7 @@
 
                                                     <a href="#" data-bs-toggle="modal" data-bs-target="#changeRole{{ $us->id }}">
                                                         <span class="badge bg-info">Ganti Role</span>
-                                                    </a>
+                                                    </a> --}}
                                                 </div>
                                             </td>
                                         </tr>

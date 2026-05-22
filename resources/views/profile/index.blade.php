@@ -88,11 +88,11 @@
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <p class="mb-1 text-muted">NIK</p>
-                                                        <p class="mb-0">{{ $poka->Nik }}</p>
+                                                        <p class="mb-0">{{ $poka->Nik ?? '-' }}</p>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <p class="mb-1 text-muted">Nama Lengkap</p>
-                                                        <p class="mb-0">{{ $poka->Nama }}</p>
+                                                        <p class="mb-0">{{ $poka->Nama ?? '-' }}</p>
                                                     </div>
                                                 </div>
                                             </li>
@@ -100,11 +100,11 @@
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <p class="mb-1 text-muted">No. Handphone</p>
-                                                        <p class="mb-0">{{ $poka->No_Hp }}</p>
+                                                        <p class="mb-0">{{ $poka->No_Hp ?? '-' }}</p>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <p class="mb-1 text-muted">Tanggal Lahir</p>
-                                                        <p class="mb-0">{{ $poka->DOB }}</p>
+                                                        <p class="mb-0">{{ $poka->DOB ?? '-' }}</p>
                                                     </div>
                                                 </div>
                                             </li>
@@ -112,17 +112,17 @@
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <p class="mb-1 text-muted">Agama</p>
-                                                        <p class="mb-0">{{ $poka->Agama }}</p>
+                                                        <p class="mb-0">{{ $poka->Agama ?? '-' }}</p>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <p class="mb-1 text-muted">Suku</p>
-                                                        <p class="mb-0">{{ $poka->Suku }}</p>
+                                                        <p class="mb-0">{{ $poka->Suku ?? '-' }}</p>
                                                     </div>
                                                 </div>
                                             </li>
                                             <li class="list-group-item px-0 pb-0">
                                                 <p class="mb-1 text-muted">Email</p>
-                                                <p class="mb-0">{{ $poka->Alamat_Email }}</p>
+                                                <p class="mb-0">{{ $poka->Alamat_Email ?? '-' }}</p>
                                             </li>
                                         </ul>
                                     </div>
