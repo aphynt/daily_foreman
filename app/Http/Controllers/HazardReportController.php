@@ -501,6 +501,8 @@ class HazardReportController extends Controller
                     $verificationNumber = RefConf::where('id', 22)->value('value');
                 }else if($request->departemen == 9){
                     $verificationNumber = RefConf::where('id', 24)->value('value');
+                }else if($request->departemen == 14){
+                    $verificationNumber = null;
                 }
 
                 $tanggalPelaporan = Carbon::parse($data->tanggal_pelaporan)->locale('id');
