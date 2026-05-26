@@ -7,7 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class ChecklistP2HDetail extends Model
 {
     //
-    protected $table = 'prd_opr_checklistp2h_list';
+    // protected $table = 'prd_opr_checklistp2h_list';
+
+    protected $connection = 'p2h';
+
+    protected $table = 'opr_oprchecklistitem';
+    public $timestamps = false;
 
     protected $guarded = [];
 }

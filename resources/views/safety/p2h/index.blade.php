@@ -155,6 +155,41 @@
 
 </script>
 <script>
+    function renderVerification(date) {
+
+        let result = '';
+
+        if (date) {
+
+            let formattedDate = new Date(date);
+
+            let year = formattedDate.getFullYear();
+            let month = (formattedDate.getMonth() + 1)
+                .toString()
+                .padStart(2, '0');
+
+            let day = formattedDate.getDate()
+                .toString()
+                .padStart(2, '0');
+
+            let hours = formattedDate.getHours()
+                .toString()
+                .padStart(2, '0');
+
+            let minutes = formattedDate.getMinutes()
+                .toString()
+                .padStart(2, '0');
+
+            let seconds = formattedDate.getSeconds()
+                .toString()
+                .padStart(2, '0');
+
+            result += `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
+
+
+        return result || '-';
+    }
 
     $(document).ready(function () {
         const userRole = "{{ Auth::user()->position }}";
@@ -206,7 +241,15 @@
             },
             columns: [
                 { data: 'VHC_ID' },
-                { data: 'OPR_REPORTTIME' },
+                {
+                    data: null,
+                    render: function(_, __, row) {
+
+                        return renderVerification(
+                            row.OPR_REPORTTIME
+                        );
+                    }
+                },
                 { data: 'OPR_NRP' },
                 { data: 'PERSONALNAME' },
                 {
@@ -219,26 +262,9 @@
                 {
                     data: null,
                     render: function (_, __, row) {
-                        if (!row) return '-';
-
-                        // Ambil tanggal yang sesuai
-                        var date = row.DATEVERIFIED_MEKANIK;
-
-                        // Jika tidak ada tanggal, return '-'
-                        if (!date) return '-';
-
-                        // Ubah format tanggal menggunakan JavaScript Date
-                        var formattedDate = new Date(date);
-
-                        // Mendapatkan tahun, bulan, tanggal, jam, dan menit dengan format yang diinginkan
-                        var year = formattedDate.getFullYear();
-                        var month = (formattedDate.getMonth() + 1).toString().padStart(2, '0');
-                        var day = formattedDate.getDate().toString().padStart(2, '0');
-                        var hours = formattedDate.getHours().toString().padStart(2, '0');
-                        var minutes = formattedDate.getMinutes().toString().padStart(2, '0');
-
-                        // Kembalikan dalam format 'yyyy-MM-dd HH:mm'
-                        return `${year}-${month}-${day} ${hours}:${minutes}`;
+                        return renderVerification(
+                            row.DATEVERIFIED_MEKANIK
+                        );
                     }
                 },
                 {
@@ -259,25 +285,9 @@
                     data: null,
                     render: function (_, __, row) {
                         if (!row) return '-';
-
-                        // Ambil tanggal yang sesuai
-                        var date = row.DATEVERIFIED_FOREMAN || row.DATEVERIFIED_SUPERVISOR;
-
-                        // Jika tidak ada tanggal, return '-'
-                        if (!date) return '-';
-
-                        // Ubah format tanggal menggunakan JavaScript Date
-                        var formattedDate = new Date(date);
-
-                        // Mendapatkan tahun, bulan, tanggal, jam, dan menit dengan format yang diinginkan
-                        var year = formattedDate.getFullYear();
-                        var month = (formattedDate.getMonth() + 1).toString().padStart(2, '0');
-                        var day = formattedDate.getDate().toString().padStart(2, '0');
-                        var hours = formattedDate.getHours().toString().padStart(2, '0');
-                        var minutes = formattedDate.getMinutes().toString().padStart(2, '0');
-
-                        // Kembalikan dalam format 'yyyy-MM-dd HH:mm'
-                        return `${year}-${month}-${day} ${hours}:${minutes}`;
+                        return renderVerification(
+                            row.DATEVERIFIED_FOREMAN || row.DATEVERIFIED_SUPERVISOR
+                        );
                     }
                 },
                 {

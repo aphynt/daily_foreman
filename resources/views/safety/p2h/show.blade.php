@@ -52,12 +52,9 @@
                                         <th colspan="2">Operator</th>
                                         <th colspan="2">Mekanik</th>
                                         <th colspan="2">Foreman/Spv</th>
-                                        <th colspan="2">S/Intendent</th>
                                         <th rowspan="2">Aksi</th>
                                     </tr>
                                     <tr>
-                                        <th>NIK</th>
-                                        <th>Nama</th>
                                         <th>NIK</th>
                                         <th>Nama</th>
                                         <th>NIK</th>
@@ -71,24 +68,57 @@
                                     @foreach ($data as $item)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $item->VHC_ID }}</td>
-                                        <td>{{ date('Y-m-d H:i', strtotime($item->OPR_REPORTTIME)) }}</td>
-                                        <td>{{ date('Y-m-d H:i', strtotime($item->CREATED_AT)) }}</td>
-                                        <td>{{ $item->SHIFTDESC }}</td>
-                                        <td>{{ $item->VERIFIED_OPERATOR }}</td>
-                                        <td>{{ $item->NAMAOPERATOR }}</td>
-                                        <td>{{ $item->VERIFIED_MEKANIK }}</td>
-                                        <td>{{ $item->NAMAMEKANIK }}</td>
+
+                                        <td>{{ $item->vhc_id }}</td>
+
                                         <td>
-                                            {{ $item->VERIFIED_FOREMAN ? $item->VERIFIED_FOREMAN : $item->VERIFIED_SUPERVISOR }}
+                                            {{
+                                                $item->opr_reporttime
+                                                ? date('Y-m-d H:i', strtotime($item->opr_reporttime))
+                                                : '-'
+                                            }}
                                         </td>
+
                                         <td>
-                                            {{ $item->VERIFIED_FOREMAN ? $item->NAMAFOREMAN : $item->NAMASUPERVISOR }}
+                                            {{
+                                                $item->sys_createdat
+                                                ? date('Y-m-d H:i', strtotime($item->sys_createdat))
+                                                : '-'
+                                            }}
                                         </td>
-                                        <td>{{ $item->VERIFIED_SUPERINTENDENT }}</td>
-                                        <td>{{ $item->NAMASUPERINTENDENT }}</td>
+
+                                        <td>{{ $item->SHIFTDESC ?? '-' }}</td>
+
+                                        <td>{{ $item->verified_operator ?? '-' }}</td>
+
+                                        <td>{{ $item->NAMAOPERATOR ?? '-' }}</td>
+
+                                        <td>{{ $item->verified_mekanik ?? '-' }}</td>
+
+                                        <td>{{ $item->NAMAMEKANIK ?? '-' }}</td>
+
                                         <td>
-                                            <a href="{{ route('p2h.preview', $item->UUID) }}"><span class="badge bg-success">Preview</span></a>
+                                            {{
+                                                $item->verified_foreman
+                                                    ? $item->verified_foreman
+                                                    : ($item->verified_supervisor ?? '-')
+                                            }}
+                                        </td>
+
+                                        <td>
+                                            {{
+                                                $item->verified_foreman
+                                                    ? ($item->NAMAFOREMAN ?? '-')
+                                                    : ($item->NAMASUPERVISOR ?? '-')
+                                            }}
+                                        </td>
+
+                                        <td>
+                                            <a href="{{ route('p2h.preview', $item->uuid) }}">
+                                                <span class="badge bg-success">
+                                                    Preview
+                                                </span>
+                                            </a>
                                         </td>
                                     </tr>
                                     @endforeach

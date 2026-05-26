@@ -58,6 +58,7 @@ $detailFiltered = $detail->filter(function($item) {
                             <h3 style="text-align: center;">PEMERIKSAAN DAN PERAWATAN HARIAN (P2H)</h3>
                             <form action="{{ route('p2h.detail.post') }}" method="post">
                                 @csrf
+
                                 <input type="hidden" name="VHC_ID" value="{{ $detail->first()->VHC_ID }}">
                                 <input type="hidden" name="OPR_SHIFTNO" value="{{ $detail->first()->OPR_SHIFTNO }}">
                                 <input type="hidden" name="OPR_REPORTTIME" value="{{ $detail->first()->OPR_REPORTTIME }}">
@@ -116,6 +117,7 @@ $detailFiltered = $detail->filter(function($item) {
                                                     @foreach ($detailP2H as $dp)
                                                     <tr>
                                                         <td>{{ $loop->iteration }}</td>
+                                                        <td><input type="hidden" name="UUID[]" value="{{ $dp->UUID }}">{{ $dp->UUID }}</td>
                                                         <td><input type="hidden" name="CHECKLISTGROUPID[]" value="{{ $dp->CHECKLISTGROUPID }}">{{ $dp->CHECKLISTGROUPID }}</td>
                                                         <td><input type="hidden" name="CHECKLISTITEMDESCRIPTION[]" value="{{ $dp->CHECKLISTITEMDESCRIPTION }}"> {{ $dp->CHECKLISTITEMDESCRIPTION }}</td>
                                                         <td style="text-align: center">
@@ -167,6 +169,7 @@ $detailFiltered = $detail->filter(function($item) {
                                                     @foreach ($detailFiltered as $dt)
                                                     <tr>
                                                         <td>{{ $loop->iteration }}</td>
+                                                        <td><input type="hidden" name="UUID[]" value="{{ $dt->UUID }}">{{ $dt->UUID }}</td>
                                                         <td><input type="hidden" name="CHECKLISTGROUPID[]" value="{{ $dt->CHECKLISTGROUPID }}">{{ $dt->CHECKLISTGROUPID }}</td>
                                                         <td><input type="hidden" name="CHECKLISTITEMDESCRIPTION[]" value="{{ $dt->CHECKLISTITEMDESCRIPTION }}"> {{ $dt->CHECKLISTITEMDESCRIPTION }}</td>
                                                         <td style="text-align: center">
