@@ -204,6 +204,8 @@ class P2HController extends Controller
             ? $request->cluster
             : null;
 
+        $statusVerifikasi = $request->input('statusVerifikasi');
+
         $userRoleList = [
             'FOREMAN',
             'PJS FOREMAN',
@@ -231,11 +233,6 @@ class P2HController extends Controller
             ->keyBy(fn($u) => trim($u->nik));
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | CHECKLIST HEADER (POSTGRESQL)
-        |--------------------------------------------------------------------------
-        */
         $checklistIds = DB::connection('p2h')
             ->table('opr_oprchecklist')
             ->select(
@@ -255,22 +252,57 @@ class P2HController extends Controller
                 'verified_supervisor',
                 'dateverified_supervisor'
             )
+
             ->when($shiftNo, fn($q) =>
                 $q->where('opr_shiftno', $shiftNo)
             )
+
             ->when($shiftDate, fn($q) =>
                 $q->whereDate('opr_shiftdate', $shiftDate)
             )
+
             ->when($cluster, fn($q) =>
                 $q->where('vhc_id', 'like', $cluster.'%')
             )
+
             ->when($searchValueTrim, function($q) use ($searchValueTrim){
+
                 $q->where(function($q2) use ($searchValueTrim){
+
                     $q2->where('opr_nrp', 'ilike', "%{$searchValueTrim}%")
                     ->orWhere('vhc_id', 'ilike', "%{$searchValueTrim}%");
+
                 });
             })
+
+            ->when(
+                $statusVerifikasi == 'Sudah Diverifikasi',
+                function ($q) {
+
+                    $q->where(function ($q2) {
+
+                        $q2->whereNotNull('verified_foreman')
+                        ->orWhereNotNull('verified_supervisor');
+
+                    });
+                }
+            )
+
+            ->when(
+                $statusVerifikasi == 'Belum Diverifikasi',
+                function ($q) {
+
+                    $q->where(function ($q2) {
+
+                        $q2->whereNull('verified_foreman')
+                        ->whereNull('verified_supervisor');
+
+                    });
+                }
+            )
+
             ->get();
+
 
         /*
         |--------------------------------------------------------------------------
