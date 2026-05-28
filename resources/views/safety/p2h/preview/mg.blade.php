@@ -4,6 +4,18 @@
 @php
     use Carbon\Carbon;
 @endphp
+<style>
+    table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th,
+table td {
+    border: 1px solid #dcdcdc;
+    padding: 8px;
+}
+</style>
 <section class="pc-container">
     <div class="pc-content">
         <div class="row">
@@ -65,8 +77,8 @@
                                         <tbody>
                                             @foreach ($data as $dt)
                                                 <tr>
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $dt->GROUPID }}</td>
+                                                    <td style="text-align: center">{{ $loop->iteration }}</td>
+                                                    <td style="text-align: center">{{ $dt->GROUPID }}</td>
                                                     <td>{{ $dt->ITEMDESCRIPTION }}</td>
                                                     <td style="text-align: center">
                                                         @if ( $dt->VALUE == 0)
@@ -79,7 +91,7 @@
                                                         @endif
                                                     </td>
                                                     <td>{{ $dt->NOTES }}</td>
-                                                    <td>{{ $dt->KBJ }}</td>
+                                                    <td style="text-align: center">{{ $dt->KBJ }}</td>
                                                     <td>{{ $dt->JAWABAN }}</td>
                                                 </tr>
                                             @endforeach

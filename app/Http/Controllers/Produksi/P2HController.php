@@ -374,11 +374,6 @@ class P2HController extends Controller
             $vhcPrefix = substr($vhcId, 0, 2);
 
             $oprReportTime = $row->opr_reporttime ?? null;
-            $oprName = optional(
-                $users->get(
-                    strtoupper(trim($row->opr_nrp ?? ''))
-                )
-            )->name;
 
             if (!$vhcId || !$oprReportTime) {
                 return null;
@@ -439,12 +434,16 @@ class P2HController extends Controller
 
                 'OPR_NRP' => $opr_nrp_fix,
 
-                'PERSONALNAME' => $oprName,
+                'PERSONALNAME' =>
+                    $users[
+                        trim($opr_nrp_fix ?? '')
+                    ]->name ?? null,
+
 
                 'VAL_NOTOK' => $valNotOk,
 
                 'DATEVERIFIED_OPERATOR' =>
-                    $p2h?->dateverified_operator ?? null,
+                    $p2h?->oprReportTime ?? null,
 
                 'VERIFIED_OPERATOR' =>
                     $p2h?->verified_operator ?? null,
@@ -1620,53 +1619,109 @@ class P2HController extends Controller
 
     public function preview($uuid)
     {
-        $data = DB::table('prd_opr_checklistp2h as p2h')
-        ->leftJoin('prd_opr_checklistp2h_list as ph', 'p2h.UUID', '=', 'ph.UUID_OPR_CHECKLISTP2H')
-        ->leftJoin('focus.focus.dbo.FLT_SHIFT as sh', 'p2h.OPR_SHIFTNO', '=', 'sh.SHIFTNO')
-        ->leftJoin('users as opr', 'p2h.VERIFIED_OPERATOR', '=', 'opr.nik')
-        ->leftJoin('users as gl', 'p2h.VERIFIED_FOREMAN', '=', 'gl.nik')
-        ->leftJoin('users as spv', 'p2h.VERIFIED_SUPERVISOR', '=', 'spv.nik')
-        ->leftJoin('users as spt', 'p2h.VERIFIED_SUPERINTENDENT', '=', 'spt.nik')
-        ->leftJoin('users as mec', 'p2h.VERIFIED_MEKANIK', '=', 'mec.nik')
-        ->select(
-            'p2h.UUID',
-            'p2h.STATUSENABLED',
-            'p2h.VHC_ID',
-            'p2h.MTR_HOURMETER',
-            'sh.SHIFTDESC',
-            'p2h.OPR_REPORTTIME',
-            'p2h.VERIFIED_OPERATOR',
-            'p2h.DATEVERIFIED_OPERATOR',
-            'p2h.VERIFIED_MEKANIK',
-            'opr.name as NAMAOPERATOR',
-            'p2h.DATEVERIFIED_MEKANIK',
-            'mec.name as NAMAMEKANIK',
-            'p2h.VERIFIED_FOREMAN',
-            'gl.name as NAMAFOREMAN',
-            'p2h.DATEVERIFIED_FOREMAN',
-            'p2h.VERIFIED_SUPERVISOR',
-            'spv.name as NAMASUPERVISOR',
-            'p2h.DATEVERIFIED_SUPERVISOR',
-            'p2h.VERIFIED_SUPERINTENDENT',
-            'spt.name as NAMASUPERINTENDENT',
-            'p2h.DATEVERIFIED_SUPERINTENDENT',
-            'ph.GROUPID',
-            'ph.ITEMDESCRIPTION',
-            'ph.VALUE',
-            'ph.CATATAN_MEKANIK',
-            'ph.NOTES',
-            'ph.KBJ',
-            'ph.JAWABAN',
-        )
-        ->where('ph.UUID_OPR_CHECKLISTP2H', $uuid)
-        ->where('p2h.STATUSENABLED', true)
-        ->orderBy('ph.GROUPID')
-        ->orderBy('ph.ITEMDESCRIPTION')
-        // ->where(function ($query) {
-        //     $query->whereNotNull('p2h.DATEVERIFIED_FOREMAN')
-        //         ->orWhereNotNull('p2h.DATEVERIFIED_SUPERVISOR');
-        // })
-        ->get();
+        $data = DB::connection('p2h')
+            ->table('opr_oprchecklist as p2h')
+
+            ->leftJoin('opr_oprchecklistitem as ph', function ($join) {
+
+                $join->on('p2h.vhc_id', '=', 'ph.vhc_id')
+                    ->whereRaw("
+                        date_trunc('second', p2h.opr_reporttime)
+                        =
+                        date_trunc('second', ph.opr_reporttime)
+                    ");
+            })
+
+            ->select(
+                'p2h.uuid as UUID',
+                'p2h.statusenabled as STATUSENABLED',
+                'p2h.vhc_id as VHC_ID',
+                'p2h.mtr_hourmeter as MTR_HOURMETER',
+                'p2h.opr_shiftno as OPR_SHIFTNO',
+                'p2h.opr_reporttime as OPR_REPORTTIME',
+
+                'p2h.verified_operator as VERIFIED_OPERATOR',
+                'p2h.dateverified_operator as DATEVERIFIED_OPERATOR',
+
+                'p2h.verified_mekanik as VERIFIED_MEKANIK',
+                'p2h.dateverified_mekanik as DATEVERIFIED_MEKANIK',
+
+                'p2h.verified_foreman as VERIFIED_FOREMAN',
+                'p2h.dateverified_foreman as DATEVERIFIED_FOREMAN',
+
+                'p2h.verified_supervisor as VERIFIED_SUPERVISOR',
+                'p2h.dateverified_supervisor as DATEVERIFIED_SUPERVISOR',
+
+
+                'p2h.verified_superintendent as VERIFIED_SUPERINTENDENT',
+                'p2h.dateverified_superintendent as DATEVERIFIED_SUPERINTENDENT',
+
+                'ph.checklistgroupid as GROUPID',
+                'ph.checklistitemid as ITEMID',
+                'ph.equ_typeid as EQU_TYPEID',
+                'ph.checklistval as VALUE',
+                'ph.catatan_mekanik as CATATAN_MEKANIK',
+                'ph.checklistnotes as NOTES',
+                'ph.kbj as KBJ',
+                'ph.jawaban as JAWABAN',
+            )
+
+            ->where('p2h.uuid', $uuid)
+            ->where('p2h.statusenabled', true)
+
+            ->orderBy('ph.checklistgroupid')
+            ->orderBy('ph.checklistitemid')
+
+            ->get();
+
+        $shift = DB::connection('focus')
+            ->table('dbo.FLT_SHIFT')
+            ->get()
+            ->keyBy('SHIFTNO');
+
+        $users = DB::connection('daily_foreman')
+            ->table('users')
+            ->get()
+            ->keyBy('nik');
+
+        $checklistItems = DB::connection('focus')
+        ->table('dbo.FLT_EQUCHECKLISTITEM')
+        ->get()
+        ->keyBy(function ($item) {
+
+            return $item->EQU_TYPEID . '_' .
+                $item->CHECKLISTGROUPID . '_' .
+                $item->CHECKLISTITEMID;
+        });
+
+        $data->transform(function ($item) use ($shift, $users, $checklistItems) {
+
+            $item->SHIFTDESC =
+                $shift[$item->OPR_SHIFTNO]->SHIFTDESC ?? null;
+
+            $item->NAMAOPERATOR =
+                $users[$item->VERIFIED_OPERATOR]->name ?? null;
+
+            $item->NAMAMEKANIK =
+                $users[$item->VERIFIED_MEKANIK]->name ?? null;
+
+            $item->NAMAFOREMAN =
+                $users[$item->VERIFIED_FOREMAN]->name ?? null;
+
+            $item->NAMASUPERVISOR = $users[$item->VERIFIED_SUPERVISOR]->name ?? null;
+
+            $item->NAMASUPERINTENDENT = $users[$item->VERIFIED_SUPERINTENDENT]->name ?? null;
+
+            $key =
+            $item->EQU_TYPEID . '_' .
+            $item->GROUPID . '_' .
+            $item->ITEMID;
+
+        $item->ITEMDESCRIPTION =
+            $checklistItems[$key]->CHECKLISTITEMDESCRIPTION ?? null;
+
+            return $item;
+        });
 
         if($data->isEmpty()){
             return redirect()->back()->with('info', 'Maaf, data P2H belum diverifikasi');
@@ -1707,270 +1762,246 @@ class P2HController extends Controller
     }
 
     public function detail_post(Request $request)
-{
-    /*
-    |--------------------------------------------------------------------------
-    | VALIDASI ROLE
-    |--------------------------------------------------------------------------
-    */
-    if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
+    {
+        if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
 
-        return redirect()
-            ->back()
-            ->with(
-                'info',
-                'Maaf, verifikasi hanya dapat dilakukan oleh pengawas!'
-            );
-    }
+            return redirect()
+                ->back()
+                ->with(
+                    'info',
+                    'Maaf, verifikasi hanya dapat dilakukan oleh pengawas!'
+                );
+        }
 
-    /*
-    |--------------------------------------------------------------------------
-    | REQUEST
-    |--------------------------------------------------------------------------
-    */
-    $uuid = $request->UUID;
-    $uuidItems = $request->UUID ?? [];
-    /*
-    |--------------------------------------------------------------------------
-    | HEADER POSTGRES
-    |--------------------------------------------------------------------------
-    */
+        $uuidItems = $request->UUID ?? [];
+        $groupIds  = $request->CHECKLISTGROUPID ?? [];
+        $kbjs      = $request->KBJ ?? [];
+        $mekanik   = $request->CATATAN_MEKANIK ?? [];
+        $jawabans  = $request->JAWABAN ?? [];
 
-    $groupIds = $request->CHECKLISTGROUPID ?? [];
+        $count = count($groupIds);
 
-    $kbjs = $request->KBJ ?? [];
+        $role         = strtoupper(trim(Auth::user()->role));
+        $departemenId = (int) Auth::user()->departemen_id;
+        $nik          = Auth::user()->nik;
+        $now          = Carbon::now();
 
-    $mekanik = $request->CATATAN_MEKANIK ?? [];
+        DB::beginTransaction();
 
-    $jawabans = $request->JAWABAN ?? [];
+        try {
 
-    $count = count($groupIds);
+            for ($i = 0; $i < $count; $i++) {
 
-    DB::beginTransaction();
-
-    try {
-
-        /*
-        |--------------------------------------------------------------------------
-        | UPDATE DETAIL POSTGRES
-        |--------------------------------------------------------------------------
-        */
-        for ($i = 0; $i < $count; $i++) {
-
-            ChecklistP2HDetail::where(
+                ChecklistP2HDetail::where(
                     'uuid',
                     $uuidItems[$i]
-                )
-                ->update([
-
-                    'kbj' =>
-                        $kbjs[$i] ?? null,
-
-                    'catatan_mekanik' =>
-                        $mekanik[$i] ?? null,
-
-                    'jawaban' =>
-                        $jawabans[$i] ?? null,
-
-                    'sys_updateby' =>
-                        Auth::user()->nik,
-
-
+                )->update([
+                    'kbj' => $kbjs[$i] ?? null,
+                    'catatan_mekanik' => $mekanik[$i] ?? null,
+                    'jawaban' => $jawabans[$i] ?? null,
                 ]);
+            }
+
+            if (
+                $departemenId == 11 &&
+                in_array($role, [
+                    'FOREMAN',
+                    'SUPERVISOR',
+                    'SUPERINTENDENT',
+                ])
+            ) {
+
+                $updateData = [
+                    'verified_mekanik' => $nik,
+                    'dateverified_mekanik' => $now,
+                ];
+
+            } else {
+
+                $updateData = match ($role) {
+
+                    'FOREMAN' => [
+                        'verified_foreman' => $nik,
+                        'dateverified_foreman' => $now,
+                    ],
+
+                    'SUPERVISOR' => [
+                        'verified_supervisor' => $nik,
+                        'dateverified_supervisor' => $now,
+                    ],
+
+                    'SUPERINTENDENT' => [
+                        'verified_superintendent' => $nik,
+                        'dateverified_superintendent' => $now,
+                    ],
+
+                    default => [
+                        'verified_mekanik' => $nik,
+                        'dateverified_mekanik' => $now,
+                    ],
+                };
+            }
+
+
+            $updated = ChecklistP2H::where(
+                    'vhc_id',
+                    $request->VHC_ID
+                )
+                ->whereRaw(
+                    "date_trunc('second', opr_reporttime) = ?::timestamp",
+                    [
+                        Carbon::parse(
+                            $request->OPR_REPORTTIME
+                        )->format('Y-m-d H:i:s')
+                    ]
+                )
+                ->update($updateData);
+
+            if ($updated == 0) {
+
+                DB::rollBack();
+
+                return redirect()
+                    ->back()
+                    ->with(
+                        'info',
+                        'Data header gagal diupdate'
+                    );
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('p2h.index')
+                ->with(
+                    'success',
+                    'P2H berhasil diverifikasi'
+                );
+
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+
+            return redirect()
+                ->route('p2h.index')
+                ->with(
+                    'info',
+                    $th->getMessage()
+                );
         }
-
-
-
-        $role = strtoupper(
-            trim(Auth::user()->role)
-        );
-
-        $departemenId = (int)
-            Auth::user()->departemen_id;
-
-        dd([
-    'role_raw' => Auth::user()->role,
-    'role_upper' => $role,
-    'departemen_id' => $departemenId,
-]);
-        if (
-            $departemenId == 11
-            && in_array($role, [
-
-                'FOREMAN',
-                'SUPERVISOR',
-                'SUPERINTENDENT',
-            ])
-        ) {
-
-            /*
-            |--------------------------------------------------------------------------
-            | DEPT 11 = MEKANIK
-            |--------------------------------------------------------------------------
-            */
-            $updateData = [
-
-                'verified_mekanik' =>
-                    Auth::user()->nik,
-
-                'dateverified_mekanik' =>
-                    Carbon::now(),
-            ];
-
-        } else {
-
-            /*
-            |--------------------------------------------------------------------------
-            | NORMAL ROLE
-            |--------------------------------------------------------------------------
-            */
-            $updateData = match ($role) {
-
-                'FOREMAN' => [
-
-                    'verified_foreman' =>
-                        Auth::user()->nik,
-
-                    'dateverified_foreman' =>
-                        Carbon::now(),
-                ],
-
-                'SUPERVISOR' => [
-
-                    'verified_supervisor' =>
-                        Auth::user()->nik,
-
-                    'dateverified_supervisor' =>
-                        Carbon::now(),
-                ],
-
-                'SUPERINTENDENT' => [
-
-                    'verified_superintendent' =>
-                        Auth::user()->nik,
-
-                    'dateverified_superintendent' =>
-                        Carbon::now(),
-                ],
-
-                default => [
-
-                    'verified_mekanik' =>
-                        Auth::user()->nik,
-
-                    'dateverified_mekanik' =>
-                        Carbon::now(),
-                ],
-            };
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | SYSTEM UPDATE
-        |--------------------------------------------------------------------------
-        */
-        $updateData['sys_updateby']
-            = Auth::user()->nik;
-
-        $updateData['sys_updateat']
-            = now();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | UPDATE HEADER
-        |--------------------------------------------------------------------------
-        */
-        ChecklistP2H::where(
-        'vhc_id',
-        $request->VHC_ID
-    )
-    ->whereRaw(
-        "date_trunc('second', opr_reporttime) = ?::timestamp",
-        [
-            Carbon::parse(
-                $request->OPR_REPORTTIME
-            )->format('Y-m-d H:i:s')
-        ]
-    )
-    ->update($updateData);
-
-        DB::commit();
-
-        return redirect()
-            ->route('p2h.index')
-            ->with(
-                'success',
-                'P2H berhasil diverifikasi'
-            );
-
-    } catch (\Throwable $th) {
-
-        DB::rollBack();
-
-        return redirect()
-            ->route('p2h.index')
-            ->with(
-                'info',
-                $th->getMessage()
-            );
     }
-}
+
 
     public function cetak($uuid)
     {
-        $data = DB::table('prd_opr_checklistp2h as p2h')
-        ->leftJoin('prd_opr_checklistp2h_list as ph', 'p2h.UUID', '=', 'ph.UUID_OPR_CHECKLISTP2H')
-        ->leftJoin('focus.focus.dbo.FLT_SHIFT as sh', 'p2h.OPR_SHIFTNO', '=', 'sh.SHIFTNO')
-        ->leftJoin('focus.focus.dbo.PRS_PERSONAL as opr', 'p2h.VERIFIED_OPERATOR', '=', 'opr.NRP')
-        ->leftJoin('focus.focus.dbo.PRS_PERSONAL as gl', 'p2h.VERIFIED_FOREMAN', '=', 'gl.NRP')
-        ->leftJoin('focus.focus.dbo.PRS_PERSONAL as spv', 'p2h.VERIFIED_SUPERVISOR', '=', 'spv.NRP')
-        ->leftJoin('focus.focus.dbo.PRS_PERSONAL as spt', 'p2h.VERIFIED_SUPERINTENDENT', '=', 'spt.NRP')
-        ->leftJoin('focus.focus.dbo.PRS_PERSONAL as mec', 'p2h.VERIFIED_MEKANIK', '=', 'mec.NRP')
-        ->select(
-            'p2h.UUID',
-            'p2h.STATUSENABLED',
-            'p2h.VHC_ID',
-            'p2h.MTR_HOURMETER',
-            'sh.SHIFTDESC',
-            'p2h.OPR_REPORTTIME',
-            'p2h.VERIFIED_OPERATOR',
-            'p2h.DATEVERIFIED_OPERATOR',
-            'opr.NRP as NRPOPERATOR',
-            'opr.PERSONALNAME as NAMAOPERATOR',
-            'p2h.VERIFIED_MEKANIK',
-            'p2h.DATEVERIFIED_MEKANIK',
-            'mec.NRP as NRPMEKANIK',
-            'mec.PERSONALNAME as NAMAMEKANIK',
-            'p2h.VERIFIED_FOREMAN',
-            'gl.NRP as NRPFOREMAN',
-            'gl.PERSONALNAME as NAMAFOREMAN',
-            'p2h.DATEVERIFIED_FOREMAN',
-            'p2h.VERIFIED_SUPERVISOR',
-            'spv.NRP as NRPSUPERVISOR',
-            'spv.PERSONALNAME as NAMASUPERVISOR',
-            'p2h.DATEVERIFIED_SUPERVISOR',
-            'p2h.VERIFIED_SUPERINTENDENT',
-            'spt.NRP as NRPSUPERINTENDENT',
-            'spt.PERSONALNAME as NAMASUPERINTENDENT',
-            'p2h.DATEVERIFIED_SUPERINTENDENT',
-            'ph.GROUPID',
-            'ph.ITEMDESCRIPTION',
-            'ph.VALUE',
-            'ph.NOTES',
-            'ph.KBJ',
-            'ph.JAWABAN',
-            'ph.CATATAN_MEKANIK',
-        )
-        ->where('ph.UUID_OPR_CHECKLISTP2H', $uuid)
-        ->where('p2h.STATUSENABLED', true)
-        ->orderBy('ph.GROUPID')
-        ->orderBy('ph.ITEMDESCRIPTION')
-        // ->where(function ($query) {
-        //     $query->whereNotNull('p2h.DATEVERIFIED_FOREMAN')
-        //         ->orWhereNotNull('p2h.DATEVERIFIED_SUPERVISOR');
-        // })
-        ->get();
+        $data = DB::connection('p2h')
+            ->table('opr_oprchecklist as p2h')
+
+            ->leftJoin('opr_oprchecklistitem as ph', function ($join) {
+
+                $join->on('p2h.vhc_id', '=', 'ph.vhc_id')
+                    ->whereRaw("
+                        date_trunc('second', p2h.opr_reporttime)
+                        =
+                        date_trunc('second', ph.opr_reporttime)
+                    ");
+            })
+
+            ->select(
+                'p2h.uuid as UUID',
+                'p2h.statusenabled as STATUSENABLED',
+                'p2h.opr_nrp as NRPOPERATOR',
+                'p2h.vhc_id as VHC_ID',
+                'p2h.mtr_hourmeter as MTR_HOURMETER',
+                'p2h.opr_shiftno as OPR_SHIFTNO',
+                'p2h.opr_reporttime as OPR_REPORTTIME',
+
+                'p2h.opr_nrp as VERIFIED_OPERATOR',
+                'p2h.opr_reporttime as DATEVERIFIED_OPERATOR',
+
+                'p2h.verified_mekanik as NRPMEKANIK',
+                'p2h.verified_mekanik as VERIFIED_MEKANIK',
+                'p2h.dateverified_mekanik as DATEVERIFIED_MEKANIK',
+
+                'p2h.verified_foreman as NRPFOREMAN',
+                'p2h.verified_foreman as VERIFIED_FOREMAN',
+                'p2h.dateverified_foreman as DATEVERIFIED_FOREMAN',
+
+                'p2h.verified_supervisor as NRPSUPERVISOR',
+                'p2h.verified_supervisor as VERIFIED_SUPERVISOR',
+                'p2h.dateverified_supervisor as DATEVERIFIED_SUPERVISOR',
+
+
+                'p2h.verified_superintendent as NRPSUPERINTENDENT',
+                'p2h.verified_superintendent as VERIFIED_SUPERINTENDENT',
+                'p2h.dateverified_superintendent as DATEVERIFIED_SUPERINTENDENT',
+
+                'ph.checklistgroupid as GROUPID',
+                'ph.checklistitemid as ITEMID',
+                'ph.equ_typeid as EQU_TYPEID',
+                'ph.checklistval as VALUE',
+                'ph.catatan_mekanik as CATATAN_MEKANIK',
+                'ph.checklistnotes as NOTES',
+                'ph.kbj as KBJ',
+                'ph.jawaban as JAWABAN',
+            )
+
+            ->where('p2h.uuid', $uuid)
+            ->where('p2h.statusenabled', true)
+
+            ->orderBy('ph.checklistgroupid')
+            ->orderBy('ph.checklistitemid')
+
+            ->get();
+
+        $shift = DB::connection('focus')
+            ->table('dbo.FLT_SHIFT')
+            ->get()
+            ->keyBy('SHIFTNO');
+
+        $users = DB::connection('daily_foreman')
+            ->table('users')
+            ->get()
+            ->keyBy('nik');
+
+        $checklistItems = DB::connection('focus')
+        ->table('dbo.FLT_EQUCHECKLISTITEM')
+        ->get()
+        ->keyBy(function ($item) {
+
+            return $item->EQU_TYPEID . '_' .
+                $item->CHECKLISTGROUPID . '_' .
+                $item->CHECKLISTITEMID;
+        });
+
+        $data->transform(function ($item) use ($shift, $users, $checklistItems) {
+
+            $item->SHIFTDESC =
+                $shift[$item->OPR_SHIFTNO]->SHIFTDESC ?? null;
+
+            $item->NAMAOPERATOR =
+                $users[$item->VERIFIED_OPERATOR]->name ?? null;
+
+            $item->NAMAMEKANIK =
+                $users[$item->VERIFIED_MEKANIK]->name ?? null;
+
+            $item->NAMAFOREMAN =
+                $users[$item->VERIFIED_FOREMAN]->name ?? null;
+
+            $item->NAMASUPERVISOR = $users[$item->VERIFIED_SUPERVISOR]->name ?? null;
+
+            $item->NAMASUPERINTENDENT = $users[$item->VERIFIED_SUPERINTENDENT]->name ?? null;
+
+            $key =
+            $item->EQU_TYPEID . '_' .
+            $item->GROUPID . '_' .
+            $item->ITEMID;
+
+        $item->ITEMDESCRIPTION =
+            $checklistItems[$key]->CHECKLISTITEMDESCRIPTION ?? null;
+
+            return $item;
+        });
 
         if ($data->isEmpty()) {
             return redirect()->back()->with('info', 'Maaf, data tidak ditemukan');
@@ -2019,58 +2050,140 @@ class P2HController extends Controller
 
     public function download($uuid)
     {
-        $data = DB::table('prd_opr_checklistp2h as p2h')
-        ->leftJoin('prd_opr_checklistp2h_list as ph', 'p2h.UUID', '=', 'ph.UUID_OPR_CHECKLISTP2H')
-        ->leftJoin('focus.focus.dbo.FLT_SHIFT as sh', 'p2h.OPR_SHIFTNO', '=', 'sh.SHIFTNO')
-        ->leftJoin('focus.focus.dbo.PRS_PERSONAL as opr', 'p2h.VERIFIED_OPERATOR', '=', 'opr.NRP')
-        ->leftJoin('focus.focus.dbo.PRS_PERSONAL as gl', 'p2h.VERIFIED_FOREMAN', '=', 'gl.NRP')
-        ->leftJoin('focus.focus.dbo.PRS_PERSONAL as spv', 'p2h.VERIFIED_SUPERVISOR', '=', 'spv.NRP')
-        ->leftJoin('focus.focus.dbo.PRS_PERSONAL as spt', 'p2h.VERIFIED_SUPERINTENDENT', '=', 'spt.NRP')
-        ->leftJoin('focus.focus.dbo.PRS_PERSONAL as mec', 'p2h.VERIFIED_MEKANIK', '=', 'mec.NRP')
-        ->select(
-            'p2h.UUID',
-            'p2h.STATUSENABLED',
-            'p2h.VHC_ID',
-            'p2h.MTR_HOURMETER',
-            'sh.SHIFTDESC',
-            'p2h.OPR_REPORTTIME',
-            'p2h.VERIFIED_OPERATOR',
-            'p2h.DATEVERIFIED_OPERATOR',
-            'opr.NRP as NRPOPERATOR',
-            'opr.PERSONALNAME as NAMAOPERATOR',
-            'p2h.VERIFIED_MEKANIK',
-            'p2h.DATEVERIFIED_MEKANIK',
-            'mec.NRP as NRPMEKANIK',
-            'mec.PERSONALNAME as NAMAMEKANIK',
-            'p2h.VERIFIED_FOREMAN',
-            'gl.NRP as NRPFOREMAN',
-            'gl.PERSONALNAME as NAMAFOREMAN',
-            'p2h.DATEVERIFIED_FOREMAN',
-            'p2h.VERIFIED_SUPERVISOR',
-            'spv.NRP as NRPSUPERVISOR',
-            'spv.PERSONALNAME as NAMASUPERVISOR',
-            'p2h.DATEVERIFIED_SUPERVISOR',
-            'p2h.VERIFIED_SUPERINTENDENT',
-            'spt.NRP as NRPSUPERINTENDENT',
-            'spt.PERSONALNAME as NAMASUPERINTENDENT',
-            'p2h.DATEVERIFIED_SUPERINTENDENT',
-            'ph.GROUPID',
-            'ph.ITEMDESCRIPTION',
-            'ph.VALUE',
-            'ph.NOTES',
-            'ph.KBJ',
-            'ph.JAWABAN',
-            'ph.CATATAN_MEKANIK',
-        )
-        ->where('ph.UUID_OPR_CHECKLISTP2H', $uuid)
-        ->where('p2h.STATUSENABLED', true)
-        ->orderBy('ph.GROUPID')
-        ->orderBy('ph.ITEMDESCRIPTION')
-        // ->where(function ($query) {
-        //     $query->whereNotNull('p2h.DATEVERIFIED_FOREMAN')
-        //         ->orWhereNotNull('p2h.DATEVERIFIED_SUPERVISOR');
-        // })
-        ->get();
+        $data = DB::connection('p2h')
+            ->table('opr_oprchecklist as p2h')
+
+            ->leftJoin('opr_oprchecklistitem as ph', function ($join) {
+
+                $join->on('p2h.vhc_id', '=', 'ph.vhc_id')
+                    ->whereRaw("
+                        date_trunc('second', p2h.opr_reporttime)
+                        =
+                        date_trunc('second', ph.opr_reporttime)
+                    ");
+            })
+
+            ->select(
+                'p2h.uuid as UUID',
+                'p2h.statusenabled as STATUSENABLED',
+                'p2h.opr_nrp as NRPOPERATOR',
+                'p2h.vhc_id as VHC_ID',
+                'p2h.mtr_hourmeter as MTR_HOURMETER',
+                'p2h.opr_shiftno as OPR_SHIFTNO',
+                'p2h.opr_reporttime as OPR_REPORTTIME',
+
+                'p2h.opr_nrp as VERIFIED_OPERATOR',
+                'p2h.opr_reporttime as DATEVERIFIED_OPERATOR',
+
+                'p2h.verified_mekanik as NRPMEKANIK',
+                'p2h.verified_mekanik as VERIFIED_MEKANIK',
+                'p2h.dateverified_mekanik as DATEVERIFIED_MEKANIK',
+
+                'p2h.verified_foreman as NRPFOREMAN',
+                'p2h.verified_foreman as VERIFIED_FOREMAN',
+                'p2h.dateverified_foreman as DATEVERIFIED_FOREMAN',
+
+                'p2h.verified_supervisor as NRPSUPERVISOR',
+                'p2h.verified_supervisor as VERIFIED_SUPERVISOR',
+                'p2h.dateverified_supervisor as DATEVERIFIED_SUPERVISOR',
+
+
+                'p2h.verified_superintendent as NRPSUPERINTENDENT',
+                'p2h.verified_superintendent as VERIFIED_SUPERINTENDENT',
+                'p2h.dateverified_superintendent as DATEVERIFIED_SUPERINTENDENT',
+
+                'ph.checklistgroupid as GROUPID',
+                'ph.checklistitemid as ITEMID',
+                'ph.equ_typeid as EQU_TYPEID',
+                'ph.checklistval as VALUE',
+                'ph.catatan_mekanik as CATATAN_MEKANIK',
+                'ph.checklistnotes as NOTES',
+                'ph.kbj as KBJ',
+                'ph.jawaban as JAWABAN',
+            )
+
+            ->where('p2h.uuid', $uuid)
+            ->where('p2h.statusenabled', true)
+
+            ->orderBy('ph.checklistgroupid')
+            ->orderBy('ph.checklistitemid')
+
+            ->get();
+
+        $shift = DB::connection('focus')
+            ->table('dbo.FLT_SHIFT')
+            ->get()
+            ->keyBy('SHIFTNO');
+
+        $users = DB::connection('daily_foreman')
+            ->table('users')
+            ->get()
+            ->keyBy('nik');
+
+        $checklistItems = DB::connection('focus')
+        ->table('dbo.FLT_EQUCHECKLISTITEM')
+        ->get()
+        ->keyBy(function ($item) {
+
+            return $item->EQU_TYPEID . '_' .
+                $item->CHECKLISTGROUPID . '_' .
+                $item->CHECKLISTITEMID;
+        });
+
+        $data->transform(function ($item) use ($shift, $users, $checklistItems) {
+
+            $item->SHIFTDESC =
+                $shift[$item->OPR_SHIFTNO]->SHIFTDESC ?? null;
+
+            $item->NAMAOPERATOR =
+                $users[$item->VERIFIED_OPERATOR]->name ?? null;
+
+            $item->NAMAMEKANIK =
+                $users[$item->VERIFIED_MEKANIK]->name ?? null;
+
+            $item->NAMAFOREMAN =
+                $users[$item->VERIFIED_FOREMAN]->name ?? null;
+
+            $item->NAMASUPERVISOR = $users[$item->VERIFIED_SUPERVISOR]->name ?? null;
+
+            $item->NAMASUPERINTENDENT = $users[$item->VERIFIED_SUPERINTENDENT]->name ?? null;
+
+            $key =
+            $item->EQU_TYPEID . '_' .
+            $item->GROUPID . '_' .
+            $item->ITEMID;
+
+        $item->ITEMDESCRIPTION =
+            $checklistItems[$key]->CHECKLISTITEMDESCRIPTION ?? null;
+
+            return $item;
+        });
+
+        if ($data->isEmpty()) {
+            return redirect()->back()->with('info', 'Maaf, data tidak ditemukan');
+        } else {
+            foreach ($data as $item) {
+                $item->VERIFIED_OPERATOR = $item->VERIFIED_OPERATOR != null
+                    ? QrCode::size(70)->generate('Telah diverifikasi oleh: ' . $item->NAMAOPERATOR)
+                    : null;
+
+                $item->VERIFIED_MEKANIK = $item->VERIFIED_MEKANIK != null
+                    ? QrCode::size(70)->generate('Telah diverifikasi oleh: ' . $item->NAMAMEKANIK)
+                    : null;
+
+                $item->VERIFIED_FOREMAN = $item->VERIFIED_FOREMAN != null
+                    ? QrCode::size(70)->generate('Telah diverifikasi oleh: ' . $item->NAMAFOREMAN)
+                    : null;
+
+                $item->VERIFIED_SUPERVISOR = $item->VERIFIED_SUPERVISOR != null
+                    ? QrCode::size(70)->generate('Telah diverifikasi oleh: ' . $item->NAMASUPERVISOR)
+                    : null;
+
+                $item->VERIFIED_SUPERINTENDENT = $item->VERIFIED_SUPERINTENDENT != null
+                    ? QrCode::size(70)->generate('Telah diverifikasi oleh: ' . $item->NAMASUPERINTENDENT)
+                    : null;
+            }
+        }
 
         if ($data->isEmpty()) {
             return redirect()->back()->with('info', 'Maaf, data tidak ditemukan');

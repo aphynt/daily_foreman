@@ -35,6 +35,18 @@ $detailFiltered = $detail->filter(function($item) {
 </script>
 
 @endif
+<style>
+    table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th,
+table td {
+    border: 1px solid #dcdcdc;
+    padding: 8px;
+}
+</style>
 <section class="pc-container">
     <div class="pc-content">
         <div class="row">
@@ -116,9 +128,9 @@ $detailFiltered = $detail->filter(function($item) {
                                                 <tbody>
                                                     @foreach ($detailP2H as $dp)
                                                     <tr>
-                                                        <td>{{ $loop->iteration }}</td>
-                                                        <td><input type="hidden" name="UUID[]" value="{{ $dp->UUID }}">{{ $dp->UUID }}</td>
-                                                        <td><input type="hidden" name="CHECKLISTGROUPID[]" value="{{ $dp->CHECKLISTGROUPID }}">{{ $dp->CHECKLISTGROUPID }}</td>
+                                                        <td style="text-align: center">{{ $loop->iteration }}</td>
+                                                        <input type="hidden" name="UUID[]" value="{{ $dp->UUID }}">
+                                                        <td style="text-align: center"><input type="hidden" name="CHECKLISTGROUPID[]" value="{{ $dp->CHECKLISTGROUPID }}">{{ $dp->CHECKLISTGROUPID }}</td>
                                                         <td><input type="hidden" name="CHECKLISTITEMDESCRIPTION[]" value="{{ $dp->CHECKLISTITEMDESCRIPTION }}"> {{ $dp->CHECKLISTITEMDESCRIPTION }}</td>
                                                         <td style="text-align: center">
                                                             <input type="hidden" name="CHECKLISTVAL[]" value="{{ $dp->CHECKLISTVAL }}">
@@ -168,9 +180,9 @@ $detailFiltered = $detail->filter(function($item) {
                                                 <tbody>
                                                     @foreach ($detailFiltered as $dt)
                                                     <tr>
-                                                        <td>{{ $loop->iteration }}</td>
-                                                        <td><input type="hidden" name="UUID[]" value="{{ $dt->UUID }}">{{ $dt->UUID }}</td>
-                                                        <td><input type="hidden" name="CHECKLISTGROUPID[]" value="{{ $dt->CHECKLISTGROUPID }}">{{ $dt->CHECKLISTGROUPID }}</td>
+                                                        <td style="text-align: center">{{ $loop->iteration }}</td>
+                                                        <input type="hidden" name="UUID[]" value="{{ $dt->UUID }}">
+                                                        <td style="text-align: center"><input type="hidden" name="CHECKLISTGROUPID[]" value="{{ $dt->CHECKLISTGROUPID }}">{{ $dt->CHECKLISTGROUPID }}</td>
                                                         <td><input type="hidden" name="CHECKLISTITEMDESCRIPTION[]" value="{{ $dt->CHECKLISTITEMDESCRIPTION }}"> {{ $dt->CHECKLISTITEMDESCRIPTION }}</td>
                                                         <td style="text-align: center">
                                                             <input type="hidden" name="CHECKLISTVAL[]" value="{{ $dt->CHECKLISTVAL }}">
@@ -226,7 +238,7 @@ $detailFiltered = $detail->filter(function($item) {
                                                 <tbody>
                                                     @foreach ($detail as $dt)
                                                     <tr>
-                                                        <td>{{ $loop->iteration }}</td>
+                                                        <td style="text-align: center">{{ $loop->iteration }}</td>
                                                         <td><input type="hidden" name="CHECKLISTGROUPID[]" value="{{ $dt->CHECKLISTGROUPID }}">{{ $dt->CHECKLISTGROUPID }}</td>
                                                         <td><input type="hidden" name="CHECKLISTITEMDESCRIPTION[]" value="{{ $dt->CHECKLISTITEMDESCRIPTION }}"> {{ $dt->CHECKLISTITEMDESCRIPTION }}</td>
                                                         <td style="text-align: center">
