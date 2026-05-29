@@ -1283,6 +1283,7 @@ class P2HController extends Controller
             return $row;
 
         })
+        ->sortBy('checklistval')
         ->unique(fn($row) =>
             strtoupper(
                 trim((string)$row->checklistgroupid)
