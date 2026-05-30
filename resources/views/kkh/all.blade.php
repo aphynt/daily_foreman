@@ -1,6 +1,25 @@
 @include('layout.head', ['title' => 'Daftar Laporan KKH Per Tanggal'])
 @include('layout.sidebar')
 @include('layout.header')
+<style>
+@media (max-width:768px){
+
+    #dataKKH tbody td:first-child{
+        position: sticky;
+        left: 0;
+        background: #fff;
+        z-index: 2;
+        min-width: 180px;
+    }
+
+    #dataKKH thead tr:first-child th:first-child{
+        position: sticky;
+        left: 0;
+        background: #fff;
+        z-index: 3;
+    }
+}
+</style>
 <section class="pc-container">
     <div class="pc-content">
         <div class="page-header">
@@ -88,7 +107,7 @@
                             <table id="dataKKH" class="table table-striped table-hover table-bordered nowrap">
                                 <thead style="text-align: center; vertical-align: middle;">
                                     <tr>
-                                        <th colspan="2">Pengisi</th>
+                                        <th rowspan="2">Pengisi</th>
                                         <th rowspan="2">Hari/Tanggal</th>
                                         <th rowspan="2" style="white-space: normal !important; min-width: 20px;">Jam Pulang</th>
                                         <th rowspan="2">Shift</th>
@@ -102,8 +121,6 @@
                                         <th rowspan="2">Aksi</th>
                                     </tr>
                                     <tr>
-                                        <th>NIK</th>
-                                        <th style="white-space: normal !important; min-width: 20px;">Nama</th>
                                         <th>Mulai</th>
                                         <th>Bangun</th>
                                         <th>Total</th>
@@ -218,8 +235,19 @@
                 },
             },
             columns: [
-                { data: 'NIK_PENGISI' },
-                { data: 'NAMA_PENGISI' },
+                {
+                    data: null,
+                    render: function(data, type, row){
+                        return `
+                            <div>
+                                <div style="font-weight:600">${row.NAMA_PENGISI}</div>
+                                <div style="font-size:12px;color:#6b7280">
+                                    ${row.NIK_PENGISI}
+                                </div>
+                            </div>
+                        `;
+                    }
+                },
                 { data: 'TANGGAL_DIBUAT' },
                 { data: 'JAM_PULANG' },
 

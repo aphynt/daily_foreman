@@ -151,6 +151,7 @@
         box-shadow: var(--kkh-shadow);
         overflow: hidden;
         height: 100%;
+        min-height: 700px;
         display: flex;
         flex-direction: column;
     }

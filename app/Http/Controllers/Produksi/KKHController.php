@@ -958,7 +958,7 @@ class KKHController extends Controller
         $dataKKH = $kkh->get();
 
         $kkhBelumDiverifikasi = $dataKKH->where('ferivikasi_pengawas', '!=', 1);
-        $kkhUnfit = $dataKKH->where('FIT_BEKERJA', '!=', 1);
+        $kkhUnfit = $dataKKH->where('KELUHAN', '!=', 'FIT');
         $kkhdibawah6Jam = $dataKKH->filter(function ($item) {
             return floatval(trim($item->TOTAL_TIDUR)) < 6;
         });
