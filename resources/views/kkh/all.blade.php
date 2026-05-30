@@ -9,7 +9,7 @@
         left: 0;
         background: #fff;
         z-index: 2;
-        min-width: 180px;
+        /* min-width: 100px; */
     }
 
     #dataKKH thead tr:first-child th:first-child{
@@ -240,7 +240,7 @@
                     render: function(data, type, row){
                         return `
                             <div>
-                                <div style="font-weight:600">${row.NAMA_PENGISI}</div>
+                                <div style="font-weight:600;font-size:12px">${row.NAMA_PENGISI}</div>
                                 <div style="font-size:12px;color:#6b7280">
                                     ${row.NIK_PENGISI}
                                 </div>
