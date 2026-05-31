@@ -151,7 +151,7 @@
         box-shadow: var(--kkh-shadow);
         overflow: hidden;
         height: 100%;
-        min-height: 700px;
+        min-height: 650px;
         display: flex;
         flex-direction: column;
     }
@@ -230,7 +230,7 @@
     }
 
     .kkh-table-scroll {
-        height: 400px;
+        height: 600px;
         overflow-y: auto;
         overflow-x: hidden;
         position: relative;
@@ -276,7 +276,7 @@
 
     @media (max-width: 767.98px) {
         .kkh-table-scroll {
-            height: 260px;
+            height: 600px;
         }
     }
 

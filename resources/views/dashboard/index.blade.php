@@ -123,7 +123,7 @@
                             <div class="card mb-3">
                                 <div class="card-body text-center" style="padding-left:2px; padding-right:2px;">
                                     <img class="img-fluid card-img-top" src="{{ asset('dashboard/assets') }}/images/widget/pencil.png" style="max-width: 20px">
-                                    <h6 class="card-title" style="font-size:11px">Sweeping</h6>
+                                    <h6 class="card-title" style="font-size:11px">Form Sidak</h6>
                                 </div>
                             </div>
                         </a>
