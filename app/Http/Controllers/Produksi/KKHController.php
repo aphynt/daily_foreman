@@ -139,7 +139,7 @@ class KKHController extends Controller
                     END AS JAM_BERANGKAT
                 "),
                 'kkh.fit_or as FIT_BEKERJA',
-                DB::raw('UPPER(LTRIM(RTRIM(ISNULL(kkh.keluhan, \'\')))) as KELUHAN'),
+                DB::raw("UPPER(ISNULL(kkh.keluhan, '')) as KELUHAN"),
                 'kkh.masalah_pribadi as MASALAH_PRIBADI',
 
                 'kkh.verif_p3k',
@@ -266,10 +266,12 @@ class KKHController extends Controller
             $jabatanPengisi = strtoupper(trim($row->JABATAN ?? ''));
             $isOperator = $jabatanPengisi === 'OPERATOR';
 
-            $keluhan = strtoupper(trim((string) ($row->KELUHAN ?? '')));
+            $keluhan = $row->KELUHAN;
+
             $totalTidur = (float) trim((string) ($row->TOTAL_TIDUR ?? 0));
 
-            $butuhP3k = ($totalTidur < 6) || ($keluhan !== 'FIT');
+
+            $butuhP3k = ($totalTidur < 6) || ($keluhan != 'FIT');
             $petugasP3kIds = [5];
             $isPetugasP3k = in_array((int) Auth::user()->id, $petugasP3kIds);
 
@@ -442,7 +444,7 @@ class KKHController extends Controller
                     END AS JAM_BERANGKAT
                 "),
                 'kkh.fit_or as FIT_BEKERJA',
-                DB::raw('UPPER(LTRIM(RTRIM(ISNULL(kkh.keluhan, \'\')))) as KELUHAN'),
+                DB::raw("UPPER(ISNULL(kkh.keluhan, '')) as KELUHAN"),
                 'kkh.masalah_pribadi as MASALAH_PRIBADI',
 
                 'kkh.verif_p3k',
@@ -611,7 +613,7 @@ class KKHController extends Controller
 
         $fitOr = 0;
 
-        if (strtoupper($row->keluhan) === 'FIT') {
+        if (strtoupper($row->keluhan) == 'FIT') {
             $fitOr = 1;
         } elseif ($statusLayak !== null) {
             $fitOr = $statusLayak;
