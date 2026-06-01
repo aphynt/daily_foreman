@@ -539,10 +539,10 @@ class KKHController extends Controller
             $jabatanPengisi = strtoupper(trim($row->JABATAN ?? ''));
             $isOperator = $jabatanPengisi === 'OPERATOR';
 
-            $keluhan = strtoupper(trim((string) ($row->KELUHAN ?? '')));
+            $keluhan = strtoupper($row->KELUHAN);
             $totalTidur = (float) trim((string) ($row->TOTAL_TIDUR ?? 0));
 
-            $butuhP3k = ($totalTidur < 6) || ($keluhan !== 'FIT');
+            $butuhP3k = ($totalTidur < 6) || ($keluhan != 'FIT');
             $petugasP3kIds = [5];
             $isPetugasP3k = in_array((int) Auth::user()->id, $petugasP3kIds);
 
