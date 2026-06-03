@@ -71,6 +71,7 @@ class KKHController extends Controller
 
         $currentUserRole = strtoupper(trim(Auth::user()->role ?? ''));
 
+
         if ($currentUserRole === 'SEPERVISOR') {
             $currentUserRole = 'SUPERVISOR';
         }
@@ -291,11 +292,11 @@ class KKHController extends Controller
 
             $allowedToVerify = false;
 
+            $lolosTahapP3k = (!$butuhP3k) || $verifP3k;
             if (!$verifPengawas) {
-                $lolosTahapP3k = (!$butuhP3k) || $verifP3k;
                 // $lolosTahapP3k = true;
 
-                if ($lolosTahapP3k && $jabatanPengisi !== $currentUserRole) {
+                if ($lolosTahapP3k) {
                     if ($isOperator) {
                         $allowedToVerify = in_array($currentUserRole, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']);
                     } else {
@@ -307,9 +308,7 @@ class KKHController extends Controller
                                 $allowedToVerify = $currentUserRole === 'SUPERINTENDENT';
                                 break;
                             case 'SUPERINTENDENT':
-                            case 'PJS. SUPERINTENDENT':
-                            case 'ASISTEN MANAGEMENT':
-                                $allowedToVerify = $currentUserRole === 'MANAGEMENT';
+                                $allowedToVerify = in_array($currentUserRole, ['MANAGEMENT', 'SUPERINTENDENT']);
                                 break;
                             default:
                                 $allowedToVerify = in_array($currentUserRole, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']);
@@ -564,11 +563,12 @@ class KKHController extends Controller
 
             $allowedToVerify = false;
 
+            $lolosTahapP3k = (!$butuhP3k) || $verifP3k;
             if (!$verifPengawas) {
-                $lolosTahapP3k = (!$butuhP3k) || $verifP3k;
                 // $lolosTahapP3k = true;
 
-                if ($lolosTahapP3k && $jabatanPengisi !== $currentUserRole) {
+
+                if ($lolosTahapP3k) {
                     if ($isOperator) {
                         $allowedToVerify = in_array($currentUserRole, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']);
                     } else {
@@ -582,7 +582,7 @@ class KKHController extends Controller
                             case 'SUPERINTENDENT':
                             case 'PJS. SUPERINTENDENT':
                             case 'ASISTEN MANAGEMENT':
-                                $allowedToVerify = $currentUserRole === 'MANAGEMENT';
+                                $allowedToVerify = in_array($currentUserRole, ['MANAGEMENT', 'SUPERINTENDENT']);
                                 break;
                             default:
                                 $allowedToVerify = in_array($currentUserRole, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']);

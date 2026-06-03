@@ -49,7 +49,6 @@ class InspeksiWorkshopController extends Controller
         ->leftJoin('users as us2', 'ws.inspektor2', '=', 'us2.nik')
         ->leftJoin('users as us3', 'ws.inspektor3', '=', 'us3.nik')
         ->leftJoin('users as us4', 'ws.inspektor4', '=', 'us4.nik')
-        ->leftJoin('users as us5', 'ws.inspektor5', '=', 'us5.nik')
         ->leftJoin('users as us6', 'ws.penanggungjawab', '=', 'us6.nik')
         ->select(
             'ws.id',
@@ -69,8 +68,7 @@ class InspeksiWorkshopController extends Controller
             'us3.name as nama_inspektor3',
             'ws.inspektor4 as nik_inspektor4',
             'us4.name as nama_inspektor4',
-            'ws.inspektor5 as nik_inspektor5',
-            'us5.name as nama_inspektor5',
+            'ws.inspektor5',
             'ws.penanggungjawab as nik_penanggungjawab',
             'us6.name as nama_penanggungjawab',
             'ws.verified_inspektor1',
@@ -100,13 +98,14 @@ class InspeksiWorkshopController extends Controller
         $pit = Area::where('statusenabled', true)->get();
         $penanggungjawab = User::whereIn('role', ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'])->orderBy('name')->get();
         $inspektor = User::where(function ($query) {
-        $query->whereIn('departemen_id', [9])
+        $query->whereIn('role', ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT', 'MANAGEMENT'])
                 ->orWhereIn('id', [
                     8043, 8044, 8045, 8046, 8047, 8048, 8049,
                     8050, 8051, 8052, 8053, 8054, 8055, 8056, 8058, 8059, 8062,
                     8063, 8066, 8067, 8068, 8069, 8070
                 ]);
         })
+        ->where('statusenabled', true)
         ->orderBy('name')->get();
 
         $users = [
@@ -442,7 +441,6 @@ class InspeksiWorkshopController extends Controller
         ->leftJoin('users as us2', 'ws.inspektor2', '=', 'us2.nik')
         ->leftJoin('users as us3', 'ws.inspektor3', '=', 'us3.nik')
         ->leftJoin('users as us4', 'ws.inspektor4', '=', 'us4.nik')
-        ->leftJoin('users as us5', 'ws.inspektor5', '=', 'us5.nik')
         ->leftJoin('users as us6', 'ws.penanggungjawab', '=', 'us6.nik')
 
         ->select(
@@ -461,11 +459,9 @@ class InspeksiWorkshopController extends Controller
             'us3.position as jabatan_inspektor3',
             'ws.inspektor4 as nik_inspektor4',
             'us4.name as nama_inspektor4',
-            'ws.inspektor5 as nik_inspektor5',
+            'ws.inspektor5',
             'us4.position as jabatan_inspektor4',
-            'us5.name as nama_inspektor5',
             'ws.penanggungjawab as nik_penanggungjawab',
-            'us5.position as jabatan_inspektor5',
             'us6.name as nama_penanggungjawab',
             )
         ->where('ws.statusenabled', true)

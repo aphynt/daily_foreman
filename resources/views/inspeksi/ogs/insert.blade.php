@@ -1090,15 +1090,7 @@
                                     {{-- INSPEKTOR 5 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Inspektor 5</label>
-                                        <select class="form-control form-control-sm" name="inspektor5">
-                                            <option value="" disabled selected></option>
-                                            @foreach ($users['inspektor'] as $inspektor)
-                                                <option value="{{ $inspektor->nik }}"
-                                                    {{ old('inspektor5') == $inspektor->nik ? 'selected' : '' }}>
-                                                    {{ $inspektor->name }} ({{ $inspektor->nik }})
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <input type="text" name="inspektor5" class="form-control form-control-sm">
                                     </div>
 
                                 </div>

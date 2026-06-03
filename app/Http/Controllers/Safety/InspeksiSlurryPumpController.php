@@ -49,7 +49,6 @@ class InspeksiSlurryPumpController extends Controller
         ->leftJoin('users as us2', 'sp.inspektor2', '=', 'us2.nik')
         ->leftJoin('users as us3', 'sp.inspektor3', '=', 'us3.nik')
         ->leftJoin('users as us4', 'sp.inspektor4', '=', 'us4.nik')
-        ->leftJoin('users as us5', 'sp.inspektor5', '=', 'us5.nik')
         ->leftJoin('users as us6', 'sp.penanggungjawab', '=', 'us6.nik')
         ->select(
             'sp.id',
@@ -69,8 +68,7 @@ class InspeksiSlurryPumpController extends Controller
             'us3.name as nama_inspektor3',
             'sp.inspektor4 as nik_inspektor4',
             'us4.name as nama_inspektor4',
-            'sp.inspektor5 as nik_inspektor5',
-            'us5.name as nama_inspektor5',
+            'sp.inspektor5',
             'sp.penanggungjawab as nik_penanggungjawab',
             'us6.name as nama_penanggungjawab',
             'sp.verified_inspektor1',
@@ -89,8 +87,7 @@ class InspeksiSlurryPumpController extends Controller
                     ->orWhere('sp.inspektor1', Auth::user()->nik)
                     ->orWhere('sp.inspektor2', Auth::user()->nik)
                     ->orWhere('sp.inspektor3', Auth::user()->nik)
-                    ->orWhere('sp.inspektor4', Auth::user()->nik)
-                    ->orWhere('sp.inspektor5', Auth::user()->nik);
+                    ->orWhere('sp.inspektor4', Auth::user()->nik);
         });
 
         $sp = $baseQuery->get();
@@ -104,13 +101,14 @@ class InspeksiSlurryPumpController extends Controller
         $pit = Area::where('statusenabled', true)->where('group', 'production')->get();
         $penanggungjawab = Personal::whereIn('ROLETYPE', [2, 3, 4])->orderBy('PERSONALNAME')->get();
         $inspektor = User::where(function ($query) {
-        $query->whereIn('departemen_id', [9])
+        $query->whereIn('role', ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT', 'MANAGEMENT'])
                 ->orWhereIn('id', [
                     8043, 8044, 8045, 8046, 8047, 8048, 8049,
                     8050, 8051, 8052, 8053, 8054, 8055, 8056, 8058, 8059, 8062,
                     8063, 8066, 8067, 8068, 8069, 8070
                 ]);
         })
+        ->where('statusenabled', true)
         ->orderBy('name')->get();
 
         $users = [
@@ -308,7 +306,6 @@ class InspeksiSlurryPumpController extends Controller
         ->leftJoin('users as us2', 'sp.inspektor2', '=', 'us2.nik')
         ->leftJoin('users as us3', 'sp.inspektor3', '=', 'us3.nik')
         ->leftJoin('users as us4', 'sp.inspektor4', '=', 'us4.nik')
-        ->leftJoin('users as us5', 'sp.inspektor5', '=', 'us5.nik')
         ->leftJoin('users as us6', 'sp.penanggungjawab', '=', 'us6.nik')
 
         ->select(
@@ -327,11 +324,9 @@ class InspeksiSlurryPumpController extends Controller
             'us3.position as jabatan_inspektor3',
             'sp.inspektor4 as nik_inspektor4',
             'us4.name as nama_inspektor4',
-            'sp.inspektor5 as nik_inspektor5',
+            'sp.inspektor5',
             'us4.position as jabatan_inspektor4',
-            'us5.name as nama_inspektor5',
             'sp.penanggungjawab as nik_penanggungjawab',
-            'us5.position as jabatan_inspektor5',
             'us6.name as nama_penanggungjawab',
             )
         ->where('sp.statusenabled', true)
