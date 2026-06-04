@@ -208,6 +208,7 @@
                                         <span>
                                         {{ $loop->iteration }}.
                                         {{ date('d M Y', strtotime($item->tanggal_pelaporan)) }}
+                                        {{ date('H:m', strtotime($item->tanggal_pelaporan)) }}
                                         •
                                         {{ $item->nama_departemen ?? '-' }}
                                         </span>
