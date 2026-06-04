@@ -73,50 +73,30 @@ class KLKHOGSController extends Controller
         ->where('ogs.statusenabled', true)
         ->whereBetween(DB::raw('CONVERT(varchar, ogs.date, 23)'), [$startTimeFormatted, $endTimeFormatted]);
 
-        // if (Auth::user()->role == 'FOREMAN') {
-        //     $baseQuery->where('foreman', Auth::user()->nik);
-        // }
-        // if (Auth::user()->role == 'SUPERVISOR') {
-        //     $baseQuery->where('supervisor', Auth::user()->nik);
-        // }
-        // if (Auth::user()->role == 'SUPERINTENDENT') {
-        //     $baseQuery->where('superintendent', Auth::user()->nik);
-        // }
-        // if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'])) {
-        //     $baseQuery->orWhere('pic', Auth::user()->id);
-        // }
-
-        // /** @var \App\Models\User $user */
-        // $user = Auth::user();
-        // $roleBypass = getConfigArrayById(1);
-        // $roleBypassAdminManagement = getConfigArrayById(5);
-
-        // if (!$user->hasRoleId($roleBypassAdminManagement)) {
-        //     if (
-        //         $user->hasRoleId($roleBypass) ||
-        //         $user->inDepartemenId([8])
-        //     ) {
-        //         $baseQuery->where('pic', $user->id);
-        //     }
-
-        //     $baseQuery->where(function($query) use ($user) {
-        //         $query->where('ogs.foreman', $user->nik)
-        //             ->orWhere('ogs.supervisor', $user->nik)
-        //             ->orWhere('ogs.superintendent', $user->nik);
-        //     });
-        // }
-
-        // $ogs = $baseQuery->get();
-
         if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'])) {
             $baseQuery->orWhere('pic', Auth::user()->id);
         }
 
-        $baseQuery = $baseQuery->where(function($query) {
-            $query->where('ogs.foreman', Auth::user()->nik)
-                  ->orWhere('ogs.supervisor', Auth::user()->nik)
-                  ->orWhere('ogs.superintendent', Auth::user()->nik);
-        });
+        // $baseQuery = $baseQuery->where(function($query) {
+        //     $query->where('ogs.foreman', Auth::user()->nik)
+        //           ->orWhere('ogs.supervisor', Auth::user()->nik)
+        //           ->orWhere('ogs.superintendent', Auth::user()->nik);
+        // });
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        $nikBypass = getConfigArrayById(28);
+
+        if (!in_array($user->nik, $nikBypass)) {
+
+            $baseQuery->where(function ($query) use ($user) {
+                $query->where('ogs.foreman', $user->nik)
+                    ->orWhere('ogs.supervisor', $user->nik)
+                    ->orWhere('ogs.superintendent', $user->nik);
+            });
+
+        }
 
         $ogs = $baseQuery->get();
 

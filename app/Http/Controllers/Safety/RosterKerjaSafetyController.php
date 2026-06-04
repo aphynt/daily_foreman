@@ -29,13 +29,24 @@ class RosterKerjaSafetyController extends Controller
 
 
         $roster = DB::table('se_ref_roster_kerja as rs')
-        ->leftJoin('users as us', 'rs.nik', '=', 'us.nik')
-        ->select('rs.*', 'us.name as nama', 'us.position as jabatan')
-        ->where('rs.statusenabled', true)
-        ->whereRaw('CAST(rs.bulan AS INT) = ?', [$bulan])  // Pastikan bulan adalah numerik
-        ->whereRaw('CAST(rs.tahun AS INT) = ?', [$tahun])
-        ->orderBy('us.id')
-        ->get();
+            ->leftJoin('users as us', 'rs.nik', '=', 'us.nik')
+            ->select('rs.*', 'us.name as nama', 'us.position as jabatan')
+            ->where('rs.statusenabled', true)
+            ->whereRaw('CAST(rs.bulan AS INT) = ?', [$bulan])
+            ->whereRaw('CAST(rs.tahun AS INT) = ?', [$tahun])
+            ->orderBy('us.id')
+            ->get()
+            ->map(function ($item) {
+                for ($i = 1; $i <= 31; $i++) {
+                    $field = (string) $i;
+
+                    if (isset($item->$field) && $item->$field !== null) {
+                        $item->$field = trim($item->$field);
+                    }
+                }
+
+                return $item;
+            });
 
         // dd($roster);
 

@@ -210,7 +210,19 @@
                                         {{ date('d M Y', strtotime($item->tanggal_pelaporan)) }}
                                         • {{ date('H:i', strtotime($item->tanggal_pelaporan)) }}
                                         </span>
-                                            @if ($item->verified_scc == 'reject')
+                                            @if ($item->status == 0 && $item->verified_penerima == null)
+                                                -
+                                            @elseif($item->status == 1 && $item->verified_penerima == null)
+                                                <span class="badge bg-warning">Open</span>
+                                            @elseif($item->status == 2 && $item->verified_scc == null)
+                                                <span class="badge bg-info">Need Review Safety</span>
+                                            @elseif($item->status == 2 && $item->verified_scc != null)
+                                                <span class="badge bg-success">Close</span>
+                                            @else
+                                                No Status
+                                            @endif
+
+                                            {{-- @if ($item->verified_scc == 'reject')
                                                 <span class="badge bg-danger">Reject</span>
                                             @elseif($item->verified_scc == 'accept')
                                                 <span class="badge bg-success">Accepted</span>
@@ -222,7 +234,7 @@
                                             <span class="badge bg-info">Need Review</span>
                                             @else
                                                 No Status
-                                            @endif
+                                            @endif --}}
 
                                     </div>
 
