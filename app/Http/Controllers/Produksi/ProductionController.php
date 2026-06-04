@@ -159,6 +159,7 @@ class ProductionController extends Controller
     public function ex()
     {
         $nowHour = (int) date('H');
+        $date = request('tanggal', date('Y-m-d'));
 
         if ($nowHour >= 7 && $nowHour <= 18) {
 
@@ -167,9 +168,6 @@ class ProductionController extends Controller
             $shiftAktif   = 'Siang';
             $historyShift = 'Malam';
 
-            $shiftAktifDate   = date('Y-m-d');
-            $historyShiftDate = date('Y-m-d', strtotime('-1 day'));
-
         } else {
 
             $waktu = 'Malam';
@@ -177,61 +175,30 @@ class ProductionController extends Controller
             $shiftAktif   = 'Malam';
             $historyShift = 'Siang';
 
-            if ($nowHour < 7) {
-                $shiftAktifDate   = date('Y-m-d', strtotime('-1 day'));
-                $historyShiftDate = date('Y-m-d', strtotime('-1 day'));
-            } else {
-                $shiftAktifDate   = date('Y-m-d');
-                $historyShiftDate = date('Y-m-d');
-            }
         }
-
-        $dataPerHour = DB::connection('focus_reporting')->table('DASHBOARD.PRODUCTION_PER_HOUR as a')
-            ->select([
-                'PIT',
-                'a.HOUR',
-                'a.SORT',
-                'PRODUCTION',
-                DB::raw("COALESCE(
-                    CASE
-                        WHEN PLAN_PRODUCTION < 7000 AND PIT = 'ALL PIT' THEN NULL
-                        WHEN PLAN_PRODUCTION < 2333.333 AND PIT = 'PIT SM-A3' THEN NULL
-                        WHEN PLAN_PRODUCTION < 2333.333 AND PIT = 'PIT SM-B1' THEN NULL
-                        WHEN PLAN_PRODUCTION < 2333.333 AND PIT = 'PIT SM-B2' THEN NULL
-                        ELSE PLAN_PRODUCTION
-                    END, PLAN_PRODUCTION) AS PLAN_PRODUCTION")
-            ])
-            ->where('PIT', 'ALL PIT')
-            ->orderByRaw("
-                CASE
-                    WHEN a.HOUR >= 19 THEN a.HOUR
-                    ELSE a.HOUR + 24
-                END
-            ")
-            ->get();
 
         if ($shiftAktif === 'Siang') {
             $rawAktif = DB::connection('focus_reporting')->select(
                 'SET NOCOUNT ON;
-                EXEC dbo.APP_GET_PRODUCTION_TODAY_AND_LAST_SHIFT
-                @shift = ?',
-                ['Siang']
+                EXEC dbo.APP_GET_PRODUCTION_TODAY_AND_LAST_SHIFT_NEW
+                @shift = ?, @date = ?',
+                ['Siang', $date]
             );
 
             $rawHistorySource =DB::connection('focus_reporting')->select(
                 'SET NOCOUNT ON;
-                EXEC dbo.APP_GET_PRODUCTION_TODAY_AND_LAST_SHIFT
-                @shift = ?',
-                ['Malam']
+                EXEC dbo.APP_GET_PRODUCTION_TODAY_AND_LAST_SHIFT_NEW
+                @shift = ?, @date = ?',
+                ['Malam', $date]
             );
 
         } else {
 
             $rawAktif =  DB::connection('focus_reporting')->select(
                 'SET NOCOUNT ON;
-                EXEC dbo.APP_GET_PRODUCTION_TODAY_AND_LAST_SHIFT
-                @shift = ?',
-                ['Malam']
+                EXEC dbo.APP_GET_PRODUCTION_TODAY_AND_LAST_SHIFT_NEW
+                @shift = ?, @date = ?',
+                ['Malam', $date]
             );
 
             $rawHistorySource = $rawAktif;
@@ -252,46 +219,31 @@ class ProductionController extends Controller
 
             $perExNow = DB::connection('focus_reporting')->select(
                 'SET NOCOUNT ON;
-                EXEC dbo.APP_GET_PRODUCTION_PER_EX_TODAY_AND_LAST_SHIFT
-                @shift = ?',
-                ['Siang']
+                EXEC dbo.APP_GET_PRODUCTION_PER_EX_TODAY_AND_LAST_SHIFT_NEW
+                @shift = ?, @date = ?',
+                ['Siang', $date]
             );
 
             $perExHistory = DB::connection('focus_reporting')->select(
                 'SET NOCOUNT ON;
-                EXEC dbo.APP_GET_PRODUCTION_PER_EX_TODAY_AND_LAST_SHIFT
-                @shift = ?',
-                ['Malam']
+                EXEC dbo.APP_GET_PRODUCTION_PER_EX_TODAY_AND_LAST_SHIFT_NEW
+                @shift = ?, @date = ?',
+                ['Malam', $date]
             );
 
         } else {
 
             $perExNow = DB::connection('focus_reporting')->select(
                 'SET NOCOUNT ON;
-                EXEC dbo.APP_GET_PRODUCTION_PER_EX_TODAY_AND_LAST_SHIFT
-                @shift = ?',
-                ['Malam']
+                EXEC dbo.APP_GET_PRODUCTION_PER_EX_TODAY_AND_LAST_SHIFT_NEW
+                @shift = ?, @date = ?',
+                ['Malam', $date]
             );
 
             $perExHistory = $perExNow;
         }
 
         $nowHour = (int) date('H');
-        $today   = date('Y-m-d');
-        $tomorrow = date('Y-m-d', strtotime('+1 day'));
-
-        if ($nowHour >= 7 && $nowHour < 19) {
-            $shiftIdAktif = 1;
-            $startDateRef = $today;
-            $endDateRef   = $today;
-
-        } else {
-
-            $shiftIdAktif = 2;
-            $startDateRef = $today;
-            $endDateRef   = $tomorrow;
-        }
-
         $perExSource = array_merge($perExNow, $perExHistory);
         $perExAll = collect($perExSource)
             ->filter(fn($r) => !empty($r->LOD_LOADERID))

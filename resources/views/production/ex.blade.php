@@ -123,11 +123,27 @@
 
         {{-- ================= ROW UTAMA ================= --}}
         <div class="row">
+            <form method="GET" class="mb-3">
+                <div class="input-group" style="max-width:300px">
+
+                    <input
+                        type="date"
+                        class="form-control form-control-sm"
+                        name="tanggal"
+                        value="{{ request('tanggal', now()->format('Y-m-d')) }}"
+                    >
+
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        Tampilkan
+                    </button>
+
+                </div>
+            </form>
 
             {{-- =========================================================
             | KOLOM KIRI
             ========================================================== --}}
-            <div class="col-xl-6 col-md-6">
+            <div class="col-xl-6 col-md-6 mt-2">
 
                 {{-- ===== CARD SUMMARY ===== --}}
                 <div class="card mb-3">
@@ -654,7 +670,14 @@
     </div>
 
     @include('layout.footer')
+<script>
+    (function () {
+        const datepicker_range = new DateRangePicker(document.querySelector('#pc-datepicker-10'), {
+            buttonClass: 'btn'
+        });
+    })();
 
+</script>
     <script>
         setTimeout(function () {
             location.reload();

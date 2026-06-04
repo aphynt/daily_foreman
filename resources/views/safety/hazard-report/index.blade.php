@@ -29,7 +29,7 @@
     .accordion-modern .accordion-button{
         background:#ffffff;
         font-weight:600;
-        font-size:14px;
+        font-size:11px;
         padding:14px 18px;
     }
 
@@ -208,7 +208,8 @@
                                         <span>
                                         {{ $loop->iteration }}.
                                         {{ date('d M Y', strtotime($item->tanggal_pelaporan)) }}
-                                        • {{ date('H:i', strtotime($item->tanggal_pelaporan)) }}
+                                        •
+                                        {{ $item->nama_departemen ?? '-' }}
                                         </span>
                                             @if ($item->status == 0 && $item->verified_penerima == null)
                                                 -
@@ -222,19 +223,7 @@
                                                 No Status
                                             @endif
 
-                                            {{-- @if ($item->verified_scc == 'reject')
-                                                <span class="badge bg-danger">Reject</span>
-                                            @elseif($item->verified_scc == 'accept')
-                                                <span class="badge bg-success">Accepted</span>
-                                            @elseif($item->status == 2 && $item->verified_scc == 'accept')
-                                                <span class="badge bg-info">Close</span>
-                                            @elseif($item->status == 0 && $item->verified_scc == null)
-                                                <span class="badge bg-info">Need Review Safety</span>
-                                            @elseif($item->status == 2 && $item->verified_penerima != null && $item->verified_scc == null)
-                                            <span class="badge bg-info">Need Review</span>
-                                            @else
-                                                No Status
-                                            @endif --}}
+
 
                                     </div>
 
