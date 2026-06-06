@@ -271,6 +271,8 @@ class KLKHITController extends Controller
                 'verified_diketahui' => $klkh->diketahui,
                 'updated_by' => Auth::user()->id,
                 'catatan_verified_diketahui' => $request->catatan_verified_all,
+                'date_verified_pengawas' => Carbon::now(),
+                'date_verified_diketahui' => Carbon::now(),
             ]);
 
             return redirect()->back()->with('success', 'KLKH berhasil diverifikasi');
@@ -289,6 +291,7 @@ class KLKHITController extends Controller
                 'verified_pengawas' => (string)Auth::user()->nik,
                 'updated_by' => Auth::user()->id,
                 'catatan_verified_pengawas' => $request->catatan_verified_pengawas,
+                'date_verified_pengawas' => Carbon::now(),
             ]);
 
             return redirect()->back()->with('success', 'KLKH berhasil diverifikasi');
@@ -307,6 +310,7 @@ class KLKHITController extends Controller
                 'verified_diketahui' => (string)Auth::user()->nik,
                 'updated_by' => Auth::user()->id,
                 'catatan_verified_diketahui' => $request->catatan_verified_diketahui,
+                'date_verified_diketahui' => Carbon::now(),
             ]);
 
             return redirect()->back()->with('success', 'KLKH berhasil diverifikasi');

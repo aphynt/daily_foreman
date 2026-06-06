@@ -293,6 +293,7 @@
 
                                 @include('klkh.it.modal.verifiedAll')
                                 @include('klkh.it.modal.verifiedPengawas')
+                                @include('klkh.it.modal.verifiedDiketahui')
 
                                 <ul class="list-inline ms-auto mb-0 d-flex justify-content-end flex-wrap">
 
