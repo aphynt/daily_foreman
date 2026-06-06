@@ -27,7 +27,7 @@
 
                                 </div>
                             </div>
-                            <h5 style="text-align: center;">KELAYAKAN LINGKUNGAN KERJA HARIAN UNIT DEPARTEMEN GA - IT</h5>
+                            <h5 style="text-align: center;">KELAYAKAN LINGKUNGAN KERJA HARIAN DEPARTEMEN GA - IT</h5>
                             <div class="col-sm-2">
                                 <div class="border rounded p-3">
                                     <h6 class="mb-0">Pit:</h6>
