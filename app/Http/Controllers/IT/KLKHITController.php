@@ -83,8 +83,9 @@ class KLKHITController extends Controller
 
         $nikBypass = array_merge(
             getConfigArrayById(28),
-            getConfigArrayById(29)
+            getConfigArrayById(31)
         );
+
 
         if (!in_array($user->nik, $nikBypass)) {
             $baseQuery->where(function ($query) use ($user) {
