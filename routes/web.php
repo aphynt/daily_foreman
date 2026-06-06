@@ -33,6 +33,8 @@ use App\Http\Controllers\Produksi\VerifikasiKLKHController;
 
 use App\Http\Controllers\Engineering\StagingPlanController;
 
+use App\Http\Controllers\IT\KLKHITController;
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HazardReportController;
@@ -408,6 +410,19 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/klkh/simpangempat/verified/foreman/{uuid}', [KLKHSimpangEmpatController::class, 'verifiedForeman'])->name('klkh.simpangempat.verified.foreman');
     Route::post('/klkh/simpangempat/verified/supervisor/{uuid}', [KLKHSimpangEmpatController::class, 'verifiedSupervisor'])->name('klkh.simpangempat.verified.supervisor');
     Route::post('/klkh/simpangempat/verified/superintendent/{uuid}', [KLKHSimpangEmpatController::class, 'verifiedSuperintendent'])->name('klkh.simpangempat.verified.superintendent');
+
+    //KLKH IT
+    Route::get('/klkh/it', [KLKHITController::class, 'index'])->name('klkh.it');
+    Route::get('/klkh/it/insert', [KLKHITController::class, 'insert'])->name('klkh.it.insert')->middleware('canAccess');
+    Route::post('/klkh/it/post', [KLKHITController::class, 'post'])->name('klkh.it.post');
+    Route::get('/klkh/it/delete/{id}', [KLKHITController::class, 'delete'])->name('klkh.it.delete');
+    Route::get('/klkh/it/preview/{uuid}', [KLKHITController::class, 'preview'])->name('klkh.it.preview');
+    Route::get('/klkh/it/bundlepdf', [KLKHITController::class, 'bundlepdf'])->name('klkh.it.bundlepdf');
+    Route::get('/klkh/it/cetak/{uuid}', [KLKHITController::class, 'cetak'])->name('klkh.it.cetak');
+    Route::get('/klkh/it/download/{uuid}', [KLKHITController::class, 'download'])->name('klkh.it.download');
+    Route::post('/klkh/it/verified/all/{uuid}', [KLKHITController::class, 'verifiedAll'])->name('klkh.it.verified.all');
+    Route::post('/klkh/it/verified/pengawas/{uuid}', [KLKHITController::class, 'verifiedPengawas'])->name('klkh.it.verified.pengawas');
+    Route::post('/klkh/it/verified/diketahui/{uuid}', [KLKHITController::class, 'verifiedDiketahui'])->name('klkh.it.verified.diketahui');
 
     //Inspeksi Tambang - Jalan Tambang
     Route::get('/inspeksi/jalantambang', [InspeksiJalanTambangController::class, 'index'])->name('inspeksi.jalantambang');
