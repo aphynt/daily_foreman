@@ -48,6 +48,7 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
                 'PELAPOR HAZARD',
                 '',
                 '',
+                '',
                 'PIC PENANGGUNG JAWAB',
                 '',
                 'DETAIL LOKASI',
@@ -64,8 +65,9 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
             [
                 '',
                 'PERUSAHAAN',
-                'DEPT.',
                 'NAMA',
+                'NIK',
+                'DEPT.',
                 'PERUSAHAAN',
                 'DEPT.',
                 '',
@@ -88,11 +90,11 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
         $fotoPerbaikan = ($item->dokumentasi_perbaikan_1 ?? null) ?: ($item->dokumentasi_perbaikan_2 ?? null);
 
         return [
-            $item->id ?? '-',
-            'PT.SIMS',
-            $item->departemen_pelapor ?? '-',
+            $item->no_inspeksi ?? '-',
+            $this->getPerusahaanByNik($item->nik_pelapor ?? null),
             $item->nama_pelapor ?? '-',
-
+            $item->nik_pelapor ?? '-',
+            $item->departemen_pelapor ?? '-',
             $item->perusahaan ?? '-',
             $item->nama_departemen ?? '-',
 
@@ -124,7 +126,7 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
                 /** @var Worksheet $sheet */
                 $sheet = $event->sheet->getDelegate();
 
-                $sheet->mergeCells('A1:P1');
+                $sheet->mergeCells('A1:Q1');
                 $sheet->setCellValue('A1', '"' . $this->buildTitle() . '"');
 
                 $sheet->getStyle('A1')->applyFromArray([
@@ -151,9 +153,8 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
                 $sheet->getRowDimension(1)->setRowHeight(42);
 
                 $sheet->mergeCells('A2:A3');
-                $sheet->mergeCells('B2:D2');
-                $sheet->mergeCells('E2:F2');
-                $sheet->mergeCells('G2:G3');
+                $sheet->mergeCells('B2:E2');
+                $sheet->mergeCells('F2:G2');
                 $sheet->mergeCells('H2:H3');
                 $sheet->mergeCells('I2:I3');
                 $sheet->mergeCells('J2:J3');
@@ -163,13 +164,14 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
                 $sheet->mergeCells('N2:N3');
                 $sheet->mergeCells('O2:O3');
                 $sheet->mergeCells('P2:P3');
+                $sheet->mergeCells('Q2:Q3');
 
                 $this->setColumnWidths($sheet);
 
                 $sheet->getRowDimension(2)->setRowHeight(28);
                 $sheet->getRowDimension(3)->setRowHeight(28);
 
-                $sheet->getStyle('A2:P3')->applyFromArray([
+                $sheet->getStyle('A2:Q3')->applyFromArray([
                     'font' => [
                         'bold' => true,
                         'size' => 10,
@@ -194,7 +196,7 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
                 $highestRow = $sheet->getHighestRow();
 
                 if ($highestRow >= 4) {
-                    $sheet->getStyle("A4:P{$highestRow}")->applyFromArray([
+                    $sheet->getStyle("A4:Q{$highestRow}")->applyFromArray([
                         'alignment' => [
                             'vertical' => Alignment::VERTICAL_CENTER,
                             'wrapText' => true,
@@ -211,11 +213,11 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
                         ->getAlignment()
                         ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-                    $sheet->getStyle("K4:L{$highestRow}")
+                    $sheet->getStyle("L4:L{$highestRow}")
                         ->getAlignment()
                         ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-                    $sheet->getStyle("O4:P{$highestRow}")
+                    $sheet->getStyle("Q4:Q{$highestRow}")
                         ->getAlignment()
                         ->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 }
@@ -223,22 +225,22 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
                 for ($row = 4; $row <= $highestRow; $row++) {
                     $sheet->getRowDimension($row)->setRowHeight(85);
 
-                    $sheet->getStyle('C' . $row)->getFont()->setBold(true);
-                    $sheet->getStyle('F' . $row)->getFont()->setBold(true);
+                    $sheet->getStyle('D' . $row)->getFont()->setBold(true);
+                    $sheet->getStyle('G' . $row)->getFont()->setBold(true);
 
-                    $riskText = strtoupper((string) $sheet->getCell('K' . $row)->getValue());
-                    $this->applyRiskStyle($sheet, 'K' . $row, $riskText);
+                    $riskText = strtoupper((string) $sheet->getCell('L' . $row)->getValue());
+                    $this->applyRiskStyle($sheet, 'L' . $row, $riskText);
 
-                    $status = trim((string) $sheet->getCell('P' . $row)->getValue());
+                    $status = trim((string) $sheet->getCell('Q' . $row)->getValue());
 
                     if ($status !== 'Close') {
                         $status = 'Open';
                     }
 
-                    $sheet->setCellValue('P' . $row, $status);
-                    $this->applyStatusStyle($sheet, 'P' . $row, $status);
+                    $sheet->setCellValue('Q' . $row, $status);
+                    $this->applyStatusStyle($sheet, 'Q' . $row, $status);
 
-                    $fotoTemuan = $sheet->getCell('L' . $row)->getValue();
+                    $fotoTemuan = $sheet->getCell('M' . $row)->getValue();
 
                     if (!empty($fotoTemuan)) {
                         $imagePath = $this->makeOptimizedImage($fotoTemuan);
@@ -247,15 +249,15 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
                             $this->addImageToSheet(
                                 $sheet,
                                 $imagePath,
-                                'L' . $row,
+                                'M' . $row,
                                 'Foto Temuan ' . $row
                             );
 
-                            $sheet->setCellValue('L' . $row, '');
+                            $sheet->setCellValue('M' . $row, '');
                         }
                     }
 
-                    $fotoPerbaikan = $sheet->getCell('O' . $row)->getValue();
+                    $fotoPerbaikan = $sheet->getCell('P' . $row)->getValue();
 
                     if (!empty($fotoPerbaikan)) {
                         $imagePath = $this->makeOptimizedImage($fotoPerbaikan);
@@ -264,11 +266,11 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
                             $this->addImageToSheet(
                                 $sheet,
                                 $imagePath,
-                                'O' . $row,
+                                'P' . $row,
                                 'Foto Perbaikan ' . $row
                             );
 
-                            $sheet->setCellValue('O' . $row, '');
+                            $sheet->setCellValue('P' . $row, '');
                         }
                     }
                 }
@@ -286,22 +288,46 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
 
     protected function setColumnWidths(Worksheet $sheet): void
     {
-        $sheet->getColumnDimension('A')->setWidth(8);
-        $sheet->getColumnDimension('B')->setWidth(16);
-        $sheet->getColumnDimension('C')->setWidth(15);
-        $sheet->getColumnDimension('D')->setWidth(20);
-        $sheet->getColumnDimension('E')->setWidth(16);
-        $sheet->getColumnDimension('F')->setWidth(18);
-        $sheet->getColumnDimension('G')->setWidth(24);
-        $sheet->getColumnDimension('H')->setWidth(14);
-        $sheet->getColumnDimension('I')->setWidth(42);
-        $sheet->getColumnDimension('J')->setWidth(36);
-        $sheet->getColumnDimension('K')->setWidth(18);
-        $sheet->getColumnDimension('L')->setWidth(35);
-        $sheet->getColumnDimension('M')->setWidth(30);
-        $sheet->getColumnDimension('N')->setWidth(28);
-        $sheet->getColumnDimension('O')->setWidth(35);
-        $sheet->getColumnDimension('P')->setWidth(12);
+        $sheet->getColumnDimension('A')->setWidth(35);
+        $sheet->getColumnDimension('B')->setWidth(20);
+        $sheet->getColumnDimension('C')->setWidth(20);
+        $sheet->getColumnDimension('D')->setWidth(15);
+        $sheet->getColumnDimension('E')->setWidth(20);
+        $sheet->getColumnDimension('F')->setWidth(16);
+        $sheet->getColumnDimension('G')->setWidth(18);
+        $sheet->getColumnDimension('H')->setWidth(24);
+        $sheet->getColumnDimension('I')->setWidth(14);
+        $sheet->getColumnDimension('J')->setWidth(42);
+        $sheet->getColumnDimension('K')->setWidth(36);
+        $sheet->getColumnDimension('L')->setWidth(18);
+        $sheet->getColumnDimension('M')->setWidth(35);
+        $sheet->getColumnDimension('N')->setWidth(30);
+        $sheet->getColumnDimension('O')->setWidth(28);
+        $sheet->getColumnDimension('P')->setWidth(35);
+        $sheet->getColumnDimension('Q')->setWidth(12);
+    }
+
+    protected function getPerusahaanByNik(?string $nik): string
+    {
+        $nik = strtoupper(trim((string) $nik));
+
+        if (preg_match('/KJM$/', $nik)) {
+            return 'PT. KJM';
+        }
+
+        if (preg_match('/ABM$/', $nik)) {
+            return 'PT. ABM';
+        }
+
+        if (str_starts_with($nik, 'SM') || str_starts_with($nik, 'SM-')) {
+            return 'PT. SM';
+        }
+
+        if (preg_match('/S$/', $nik)) {
+            return 'PT. SIMS';
+        }
+
+        return '-';
     }
 
     protected function buildTitle(): string
