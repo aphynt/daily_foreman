@@ -81,15 +81,16 @@ class KLKHITController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        $nikBypass = getConfigArrayById(28);
+        $nikBypass = array_merge(
+            getConfigArrayById(28),
+            getConfigArrayById(29)
+        );
 
         if (!in_array($user->nik, $nikBypass)) {
-
             $baseQuery->where(function ($query) use ($user) {
                 $query->where('it.pengawas', $user->nik)
                     ->orWhere('it.diketahui', $user->nik);
             });
-
         }
 
         $it = $baseQuery->get();
