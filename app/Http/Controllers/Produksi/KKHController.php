@@ -900,8 +900,17 @@ class KKHController extends Controller
             in_array($role, ['ADMIN', 'MANAGEMENT']) ||
             (in_array($role, ['SUPERVISOR', 'SUPERINTENDENT']) && $departemenId === 9);
 
+        $latestIds = DB::connection('kkh')
+            ->table('db_payroll.dbo.web_kkh')
+            ->where('tgl', $now)
+            ->groupBy('nik')
+            ->selectRaw('MAX(id) as id');
+
         $kkh = DB::connection('kkh')
             ->table('db_payroll.dbo.web_kkh as kkh')
+            ->joinSub($latestIds, 'latest', function ($join) {
+                $join->on('kkh.id', '=', 'latest.id');
+            })
             ->leftJoin('db_payroll.dbo.tbl_data_hr as hr', 'kkh.nik', '=', 'hr.nik')
             ->leftJoin('db_payroll.dbo.tbl_data_hr as hr2', 'kkh.nik_pengawas', '=', 'hr2.nik')
             ->leftJoin('db_payroll.dbo.tm_departemen as dp', 'hr.Id_Departemen', '=', 'dp.ID_Departemen')
