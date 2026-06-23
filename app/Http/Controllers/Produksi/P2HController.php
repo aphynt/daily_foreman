@@ -1154,22 +1154,40 @@ class P2HController extends Controller
             )
             ->get();
 
-        $checklistMap = [];
+        /*
+|--------------------------------------------------------------------------
+| CHECKLIST ITEM MASTER
+|--------------------------------------------------------------------------
+*/
+$checklistItems = DB::connection('focus')
+    ->table('FLT_EQUCHECKLISTITEM')
+    ->select(
+        'EQU_TYPEID',
+        'CHECKLISTGROUPID',
+        'CHECKLISTITEMID',
+        'CHECKLISTITEMDESCRIPTION'
+    )
+    ->get();
 
-        foreach ($checklistItems as $item) {
+$checklistMap = [];
 
-            $groupKey = strtoupper(
-                trim((string)$item->CHECKLISTGROUPID)
-            );
+foreach ($checklistItems as $item) {
 
-            $itemKey = trim(
-                (string)$item->CHECKLISTITEMID
-            );
+    $groupKey = strtoupper(
+        trim((string)$item->CHECKLISTGROUPID)
+    );
 
-            $checklistMap[$groupKey][$itemKey]
-                = $item->CHECKLISTITEMDESCRIPTION;
-        }
+    $itemKey = trim(
+        (string)$item->CHECKLISTITEMID
+    );
 
+    $equTypeId = strtoupper(
+        trim((string)$item->EQU_TYPEID)
+    );
+
+    $checklistMap[$groupKey][$itemKey][$equTypeId]
+        = $item->CHECKLISTITEMDESCRIPTION;
+}
         /*
         |--------------------------------------------------------------------------
         | REPORT TIME
@@ -1226,7 +1244,7 @@ class P2HController extends Controller
         );
 
         $detail = $detail->map(function ($row)
-            use ($groups, $checklistMap, $groupKeys) {
+            use ($groups, $checklistMap) {
 
             $groupId = strtoupper(
                 trim((string)$row->checklistgroupid)
@@ -1236,45 +1254,18 @@ class P2HController extends Controller
                 (string)$row->checklistitemid
             );
 
-            $description = null;
+            $equTypeId = strtoupper(
+                trim((string)$row->equ_typeid)
+            );
 
-            if (isset($checklistMap[$groupId][$itemId])) {
-
-                $description =
-                    $checklistMap[$groupId][$itemId];
-            }
-
-            if ($description === null) {
-
-                foreach ($groupKeys as $grpKey) {
-
-                    if (
-                        str_contains($groupId, $grpKey)
-                        && isset(
-                            $checklistMap[$grpKey][$itemId]
-                        )
-                    ) {
-
-                        $description =
-                            $checklistMap[$grpKey][$itemId];
-
-                        break;
-                    }
-                }
-            }
+            $description = $checklistMap[$groupId][$itemId][$equTypeId]
+                ?? null;
 
             if ($description === null) {
 
-                foreach ($groupKeys as $grpKey) {
-
-                    if (isset($checklistMap[$grpKey][$itemId])) {
-
-                        $description =
-                            $checklistMap[$grpKey][$itemId];
-
-                        break;
-                    }
-                }
+                $description = collect(
+                    $checklistMap[$groupId][$itemId] ?? []
+                )->first();
             }
 
             $row->checklistitemdescription =
@@ -1377,7 +1368,7 @@ class P2HController extends Controller
                     ->get();
 
                 $detailP2H = $detailP2H->map(function ($item)
-                    use ($checklistMap, $groupKeys) {
+                    use ($checklistMap) {
 
                     $groupId = strtoupper(
                         trim((string)$item->CHECKLISTGROUPID)
@@ -1387,45 +1378,19 @@ class P2HController extends Controller
                         (string)$item->CHECKLISTITEMID
                     );
 
-                    $description = null;
+                    $equTypeId = strtoupper(
+                        trim((string)($item->EQU_TYPEID ?? ''))
+                    );
 
-                    if (isset($checklistMap[$groupId][$itemId])) {
-
-                        $description =
-                            $checklistMap[$groupId][$itemId];
-                    }
-
-                    if ($description === null) {
-
-                        foreach ($groupKeys as $grpKey) {
-
-                            if (
-                                str_contains($groupId, $grpKey)
-                                && isset(
-                                    $checklistMap[$grpKey][$itemId]
-                                )
-                            ) {
-
-                                $description =
-                                    $checklistMap[$grpKey][$itemId];
-
-                                break;
-                            }
-                        }
-                    }
+                    $description =
+                        $checklistMap[$groupId][$itemId][$equTypeId]
+                        ?? null;
 
                     if ($description === null) {
 
-                        foreach ($groupKeys as $grpKey) {
-
-                            if (isset($checklistMap[$grpKey][$itemId])) {
-
-                                $description =
-                                    $checklistMap[$grpKey][$itemId];
-
-                                break;
-                            }
-                        }
+                        $description = collect(
+                            $checklistMap[$groupId][$itemId] ?? []
+                        )->first();
                     }
 
                     $item->CHECKLISTITEMDESCRIPTION =
@@ -1488,6 +1453,7 @@ class P2HController extends Controller
             ]);
         }
 
+
         $detail = $detail->map(function ($row) {
 
             return (object)[
@@ -1538,6 +1504,8 @@ class P2HController extends Controller
                     $row->checklistitemdescription ?? null,
             ];
         });
+
+        // dd($detail);
 
         /*
         |--------------------------------------------------------------------------
