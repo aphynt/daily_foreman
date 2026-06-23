@@ -237,21 +237,26 @@
                             <table id="cbtn-selectors" class="table table-striped table-hover table-bordered align-middle">
                                 <thead>
                                     <tr>
-                                        <th style="width: 50px;">No</th>
-                                        <th style="width: 95px;">Tanggal Inspeksi</th>
-                                        <th style="width: 120px;">Level</th>
-                                        <th style="width: 120px;">Lokasi</th>
-                                        <th style="width: 120px;">Inspektor</th>
-                                        <th style="width: 220px;">Uraian Temuan</th>
+                                        <th style="width: 50px;" rowspan="2">No</th>
+                                        <th style="width: 95px;" rowspan="2">Tanggal Inspeksi</th>
+                                        <th style="width: 50px;" colspan="2">Pembuat</th>
+                                        <th style="width: 120px;" rowspan="2">Level</th>
+                                        <th style="width: 120px;" rowspan="2">Lokasi</th>
+                                        <th style="width: 120px;" rowspan="2">Inspektor</th>
+                                        <th style="width: 220px;" rowspan="2">Uraian Temuan</th>
                                         {{-- <th style="width: 110px;">Dokumentasi Temuan</th> --}}
-                                        <th style="width: 95px;">Tingkat Risiko</th>
-                                        <th style="width: 220px;">Tindak Lanjut Perbaikan</th>
-                                        <th style="width: 95px;">Due Date</th>
-                                        <th style="width: 110px;">PIC</th>
-                                        <th style="width: 105px;">Tanggal Perbaikan</th>
+                                        <th style="width: 95px;" rowspan="2">Tingkat Risiko</th>
+                                        <th style="width: 220px;" rowspan="2">Tindak Lanjut Perbaikan</th>
+                                        <th style="width: 95px;" rowspan="2">Due Date</th>
+                                        <th style="width: 110px;" rowspan="2">PIC</th>
+                                        <th style="width: 105px;" rowspan="2">Tanggal Perbaikan</th>
                                         {{-- <th style="width: 120px;">Dokumentasi Tindakan Perbaikan</th> --}}
-                                        <th style="width: 90px;">Status</th>
-                                        <th style="width: 120px;">Aksi</th>
+                                        <th style="width: 90px;" rowspan="2">Status</th>
+                                        <th style="width: 120px;" rowspan="2">Aksi</th>
+                                    </tr>
+                                    <tr>
+                                        <th>NIK</th>
+                                        <th>Nama</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -276,6 +281,8 @@
                                                 {{ \Carbon\Carbon::parse($item->tanggal_kejadian)->format('d-m-Y') ?? '-' }}
                                                 {{ \Carbon\Carbon::parse($item->jam_kejadian)->format('H:i') ?? '-' }}
                                             </td>
+                                            <td class="text-cell">{{ $item->nik_pic ?? '-' }}</td>
+                                            <td class="text-cell">{{ $item->pic ?? '-' }}</td>
                                             <td class="text-cell">{{ $item->level ?? '-' }}</td>
                                             <td class="text-cell">{{ $item->area ?? '-' }}</td>
                                             <td class="text-cell">
