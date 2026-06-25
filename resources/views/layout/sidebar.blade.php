@@ -246,7 +246,7 @@
                     @if (canAccess('kkh.all') || canAccess('kkh.name'))
                     <li class="pc-item pc-hasmenu">
                         <a href="#!" class="pc-link"><span class="pc-micon">
-                            <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/ergonomic.png" alt="DS"> </span><span class="pc-mtext">KKH</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span> <span class="pc-badge">2</span>
+                            <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/ergonomic.png" alt="DS"> </span><span class="pc-mtext">Verifikasi KKH</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span> <span class="pc-badge">2</span>
                         </a>
                         <ul class="pc-submenu">
                             @if (canAccess('kkh.all'))<li class="pc-item"><a class="pc-link" href="{{ route('kkh.all') }}">Seleksi per Tanggal</a></li>@endif
