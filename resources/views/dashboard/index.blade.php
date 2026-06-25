@@ -28,7 +28,7 @@
         <div class="row g-1">
             <h5 class="w-100">Fitur Pilihan</h5>
             <div class="col-4 col-md-4 col-xxl-4">
-                    <a href="http://poka.ptsims.co.id" class="text-decoration-none">
+                    <a href="http://asatu.ptsims.co.id" class="text-decoration-none">
                         <div class="card mb-3">
                             <div class="card-body text-center" style="padding-left:2px; padding-right:2px;">
                                 <img class="img-fluid card-img-top" src="{{ asset('dashboard/assets') }}/images/widget/house.png" style="max-width: 20px">
