@@ -24972,7 +24972,7 @@ pre[class*=language-] {
     left: 280px;
     right: 0;
     z-index: 1023;
-    min-height: 55px;
+    min-height: 35px;
     /* padding: 13px 0; */
     background: 0 0;
     border-radius: 8px

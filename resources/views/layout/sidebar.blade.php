@@ -35,7 +35,14 @@
                 @if (canAccess('dashboard.index'))
                 <li class="pc-item"><a href="{{ route('dashboard.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/house.png" alt="NT"></span><span class="pc-mtext">Home</span></a></li>
                 @endif
-
+                <li class="pc-item">
+                    <a href="http://poka.ptsims.co.id" class="pc-link">
+                        <span class="pc-micon">
+                            <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/house.png" alt="NT">
+                        </span>
+                        <span class="pc-mtext">SATU SIMS</span>
+                    </a>
+                </li>
                 @if (Auth::user()->role != 'WORKER')
                     {{-- PRODUKSI --}}
                     @if (canAccess('production.index'))

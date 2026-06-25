@@ -91,6 +91,54 @@
         vertical-align: top;
     }
 
+    .mobile-filter{
+        display:none;
+    }
+
+    @media (max-width:768px){
+
+        .mobile-filter{
+            display:block;
+            margin-bottom:15px;
+        }
+
+        .mobile-filter .form-control,
+        .mobile-filter .form-select{
+            height:46px;
+            margin-bottom:10px;
+            border-radius:10px;
+            font-size:14px;
+        }
+
+        .mobile-filter .btn{
+            width:100%;
+            height:30px;
+            border-radius:10px;
+            margin-bottom:10px;
+        }
+
+        .mobile-action{
+            display:flex;
+            gap:10px;
+        }
+
+        .mobile-action a{
+            flex:1;
+        }
+
+    }
+
+    #mobile-datepicker .form-control{
+        height:46px;
+        font-size:14px;
+    }
+
+    #mobile-datepicker .input-group-text{
+        height:46px;
+        font-size:13px;
+        padding:0 10px;
+    }
+
 </style>
 
 
@@ -106,7 +154,7 @@
                             <li class="breadcrumb-item"><a href="javascript: void(0)">Daftar Laporan Hazard</a></li>
                         </ul>
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 d-none d-md-block">
                         <div class="mb-3 d-flex flex-wrap flex-md-nowrap align-items-center justify-content-between gap-2">
 
                             {{-- FILTER TANGGAL --}}
@@ -191,6 +239,72 @@
                 </div>
             </div>
         </div>
+
+        <div class="mobile-filter">
+
+            <form method="GET">
+
+                <input
+                    type="search"
+                    name="keyword"
+                    class="form-control"
+                    placeholder="🔍 Cari No. Inspeksi, Departemen, Bahaya..."
+                    value="{{ request('keyword') }}">
+
+                <div class="input-group mb-2" id="mobile-datepicker">
+                    <input
+                        type="text"
+                        id="range-start-mobile"
+                        name="rangeStart"
+                        class="form-control"
+                        placeholder="Tanggal Awal"
+                        value="{{ request('rangeStart') }}">
+
+                    <span class="input-group-text">s/d</span>
+
+                    <input
+                        type="text"
+                        id="range-end-mobile"
+                        name="rangeEnd"
+                        class="form-control"
+                        placeholder="Tanggal Akhir"
+                        value="{{ request('rangeEnd') }}">
+                </div>
+
+                <select
+                    class="form-select"
+                    name="status">
+
+                    <option value="">Semua Status</option>
+                    <option value="1" {{ request('status')=='1'?'selected':'' }}>Open</option>
+                    <option value="2" {{ request('status')=='2'?'selected':'' }}>Close</option>
+
+                </select>
+
+                <button class="btn btn-primary">
+                    <i class="fas fa-search"></i>
+                    Tampilkan
+                </button>
+
+            </form>
+
+            <div class="mobile-action">
+
+            <a href="{{ url()->previous() }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Kembali
+            </a>
+
+            @if (canAccess('hazard-report.insert'))
+            <a href="{{ route('hazard-report.insert') }}" class="btn btn-success">
+                <i class="fas fa-plus"></i>
+                Buat
+            </a>
+            @endif
+
+            </div>
+
+            </div>
 
         <div class="row mode-hp">
             <div class="col-sm-12">
@@ -463,6 +577,14 @@
             }
         }]
     });
+
+    const mobilePicker = new DateRangePicker(
+        document.querySelector('#mobile-datepicker'),
+        {
+            buttonClass: 'btn',
+            autohide: true
+        }
+    );
 
 </script>
 

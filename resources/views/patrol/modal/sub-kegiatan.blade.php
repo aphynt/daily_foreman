@@ -123,74 +123,138 @@
         });
     });
 
+    // const subKegiatanData = {
+    //     "Safety Talk / P5M": {
+    //         kategori: "SM B1 & SM B2",
+    //         frekuensi: "Awal Shift",
+    //         lokasi: "Area Tambang"
+    //     },
+    //     "Checklist Standard PIT - Excellent Patrol": {
+    //         kategori: "SM B1 & SM B2",
+    //         frekuensi: "Daily/Shift",
+    //         lokasi: "Seluruh PIT"
+    //     },
+    //     "Inspeksi Terencana (Level 2)": {
+    //         kategori: "All Area, A3 Barat (Sump), B2 (Sump)",
+    //         frekuensi: "Pagi (sesuai Jadwal)",
+    //         lokasi: "SM B1 & B2"
+    //     },
+    //     "Sidak/Sweeping (Inspeksi Tidak Terencana)": {
+    //         kategori: "Seat Belt, Simper, Kecepatan, Jarak Aman, Kepatuhan Rambu, APD",
+    //         frekuensi: "Sepanjang Shift",
+    //         lokasi: "Random Area"
+    //     },
+    //     "Monitoring Pengawas": {
+    //         kategori: "KLKH Pengawas, Keberadaan & Fungsi Pengawas",
+    //         frekuensi: "100%/Shift",
+    //         lokasi: "Seluruh PIT"
+    //     },
+    //     "Pengukuran Pencahayaan": {
+    //         kategori: "Shift Malam (2x/Minggu)",
+    //         frekuensi: "Malam",
+    //         lokasi: "Front Loading, Disposal, Pitstop dll"
+    //     },
+    //     "Kelengkapan & Standar Rambu": {
+    //         kategori: "Minimal 3 Titik/Hari",
+    //         frekuensi: "Siang/Malam",
+    //         lokasi: "Jalan Tambang"
+    //     },
+    //     "Observasi Perilaku Khusus/Area Kritis": {
+    //         kategori: "10 Orang/Minggu",
+    //         frekuensi: "Sepanjang Shift",
+    //         lokasi: "Seluruh PIT"
+    //     },
+    //     "Mari Ngopi": {
+    //         kategori: "SM B1 & SM B2",
+    //         frekuensi: "Daily/Shift",
+    //         lokasi: "Seluruh PIT"
+    //     },
+    //     "Meeting Koordinasi": {
+    //         kategori: "Identifikasi & Pencegahan Keadaan Darurat",
+    //         frekuensi: "Daily Meeting, Meeting Internal SE, Mitra Kerja, Koordinasi Safety Representative",
+    //         lokasi: "View Point, Kantor, Pondok"
+    //     },
+    //     "Monitoring Blasting": {
+    //         kategori: "Standby di View Point",
+    //         frekuensi: "Jam Istirahat",
+    //         lokasi: "View Point"
+    //     },
+    //     "Support Excort Mobilisasi Unit": {
+    //         kategori: "Excort Commander",
+    //         frekuensi: "Sesuai Permintaan",
+    //         lokasi: "Seluruh PIT"
+    //     },
+
+    // };
+
     const subKegiatanData = {
         "Safety Talk / P5M": {
-            kategori: "SM B1 & SM B2",
-            frekuensi: "Awal Shift",
-            lokasi: "Area Tambang"
+            kategori: "",
+            frekuensi: "",
+            lokasi: ""
         },
         "Checklist Standard PIT - Excellent Patrol": {
-            kategori: "SM B1 & SM B2",
-            frekuensi: "Daily/Shift",
-            lokasi: "Seluruh PIT"
+            kategori: "",
+            frekuensi: "",
+            lokasi: ""
         },
         "Inspeksi Terencana (Level 2)": {
-            kategori: "All Area, A3 Barat (Sump), B2 (Sump)",
-            frekuensi: "Pagi (sesuai Jadwal)",
-            lokasi: "SM B1 & B2"
+            kategori: "",
+            frekuensi: "",
+            lokasi: ""
         },
         "Sidak/Sweeping (Inspeksi Tidak Terencana)": {
-            kategori: "Seat Belt, Simper, Kecepatan, Jarak Aman, Kepatuhan Rambu, APD",
-            frekuensi: "Sepanjang Shift",
-            lokasi: "Random Area"
+            kategori: "",
+            frekuensi: "",
+            lokasi: ""
         },
         "Monitoring Pengawas": {
-            kategori: "KLKH Pengawas, Keberadaan & Fungsi Pengawas",
-            frekuensi: "100%/Shift",
-            lokasi: "Seluruh PIT"
+            kategori: "",
+            frekuensi: "",
+            lokasi: ""
         },
         "Pengukuran Pencahayaan": {
-            kategori: "Shift Malam (2x/Minggu)",
-            frekuensi: "Malam",
-            lokasi: "Front Loading, Disposal, Pitstop dll"
+            kategori: "",
+            frekuensi: "",
+            lokasi: ""
         },
         "Kelengkapan & Standar Rambu": {
-            kategori: "Minimal 3 Titik/Hari",
-            frekuensi: "Siang/Malam",
-            lokasi: "Jalan Tambang"
+            kategori: "",
+            frekuensi: "",
+            lokasi: ""
         },
         "Observasi Perilaku Khusus/Area Kritis": {
-            kategori: "10 Orang/Minggu",
-            frekuensi: "Sepanjang Shift",
-            lokasi: "Seluruh PIT"
+            kategori: "",
+            frekuensi: "",
+            lokasi: ""
         },
         "Mari Ngopi": {
-            kategori: "SM B1 & SM B2",
-            frekuensi: "Daily/Shift",
-            lokasi: "Seluruh PIT"
+            kategori: "",
+            frekuensi: "",
+            lokasi: ""
         },
         "Meeting Koordinasi": {
-            kategori: "Identifikasi & Pencegahan Keadaan Darurat",
-            frekuensi: "Daily Meeting, Meeting Internal SE, Mitra Kerja, Koordinasi Safety Representative",
-            lokasi: "View Point, Kantor, Pondok"
+            kategori: "",
+            frekuensi: "",
+            lokasi: ""
         },
         "Monitoring Blasting": {
-            kategori: "Standby di View Point",
-            frekuensi: "Jam Istirahat",
-            lokasi: "View Point"
+            kategori: "",
+            frekuensi: "",
+            lokasi: ""
         },
         "Support Excort Mobilisasi Unit": {
-            kategori: "Excort Commander",
-            frekuensi: "Sesuai Permintaan",
-            lokasi: "Seluruh PIT"
-        },
-
+            kategori: "",
+            frekuensi: "",
+            lokasi: ""
+        }
     };
 
     function handleChangeShift(selectedValue) {
         const kategori = document.getElementById('kategori');
         const frekuensi = document.getElementById('frekuensi');
         const lokasi = document.getElementById('lokasi');
+
 
         if (subKegiatanData[selectedValue]) {
             kategori.value = subKegiatanData[selectedValue].kategori || '';

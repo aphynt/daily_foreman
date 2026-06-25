@@ -109,6 +109,21 @@ class HazardReportController extends Controller
             $hazard->where('status', $request->status);
         }
 
+        if ($request->filled('keyword')) {
+
+            $keyword = trim($request->keyword);
+
+            $hazard->where(function ($query) use ($keyword) {
+                $query->where('hz.no_inspeksi', 'like', "%{$keyword}%")
+                    ->orWhere('hz.lokasi', 'like', "%{$keyword}%")
+                    ->orWhere('hz.bahaya', 'like', "%{$keyword}%")
+                    ->orWhere('hz.perusahaan', 'like', "%{$keyword}%")
+                    ->orWhere('dep.keterangan', 'like', "%{$keyword}%")
+                    ->orWhere('us2.name', 'like', "%{$keyword}%");
+            });
+
+        }
+
         $hazard = $hazard->get();
 
         if ($request->get('export') === 'excel') {
