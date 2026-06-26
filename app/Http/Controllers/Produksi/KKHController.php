@@ -96,7 +96,7 @@ class KKHController extends Controller
                 'kkh.tgl',
                 'kkh.nik',
                 'dp.ID_Departemen',
-                DB::raw("FORMAT(kkh.tgl_input, 'yyyy-MM-dd HH:mm') as TANGGAL_DIBUAT"),
+                DB::raw("FORMAT(kkh.tgl_input, 'HH:mm') as TANGGAL_DIBUAT"),
                 'hr.Nik as NIK_PENGISI',
                 'hr.Nama as NAMA_PENGISI',
                 'kkh.shift_kkh as SHIFT',

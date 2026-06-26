@@ -7,6 +7,46 @@
         .card .card-body, .card .card-header { padding: 10px; }
         .row>* { margin-top: 0.1rem; }
     }
+    .satu-sims-card{
+        background: linear-gradient(135deg,#001932,#003366);
+        border-radius:16px;
+        transition:.25s;
+    }
+
+    .satu-sims-card:hover{
+        transform:translateY(-2px);
+        box-shadow:0 10px 25px rgba(0,0,0,.18);
+    }
+
+    .satu-sims-icon{
+        width:52px;
+        height:52px;
+        border-radius:14px;
+        background:rgba(255,255,255,.12);
+        display:flex;
+        justify-content:center;
+        align-items:center;
+    }
+
+    .satu-sims-icon img{
+        width:28px;
+        height:28px;
+    }
+
+    .satu-sims-card h5{
+        font-size:18px;
+        margin:0;
+    }
+
+    .satu-sims-card small{
+        font-size:12px;
+        letter-spacing:.3px;
+    }
+
+    .page-header{
+    padding-bottom:0 !important;
+}
+
 </style>
 
 <div class="pc-container">
@@ -14,10 +54,11 @@
         <div class="page-header">
             <div class="page-block">
                 <div class="row align-items-center">
-                    <div class="col-md-12">
-                        <div class="page-header-title">
-                            <h5 class="mb-0 alert alert-primary alert-dismissible fade show">
+                    <div class="col-md-12 mb-3">
+                        <div class="page-header-title mb-0">
+                            <h5 class="alert alert-primary d-flex align-items-center mb-0">
                                 Semangat Pagi, {{ Auth::user()->name }}!
+                                <span class="wave ms-2">👋</span>
                             </h5>
                         </div>
                     </div>
@@ -25,18 +66,34 @@
             </div>
         </div>
 
+
         <div class="row g-1">
             <h5 class="w-100">Fitur Pilihan</h5>
-            <div class="col-4 col-md-4 col-xxl-4">
-                    <a href="http://asatu.ptsims.co.id" class="text-decoration-none">
-                        <div class="card mb-3">
-                            <div class="card-body text-center" style="padding-left:2px; padding-right:2px;">
-                                <img class="img-fluid card-img-top" src="{{ asset('dashboard/assets') }}/images/widget/house.png" style="max-width: 20px">
-                                <h6 class="card-title" style="font-size:11px">SATU SIMS</h6>
+            <div class="col-12">
+                <a href="http://poka.ptsims.co.id" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm satu-sims-card">
+                        <div class="card-body d-flex align-items-center">
+
+                            <div class="satu-sims-icon">
+                                <i class="ti ti-arrow-left text-white fs-4"></i>
                             </div>
+
+                            <div class="ms-3 flex-grow-1">
+                                <h6 class="mb-1 text-white fw-bold">
+                                    Kembali ke SATU SIMS
+                                </h6>
+
+                                <small class="text-white-50">
+                                    Portal utama aplikasi
+                                </small>
+                            </div>
+
+                            <i class="ti ti-external-link text-white fs-5"></i>
+
                         </div>
-                    </a>
-                </div>
+                    </div>
+                </a>
+            </div>
             @if (
                 canAccess('hazard-report.insert') ||
                 canAccess('form-pengawas-new.index') ||
@@ -55,7 +112,7 @@
                         <div class="card mb-3">
                             <div class="card-body text-center" style="padding-left:2px; padding-right:2px;">
                                 <img class="img-fluid card-img-top" src="{{ asset('dashboard/assets') }}/images/widget/hazard.png" style="max-width: 20px">
-                                <h6 class="card-title" style="font-size:11px">Hazard Report</h6>
+                                <h6 class="card-title" style="font-size:11px">Form Hazard Report</h6>
                             </div>
                         </div>
                     </a>
@@ -68,19 +125,19 @@
                             <div class="card mb-3">
                                 <div class="card-body text-center" style="padding-left:2px; padding-right:2px;">
                                     <img class="img-fluid card-img-top" src="{{ asset('dashboard/assets') }}/images/widget/pencil.png" style="max-width: 20px">
-                                    <h6 class="card-title" style="font-size:11px">Inspeksi PICA</h6>
+                                    <h6 class="card-title" style="font-size:11px">Form Inspeksi</h6>
                                 </div>
                             </div>
                         </a>
                     </div>
                     @endif
-                    @if (canAccess('observasibank'))
+                    @if (canAccess('observasibank.insert'))
                     <div class="col-4 col-md-4 col-xxl-4">
-                        <a href="{{ route('observasibank') }}" class="text-decoration-none">
+                        <a href="{{ route('observasibank.insert') }}" class="text-decoration-none">
                             <div class="card mb-3">
                                 <div class="card-body text-center" style="padding-left:2px; padding-right:2px;">
                                     <img class="img-fluid card-img-top" src="{{ asset('dashboard/assets') }}/images/widget/pencil.png" style="max-width: 20px">
-                                    <h6 class="card-title" style="font-size:11px">Observasi BANK</h6>
+                                    <h6 class="card-title" style="font-size:11px">Form Observasi BANK</h6>
                                 </div>
                             </div>
                         </a>
@@ -233,7 +290,7 @@
                         <div class="card mb-3">
                             <div class="card-body text-center" style="padding-left:2px; padding-right:2px;">
                                 <img class="img-fluid card-img-top" src="{{ asset('dashboard/assets') }}/images/widget/worker.png" style="max-width: 20px">
-                                <h6 class="card-title" style="font-size:11px">P2H Unit</h6>
+                                <h6 class="card-title" style="font-size:11px">Verifikasi P2H</h6>
                             </div>
                         </div>
                     </a>
@@ -323,7 +380,7 @@
                     </div>
                     <div class="card-body">
                         <div class="list-group">
-                            @if (canAccess('form-pengawas-sap.index'))<a href="{{ route('form-pengawas-sap.index') }}" class="list-group-item">Inspeksi PICA</a>@endif
+                            @if (canAccess('form-pengawas-sap.index'))<a href="{{ route('form-pengawas-sap.index') }}" class="list-group-item">Inspeksi</a>@endif
                             @if (canAccess('klkh.loading-point'))<a href="{{ route('klkh.loading-point') }}" class="list-group-item">KLKH Loading Point</a>@endif
                             @if (canAccess('klkh.haul-road'))<a href="{{ route('klkh.haul-road') }}" class="list-group-item">KLKH Haul Road</a>@endif
                             @if (canAccess('klkh.disposal'))<a href="{{ route('klkh.disposal') }}" class="list-group-item">KLKH Disposal/Dumping Point</a>@endif

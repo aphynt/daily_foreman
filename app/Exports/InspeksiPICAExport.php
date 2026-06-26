@@ -14,79 +14,29 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use Maatwebsite\Excel\Concerns\FromCollection;
 
 class InspeksiPICAExport implements
-    FromQuery,
+    FromCollection,
     WithHeadings,
     WithMapping,
     WithEvents
 {
-    protected array $filters;
+    protected $report;
     protected int $no = 1;
     protected array $temporaryImages = [];
 
-    public function __construct(array $filters)
+    public function __construct($report)
     {
-        $this->filters = $filters;
+        $this->report = $report;
     }
 
-    public function query()
+    public function collection()
     {
-        $query = DB::table('prd_sap_report as sr')
-            ->leftJoin('users as us', 'sr.foreman_id', 'us.id')
-            ->leftJoin('ref_departemen as dep', 'sr.departemen_pic', 'dep.id')
-            ->leftJoin('ref_shift as sh', 'sr.shift', 'sh.id')
-            ->select(
-                'sr.uuid',
-                'sr.statusenabled',
-                'sr.created_at',
-                'sr.tanggal_kejadian',
-                'sr.jam_kejadian',
-                'sh.keterangan as shift',
-                'us.nik as nik_pic',
-                'us.name as pic',
-                'sr.area',
-                'sr.temuan',
-                'sr.risiko',
-                'sr.level',
-                'sr.inspektor1',
-                'sr.inspektor2',
-                'sr.inspektor3',
-                'sr.inspektor4',
-                'sr.inspektor5',
-                'sr.file_temuan',
-                'sr.file_temuan2',
-                'sr.file_temuan3',
-                'sr.file_tindakLanjut',
-                'sr.file_tindakLanjut2',
-                'sr.file_tindakLanjut3',
-                'sr.tingkat_risiko',
-                'sr.due_date',
-                'sr.tanggal_perbaikan',
-                'sr.pengendalian',
-                'sr.tindak_lanjut',
-                'sr.is_finish',
-                'dep.keterangan as departemen'
-            )
-            ->whereBetween('sr.created_at', [
-                $this->filters['start'],
-                $this->filters['end'],
-            ])
-            ->where('sr.statusenabled', 1);
-
-        if (!in_array($this->filters['role'], ['ADMIN', 'MANAGEMENT'])) {
-            $query->where(function ($q) {
-                $q->where('sr.departemen_pic', $this->filters['departemen_id'])
-                    ->orWhere('sr.foreman_id', $this->filters['user_id']);
-            });
-        }
-
-        if (isset($this->filters['status']) && $this->filters['status'] !== '') {
-            $query->where('sr.is_finish', $this->filters['status']);
-        }
-
-        return $query->orderBy('sr.created_at', 'DESC');
+        return $this->report;
     }
+
+
 
     public function headings(): array
     {

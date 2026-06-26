@@ -1,4 +1,4 @@
-@include('layout.head', ['title' => 'Inspeksi PICA'])
+@include('layout.head', ['title' => 'Form Inspeksi'])
 @include('layout.sidebar')
 @include('layout.header')
 
@@ -251,7 +251,7 @@
         <div class="row">
             <div class="col-md-10 col-xxl-9 mb-4">
                 <div class="page-title-wrap">
-                    <h3>Inspeksi PICA</h3>
+                    <h3>Form Inspeksi</h3>
                 </div>
             </div>
         </div>

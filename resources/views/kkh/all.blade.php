@@ -108,7 +108,7 @@
                                 <thead style="text-align: center; vertical-align: middle;">
                                     <tr>
                                         <th rowspan="2">Pengisi</th>
-                                        <th rowspan="2">Hari/Tanggal</th>
+                                        <th rowspan="2" style="white-space: normal !important; min-width: 20px;">Jam Dibuat</th>
                                         <th rowspan="2" style="white-space: normal !important; min-width: 20px;">Jam Pulang</th>
                                         <th rowspan="2">Shift</th>
                                         <th colspan="3">Jam Tidur</th>

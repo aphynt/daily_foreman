@@ -1,4 +1,4 @@
-@include('layout.head', ['title' => 'Daftar Laporan Inspeksi PICA'])
+@include('layout.head', ['title' => 'Daftar Laporan Inspeksi'])
 @include('layout.sidebar')
 @include('layout.header')
 
@@ -146,7 +146,7 @@
                     <div class="col-md-12">
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item">
-                                <a href="javascript: void(0)">Daftar Laporan Inspeksi PICA</a>
+                                <a href="javascript: void(0)">Daftar Laporan Inspeksi</a>
                             </li>
                         </ul>
                     </div>
@@ -156,36 +156,48 @@
 
                             {{-- FILTER TANGGAL --}}
                             <div class="d-flex align-items-center">
-                                <form action="" method="get">
+                                <form action="" method="GET">
                                     <div class="input-group input-group-sm" id="pc-datepicker-8">
+
                                         <input type="text"
-                                            class="form-control form-control-sm"
+                                            class="form-control"
                                             placeholder="Start date"
                                             name="rangeStart"
+                                            value="{{ request('rangeStart') }}"
                                             style="max-width:160px"
                                             id="range-start">
 
                                         <span class="input-group-text">s/d</span>
 
                                         <input type="text"
-                                            class="form-control form-control-sm"
+                                            class="form-control"
                                             placeholder="End date"
                                             name="rangeEnd"
+                                            value="{{ request('rangeEnd') }}"
                                             style="max-width:160px"
                                             id="range-end">
 
-                                        <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
+                                        <input type="text"
+                                            class="form-control"
+                                            name="search"
+                                            value="{{ request('search') }}"
+                                            placeholder="Cari NIK, Nama, Area, Temuan..."
+                                            style="min-width:250px">
+
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-search"></i> Tampilkan
+                                        </button>
+
                                         @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT']))
                                             <button
                                                 type="submit"
                                                 name="export"
                                                 value="excel"
-                                                class="btn btn-success btn-sm d-inline-flex align-items-center justify-content-center gap-1 px-2"
-                                            >
-                                                <i class="fas fa-download"></i>
-                                                <span>Download</span>
+                                                class="btn btn-success">
+                                                <i class="fas fa-download"></i> Download
                                             </button>
                                         @endif
+
                                     </div>
                                 </form>
                             </div>

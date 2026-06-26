@@ -1,7 +1,23 @@
 <nav class="pc-sidebar">
     <div class="navbar-wrapper">
-        <div class="m-header justify-content-center"><a href="#" class="b-brand text-primary">
-                <span class="badge bg-light-success rounded-pill ms-2 theme-version fs-4">{{ config('app.name') }}</span></a></div>
+        <div class="m-header d-flex flex-column align-items-center justify-content-center py-3"
+     style="background:#001932;">
+
+    <h4 class="mb-2 text-white fw-bold">
+        {{ config('app.name') }}
+    </h4>
+
+    <div class="d-flex align-items-center">
+        <small class="text-light opacity-75 me-2">
+            Powered by
+        </small>
+
+        <img src="{{ asset('dashboard/assets/images/lp.png') }}"
+             alt="Group Logo"
+             style="height:10px;">
+    </div>
+
+</div>
         <div class="navbar-content">
             <a style="color:#001932;" data-bs-toggle="collapse" href="#pc_sidebar_userlink">
                 <div class="card pc-user-card">
@@ -35,14 +51,14 @@
                 @if (canAccess('dashboard.index'))
                 <li class="pc-item"><a href="{{ route('dashboard.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/house.png" alt="NT"></span><span class="pc-mtext">Home</span></a></li>
                 @endif
-                <li class="pc-item">
-                    <a href="http://asatu.ptsims.co.id" class="pc-link">
+                {{-- <li class="pc-item">
+                    <a href="http://poka.ptsims.co.id" class="pc-link">
                         <span class="pc-micon">
                             <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/house.png" alt="NT">
                         </span>
                         <span class="pc-mtext">SATU SIMS</span>
                     </a>
-                </li>
+                </li> --}}
                 @if (Auth::user()->role != 'WORKER')
                     {{-- PRODUKSI --}}
                     @if (canAccess('production.index'))
@@ -139,9 +155,9 @@
                 <li class="pc-item"><a href="{{ route('sop.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/sop.png" alt="NT"></span><span class="pc-mtext">SOP</span></a></li>
                 @endif
 
-                @if (canAccess('hazard-report.index'))
+                {{-- @if (canAccess('hazard-report.index'))
                 <li class="pc-item"><a href="{{ route('hazard-report.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/hazard.png" alt="NT"></span><span class="pc-mtext">Hazard Report</span></a></li>
-                @endif
+                @endif --}}
 
                 @if (Auth::user()->role != 'WORKER')
                     <li class="pc-item pc-caption"><label>Laporan Harian</label></li>
@@ -156,6 +172,7 @@
                         canAccess('p2h.show') ||
                         canAccess('ert.show') ||
                         canAccess('patrol.show') ||
+                        canAccess('hazard-report.index') ||
                         canAccess('observasibank') ||
                         canAccess('inspeksi.tidakterencana')
                     )
@@ -167,13 +184,14 @@
                         <ul class="pc-submenu">
                             @if (canAccess('pengawas-produksi-pitstop.index'))<li class="pc-item"><a class="pc-link" href="{{ route('pengawas-produksi-pitstop.index') }}">Pengawas OB</a></li>@endif
                             @if (canAccess('form-pengawas-batubara.show'))<li class="pc-item"><a class="pc-link" href="{{ route('form-pengawas-batubara.show') }}">Pengawas Coal</a></li>@endif
-                            @if (canAccess('form-pengawas-sap.show'))<li class="pc-item"><a class="pc-link" href="{{ route('form-pengawas-sap.show') }}">Laporan Inspeksi PICA</a></li>@endif
+                            @if (canAccess('form-pengawas-sap.show'))<li class="pc-item"><a class="pc-link" href="{{ route('form-pengawas-sap.show') }}">Laporan Inspeksi</a></li>@endif
                             @if (canAccess('laporan-kata-sandi.show'))<li class="pc-item"><a class="pc-link" href="{{ route('laporan-kata-sandi.show') }}">Laporan Kata Sandi</a></li>@endif
                             @if (canAccess('jobpending.produksi.detail'))<li class="pc-item"><a class="pc-link" href="{{ route('jobpending.produksi.detail') }}">Laporan Job Pending Produksi</a></li>@endif
                             {{-- @if (canAccess('jobpending.safety.detail'))<li class="pc-item"><a class="pc-link" href="{{ route('jobpending.safety.detail') }}">Laporan Job Pending Safety</a></li>@endif --}}
                             @if (canAccess('p2h.show'))<li class="pc-item"><a class="pc-link" href="{{ route('p2h.show') }}">Laporan P2H</a></li>@endif
                             @if (canAccess('ert.show'))<li class="pc-item"><a class="pc-link" href="{{ route('ert.show') }}">Laporan Safety ERT</a></li>@endif
                             @if (canAccess('patrol.show'))<li class="pc-item"><a class="pc-link" href="{{ route('patrol.show') }}">Laporan Safety Patrol</a></li>@endif
+                            @if (canAccess('hazard-report.index'))<li class="pc-item"><a class="pc-link" href="{{ route('hazard-report.index') }}">Laporan Hazard</a></li>@endif
                             @if (canAccess('observasibank'))<li class="pc-item"><a class="pc-link" href="{{ route('observasibank') }}">Laporan Observasi Bank</a></li>@endif
                             @if (canAccess('inspeksi.tidakterencana'))<li class="pc-item"><a class="pc-link" href="{{ route('inspeksi.tidakterencana') }}">Laporan Inspeksi Tidak Terencana</a></li>@endif
                         </ul>
@@ -222,7 +240,10 @@
                     <li class="pc-item pc-caption"><label>Kesiapan & Verifikasi</label></li>
 
                     {{-- VERIFIKASI --}}
-                    @if (
+                    @if (canAccess('verifikasi.klkh'))
+                    <li class="pc-item"><a href="{{ route('verifikasi.klkh') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/stamp.png" alt="NT"></span><span class="pc-mtext">Verifikasi KLKH</span></a></li>
+                    @endif
+                    {{-- @if (
                         canAccess('verifikasi.klkh') ||
                         canAccess('monitoring.p2h')
                     )
@@ -235,11 +256,11 @@
                             @if (canAccess('monitoring.p2h'))<li class="pc-item"><a class="pc-link" href="{{ route('monitoring.p2h') }}">P2H</a></li>@endif
                         </ul>
                     </li>
-                    @endif
+                    @endif --}}
 
                     {{-- P2H UNIT --}}
                     @if (canAccess('p2h.index'))
-                    <li class="pc-item"><a href="{{ route('p2h.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/worker.png" alt="NT"></span><span class="pc-mtext">P2H Unit</span></a></li>
+                    <li class="pc-item"><a href="{{ route('p2h.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/worker.png" alt="NT"></span><span class="pc-mtext">Verifikasi P2H</span></a></li>
                     @endif
 
                     {{-- KKH --}}

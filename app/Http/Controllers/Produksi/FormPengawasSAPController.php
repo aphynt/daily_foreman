@@ -421,20 +421,7 @@ MSG;
         $startTimeFormatted = $start->format('Y-m-d');
         $endTimeFormatted = $end->format('Y-m-d');
 
-        $filters = [
-            'start' => $start->format('Y-m-d H:i:s'),
-            'end' => $end->format('Y-m-d H:i:s'),
-            'status' => $request->status,
-            'role' => Auth::user()->role,
-            'departemen_id' => Auth::user()->departemen_id,
-            'user_id' => Auth::user()->id,
-        ];
-
-        if ($request->get('export') === 'excel') {
-            $fileName = "($startTimeFormatted - $endTimeFormatted) PICA Inspeksi Keselamatan Pertambangan.xlsx";
-
-            return Excel::download(new InspeksiPICAExport($filters), $fileName);
-        }
+        $user = Auth::user();
 
         $report = DB::table('prd_sap_report as sr')
             ->leftJoin('users as us', 'sr.foreman_id', 'us.id')
@@ -473,42 +460,70 @@ MSG;
                 'sr.is_finish',
                 'dep.keterangan as departemen'
             )
-            ->whereBetween('sr.created_at', [$filters['start'], $filters['end']])
+            ->whereBetween('sr.created_at', [
+                $start->format('Y-m-d H:i:s'),
+                $end->format('Y-m-d H:i:s')
+            ])
             ->where('sr.statusenabled', 1);
 
-        // if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
-        //     $report->where(function ($query) {
-        //         $query->where('sr.departemen_pic', Auth::user()->departemen_id)
-        //             ->orWhere('sr.foreman_id', Auth::user()->id);
-        //     });
-        // }
+        // Filter pencarian
+        if ($request->filled('search')) {
+            $search = trim($request->search);
 
-        $user = Auth::user();
+            $report->where(function ($q) use ($search) {
+                $q->where('us.nik', 'like', "%{$search}%")
+                    ->orWhere('us.name', 'like', "%{$search}%")
+                    ->orWhere('sr.area', 'like', "%{$search}%")
+                    ->orWhere('sr.temuan', 'like', "%{$search}%")
+                    ->orWhere('sr.level', 'like', "%{$search}%")
+                    ->orWhere('dep.keterangan', 'like', "%{$search}%")
+                    ->orWhere('sr.inspektor1', 'like', "%{$search}%")
+                    ->orWhere('sr.inspektor2', 'like', "%{$search}%")
+                    ->orWhere('sr.inspektor3', 'like', "%{$search}%")
+                    ->orWhere('sr.inspektor4', 'like', "%{$search}%")
+                    ->orWhere('sr.inspektor5', 'like', "%{$search}%");
+            });
+        }
 
+        // Hak akses
         if (!in_array($user->role, ['ADMIN', 'MANAGEMENT'])) {
+
             $report->where(function ($query) use ($user) {
 
                 if (in_array($user->role, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'])) {
+
                     $query->where('sr.departemen_pic', $user->departemen_id)
                         ->orWhere('sr.foreman_id', $user->id)
                         ->orWhere('sr.inspektor1', $user->name)
                         ->orWhere('sr.inspektor2', $user->name)
                         ->orWhere('sr.inspektor3', $user->name)
                         ->orWhere('sr.inspektor4', $user->name)
-                        ->orWhere('sr.inspektor5', $user->name)
-                        ;
-                } else {
-                    $query->where('sr.foreman_id', $user->id);
-                }
+                        ->orWhere('sr.inspektor5', $user->name);
 
+                } else {
+
+                    $query->where('sr.foreman_id', $user->id);
+
+                }
             });
         }
 
+        // Filter status
         if ($request->filled('status')) {
             $report->where('sr.is_finish', $request->status);
         }
 
         $report = $report->orderBy('sr.created_at', 'DESC')->get();
+
+        if ($request->get('export') === 'excel') {
+
+            $fileName = "({$startTimeFormatted} - {$endTimeFormatted}) PICA Inspeksi Keselamatan Pertambangan.xlsx";
+
+            return Excel::download(
+                new InspeksiPICAExport($report),
+                $fileName
+            );
+        }
 
         return view('form-sap.daftar.index', compact('report'));
     }
