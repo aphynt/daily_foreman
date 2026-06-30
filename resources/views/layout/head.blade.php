@@ -34,7 +34,7 @@
     <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/css/plugins/dropzone.min.css">
     <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/fonts/inter/inter.css">
     <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/fonts/phosphor/duotone/style.css">
-    <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/fonts/tabler-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
     <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/fonts/feather.css">
     <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/fonts/fontawesome.css">
     <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/fonts/material.css">
