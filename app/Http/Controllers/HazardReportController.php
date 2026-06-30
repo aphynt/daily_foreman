@@ -512,7 +512,7 @@ class HazardReportController extends Controller
                     $verificationNumber = RefConf::where('id', 23)->value('value');
                 }else if($request->departemen == 11){
                     $verificationNumber = RefConf::where('id', 21)->value('value');
-                }else if($request->departemen == 12){
+                }else if($request->departemen == 17){
                     $verificationNumber = RefConf::where('id', 22)->value('value');
                 }else if($request->departemen == 9){
                     $verificationNumber = RefConf::where('id', 24)->value('value');

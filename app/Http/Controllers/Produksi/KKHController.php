@@ -161,8 +161,12 @@ class KKHController extends Controller
                 'hr2.Nama as NAMA_PENGAWAS',
             );
 
-        if ($request->search['value']) {
-            $searchValue = '%' . $request->search['value'] . '%';
+        $searchValue = $request->input('search.value');
+
+        if (!empty($searchValue)) {
+
+            $searchValue = "%{$searchValue}%";
+
             $columnsToSearch = [
                 'hr.Nik',
                 'hr.Nama',

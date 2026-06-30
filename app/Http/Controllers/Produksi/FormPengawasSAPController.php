@@ -611,7 +611,7 @@ MSG;
                     $verificationNumber = RefConf::where('id', 23)->value('value');
                 }else if($request->pic == 11){
                     $verificationNumber = RefConf::where('id', 21)->value('value');
-                }else if($request->pic == 12){
+                }else if($request->pic == 17){
                     $verificationNumber = RefConf::where('id', 22)->value('value');
                 }else if($request->pic == 9){
                     $verificationNumber = RefConf::where('id', 24)->value('value');
