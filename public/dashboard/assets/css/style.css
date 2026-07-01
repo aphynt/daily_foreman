@@ -24757,7 +24757,7 @@ pre[class*=language-] {
         top: 0;
         left: 0;
         transition: all .15s ease-in-out;
-        padding-top: 20px;
+        padding-top: 30px;
     }
 
     .pc-header .m-header,
@@ -25145,7 +25145,7 @@ pre[class*=language-] {
     .pc-container {
         margin-left: 0;
         margin-right: 0;
-        padding-top:20px;
+        padding-top:30px;
     }
 
     .pc-container .page-header+.pc-content,
