@@ -24756,7 +24756,8 @@ pre[class*=language-] {
     .pc-header {
         top: 0;
         left: 0;
-        transition: all .15s ease-in-out
+        transition: all .15s ease-in-out;
+        padding-top: 20px;
     }
 
     .pc-header .m-header,
@@ -25143,7 +25144,8 @@ pre[class*=language-] {
 @media (max-width:1024px) {
     .pc-container {
         margin-left: 0;
-        margin-right: 0
+        margin-right: 0;
+        padding-top:20px;
     }
 
     .pc-container .page-header+.pc-content,

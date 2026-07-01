@@ -10,8 +10,8 @@
                 <li class="pc-h-item pc-sidebar-popup"><a href="#" class="pc-head-link ms-0" id="mobile-collapse"><i
                             class="ti ti-menu-2"></i></a></li>
                 <li class="pc-h-item  d-md-inline-flex">
-                    <img src="{{ asset('dashboard/assets') }}/images/logo-full.png" class="img-fluid" width="140px" alt="logo">
-                    <span class="badge bg-light-success rounded-pill ms-2 theme-version py-2 " style="font-size: 11pt">{{ config('app.name') }}</span>
+                    <img src="{{ asset('dashboard/assets') }}/images/logo-full.png" class="img-fluid" width="130px" alt="logo">
+                    <span class="badge bg-light-success rounded-pill ms-2 theme-version py-2 " style="font-size: 8pt">{{ config('app.name') }}</span>
                 </li>
             </ul>
         </div><!-- [Mobile Media Block end] -->
