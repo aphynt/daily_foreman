@@ -316,7 +316,7 @@ class KLKHITController extends Controller
             return redirect()->back()->with('success', 'KLKH berhasil diverifikasi');
 
         } catch (\Throwable $th) {
-            return redirect()->back()->with('info', nl2br('KLKH gagal diverifikasi..\n' . $th->getMessage()));
+            return redirect()->route('klkh.it')->with('info', nl2br('KLKH gagal diverifikasi..\n' . $th->getMessage()));
         }
     }
 

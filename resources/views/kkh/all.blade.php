@@ -1,25 +1,7 @@
 @include('layout.head', ['title' => 'Daftar Laporan KKH Per Tanggal'])
 @include('layout.sidebar')
 @include('layout.header')
-<style>
-@media (max-width:768px){
 
-    #dataKKH tbody td:first-child{
-        position: sticky;
-        left: 0;
-        background: #fff;
-        z-index: 2;
-        /* min-width: 100px; */
-    }
-
-    #dataKKH thead tr:first-child th:first-child{
-        position: sticky;
-        left: 0;
-        background: #fff;
-        z-index: 3;
-    }
-}
-</style>
 <section class="pc-container">
     <div class="pc-content">
         <div class="page-header">
@@ -104,10 +86,13 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="dt-responsive table-responsive">
-                            <table id="dataKKH" class="table table-striped table-hover table-bordered nowrap">
+                             <table id="cbtn-selectors" class="table table-striped table-hover table-bordered nowrap">
                                 <thead style="text-align: center; vertical-align: middle;">
                                     <tr>
-                                        <th rowspan="2">Pengisi</th>
+                                        <th class="desktop-only" rowspan="2">Nama</th>
+                                        <th class="desktop-only" rowspan="2">NIK</th>
+
+                                        <th class="mobile-pengisi" rowspan="2">Pengisi</th>
                                         <th rowspan="2" style="white-space: normal !important; min-width: 20px;">Jam Dibuat</th>
                                         <th rowspan="2" style="white-space: normal !important; min-width: 20px;">Jam Pulang</th>
                                         <th rowspan="2">Shift</th>
@@ -210,8 +195,35 @@
     var table;
     $(document).ready(function() {
         var userRole = "{{ Auth::user()->role }}";
-        table = $('#dataKKH').DataTable({
-
+        table = $('#cbtn-selectors').DataTable({
+            dom: 'Bfrtip',
+            paging: false,
+            buttons: [{
+                    extend: 'copyHtml5',
+                    exportOptions: {
+                        columns: [0, ':visible']
+                    }
+                },
+                {
+                    extend: 'excelHtml5',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                },
+                {
+                    extend: 'pdfHtml5',
+                    orientation: 'landscape', // Set orientation menjadi landscape
+                    pageSize: 'A4', // Ukuran halaman (opsional, default A4)
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+                    },
+                    customize: function (doc) {
+                        // Menyesuaikan margin atau pengaturan tambahan
+                        doc.content[1].margin = [10, 10, 10, 10]; // Atur margin [kiri, atas, kanan, bawah]
+                    }
+                },
+                'colvis'
+            ],
 
             processing: true,
             serverSide: true,
@@ -236,15 +248,20 @@
             },
             columns: [
                 {
+                    data: 'NAMA_PENGISI',
+                    className: 'desktop-only'
+                },
+                {
+                    data: 'NIK_PENGISI',
+                    className: 'desktop-only'
+                },
+                {
                     data: null,
-                    render: function(data, type, row){
+                    className: 'mobile-pengisi',
+                    render: function(data,type,row){
                         return `
-                            <div>
-                                <div style="font-weight:600;font-size:12px">${row.NAMA_PENGISI}</div>
-                                <div style="font-size:12px;color:#6b7280">
-                                    ${row.NIK_PENGISI}
-                                </div>
-                            </div>
+                            <div style="font-weight:600">${row.NAMA_PENGISI}</div>
+                            <div style="color:#6b7280">${row.NIK_PENGISI}</div>
                         `;
                     }
                 },
@@ -384,6 +401,16 @@
 
                         return ``;
                     }
+                }
+            ],
+            columnDefs: [
+                {
+                    targets: [0, 1], // Nama & NIK
+                    visible: window.innerWidth > 768
+                },
+                {
+                    targets: [2], // Pengisi
+                    visible: window.innerWidth <= 768
                 }
             ],
             "order": [[0, "asc"]],
