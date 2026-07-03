@@ -1948,8 +1948,14 @@ foreach ($checklistItems as $item) {
             $item->SHIFTDESC =
                 $shift[$item->OPR_SHIFTNO]->SHIFTDESC ?? null;
 
+            $operatorNik = $item->VERIFIED_OPERATOR;
+
+            if (preg_match('/^\d{4}[A-Z]1$/', $operatorNik)) {
+                $operatorNik = substr($operatorNik, 0, -1);
+            }
+
             $item->NAMAOPERATOR =
-                $users[$item->VERIFIED_OPERATOR]->name ?? null;
+                $users[$operatorNik]->name ?? null;
 
             $item->NAMAMEKANIK =
                 $users[$item->VERIFIED_MEKANIK]->name ?? null;
@@ -2104,8 +2110,15 @@ foreach ($checklistItems as $item) {
             $item->SHIFTDESC =
                 $shift[$item->OPR_SHIFTNO]->SHIFTDESC ?? null;
 
+            $operatorNik = $item->VERIFIED_OPERATOR;
+
+            // Jika formatnya seperti 0960S1 maka ubah menjadi 0960S
+            if (preg_match('/^\d{4}[A-Z]1$/', $operatorNik)) {
+                $operatorNik = substr($operatorNik, 0, -1);
+            }
+
             $item->NAMAOPERATOR =
-                $users[$item->VERIFIED_OPERATOR]->name ?? null;
+                $users[$operatorNik]->name ?? null;
 
             $item->NAMAMEKANIK =
                 $users[$item->VERIFIED_MEKANIK]->name ?? null;
