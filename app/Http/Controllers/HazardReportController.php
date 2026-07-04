@@ -126,6 +126,13 @@ class HazardReportController extends Controller
 
         $hazard = $hazard->get();
 
+        $totalDeleted = HazardReport::where('statusenabled',0)
+                ->count();
+
+        $deletedHazard = HazardReport::where('statusenabled',0)
+                ->orderByDesc('tanggal_pelaporan')
+                ->get();
+
         if ($request->get('export') === 'excel') {
             $fileName = "($startTimeFormatted - $endTimeFormatted) Hazard Report.xlsx";
             return Excel::download(
@@ -133,7 +140,7 @@ class HazardReportController extends Controller
             $fileName
         );
         }
-        return view('safety.hazard-report.index', compact('hazard'));
+        return view('safety.hazard-report.index', compact('hazard', 'deletedHazard', 'totalDeleted'));
     }
 
     public function insert()
@@ -141,6 +148,20 @@ class HazardReportController extends Controller
         $shift = Shift::where('statusenabled', true)->get();
         $dep = Departemen::where('statusenabled', true)->get();
         return view('safety.hazard-report.insert', compact('shift', 'dep'));
+    }
+
+    public function restore($uuid)
+    {
+        $hazard = HazardReport::where('uuid', $uuid)->firstOrFail();
+
+        $hazard->update([
+            'statusenabled' => 1
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Hazard Report berhasil dipulihkan.'
+        ]);
     }
 
     public function post(Request $request)

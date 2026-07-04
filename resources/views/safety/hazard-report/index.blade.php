@@ -196,8 +196,8 @@
 
                                         <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
 
-                                        @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT']))
-                                        {{-- @if(Auth::user()->id == 3) --}}
+                                        {{-- @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) --}}
+                                        @if(Auth::user()->id == 3)
                                             <button
                                                 type="submit"
                                                 name="export"
@@ -207,6 +207,23 @@
                                                 <i class="fas fa-download"></i>
                                                 <span>Download</span>
                                             </button>
+                                            <button
+                                                type="button"
+                                                class="btn btn-warning btn-sm d-inline-flex align-items-center justify-content-center gap-1 px-2"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#trashHazardModal">
+
+                                                <i class="fas fa-trash-restore-alt me-1"></i>
+                                                <span>Recycle Bin</span>
+
+                                                @if(isset($totalDeleted) && $totalDeleted > 0)
+                                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                        {{ $totalDeleted }}
+                                                    </span>
+                                                @endif
+
+                                            </button>
+                                            @include('safety.hazard-report.modal.recycle-bin')
                                         @endif
                                     </div>
                                 </form>
@@ -513,6 +530,77 @@
             buttonClass: 'btn'
         });
     })();
+
+</script>
+<script>
+
+document.getElementById('searchDeleted').addEventListener('keyup', function () {
+
+    let value = this.value.toLowerCase();
+
+    document.querySelectorAll('#deletedTable tbody tr').forEach(function(row){
+
+        row.style.display = row.innerText.toLowerCase().includes(value)
+            ? ''
+            : 'none';
+
+    });
+
+});
+
+$(document).on('click', '.btnRestore', function () {
+
+    let btn = $(this);
+    let uuid = btn.data('id');
+
+    // Optional: disable tombol agar tidak diklik berkali-kali
+    btn.prop('disabled', true);
+
+    $.ajax({
+
+        url: '/hazard-report/restore/' + uuid + '',
+        type: 'POST',
+
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+
+        success: function (res) {
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: 'Hazard Report berhasil dipulihkan.',
+                timer: 1200,
+                showConfirmButton: false
+            });
+
+            // Tutup modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('trashHazardModal'));
+            modal.hide();
+
+            // Refresh halaman
+            setTimeout(function () {
+                location.reload();
+            }, 1200);
+
+        },
+
+        error: function () {
+
+            btn.prop('disabled', false);
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: 'Data gagal dipulihkan.'
+            });
+
+        }
+
+    });
+
+});
 
 </script>
 <script>

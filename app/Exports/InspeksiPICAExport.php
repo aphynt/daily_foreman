@@ -44,13 +44,15 @@ class InspeksiPICAExport implements
             'No',
             'Tgl. Inspeksi',
             'Lokasi',
+            'NIK PIC',
+            'PIC',
+            'Departemen PIC',
             'Inspektor',
             'Uraian Temuan',
             'Dokumentasi Temuan',
             'Tingkat Risiko',
             'Rekomendasi Tindak Lanjut',
             'Due Date',
-            'PIC',
             'Tgl. Perbaikan',
             'Dokumentasi Tindakan Perbaikan',
             'Status',
@@ -79,21 +81,32 @@ class InspeksiPICAExport implements
             $item->tanggal_kejadian
                 ? Carbon::parse($item->tanggal_kejadian)->format('d-M-y')
                 : null,
+
             $item->area,
+
+            $item->nik_pic,
+            $item->pic,
+            $item->departemen_pic,
+
             $inspectors ?: '-',
+
             $item->temuan,
             $item->file_temuan ?: null,
             $item->tingkat_risiko,
             $item->tindak_lanjut,
+
             $item->created_at
                 ? Carbon::parse($item->created_at)->addDays(7)->format('d-M-y')
                 : null,
-            $item->departemen,
+
             $isClose && $item->tanggal_perbaikan
                 ? Carbon::parse($item->tanggal_perbaikan)->format('d-M-y')
                 : null,
+
             $item->file_tindakLanjut ?: null,
+
             $isClose ? 'Close' : 'Open',
+
             $item->level,
         ];
     }
@@ -124,7 +137,7 @@ class InspeksiPICAExport implements
                     $drawing->setWorksheet($sheet);
                 }
 
-                $sheet->mergeCells('A2:N2');
+                $sheet->mergeCells('A2:P2');
                 $sheet->setCellValue('A2', 'PICA INSPEKSI KESELAMATAN PERTAMBANGAN');
 
                 $sheet->getStyle('A2')->applyFromArray([
@@ -138,9 +151,9 @@ class InspeksiPICAExport implements
                     ],
                 ]);
 
-                $sheet->setCellValue('N1', 'FM-SE-82/05/24/09/25');
+                $sheet->setCellValue('P1', 'FM-SE-82/05/24/09/25');
 
-                $sheet->getStyle('N1')->applyFromArray([
+                $sheet->getStyle('P1')->applyFromArray([
                     'font' => [
                         'bold' => true,
                         'size' => 9,
@@ -155,7 +168,7 @@ class InspeksiPICAExport implements
 
                 $highestRow = $sheet->getHighestRow();
 
-                $sheet->getStyle("A4:N{$highestRow}")->applyFromArray([
+                $sheet->getStyle("A4:P{$highestRow}")->applyFromArray([
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => Border::BORDER_THIN,
@@ -168,7 +181,7 @@ class InspeksiPICAExport implements
                     ],
                 ]);
 
-                $sheet->getStyle('A4:N4')->applyFromArray([
+                $sheet->getStyle('A4:P4')->applyFromArray([
                     'font' => [
                         'bold' => true,
                         'size' => 11,
@@ -193,10 +206,10 @@ class InspeksiPICAExport implements
                 for ($row = 5; $row <= $highestRow; $row++) {
                     $sheet->getRowDimension($row)->setRowHeight(85);
 
-                    $status = $sheet->getCell('M' . $row)->getValue();
+                    $status = $sheet->getCell('O' . $row)->getValue();
                     $isClose = strtolower((string) $status) === 'close';
 
-                    $sheet->getStyle('M' . $row)->applyFromArray([
+                    $sheet->getStyle('O' . $row)->applyFromArray([
                         'font' => [
                             'bold' => true,
                             'color' => ['rgb' => 'FFFFFF'],
@@ -211,7 +224,7 @@ class InspeksiPICAExport implements
                         ],
                     ]);
 
-                    $fileTemuan = $sheet->getCell('F' . $row)->getValue();
+                    $fileTemuan = $sheet->getCell('I' . $row)->getValue();
 
                     if (!empty($fileTemuan)) {
                         $imagePath = $this->makeOptimizedImage($fileTemuan);
@@ -220,15 +233,15 @@ class InspeksiPICAExport implements
                             $this->addImageToSheet(
                                 $sheet,
                                 $imagePath,
-                                'F' . $row,
+                                'I' . $row,
                                 'Dokumentasi Temuan ' . $row
                             );
 
-                            $sheet->setCellValue('F' . $row, '');
+                            $sheet->setCellValue('I' . $row, '');
                         }
                     }
 
-                    $fileTindakLanjut = $sheet->getCell('L' . $row)->getValue();
+                    $fileTindakLanjut = $sheet->getCell('N' . $row)->getValue();
 
                     if (!empty($fileTindakLanjut)) {
                         $imagePath = $this->makeOptimizedImage($fileTindakLanjut);
@@ -237,11 +250,11 @@ class InspeksiPICAExport implements
                             $this->addImageToSheet(
                                 $sheet,
                                 $imagePath,
-                                'L' . $row,
+                                'N' . $row,
                                 'Dokumentasi Perbaikan ' . $row
                             );
 
-                            $sheet->setCellValue('L' . $row, '');
+                            $sheet->setCellValue('N' . $row, '');
                         }
                     }
                 }
@@ -262,17 +275,21 @@ class InspeksiPICAExport implements
         $sheet->getColumnDimension('A')->setWidth(5);
         $sheet->getColumnDimension('B')->setWidth(12);
         $sheet->getColumnDimension('C')->setWidth(18);
-        $sheet->getColumnDimension('D')->setWidth(30);
-        $sheet->getColumnDimension('E')->setWidth(35);
-        $sheet->getColumnDimension('F')->setWidth(30);
-        $sheet->getColumnDimension('G')->setWidth(14);
+
+        $sheet->getColumnDimension('D')->setWidth(15); // NIK PIC
+        $sheet->getColumnDimension('E')->setWidth(25); // PIC
+        $sheet->getColumnDimension('F')->setWidth(22); // Departemen
+
+        $sheet->getColumnDimension('G')->setWidth(30);
         $sheet->getColumnDimension('H')->setWidth(35);
-        $sheet->getColumnDimension('I')->setWidth(14);
-        $sheet->getColumnDimension('J')->setWidth(18);
-        $sheet->getColumnDimension('K')->setWidth(14);
-        $sheet->getColumnDimension('L')->setWidth(30);
-        $sheet->getColumnDimension('M')->setWidth(10);
-        $sheet->getColumnDimension('N')->setWidth(10);
+        $sheet->getColumnDimension('I')->setWidth(30);
+        $sheet->getColumnDimension('J')->setWidth(14);
+        $sheet->getColumnDimension('K')->setWidth(35);
+        $sheet->getColumnDimension('L')->setWidth(14);
+        $sheet->getColumnDimension('M')->setWidth(14);
+        $sheet->getColumnDimension('N')->setWidth(30);
+        $sheet->getColumnDimension('O')->setWidth(10);
+        $sheet->getColumnDimension('P')->setWidth(10);
     }
 
     protected function addImageToSheet(

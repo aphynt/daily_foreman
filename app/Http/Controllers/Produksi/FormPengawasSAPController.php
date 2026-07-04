@@ -426,6 +426,7 @@ MSG;
         $report = DB::table('prd_sap_report as sr')
             ->leftJoin('users as us', 'sr.foreman_id', 'us.id')
             ->leftJoin('ref_departemen as dep', 'sr.departemen_pic', 'dep.id')
+            ->leftJoin('ref_departemen as dep2', 'us.departemen_id', 'dep2.id')
             ->leftJoin('ref_shift as sh', 'sr.shift', 'sh.id')
             ->select(
                 'sr.uuid',
@@ -458,7 +459,8 @@ MSG;
                 'sr.tindakan_perbaikan',
                 'sr.tindak_lanjut',
                 'sr.is_finish',
-                'dep.keterangan as departemen'
+                'dep.keterangan as departemen',
+                'dep2.keterangan as departemen_pic'
             )
             ->whereBetween('sr.created_at', [
                 $start->format('Y-m-d H:i:s'),
