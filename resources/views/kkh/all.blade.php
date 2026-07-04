@@ -1,7 +1,25 @@
 @include('layout.head', ['title' => 'Daftar Laporan KKH Per Tanggal'])
 @include('layout.sidebar')
 @include('layout.header')
+<style>
+@media (max-width:768px){
 
+    #cbtn-selectors tbody td:first-child{
+        position: sticky;
+        left: 0;
+        background: #fff;
+        z-index: 2;
+        /* min-width: 100px; */
+    }
+
+    #cbtn-selectors thead tr:first-child th:first-child{
+        position: sticky;
+        left: 0;
+        background: #fff;
+        z-index: 3;
+    }
+}
+</style>
 <section class="pc-container">
     <div class="pc-content">
         <div class="page-header">
