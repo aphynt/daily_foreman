@@ -92,7 +92,8 @@
                         canAccess('bb.catatan-pengawas.index') ||
                         canAccess('pengawas-pitstop.operator') ||
                         canAccess('laporan-kata-sandi.jamMonitor') ||
-                        canAccess('kkh.dashboard')
+                        canAccess('kkh.dashboard') ||
+                        canAccess('p2h.dashboard')
                     )
                     <li class="pc-item pc-hasmenu">
                         <a href="#!" class="pc-link"><span class="pc-micon">
@@ -145,6 +146,9 @@
                             @endif
                             @if (canAccess('kkh.dashboard'))
                             <li class="pc-item"><a class="pc-link" href="{{ route('kkh.dashboard') }}">KKH</a></li>
+                            @endif
+                            @if (canAccess('p2h.dashboard'))
+                            <li class="pc-item"><a class="pc-link" href="{{ route('p2h.dashboard') }}">P2H</a></li>
                             @endif
                         </ul>
                     </li>

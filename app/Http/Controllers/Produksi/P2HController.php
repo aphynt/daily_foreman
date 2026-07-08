@@ -532,6 +532,370 @@ class P2HController extends Controller
         ]);
     }
 
+    public function dashboard(Request $request)
+    {
+        $today = Carbon::today();
+
+            $shiftDate = !empty($request->tanggalP2H)
+                ? date('Y-m-d', strtotime($request->tanggalP2H))
+                : null;
+
+            $searchValueTrim = $request->search['value'] ?? null;
+
+            $shiftP2H = $request->input('shiftP2H');
+
+            $shiftNo = in_array((int)$shiftP2H, [6,7], true)
+                ? (int)$shiftP2H
+                : null;
+
+            $cluster = in_array($request->cluster, ['EX','HD','MG','BD'])
+                ? $request->cluster
+                : null;
+
+            $statusVerifikasi = $request->input('statusVerifikasi');
+
+            $userRoleList = [
+                'FOREMAN',
+                'PJS FOREMAN',
+                'SUPERVISOR',
+                'PJS SUPERVISOR'
+            ];
+
+            $isForeman =
+                in_array(Auth::user()->role, $userRoleList)
+                && Auth::user()->departemen_id == 11;
+
+            $userSection = $isForeman
+                ? Auth::user()->section
+                : null;
+
+            /*
+            |--------------------------------------------------------------------------
+            | USERS (SQL SERVER)
+            |--------------------------------------------------------------------------
+            */
+            $users = DB::connection('daily_foreman')
+                ->table('users')
+                ->select('nik', 'name')
+                ->get()
+                ->keyBy(fn($u) => trim($u->nik));
+
+
+            $checklistIds = DB::connection('p2h')
+                ->table('opr_oprchecklist')
+                ->whereDate('opr_shiftdate', $today)
+                ->select(
+                    'uuid',
+                    'vhc_id',
+                    'opr_reporttime',
+                    'opr_nrp',
+                    'opr_shiftno',
+                    'opr_shiftdate',
+                    'mtr_hourmeter',
+                    'verified_operator',
+                    'dateverified_operator',
+                    'verified_mekanik',
+                    'dateverified_mekanik',
+                    'verified_foreman',
+                    'dateverified_foreman',
+                    'verified_supervisor',
+                    'dateverified_supervisor'
+                )
+
+                ->when($shiftNo, fn($q) =>
+                    $q->where('opr_shiftno', $shiftNo)
+                )
+
+                ->when($shiftDate, fn($q) =>
+                    $q->whereDate('opr_shiftdate', $shiftDate)
+                )
+
+                ->when($cluster, fn($q) =>
+                    $q->where('vhc_id', 'like', $cluster.'%')
+                )
+
+                ->when($searchValueTrim, function($q) use ($searchValueTrim){
+
+                    $q->where(function($q2) use ($searchValueTrim){
+
+                        $q2->where('opr_nrp', 'ilike', "%{$searchValueTrim}%")
+                        ->orWhere('vhc_id', 'ilike', "%{$searchValueTrim}%");
+
+                    });
+                })
+
+                ->when(
+                    $statusVerifikasi == 'Sudah Diverifikasi',
+                    function ($q) {
+
+                        $q->where(function ($q2) {
+
+                            $q2->whereNotNull('verified_foreman')
+                            ->orWhereNotNull('verified_supervisor');
+
+                        });
+                    }
+                )
+
+                ->when(
+                    $statusVerifikasi == 'Belum Diverifikasi',
+                    function ($q) {
+
+                        $q->where(function ($q2) {
+
+                            $q2->whereNull('verified_foreman')
+                            ->whereNull('verified_supervisor');
+
+                        });
+                    }
+                )
+
+                ->get();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | NOT OK COUNTS
+            |--------------------------------------------------------------------------
+            */
+            $notOkCounts = DB::connection('p2h')
+                ->table('opr_oprchecklistitem')
+                ->select(
+                    'vhc_id',
+                    'opr_reporttime',
+                    DB::raw('count(*) as total_notok')
+                )
+                ->whereIn(
+                    'vhc_id',
+                    $checklistIds->pluck('vhc_id')->unique()->toArray()
+                )
+                ->whereIn(
+                    'opr_reporttime',
+                    $checklistIds->pluck('opr_reporttime')->unique()->toArray()
+                )
+                ->where('checklistval', 0)
+                ->groupBy('vhc_id', 'opr_reporttime')
+                ->get()
+                ->keyBy(fn($item) =>
+                    trim($item->vhc_id) . '_' .
+                    Carbon::parse($item->opr_reporttime)->format('Y-m-d H:i:s')
+                );
+
+            /*
+            |--------------------------------------------------------------------------
+            | P2H DATA (POSTGRESQL)
+            |--------------------------------------------------------------------------
+            */
+            $p2hData = DB::connection('p2h')
+                ->table('opr_oprchecklist as p')
+                ->whereIn(
+                    'p.vhc_id',
+                    $checklistIds->pluck('vhc_id')->unique()->toArray()
+                )
+                ->whereIn(
+                    'p.opr_reporttime',
+                    $checklistIds->pluck('opr_reporttime')->unique()->toArray()
+                )
+                ->select([
+                    'p.*'
+                ])
+                ->get()
+                ->keyBy(fn($row) =>
+                    trim($row->vhc_id) . '_' .
+                    Carbon::parse($row->opr_reporttime)->format('Y-m-d H:i:s')
+                );
+
+            /*
+            |--------------------------------------------------------------------------
+            | RESULTS
+            |--------------------------------------------------------------------------
+            */
+            $results = $checklistIds->map(function($row)
+                use (
+                    $users,
+                    $p2hData,
+                    $notOkCounts,
+                    $isForeman,
+                    $userSection
+                ) {
+
+                $vhcId = $row->vhc_id ?? null;
+                $vhcPrefix = substr($vhcId, 0, 2);
+
+                $oprReportTime = $row->opr_reporttime ?? null;
+
+                if (!$vhcId || !$oprReportTime) {
+                    return null;
+                }
+
+                $opr_nrp_fix =
+                    (substr($row->opr_nrp ?? '', -2) === 'S1')
+                    ? substr($row->opr_nrp,0,-1)
+                    : ($row->opr_nrp ?? '');
+
+                $key =
+                    trim($vhcId) . '_' .
+                    Carbon::parse($oprReportTime)->format('Y-m-d H:i:s');
+
+                $p2h = $p2hData[$key] ?? null;
+
+                $valNotOk =
+                    $notOkCounts[$key]->total_notok ?? 0;
+
+                $sectionOk = true;
+
+                if ($isForeman && $userSection) {
+
+                    if (
+                        $userSection == 'WHEEL'
+                        && !str_starts_with($vhcId, 'MG')
+                        && !str_starts_with($vhcId, 'HD')
+                    ) {
+                        $sectionOk = false;
+                    }
+
+                    if (
+                        $userSection == 'TRACK EXCA'
+                        && !str_starts_with($vhcId, 'EX')
+                    ) {
+                        $sectionOk = false;
+                    }
+
+                    if (
+                        $userSection == 'TRACK DOZER'
+                        && !str_starts_with($vhcId, 'BD')
+                    ) {
+                        $sectionOk = false;
+                    }
+                }
+
+                if (!$sectionOk) {
+                    return null;
+                }
+
+                return (object)[
+
+                    'VHC_ID' => $vhcId,
+
+                    'VHC_PREFIX' => $vhcPrefix,
+
+                    'OPR_REPORTTIME' => $oprReportTime,
+
+                    'OPR_NRP' => $opr_nrp_fix,
+
+                    'PERSONALNAME' =>
+                        $users[
+                            trim($opr_nrp_fix ?? '')
+                        ]->name ?? null,
+
+
+                    'VAL_NOTOK' => $valNotOk,
+
+                    'DATEVERIFIED_OPERATOR' =>
+                        $p2h?->oprReportTime ?? null,
+
+                    'VERIFIED_OPERATOR' =>
+                        $p2h?->verified_operator ?? null,
+
+                    'DATEVERIFIED_MEKANIK' =>
+                        $p2h?->dateverified_mekanik ?? null,
+
+                    'VERIFIED_MEKANIK' =>
+                        $p2h?->verified_mekanik ?? null,
+
+                    'NAMAMEKANIK' =>
+                        $users[
+                            trim($p2h?->verified_mekanik ?? '')
+                        ]->name ?? null,
+
+                    'DATEVERIFIED_FOREMAN' =>
+                        $p2h?->dateverified_foreman
+                        ?? $p2h?->dateverified_supervisor
+                        ?? null,
+
+                    'VERIFIED_FOREMAN' =>
+                        $p2h?->verified_foreman
+                        ?? $p2h?->verified_supervisor
+                        ?? null,
+
+                    'NAMAFOREMAN' =>
+                        $users[
+                            trim(
+                                $p2h?->verified_foreman
+                                ?? $p2h?->verified_supervisor
+                                ?? ''
+                            )
+                        ]->name ?? null,
+
+                    'DATEVERIFIED_SUPERVISOR' =>
+                        $p2h?->dateverified_supervisor ?? null,
+
+                    'VERIFIED_SUPERVISOR' =>
+                        $p2h?->verified_supervisor ?? null,
+
+                    'NAMASUPERVISOR' =>
+                        $users[
+                            trim($p2h?->verified_supervisor ?? '')
+                        ]->name ?? null,
+
+                    'MTR_HOURMETER' =>
+                        $row->mtr_hourmeter ?? null,
+
+                    'OPR_SHIFTDATE' =>
+                        $row->opr_shiftdate ?? null,
+
+                    'OPR_SHIFTNO' =>
+                        $row->opr_shiftno ?? null,
+
+                    'IS_FOREMAN_ROW' =>
+                        $isForeman && !$sectionOk,
+
+                    'SECTION_OK' =>
+                        $sectionOk
+                ];
+
+            })->filter()->values();
+
+            $totalRecords = $results->count();
+
+            /*
+            |--------------------------------------------------------------------------
+            | SORTING
+            |--------------------------------------------------------------------------
+            */
+            $results = $results->sort(function ($a, $b) {
+
+                if ($a->VAL_NOTOK != $b->VAL_NOTOK) {
+                    return $b->VAL_NOTOK <=> $a->VAL_NOTOK;
+                }
+
+                return strcmp($a->VHC_ID, $b->VHC_ID);
+
+            })->values();
+
+        $results = collect($results);
+
+        $belumVerifikasi = $results->filter(function($r){
+            return empty($r->VERIFIED_FOREMAN)
+                && empty($r->VERIFIED_SUPERVISOR);
+        });
+
+        $sudahVerifikasi = $results->filter(function($r){
+            return !empty($r->VERIFIED_FOREMAN)
+                || !empty($r->VERIFIED_SUPERVISOR);
+        });
+
+        $notOk = $results->filter(function($r){
+            return $r->VAL_NOTOK > 0;
+        });
+
+        return view('safety.p2h.dashboard',[
+            'belumVerifikasi'=>$belumVerifikasi,
+            'sudahVerifikasi'=>$sudahVerifikasi,
+            'notOk'=>$notOk
+        ]);
+    }
+
     public function show(Request $request)
     {
 

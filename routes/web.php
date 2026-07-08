@@ -543,6 +543,7 @@ Route::group(['middleware' => ['auth']], function(){
 
     //P2H
     Route::get('/safety/p2h', [P2HController::class, 'index'])->name('p2h.index');
+    Route::get('/safety/p2h/dashboard', [P2HController::class, 'dashboard'])->name('p2h.dashboard');
     Route::get('/safety/p2h/api', [P2HController::class, 'api'])->name('p2h.api');
     Route::get('/safety/p2h/detail', [P2HController::class, 'detail'])->name('p2h.detail');
     Route::get('/safety/p2h/monitoring', [P2HController::class, 'monitoring'])->name('monitoring.p2h')->middleware('canAccess');
