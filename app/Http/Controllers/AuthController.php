@@ -14,6 +14,11 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    public function privacyPolicy()
+    {
+        return view('auth.privacyPolicy');
+    }
+
     public function login_post(Request $request)
     {
         $credentials = $request->only('nik', 'password');

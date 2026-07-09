@@ -72,9 +72,11 @@ class KKHController extends Controller
         $currentUserRole = strtoupper(trim(Auth::user()->role ?? ''));
 
 
-        if ($currentUserRole === 'SEPERVISOR') {
-            $currentUserRole = 'SUPERVISOR';
-        }
+        // if ($currentUserRole === 'SEPERVISOR') {
+        //     $currentUserRole = 'SUPERVISOR';
+        // }
+
+        // return $currentUserRole;
 
         $latestIds = DB::connection('kkh')
             ->table('db_payroll.dbo.web_kkh')
@@ -323,6 +325,9 @@ class KKHController extends Controller
                                 break;
                             case 'SUPERINTENDENT':
                                 $allowedToVerify = in_array($currentUserRole, ['MANAGEMENT', 'SUPERINTENDENT']);
+                                break;
+                            case 'MANAGEMENT':
+                                $allowedToVerify = in_array($currentUserRole, ['SUPERINTENDENT']);
                                 break;
                             default:
                                 $allowedToVerify = in_array($currentUserRole, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']);

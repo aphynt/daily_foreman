@@ -83,6 +83,7 @@ Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index')-
 
 
 Route::get('/login', [AuthController::class, 'login'])->name('login');
+Route::get('/privacy-policy', [AuthController::class, 'privacyPolicy'])->name('privacy.policy');
 Route::post('/login/post', [AuthController::class, 'login_post'])->name('login.post');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('/logout-session', [AuthController::class,'logout_session'])->name('session.logout');
