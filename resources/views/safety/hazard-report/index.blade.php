@@ -183,6 +183,22 @@
                                             value="{{ request('rangeEnd') }}"
                                         >
 
+                                        <span class="input-group-text">Departemen</span>
+                                        <select
+                                            name="departemen"
+                                            class="form-select form-select-sm"
+                                            style="max-width: 150px;"
+                                        >
+                                            <option value="" {{ request()->filled('departemen') ? '' : 'selected' }}>All</option>
+
+                                            @foreach ($departemen as $depar)
+                                                <option value="{{ $depar->id }}"
+                                                    {{ request('departemen') == $depar->id ? 'selected' : '' }}>
+                                                    {{ $depar->keterangan }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+
                                         <span class="input-group-text">Status</span>
                                         <select
                                             name="status"

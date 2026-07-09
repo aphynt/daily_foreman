@@ -41,6 +41,8 @@ class HazardReportController extends Controller
         $startTimeFormatted = $start->format('Y-m-d');
         $endTimeFormatted = $end->format('Y-m-d');
 
+        $departemen = Departemen::where('statusenabled', true)->get();
+
         $hazard = DB::table('se_hazard_report as hz')
         ->leftJoin('users as us1', 'hz.pic', 'us1.id')
         ->leftJoin('users as us2', 'hz.pelapor', 'us2.nik')
@@ -56,6 +58,7 @@ class HazardReportController extends Controller
             'hz.statusenabled',
             'hz.kepada',
             'sh.keterangan as shift',
+            'dep.id as id_departemen',
             'dep.keterangan as nama_departemen',
             'dep2.keterangan as departemen_pelapor',
             'hz.tanggal_pelaporan',
@@ -109,6 +112,10 @@ class HazardReportController extends Controller
             $hazard->where('status', $request->status);
         }
 
+        if ($request->filled('departemen')) {
+            $hazard->where('dep.id', $request->departemen);
+        }
+
         if ($request->filled('keyword')) {
 
             $keyword = trim($request->keyword);
@@ -140,7 +147,7 @@ class HazardReportController extends Controller
             $fileName
         );
         }
-        return view('safety.hazard-report.index', compact('hazard', 'deletedHazard', 'totalDeleted'));
+        return view('safety.hazard-report.index', compact('hazard', 'deletedHazard', 'totalDeleted', 'departemen'));
     }
 
     public function insert()
