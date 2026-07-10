@@ -153,6 +153,7 @@ class KKHController extends Controller
                 "),
                 'kkh.fit_or as FIT_BEKERJA',
                 DB::raw("UPPER(ISNULL(kkh.keluhan, '')) as KELUHAN"),
+                'kkh.keterangan as KETERANGAN_KELUHAN',
                 'kkh.masalah_pribadi as MASALAH_PRIBADI',
 
                 'kkh.verif_p3k',
@@ -179,6 +180,7 @@ class KKHController extends Controller
                 'kkh.jam_berangkat',
                 'kkh.fit_or',
                 'kkh.keluhan',
+                'kkh.keterangan',
                 'hr2.Nama',
             ];
 
@@ -473,6 +475,7 @@ class KKHController extends Controller
                 "),
                 'kkh.fit_or as FIT_BEKERJA',
                 DB::raw("UPPER(ISNULL(kkh.keluhan, '')) as KELUHAN"),
+                'kkh.keterangan as KETERANGAN_KELUHAN',
                 'kkh.masalah_pribadi as MASALAH_PRIBADI',
 
                 'kkh.verif_p3k',
@@ -497,6 +500,7 @@ class KKHController extends Controller
                 'kkh.jam_berangkat',
                 'kkh.fit_or',
                 'kkh.keluhan',
+                'kkh.keterangan',
                 'hr2.Nama',
                 'kkh.petugas_p3k',
                 'kkh.catatan_p3k'

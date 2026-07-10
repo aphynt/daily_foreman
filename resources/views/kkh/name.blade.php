@@ -73,6 +73,7 @@
                                         <th rowspan="2">Jam Berangkat</th>
                                         <th rowspan="2">Fit Bekerja</th>
                                         <th rowspan="2">Keluhan</th>
+                                        <th rowspan="2">Keterangan Keluhan</th>
                                         <th rowspan="2">Masalah Pribadi</th>
                                         <th colspan="2">Verifikasi P3K</th>
                                         <th colspan="2">Verifikasi Pengawas</th>
@@ -225,6 +226,7 @@
                     }
                 },
                 { data: 'KELUHAN' },
+                { data: 'KETERANGAN_KELUHAN' },
                 { data: 'MASALAH_PRIBADI' },
                 {
                     data: 'PETUGAS_P3K',

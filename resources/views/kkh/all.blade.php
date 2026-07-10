@@ -118,6 +118,7 @@
                                         <th rowspan="2" style="white-space: normal !important; min-width: 20px;">Jam Berangkat</th>
                                         <th rowspan="2">Fit Bekerja</th>
                                         <th rowspan="2">Keluhan</th>
+                                        <th rowspan="2">Keterangan Keluhan</th>
                                         <th rowspan="2" style="white-space: normal !important; min-width: 20px;">Masalah Pribadi</th>
                                         <th colspan="2">Verifikasi P3K</th>
                                         <th colspan="2">Verifikasi Pengawas</th>
@@ -314,6 +315,7 @@
                     }
                 },
                 { data: 'KELUHAN' },
+                { data: 'KETERANGAN_KELUHAN' },
                 { data: 'MASALAH_PRIBADI',
                     render: function(data) {
                         if (data !== null && data !== undefined && String(data).trim() !== '') {
