@@ -52,6 +52,7 @@ class WhatsAppController extends Controller
             'number' => $number,
             'media_type' => 'image',
             'caption' => $message,
+            'message' => $message,
             'url' => $image
         ];
 
