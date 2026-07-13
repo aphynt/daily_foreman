@@ -64,6 +64,21 @@ class RosterKerjaProduksiController extends Controller
         }
     }
 
+    public function delete(Request $request)
+    {
+        $tahun = $request->input('tahun');
+        $bulan = $request->input('bulan');
+
+        try {
+            RosterKerja::where('tahun', $tahun)->where('bulan', $bulan)->delete();
+
+            return redirect()->back()->with('success', 'Berhasil menghapus roster');
+
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('info', nl2br('Gagal menghapus roster..\n' . $th->getMessage()));
+        }
+    }
+
     public function export(Request $request)
     {
         $tahun = $request->input('tahun', now()->year);

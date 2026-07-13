@@ -68,6 +68,7 @@
                                     <div class="d-flex gap-2">
                                         <a href="#" onclick="downloadExport()" class="badge bg-info" style="font-size:16px; border:none;">Export</a>
                                         <button type="button" class="badge bg-secondary" style="font-size:16px; border:none;" data-bs-toggle="modal" data-bs-target="#importRoster">Import</button>
+                                        <button type="button" class="badge bg-danger" style="font-size:16px; border:none;" data-bs-toggle="modal" data-bs-target="#deleteRoster">Delete</button>
                                     </div>
                                 </div>
                                 @endif
@@ -75,6 +76,7 @@
                         </form>
 
                         @include('produksi.roster-kerja.modal.import')
+                        @include('produksi.roster-kerja.modal.delete')
                     </div>
                 </div>
             </div>

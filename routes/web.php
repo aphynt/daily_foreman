@@ -523,12 +523,14 @@ Route::group(['middleware' => ['auth']], function(){
     //Roster Kerja Produksi
     Route::get('/roster-kerja/produksi', [RosterKerjaProduksiController::class, 'index'])->name('rosterkerja.produksi');
     Route::post('/roster-kerja/produksi/import', [RosterKerjaProduksiController::class, 'import'])->name('rosterkerja.produksi.import');
+    Route::post('/roster-kerja/produksi/delete', [RosterKerjaProduksiController::class, 'delete'])->name('rosterkerja.produksi.delete');
     Route::get('/roster-kerja/produksi/export', [RosterKerjaProduksiController::class, 'export'])->name('rosterkerja.produksi.export');
     Route::get('/roster-kerja/produksi/templateExcel', [RosterKerjaProduksiController::class, 'templateExcel'])->name('rosterkerja.produksi.templateExcel');
 
     //Roster Kerja Safety
     Route::get('/roster-kerja/safety', [RosterKerjaSafetyController::class, 'index'])->name('rosterkerja.safety');
     Route::post('/roster-kerja/safety/import', [RosterKerjaSafetyController::class, 'import'])->name('rosterkerja.safety.import');
+    Route::post('/roster-kerja/safety/delete', [RosterKerjaSafetyController::class, 'delete'])->name('rosterkerja.safety.delete');
     Route::get('/roster-kerja/safety/export', [RosterKerjaSafetyController::class, 'export'])->name('rosterkerja.safety.export');
     Route::get('/roster-kerja/safety/templateExcel', [RosterKerjaSafetyController::class, 'templateExcel'])->name('rosterkerja.safety.templateExcel');
 

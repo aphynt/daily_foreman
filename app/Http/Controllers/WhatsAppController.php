@@ -41,4 +41,38 @@ class WhatsAppController extends Controller
             ];
         }
     }
+
+    public function sendMessageImage($number, $message, $image)
+    {
+        $apiKey = 'DoapL3e58i7xSyX8hYG22SuQNrVjB8';
+        $url = 'https://wa.ahmadfadillah.my.id/send-message';
+        $params = [
+            'api_key' => $apiKey,
+            'sender' => config('app.senderwhatsapp'),
+            'number' => $number,
+            'media_type' => 'image',
+            'caption' => $message,
+            'url' => $image
+        ];
+
+        try {
+            $response = Http::post($url, $params);
+
+            if ($response->successful()) {
+                return $response->json();
+            } else {
+                return [
+                    'status' => 'error',
+                    'message' => 'Gagal mengirim pesan',
+                    'details' => $response->body()
+                ];
+            }
+        } catch (\Exception $e) {
+            return [
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan saat menghubungi API',
+                'error' => $e->getMessage()
+            ];
+        }
+    }
 }

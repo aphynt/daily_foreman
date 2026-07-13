@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Safety;
 use App\Http\Controllers\Controller;
 use App\Exports\RosterKerjaSafetyExport;
 use App\Imports\RosterKerjaSafetyImport;
-use App\Models\RosterKerja;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\RosterKerjaSafety;
 
 class RosterKerjaSafetyController extends Controller
 {
@@ -72,6 +72,21 @@ class RosterKerjaSafetyController extends Controller
             return redirect()->back()->with('success', 'Berhasil import excel');
         } catch (\Throwable $th) {
             return redirect()->back()->with('info', nl2br('import excel gagal..\n' . $th->getMessage()));
+        }
+    }
+
+    public function delete(Request $request)
+    {
+        $tahun = $request->input('tahun');
+        $bulan = $request->input('bulan');
+
+        try {
+            RosterKerjaSafety::where('tahun', $tahun)->where('bulan', $bulan)->delete();
+
+            return redirect()->back()->with('success', 'Berhasil menghapus roster');
+
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('info', nl2br('Gagal menghapus roster..\n' . $th->getMessage()));
         }
     }
 

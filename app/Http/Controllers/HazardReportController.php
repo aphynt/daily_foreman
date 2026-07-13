@@ -265,16 +265,16 @@ class HazardReportController extends Controller
                 - Jam           : $jam
                 - Lokasi        : {$request->lokasi}
 
-                # HAZARD/ BAHAYA
+                *# HAZARD/ BAHAYA*
                 - {$request->bahaya}
 
-                # RISIKO
+                *# RISIKO*
                 $risikoText
 
-                # PENGENDALIAN AWAL
+                *# PENGENDALIAN AWAL*
                 $pengendalianAwalText
 
-                # TINDAKAN PERBAIKAN YANG HARUS DI LAKUKAN
+                *# TINDAKAN PERBAIKAN YANG HARUS DI LAKUKAN*
                 $tindakanPerbaikanText
 
                 Mohon bantuannya untuk melakukan pengecekan dan verifikasi laporan tersebut di aplikasi Daily Foreman
@@ -282,20 +282,13 @@ class HazardReportController extends Controller
                 MSG;
 
                 $verificationNumber = RefConf::where('id', 27)->value('value');
-                $verificationWaResult = $waController->sendMessage($verificationNumber, $hazardReportMessage);
+                $verificationWaResult = $waController->sendMessageImage($verificationNumber, $hazardReportMessage, $dokumentasi_1);
 
                 FacadesLog::info('WA Send Result Verification', [
                     'number' => $verificationNumber,
                     'result' => $verificationWaResult
                 ]);
 
-                // $reportNotificationNumber = RefConf::where('id', 25)->value('value');
-                // $reportNotificationWaResult = $waController->sendMessage($reportNotificationNumber, $hazardReportMessage);
-
-                // FacadesLog::info('WA Send Result Report Notification', [
-                //     'number' => $reportNotificationNumber,
-                //     'result' => $reportNotificationWaResult
-                // ]);
 
             DB::commit();
 
@@ -580,16 +573,16 @@ class HazardReportController extends Controller
                 - Jam           : $jam
                 - Lokasi        : {$request->lokasi}
 
-                # HAZARD/ BAHAYA
+                *# HAZARD/ BAHAYA*
                 - {$request->bahaya}
 
-                # RISIKO
+                *# RISIKO*
                 $risikoText
 
-                # PENGENDALIAN AWAL
+                *# PENGENDALIAN AWAL*
                 $pengendalianAwalText
 
-                # TINDAKAN PERBAIKAN YANG HARUS DI LAKUKAN
+                *# TINDAKAN PERBAIKAN YANG HARUS DI LAKUKAN*
                 $tindakanPerbaikanText
 
                 Mohon bantuannya untuk melakukan pengecekan dan verifikasi laporan tersebut di aplikasi Daily Foreman

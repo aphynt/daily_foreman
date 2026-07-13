@@ -195,7 +195,7 @@ Terima kasih atas perhatian dan kerja samanya.
 _Pesan ini dikirim secara otomatis. Kami mohon untuk tidak membalas pesan ini._
 MSG;
 
-                $waResult = $waController->sendMessage($number, $message);
+                $waResult = $waController->sendMessageImage($number, $message, $fileTemuan);
                 FacadesLog::info('WA Send Result: ', $waResult);
             } catch (\Throwable $waError) {
                 FacadesLog::error('WA gagal dikirim: ' . $waError->getMessage());
@@ -649,8 +649,8 @@ MSG;
                 _Pesan ini dikirim secara otomatis. Mohon tidak membalas pesan ini._
                 MSG;
 
+                $verificationWaResult = $waController->sendMessage($verificationNumber, $verificationMessage);
                 if (!empty($verificationNumber)) {
-                    $verificationWaResult = $waController->sendMessage($verificationNumber, $verificationMessage);
 
                     FacadesLog::info('WA Send Result Verification', [
                         'number' => $verificationNumber,
