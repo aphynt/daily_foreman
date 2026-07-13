@@ -45,14 +45,13 @@ class WhatsAppController extends Controller
     public function sendMessageImage($number, $message, $image)
     {
         $apiKey = 'DoapL3e58i7xSyX8hYG22SuQNrVjB8';
-        $url = 'https://wa.ahmadfadillah.my.id/send-message';
+        $url = 'https://wa.ahmadfadillah.my.id/send-media';
         $params = [
             'api_key' => $apiKey,
             'sender' => config('app.senderwhatsapp'),
             'number' => $number,
             'media_type' => 'image',
             'caption' => $message,
-            'message' => $message,
             'url' => $image
         ];
 
