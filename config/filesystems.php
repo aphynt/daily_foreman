@@ -72,7 +72,7 @@ return [
 
         'production_public' => [
             'driver' => 'local',
-            'root' => 'W:\\storage\\app\\public',
+            'root' => '\\\\10.72.4.208\\daily_foreman\\storage\\app\\public',
             'visibility' => 'public',
         ],
 
