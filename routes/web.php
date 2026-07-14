@@ -110,6 +110,14 @@ Route::get('/test-storage', function () {
 
 });
 
+Route::get('/test-user', function () {
+    dd([
+        'user' => get_current_user(),
+        'is_dir' => is_dir('\\\\10.72.4.208\\daily_foreman\\storage\\app\\public'),
+        'writable' => is_writable('\\\\10.72.4.208\\daily_foreman\\storage\\app\\public'),
+    ]);
+});
+
 Route::group(['middleware' => ['auth']], function(){
     //dashboard
     // Route::get('/dashboards/index', [DashboardController::class, 'index'])->name('dashboard.index');
