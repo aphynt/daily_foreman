@@ -20,6 +20,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\WhatsAppController;
 use Illuminate\Support\Facades\Log as FacadesLog;
 use App\Models\RefConf;
+use Illuminate\Support\Facades\Storage;
 
 class FormPengawasSAPController extends Controller
 {
@@ -73,30 +74,32 @@ class FormPengawasSAPController extends Controller
             $finishing = false;
 
             $saveFile = function ($fieldName, $relativeFolder) use ($request) {
+
                 if (!$request->hasFile($fieldName)) {
                     return null;
                 }
 
                 $file = $request->file($fieldName);
-                $destinationPath = public_path($relativeFolder);
 
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true);
-                }
+                $fileName = uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
 
-                $fileName = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
-                $file->move($destinationPath, $fileName);
+                Storage::disk('production_public')->putFileAs(
+                    $relativeFolder,
+                    $file,
+                    $fileName
+                );
 
-                return url($relativeFolder . '/' . $fileName);
+                return rtrim(env('APP_URL'), '/')
+                    . '/storage/' . trim($relativeFolder, '/') . '/' . $fileName;
             };
 
-            $fileTemuan = $saveFile('file_temuan', 'storage/sap/file_temuan');
-            $fileTemuan2 = $saveFile('file_temuan2', 'storage/sap/file_temuan');
-            $fileTemuan3 = $saveFile('file_temuan3', 'storage/sap/file_temuan');
+            $fileTemuan = $saveFile('file_temuan', 'sap/file_temuan');
+            $fileTemuan2 = $saveFile('file_temuan2', 'sap/file_temuan');
+            $fileTemuan3 = $saveFile('file_temuan3', 'sap/file_temuan');
 
-            $fileTindakLanjut = $saveFile('file_tindakLanjut', 'storage/sap/file_tindakLanjut');
-            $fileTindakLanjut2 = $saveFile('file_tindakLanjut2', 'storage/sap/file_tindakLanjut');
-            $fileTindakLanjut3 = $saveFile('file_tindakLanjut3', 'storage/sap/file_tindakLanjut');
+            $fileTindakLanjut = $saveFile('file_tindakLanjut', 'sap/file_tindakLanjut');
+            $fileTindakLanjut2 = $saveFile('file_tindakLanjut2', 'sap/file_tindakLanjut');
+            $fileTindakLanjut3 = $saveFile('file_tindakLanjut3', 'sap/file_tindakLanjut');
 
             $tanggal_perbaikan = null;
 
@@ -254,7 +257,6 @@ MSG;
         try {
             $report = SAPReport::where('uuid', $uuid)->firstOrFail();
 
-            // ambil file lama
             $fileTemuan = $report->file_temuan;
             $fileTemuan2 = $report->file_temuan2;
             $fileTemuan3 = $report->file_temuan3;
@@ -264,26 +266,28 @@ MSG;
             $fileTindakLanjut3 = $report->file_tindakLanjut3;
 
             $saveFile = function ($fieldName, $relativeFolder) use ($request) {
+
                 if (!$request->hasFile($fieldName)) {
                     return null;
                 }
 
                 $file = $request->file($fieldName);
-                $destinationPath = public_path($relativeFolder);
 
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0755, true);
-                }
+                $fileName = uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
 
-                $fileName = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
-                $file->move($destinationPath, $fileName);
+                Storage::disk('production_public')->putFileAs(
+                    $relativeFolder,
+                    $file,
+                    $fileName
+                );
 
-                return url($relativeFolder . '/' . $fileName);
+                return rtrim(env('APP_URL'), '/')
+                    . '/storage/' . trim($relativeFolder, '/') . '/' . $fileName;
             };
 
-            $newFileTemuan = $saveFile('file_temuan', 'storage/sap/file_temuan');
-            $newFileTemuan2 = $saveFile('file_temuan2', 'storage/sap/file_temuan');
-            $newFileTemuan3 = $saveFile('file_temuan3', 'storage/sap/file_temuan');
+            $newFileTemuan = $saveFile('file_temuan', 'sap/file_temuan');
+            $newFileTemuan2 = $saveFile('file_temuan2', 'sap/file_temuan');
+            $newFileTemuan3 = $saveFile('file_temuan3', 'sap/file_temuan');
 
             if ($newFileTemuan) {
                 $fileTemuan = $newFileTemuan;
@@ -295,9 +299,9 @@ MSG;
                 $fileTemuan3 = $newFileTemuan3;
             }
 
-            $newFileTindakLanjut = $saveFile('file_tindakLanjut', 'storage/sap/file_tindakLanjut');
-            $newFileTindakLanjut2 = $saveFile('file_tindakLanjut2', 'storage/sap/file_tindakLanjut');
-            $newFileTindakLanjut3 = $saveFile('file_tindakLanjut3', 'storage/sap/file_tindakLanjut');
+            $newFileTindakLanjut = $saveFile('file_tindakLanjut', 'sap/file_tindakLanjut');
+            $newFileTindakLanjut2 = $saveFile('file_tindakLanjut2', 'sap/file_tindakLanjut');
+            $newFileTindakLanjut3 = $saveFile('file_tindakLanjut3', 'sap/file_tindakLanjut');
 
             if ($newFileTindakLanjut) {
                 $fileTindakLanjut = $newFileTindakLanjut;
@@ -308,12 +312,6 @@ MSG;
             if ($newFileTindakLanjut3) {
                 $fileTindakLanjut3 = $newFileTindakLanjut3;
             }
-
-            // if(Auth::user()->id == 3){
-            //     $finishing = 0;
-            // }else{
-            //     $finishing = 1;
-            // }
 
             $dataUpdate = [
                 'temuan' => $request->temuan,
@@ -548,26 +546,28 @@ MSG;
             $fileTindakLanjut3 = $report->file_tindakLanjut3;
 
             $saveFile = function ($fieldName, $relativeFolder) use ($request) {
+
                 if (!$request->hasFile($fieldName)) {
                     return null;
                 }
 
                 $file = $request->file($fieldName);
-                $destinationPath = public_path($relativeFolder);
 
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0755, true);
-                }
+                $fileName = uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
 
-                $fileName = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
-                $file->move($destinationPath, $fileName);
+                Storage::disk('production_public')->putFileAs(
+                    $relativeFolder,
+                    $file,
+                    $fileName
+                );
 
-                return url($relativeFolder . '/' . $fileName);
+                return rtrim(env('APP_URL'), '/')
+                    . '/storage/' . trim($relativeFolder, '/') . '/' . $fileName;
             };
 
-            $newFileTemuan = $saveFile('file_temuan', 'storage/sap/file_temuan');
-            $newFileTemuan2 = $saveFile('file_temuan2', 'storage/sap/file_temuan');
-            $newFileTemuan3 = $saveFile('file_temuan3', 'storage/sap/file_temuan');
+            $newFileTemuan = $saveFile('file_temuan', 'sap/file_temuan');
+            $newFileTemuan2 = $saveFile('file_temuan2', 'sap/file_temuan');
+            $newFileTemuan3 = $saveFile('file_temuan3', 'sap/file_temuan');
 
             if ($newFileTemuan) {
                 $fileTemuan = $newFileTemuan;
@@ -579,9 +579,9 @@ MSG;
                 $fileTemuan3 = $newFileTemuan3;
             }
 
-            $newFileTindakLanjut = $saveFile('file_tindakLanjut', 'storage/sap/file_tindakLanjut');
-            $newFileTindakLanjut2 = $saveFile('file_tindakLanjut2', 'storage/sap/file_tindakLanjut');
-            $newFileTindakLanjut3 = $saveFile('file_tindakLanjut3', 'storage/sap/file_tindakLanjut');
+            $newFileTindakLanjut = $saveFile('file_tindakLanjut', 'sap/file_tindakLanjut');
+            $newFileTindakLanjut2 = $saveFile('file_tindakLanjut2', 'sap/file_tindakLanjut');
+            $newFileTindakLanjut3 = $saveFile('file_tindakLanjut3', 'sap/file_tindakLanjut');
 
             if ($newFileTindakLanjut) {
                 $fileTindakLanjut = $newFileTindakLanjut;

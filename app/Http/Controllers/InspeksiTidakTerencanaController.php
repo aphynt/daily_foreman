@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 use DateTime;
+use Illuminate\Support\Facades\Storage;
 
 class InspeksiTidakTerencanaController extends Controller
 {
@@ -235,25 +236,34 @@ class InspeksiTidakTerencanaController extends Controller
             $pelanggaranDetail = implode("\n", $pelanggaranDetailItems);
 
             $saveFile = function ($fieldName, $relativeFolder) use ($request) {
-                if (!$request->hasFile($fieldName)) {
-                    return null;
-                }
 
-                $file = $request->file($fieldName);
-                $destinationPath = public_path($relativeFolder);
+            if (!$request->hasFile($fieldName)) {
+                return null;
+            }
 
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0755, true);
-                }
+            $file = $request->file($fieldName);
 
-                $fileName = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
-                $file->move($destinationPath, $fileName);
+            $fileName = uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
 
-                return url($relativeFolder . '/' . $fileName);
-            };
+            Storage::disk('production_public')->putFileAs(
+                $relativeFolder,
+                $file,
+                $fileName
+            );
 
-            $dokumentasiFoto1 = $saveFile('dokumentasi_foto_1', 'storage/inspeksi_tidakterencana/dokumentasi');
-            $dokumentasiFoto2 = $saveFile('dokumentasi_foto_2', 'storage/inspeksi_tidakterencana/dokumentasi');
+            return rtrim(env('APP_URL'), '/')
+                . '/storage/' . trim($relativeFolder, '/') . '/' . $fileName;
+        };
+
+        $dokumentasiFoto1 = $saveFile(
+            'dokumentasi_foto_1',
+            'inspeksi_tidakterencana/dokumentasi'
+        );
+
+        $dokumentasiFoto2 = $saveFile(
+            'dokumentasi_foto_2',
+            'inspeksi_tidakterencana/dokumentasi'
+        );
 
             InspeksiTidakTerencana::create([
                 'uuid'                    => (string) Uuid::uuid4()->toString(),

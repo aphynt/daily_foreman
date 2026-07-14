@@ -22,6 +22,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use DateTime;
 use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
 
 class JobPendingProduksiController extends Controller
 {
@@ -119,28 +120,37 @@ class JobPendingProduksiController extends Controller
 
             $imagePath = null;
             $imagePath2 = null;
+
             if ($request->hasFile('fileInput')) {
+
                 $file = $request->file('fileInput');
-                $destinationPath = public_path('jobpending');
-                $fileName = time() . '_' . $file->getClientOriginalName();
 
+                $fileName = uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
 
-                $file->move($destinationPath, $fileName);
+                Storage::disk('production_public')->putFileAs(
+                    'jobpending',
+                    $file,
+                    $fileName
+                );
 
-                // simpan path relatif untuk disimpan ke DB
-                $imagePath = url('jobpending/' . $fileName);
+                $imagePath = rtrim(env('APP_URL'), '/')
+                    . '/storage/jobpending/' . $fileName;
             }
 
             if ($request->hasFile('fileInput2')) {
-                $file2 = $request->file('fileInput2');
-                $destinationPath2 = public_path('jobpending');
-                $fileName2 = time() . '_' . $file2->getClientOriginalName();
 
+                $file = $request->file('fileInput2');
 
-                $file2->move($destinationPath2, $fileName2);
+                $fileName = uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
 
-                // simpan path relatif untuk disimpan ke DB
-                $imagePath2 = url('jobpending/' . $fileName2);
+                Storage::disk('production_public')->putFileAs(
+                    'jobpending',
+                    $file,
+                    $fileName
+                );
+
+                $imagePath2 = rtrim(env('APP_URL'), '/')
+                    . '/storage/jobpending/' . $fileName;
             }
 
             $job = JobPending::create([

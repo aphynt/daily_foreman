@@ -15,6 +15,7 @@ use DateTime;
 use App\Models\RefConf;
 use Illuminate\Support\Facades\Log as FacadesLog;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
 
 class HazardReportController extends Controller
 {
@@ -179,19 +180,36 @@ class HazardReportController extends Controller
             $dokumentasi_1 = null;
             $dokumentasi_2 = null;
 
-            if ($request->dokumentasi_1 != null) {
+            if ($request->hasFile('dokumentasi_1')) {
+
                 $file = $request->file('dokumentasi_1');
-                $destinationPath = public_path('storage/hazard_report/dokumentasi_1');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $file->move($destinationPath, $fileName);
-                $dokumentasi_1 = url('storage/hazard_report/dokumentasi_1/' . $fileName);
+
+                $fileName = time().'_'.$file->getClientOriginalName();
+
+                Storage::disk('production_public')
+                    ->putFileAs(
+                        'hazard_report/dokumentasi_1',
+                        $file,
+                        $fileName
+                    );
+
+                $dokumentasi_1 = rtrim(env('APP_URL'), '/') . '/storage/hazard_report/dokumentasi_1/' . $fileName;
             }
-            if ($request->dokumentasi_2 != null) {
+
+            if ($request->hasFile('dokumentasi_2')) {
+
                 $file = $request->file('dokumentasi_2');
-                $destinationPath = public_path('storage/hazard_report/dokumentasi_2');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $file->move($destinationPath, $fileName);
-                $dokumentasi_2 = url('storage/hazard_report/dokumentasi_2/' . $fileName);
+
+                $fileName = time().'_'.$file->getClientOriginalName();
+
+                Storage::disk('production_public')
+                    ->putFileAs(
+                        'hazard_report/dokumentasi_2',
+                        $file,
+                        $fileName
+                    );
+
+                $dokumentasi_2 = rtrim(env('APP_URL'), '/') . '/storage/hazard_report/dokumentasi_2/' . $fileName;
             }
 
             $year = date('Y');
@@ -407,20 +425,36 @@ class HazardReportController extends Controller
             $dokumentasi_perbaikan_1 = $data->dokumentasi_perbaikan_1;
             $dokumentasi_perbaikan_2 = $data->dokumentasi_perbaikan_2;
 
-            if ($request->dokumentasi_perbaikan_1 != null) {
+            if ($request->hasFile('dokumentasi_perbaikan_1')) {
+
                 $file = $request->file('dokumentasi_perbaikan_1');
-                $destinationPath = public_path('storage/hazard_report/dokumentasi_perbaikan_1');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $file->move($destinationPath, $fileName);
-                $dokumentasi_perbaikan_1 = url('storage/hazard_report/dokumentasi_perbaikan_1/' . $fileName);
+
+                $fileName = uniqid().'_'.time().'.'.$file->getClientOriginalExtension();
+
+                Storage::disk('production_public')->putFileAs(
+                    'hazard_report/dokumentasi_perbaikan_1',
+                    $file,
+                    $fileName
+                );
+
+                $dokumentasi_perbaikan_1 = rtrim(env('APP_URL'), '/')
+                    . '/storage/hazard_report/dokumentasi_perbaikan_1/' . $fileName;
             }
 
-            if ($request->dokumentasi_perbaikan_2 != null) {
+            if ($request->hasFile('dokumentasi_perbaikan_2')) {
+
                 $file = $request->file('dokumentasi_perbaikan_2');
-                $destinationPath = public_path('storage/hazard_report/dokumentasi_perbaikan_2');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $file->move($destinationPath, $fileName);
-                $dokumentasi_perbaikan_2 = url('storage/hazard_report/dokumentasi_perbaikan_2/' . $fileName);
+
+                $fileName = uniqid().'_'.time().'.'.$file->getClientOriginalExtension();
+
+                Storage::disk('production_public')->putFileAs(
+                    'hazard_report/dokumentasi_perbaikan_2',
+                    $file,
+                    $fileName
+                );
+
+                $dokumentasi_perbaikan_2 = rtrim(env('APP_URL'), '/')
+                    . '/storage/hazard_report/dokumentasi_perbaikan_2/' . $fileName;
             }
 
             $verifiedSCC = null;
@@ -465,24 +499,38 @@ class HazardReportController extends Controller
             $dokumentasi_1 = $data->dokumentasi_1;
             $dokumentasi_2 = $data->dokumentasi_2;
 
-            if ($request->dokumentasi_1 != null) {
+            if ($request->hasFile('dokumentasi_1')) {
+
                 $file = $request->file('dokumentasi_1');
-                $destinationPath = public_path('storage/hazard_report/dokumentasi_1');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $file->move($destinationPath, $fileName);
-                $dokumentasi_1 = url('storage/hazard_report/dokumentasi_1/' . $fileName);
+
+                $fileName = uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
+
+                Storage::disk('production_public')->putFileAs(
+                    'hazard_report/dokumentasi_1',
+                    $file,
+                    $fileName
+                );
+
+                $dokumentasi_1 = rtrim(env('APP_URL'), '/') . '/storage/hazard_report/dokumentasi_1/' . $fileName;
             }
 
-            if ($request->dokumentasi_2 != null) {
+            if ($request->hasFile('dokumentasi_2')) {
+
                 $file = $request->file('dokumentasi_2');
-                $destinationPath = public_path('storage/hazard_report/dokumentasi_2');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $file->move($destinationPath, $fileName);
-                $dokumentasi_2 = url('storage/hazard_report/dokumentasi_2/' . $fileName);
+
+                $fileName = uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
+
+                Storage::disk('production_public')->putFileAs(
+                    'hazard_report/dokumentasi_2',
+                    $file,
+                    $fileName
+                );
+
+                $dokumentasi_2 = rtrim(env('APP_URL'), '/') . '/storage/hazard_report/dokumentasi_2/' . $fileName;
             }
 
             $tanggal_pelaporan = $data->tanggal_pelaporan;
-            if ($request->tanggal_pelaporan != null) {
+            if ($request->filled('tanggal_pelaporan')) {
                 $tanggal_pelaporan = Carbon::parse($request->tanggal_pelaporan);
             }
 
@@ -589,7 +637,7 @@ class HazardReportController extends Controller
                 _Pesan ini dikirim secara otomatis. Mohon tidak membalas pesan ini._
                 MSG;
 
-                $verificationWaResult = $waController->sendMessage($verificationNumber, $hazardReportMessage);
+                $verificationWaResult = $waController->sendMessageImage($verificationNumber, $hazardReportMessage, $dokumentasi_1);
 
                 FacadesLog::info('WA Send Result Verification', [
                     'number' => $verificationNumber,

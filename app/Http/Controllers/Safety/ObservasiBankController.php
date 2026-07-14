@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Ramsey\Uuid\Uuid;
+use Illuminate\Support\Facades\Storage;
 
 class ObservasiBankController extends Controller
 {
@@ -133,27 +134,30 @@ class ObservasiBankController extends Controller
                     $namaPengawas1 = $pengawasParts[1] ?? null;
                 }
             }
+
             $saveFile = function ($fieldName, $relativeFolder) use ($request) {
+
                 if (!$request->hasFile($fieldName)) {
                     return null;
                 }
 
                 $file = $request->file($fieldName);
-                $destinationPath = public_path($relativeFolder);
 
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0755, true);
-                }
+                $fileName = uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
 
-                $fileName = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
-                $file->move($destinationPath, $fileName);
+                Storage::disk('production_public')->putFileAs(
+                    $relativeFolder,
+                    $file,
+                    $fileName
+                );
 
-                return url($relativeFolder . '/' . $fileName);
+                return rtrim(env('APP_URL'), '/')
+                    . '/storage/' . trim($relativeFolder, '/') . '/' . $fileName;
             };
 
-            $dokumentasiFoto1 = $saveFile('dokumentasi_foto_1', 'storage/observasi_bank/dokumentasi');
-            $dokumentasiFoto2 = $saveFile('dokumentasi_foto_2', 'storage/observasi_bank/dokumentasi');
-            $dokumentasiFoto3 = $saveFile('dokumentasi_foto_3', 'storage/observasi_bank/dokumentasi');
+            $dokumentasiFoto1 = $saveFile('dokumentasi_foto_1', 'observasi_bank/dokumentasi');
+            $dokumentasiFoto2 = $saveFile('dokumentasi_foto_2', 'observasi_bank/dokumentasi');
+            $dokumentasiFoto3 = $saveFile('dokumentasi_foto_3', 'observasi_bank/dokumentasi');
 
             $dataToInsert = [
                 'uuid' => (string) Uuid::uuid4(),

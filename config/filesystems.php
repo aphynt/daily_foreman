@@ -66,9 +66,15 @@ return [
         ],
 
         'jobpending' => [
-                'driver' => 'local',
-                'root' => env('JOBPENDING_PATH', public_path('jobpending')),
-            ],
+            'driver' => 'local',
+            'root' => env('JOBPENDING_PATH', public_path('jobpending')),
+        ],
+
+        'production_public' => [
+            'driver' => 'local',
+            'root' => 'W:\\storage\\app\\public',
+            'visibility' => 'public',
+        ],
 
     ],
 
