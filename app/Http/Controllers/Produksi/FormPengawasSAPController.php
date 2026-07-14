@@ -89,7 +89,7 @@ class FormPengawasSAPController extends Controller
                     $fileName
                 );
 
-                return rtrim(env('APP_URL'), '/')
+                return rtrim(config('app.url'), '/')
                     . '/storage/' . trim($relativeFolder, '/') . '/' . $fileName;
             };
 
@@ -281,7 +281,7 @@ MSG;
                     $fileName
                 );
 
-                return rtrim(env('APP_URL'), '/')
+                return rtrim(config('app.url'), '/')
                     . '/storage/' . trim($relativeFolder, '/') . '/' . $fileName;
             };
 
@@ -561,7 +561,7 @@ MSG;
                     $fileName
                 );
 
-                return rtrim(env('APP_URL'), '/')
+                return rtrim(config('app.url'), '/')
                     . '/storage/' . trim($relativeFolder, '/') . '/' . $fileName;
             };
 

@@ -193,7 +193,7 @@ class HazardReportController extends Controller
                         $fileName
                     );
 
-                $dokumentasi_1 = rtrim(env('APP_URL'), '/') . '/storage/hazard_report/dokumentasi_1/' . $fileName;
+                $dokumentasi_1 = rtrim(config('app.url'), '/') . '/storage/hazard_report/dokumentasi_1/' . $fileName;
             }
 
             if ($request->hasFile('dokumentasi_2')) {
@@ -209,7 +209,7 @@ class HazardReportController extends Controller
                         $fileName
                     );
 
-                $dokumentasi_2 = rtrim(env('APP_URL'), '/') . '/storage/hazard_report/dokumentasi_2/' . $fileName;
+                $dokumentasi_2 = rtrim(config('app.url'), '/') . '/storage/hazard_report/dokumentasi_2/' . $fileName;
             }
 
             $year = date('Y');
@@ -437,7 +437,7 @@ class HazardReportController extends Controller
                     $fileName
                 );
 
-                $dokumentasi_perbaikan_1 = rtrim(env('APP_URL'), '/')
+                $dokumentasi_perbaikan_1 = rtrim(config('app.url'), '/')
                     . '/storage/hazard_report/dokumentasi_perbaikan_1/' . $fileName;
             }
 
@@ -453,7 +453,7 @@ class HazardReportController extends Controller
                     $fileName
                 );
 
-                $dokumentasi_perbaikan_2 = rtrim(env('APP_URL'), '/')
+                $dokumentasi_perbaikan_2 = rtrim(config('app.url'), '/')
                     . '/storage/hazard_report/dokumentasi_perbaikan_2/' . $fileName;
             }
 
@@ -511,7 +511,7 @@ class HazardReportController extends Controller
                     $fileName
                 );
 
-                $dokumentasi_1 = rtrim(env('APP_URL'), '/') . '/storage/hazard_report/dokumentasi_1/' . $fileName;
+                $dokumentasi_1 = rtrim(config('app.url'), '/') . '/storage/hazard_report/dokumentasi_1/' . $fileName;
             }
 
             if ($request->hasFile('dokumentasi_2')) {
@@ -526,7 +526,7 @@ class HazardReportController extends Controller
                     $fileName
                 );
 
-                $dokumentasi_2 = rtrim(env('APP_URL'), '/') . '/storage/hazard_report/dokumentasi_2/' . $fileName;
+                $dokumentasi_2 = rtrim(config('app.url'), '/') . '/storage/hazard_report/dokumentasi_2/' . $fileName;
             }
 
             $tanggal_pelaporan = $data->tanggal_pelaporan;
