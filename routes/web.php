@@ -99,6 +99,16 @@ Route::get('/OprAssignment/B2/api', [OprAssigntmentController::class, 'b2_api'])
 Route::get('/OprAssignment/A3', [OprAssigntmentController::class, 'a3'])->name('opr.a3');
 Route::get('/OprAssignment/A3/api', [OprAssigntmentController::class, 'a3_api'])->name('opr.a3.api');
 
+Route::get('/test-storage', function () {
+
+    dd([
+        'is_dir' => is_dir('W:\\storage\\app\\public'),
+        'is_writable' => is_writable('W:\\storage\\app\\public'),
+        'realpath' => realpath('W:\\storage\\app\\public'),
+        'user' => get_current_user(),
+    ]);
+
+});
 
 Route::group(['middleware' => ['auth']], function(){
     //dashboard
