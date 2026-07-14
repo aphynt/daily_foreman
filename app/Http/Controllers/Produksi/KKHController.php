@@ -204,7 +204,10 @@ class KKHController extends Controller
 
         $statusVerifikasi = $request->statusVerifikasi;
         if ($statusVerifikasi == 'Perlu Diverifikasi') {
-            $kkh->where('kkh.ferivikasi_pengawas', 0);
+            $kkh->where(function ($query) {
+                $query->where('kkh.ferivikasi_pengawas', 0)
+                    ->orWhereNull('kkh.ferivikasi_pengawas');
+            });
         } elseif ($statusVerifikasi == 'Sudah Diverifikasi') {
             $kkh->where('kkh.ferivikasi_pengawas', 1);
         }
