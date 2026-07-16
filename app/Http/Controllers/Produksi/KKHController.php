@@ -407,7 +407,7 @@ class KKHController extends Controller
         $latestIds = DB::connection('kkh')
             ->table('db_payroll.dbo.web_kkh')
             ->whereBetween('tgl', [$startTimeFormatted, $endTimeFormatted])
-            ->groupBy('nik')
+            ->groupBy('nik', 'tgl')
             ->selectRaw('MAX(id) as id');
 
         $kkh = DB::connection('kkh')
@@ -551,7 +551,7 @@ class KKHController extends Controller
         $filteredRecords = $kkh->count();
 
         $kkhRows = $kkh
-            ->orderBy('kkh.fit_or')
+            ->orderBy('kkh.tgl')
             ->offset($offset)
             ->limit($length)
             ->get();
@@ -919,7 +919,7 @@ class KKHController extends Controller
         $latestIds = DB::connection('kkh')
             ->table('db_payroll.dbo.web_kkh')
             ->where('tgl', $now)
-            ->groupBy('nik')
+            ->groupBy('nik', 'tgl')
             ->selectRaw('MAX(id) as id');
 
         $kkh = DB::connection('kkh')

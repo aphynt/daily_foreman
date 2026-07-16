@@ -185,7 +185,12 @@
                 </tr>
                 <tr>
                     <td>Verifikasi</td>
+                    @if(($item->DATA_KOSONG ?? false) && in_array($item->ID_ABSEN ?? '', ['OFF','CT', 'M']))
+                    -
+                    <td style="text-align: center;padding-top: 17px;padding-bottom:17px"><img src="{{ public_path('dashboard/assets') }}/images/minus.png" width="20px"></td>
+                    @else
                     <td style="text-align: center;padding-top: 17px;padding-bottom:17px"><img src="{{ public_path('dashboard/assets') }}/images/centang.png" width="20px"></td>
+                    @endif
                     <td colspan="2">
                         @if ($item->QR_CODE_PENGAWAS != null)
                             <img src="{{ $item->QR_CODE_PENGAWAS }}" style="max-width: 52px;" alt="QR Pengawas" />
