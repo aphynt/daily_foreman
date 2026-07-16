@@ -323,10 +323,10 @@ class KKHController extends Controller
                     } else {
                         switch ($jabatanPengisi) {
                             case 'FOREMAN':
-                                $allowedToVerify = in_array($currentUserRole, ['SUPERVISOR', 'SUPERINTENDENT']);
+                                $allowedToVerify = in_array($currentUserRole, ['SUPERVISOR', 'SUPERINTENDENT', 'MANAGEMENT']);
                                 break;
                             case 'SUPERVISOR':
-                                $allowedToVerify = $currentUserRole === 'SUPERINTENDENT';
+                                $allowedToVerify = in_array($currentUserRole, ['MANAGEMENT', 'SUPERINTENDENT']);
                                 break;
                             case 'SUPERINTENDENT':
                                 $allowedToVerify = in_array($currentUserRole, ['MANAGEMENT', 'SUPERINTENDENT']);
