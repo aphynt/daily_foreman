@@ -592,8 +592,8 @@
                                     <label class="form-label">Rekomendasi Tindakan Perbaikan</label>
                                     <textarea class="form-control"
                                               rows="5"
-                                              name="pengendalian"
-                                              placeholder="Masukkan rekomendasi tindakan perbaikan">{{ old('pengendalian', $report->tindakan_perbaikan) }}</textarea>
+                                              name="tindakan_perbaikan"
+                                              placeholder="Masukkan rekomendasi tindakan perbaikan">{{ old('tindakan_perbaikan', $report->tindakan_perbaikan) }}</textarea>
                                 </div>
                             </div>
 

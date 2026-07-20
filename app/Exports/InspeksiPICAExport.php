@@ -93,7 +93,7 @@ class InspeksiPICAExport implements
             $item->temuan,
             $item->file_temuan ?: null,
             $item->tingkat_risiko,
-            $item->tindak_lanjut,
+            $item->tindakan_perbaikan,
 
             $item->created_at
                 ? Carbon::parse($item->created_at)->addDays(7)->format('d-M-y')
