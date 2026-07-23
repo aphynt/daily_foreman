@@ -1,4 +1,4 @@
-@include('layout.head', ['title' => 'Daftar P2H'])
+@include('layout.head', ['title' => 'Login Operator'])
 @include('layout.sidebar')
 @include('layout.header')
 <style>
@@ -48,7 +48,7 @@
                     <div class="col-md-12">
                         <ul class="breadcrumb">
                             {{-- <li class="breadcrumb-item"><a href="javascript: void(0)">Home</a></li> --}}
-                            <li class="breadcrumb-item"><a href="javascript: void(0)">Daftar P2H Unit</a></li>
+                            <li class="breadcrumb-item"><a href="javascript: void(0)">Login Operator</a></li>
                         </ul>
                     </div>
                     <div class="col-12">
@@ -60,37 +60,17 @@
                             <div class="col-12 col-md-2 mb-2">
                                 <label for="shiftP2H">Shift</label>
                                 <select class="form-select" id="shiftP2H" name="shiftP2H">
-                                    <option value="Semua">Semua</option>
                                     @foreach ($data['shift'] as $shh)
-                                        <option value="{{ $shh->SHIFTNO }}">{{ $shh->SHIFTDESC }}</option>
+                                    <option
+                                        value="{{ $shh->SHIFTNO }}"
+                                        {{ $shh->SHIFTNO == 6 ? 'selected' : '' }}>
+                                        {{ $shh->SHIFTDESC }}
+                                    </option>
                                     @endforeach
-                                </select>
-                            </div>
-                            <div class="col-12 col-md-2 mb-2">
-                                <label for="cluster">Vehicle Type</label>
-                                <select class="form-select" name="cluster" id="cluster">
-                                    <option value="Semua">Semua</option>
-                                    <option value="EX">EX</option>
-                                    <option value="HD">HD</option>
-                                    <option value="MG">MG</option>
-                                    <option value="BD">BD</option>
-                                </select>
-                            </div>
-                            <div class="col-12 col-md-2 mb-2">
-                                <label for="statusVerifikasi">Status Verifikasi</label>
-                                <select class="form-select" name="statusVerifikasi" id="statusVerifikasi">
-                                    <option value="Semua">Semua</option>
-                                    <option value="Belum Diverifikasi">Belum Diverifikasi</option>
-                                    <option value="Sudah Diverifikasi">Sudah Diverifikasi</option>
                                 </select>
                             </div>
                             <div class="col-12 col-md-2 mb-2 d-flex align-items-end">
                                 <button id="cariP2H" class="btn btn-primary w-100" style="padding-top:10px;padding-bottom:10px;">Tampilkan</button>
-                            </div>
-                            <div class="col-12 col-md-2 mb-2 d-none d-md-flex align-items-end">
-                                <a href="{{ route('p2h.login_operator') }}" class="btn btn-info w-100 py-2">
-                                    Login Operator Page
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -106,22 +86,13 @@
                             <table id="cbtn-selectors" class="table table-striped table-hover table-bordered nowrap">
                                 <thead style="text-align: center; vertical-align: middle;">
                                     <tr>
-                                        <th rowspan="2">Unit</th>
-                                        <th rowspan="2">Tanggal Pengisian</th>
-                                        <th rowspan="2">NIK Operator</th>
-                                        <th rowspan="2">Nama Operator</th>
-                                        <th rowspan="2">Not OK</th>
-                                        <th colspan="3">Mekanik</th>
-                                        <th colspan="3">Produksi</th>
-                                        <th rowspan="2">Aksi</th>
-                                    </tr>
-                                    <tr>
-                                        <th>Tanggal</th>
-                                        <th>NIK</th>
-                                        <th>Nama</th>
-                                        <th>Tanggal</th>
-                                        <th>NIK</th>
-                                        <th>Nama</th>
+                                        <th>Unit</th>
+                                        <th>Login Time</th>
+                                        <th>Login HM</th>
+                                        <th>Logout Time</th>
+                                        <th>Logout HM</th>
+                                        <th>Duration Time</th>
+                                        <th>Duration HM</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tableBody">
@@ -149,12 +120,14 @@
         })();
     document.addEventListener("DOMContentLoaded", function () {
             const inputTanggal = document.getElementById("tanggalP2H");
-            const today = new Date();
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
 
-            // Format tanggal menjadi YYYY-MM-DD
-            const formattedDate = `${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2,
-                '0')}/${today.getFullYear()}`;
-            // Set nilai default input tanggal
+            const formattedDate =
+                `${String(yesterday.getMonth()+1).padStart(2,'0')}/` +
+                `${String(yesterday.getDate()).padStart(2,'0')}/` +
+                `${yesterday.getFullYear()}`;
+
             inputTanggal.value = formattedDate;
         });
 
@@ -233,139 +206,61 @@
             processing: true,
             serverSide: false,
             ajax: {
-                url: '{{ route('p2h.api') }}',
+                url: '{{ route('p2h.apiLoginOperator') }}',
                 method: 'GET',
                 data: function (d) {
                     d.tanggalP2H = $('#tanggalP2H').val();
                     d.shiftP2H = $('#shiftP2H').val();
-                    d.cluster = $('#cluster').val();
-                    d.statusVerifikasi = $('#statusVerifikasi').val();
                     delete d.columns;
                     delete d.order;
                 },
             },
             columns: [
-                { data: 'VHC_ID' },
                 {
-                    data: null,
-                    render: function(_, __, row) {
-
-                        return renderVerification(
-                            row.OPR_REPORTTIME
-                        );
-                    }
+                    data: 'VHC_ID'
                 },
-                { data: 'OPR_NRP' },
-                { data: 'PERSONALNAME' },
                 {
-                    data: 'VAL_NOTOK',
+                    data: 'OPR_REPORTTIME_LOGIN',
                     render: function (data) {
-                        const color = data >= 1 ? 'red' : 'green';
-                        return `<span style="color: ${color};">${data}</span>`;
+                        return renderVerification(data);
                     }
                 },
                 {
-                    data: null,
-                    render: function (_, __, row) {
-                        return renderVerification(
-                            row.DATEVERIFIED_MEKANIK
-                        );
+                    data: 'LGN_HOURMETER_LOGIN',
+                    render: function(data) {
+                        if (data == null) return '-';
+                        return parseFloat(data).toFixed(1);
                     }
                 },
                 {
-                    data: null,
-                    render: function (_, __, row) {
-                        if (!row) return '-';
-                        return row.VERIFIED_MEKANIK ? row.VERIFIED_MEKANIK : '-';
+                    data: 'OPR_REPORTTIME_LOGOUT',
+                    render: function (data) {
+                        return renderVerification(data);
                     }
                 },
                 {
-                    data: null,
-                    render: function (_, __, row) {
-                        if (!row) return '-';
-                        return row.NAMAMEKANIK ? row.NAMAMEKANIK : '-';
+                    data: 'LGN_HOURMETER_LOGOUT',
+                    render: function(data) {
+                        if (data == null) return '-';
+                        return parseFloat(data).toFixed(1);
                     }
                 },
                 {
-                    data: null,
-                    render: function (_, __, row) {
-                        if (!row) return '-';
-                        return renderVerification(
-                            row.DATEVERIFIED_FOREMAN || row.DATEVERIFIED_SUPERVISOR
-                        );
+                    data: 'LGN_DURATION_TIME',
+                    render: function(data) {
+                        if (data == null) return '-';
+                        return parseFloat(data).toFixed(1);
                     }
                 },
                 {
-                    data: 'VERIFIED_FOREMAN',
-                    render: function (_, __, row) {
-                        if (!row) return '-';
-                        return row.VERIFIED_FOREMAN || row.VERIFIED_SUPERVISOR || '-';
-                    }
-                },
-                {
-                    data: null,
-                    render: function (_, __, row) {
-                        if (!row) return '-';
-                        return row.NAMAFOREMAN || row.NAMASUPERVISOR || '-';
-                    }
-                },
-                {
-                    data: null,
-                    render: function (_, __, row) {
-                        if (!row) return '';
-
-                        const mekanikRoles = [
-                            'FOREMAN MEKANIK', 'PJS FOREMAN MEKANIK',
-                            'JR FOREMAN MEKANIK', 'SUPERVISOR MEKANIK',
-                            'LEADER MEKANIK'
-                        ];
-
-                        const excludedRoles = [
-                            'ADMIN', 'MANAGEMENT',
-                            'SUPERINTENDENT', 'SUPERINTENDENT SAFETY',
-                            'SUPERVISOR SAFETY', 'FOREMAN SAFETY'
-                        ];
-
-                        if (
-                            !excludedRoles.includes(userRole) &&
-                            !row.VERIFIED_FOREMAN &&
-                            !row.VERIFIED_SUPERVISOR &&
-                            !(mekanikRoles.includes(userRole) && row.VERIFIED_MEKANIK)
-                        ) {
-                            const editUrl = `{{ route('p2h.detail') }}?VHC_ID=${encodeURIComponent(row.VHC_ID)}&OPR_REPORTTIME=${encodeURIComponent(row.OPR_REPORTTIME)}&MTR_HOURMETER=${encodeURIComponent(row.MTR_HOURMETER)}&OPR_NRP=${encodeURIComponent(row.OPR_NRP)}`;
-
-                            if (row.VAL_NOTOK >= 1) {
-                                return `
-                                    <a href="${editUrl}">
-                                        <span class="badge w-100" style="font-size:14px;background-color:#198754">
-                                            Detail
-                                        </span>
-                                    </a>
-                                `;
-                            } else {
-                                if (userDepartemen == 8) {
-                                    return `
-                                        <button class="btn-verifikasi badge w-100 border-0"
-                                            data-vhc_id="${row.VHC_ID}"
-                                            data-opr_time="${row.OPR_REPORTTIME}"
-                                            data-hm="${row.MTR_HOURMETER}"
-                                            data-nrp="${row.OPR_NRP}"
-                                            style="font-size:14px;background-color:#001932;color:white">
-                                            Verifikasi
-                                        </button>
-                                    `;
-                                } else {
-                                    // Jika bukan departemen 8 dan VAL_NOTOK < 1, tidak menampilkan tombol apa-apa (atau sesuaikan kebutuhan)
-                                    return '';
-                                }
-                            }
-                        }
-
-                        return '';
+                    data: 'LGN_DURATION_HM',
+                    render: function(data) {
+                        if (data == null) return '-';
+                        return parseFloat(data).toFixed(1);
                     }
                 }
             ],
-            order: [[4, 'desc']],
+            order: [[0, 'asc']],
         });
 
         // Tombol pencarian manual

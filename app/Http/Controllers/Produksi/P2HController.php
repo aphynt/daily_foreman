@@ -2616,4 +2616,61 @@ foreach ($checklistItems as $item) {
 
         }
     }
+
+    public function login_operator()
+    {
+        $shift = FLTShift::all();
+        $data = [
+            'shift' => $shift
+        ];
+        return view('safety.p2h.login_operator.index', compact('data'));
+    }
+
+    public function apiLogin_operator(Request $request)
+    {
+        $limit = $request->input('length', 10);
+        $offset = $request->input('start', 0);
+
+        $pageNumber = ($limit > 0) ? ($offset / $limit) + 1 : 1;
+        $pageSize = ($limit > 0) ? $limit : 500;
+
+        $shiftDate = !empty($request->tanggalP2H)
+        ? date('Y-m-d', strtotime($request->tanggalP2H))
+        : now()->subDay()->format('Y-m-d');
+
+        $searchValueTrim = $request->search['value'] ?? null;
+
+        $shiftP2H = $request->input('shiftP2H');
+
+        $shiftNo = in_array((int)$request->shiftP2H, [6,7], true)
+        ? (int)$request->shiftP2H
+        : 6;
+
+
+        $results = collect(DB::connection('focus')->select("
+            SELECT
+                VHC_ID,
+                OPR_REPORTTIME_LOGIN,
+                LGN_HOURMETER_LOGIN,
+                OPR_REPORTTIME_LOGOUT,
+                LGN_HOURMETER_LOGOUT,
+                LGN_DURATION_TIME,
+                LGN_DURATION_HM
+            FROM HTV_UNIT_LOGIN_PERSHIFT(?, ?)
+            ORDER BY VHC_ID
+        ", [
+            $shiftDate,
+            $shiftNo
+        ]));
+
+        $totalRecords = $results->count();
+
+
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords,
+            'data' => $results
+        ]);
+    }
 }

@@ -577,6 +577,9 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/safety/p2h/verified/superintendent/{uuid}', [P2HController::class, 'verifiedSuperintendent'])->name('p2h.verified.superintendent');
     Route::get('/safety/p2h/cetak/{uuid}', [P2HController::class, 'cetak'])->name('p2h.cetak');
     Route::get('/safety/p2h/download/{uuid}', [P2HController::class, 'download'])->name('p2h.download');
+    Route::get('/safety/p2h/login-operator', [P2HController::class, 'login_operator'])->name('p2h.login_operator');
+    Route::get('/safety/p2h/api/login-operator', [P2HController::class, 'apiLogin_operator'])->name('p2h.apiLoginOperator');
+
 
     //KKH
     Route::get('/kkh/all', [KKHController::class, 'all'])->name('kkh.all')->middleware('canAccess');
