@@ -44,10 +44,10 @@
 
                                     <div class="col-md-6 col-12 px-2 py-2">
                                         <label>Penanggung Jawab Area</label>
-                                        <select class="form-control form-control-sm pb-2" id="exampleFormControlSelect2" name="penanggungjawab" required>
+                                        <select class="form-control form-control-sm pb-2" id="exampleFormControlSelect2" name="penanggungjawab" data-trigger required>
                                             <option selected disabled></option>
                                             @foreach ($users['penanggungjawab'] as $penanggungjawab)
-                                                <option value="{{ $penanggungjawab->NRP }}">{{ $penanggungjawab->PERSONALNAME }} ({{ $penanggungjawab->NRP }})</option>
+                                                <option value="{{ $penanggungjawab->nik }}">{{ $penanggungjawab->name }} ({{ $penanggungjawab->nik }})</option>
                                             @endforeach
                                         </select>
                                     </div>
