@@ -200,7 +200,7 @@
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-3 mb-3">
                                             <label class="form-label">Lokasi:</label>
                                             <input type="text"
                                                    name="lokasi"
@@ -208,7 +208,7 @@
                                                    value="{{ old('lokasi', $data->lokasi) }}">
                                         </div>
 
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-3 mb-3">
                                             <label class="form-label">Tingkat Risiko:</label>
                                             <select name="tingkat_risiko" class="form-select">
                                                 <option value="">-- Pilih Tingkat Risiko --</option>
@@ -217,6 +217,25 @@
                                                 <option value="Sedang" {{ old('tingkat_risiko', $data->tingkat_risiko) == 'Sedang' ? 'selected' : '' }}>Sedang</option>
                                                 <option value="Tinggi" {{ old('tingkat_risiko', $data->tingkat_risiko) == 'Tinggi' ? 'selected' : '' }}>Tinggi</option>
                                                 <option value="Ekstrim" {{ old('tingkat_risiko', $data->tingkat_risiko) == 'Ekstrim' ? 'selected' : '' }}>Ekstrim</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-3 mb-3">
+                                            <label class="form-label">Kategori Bahaya:</label>
+                                            <select name="kategori_bahaya" class="form-select">
+                                                <option value="">-- Pilih Kategori Bahaya --</option>
+                                                <option value="Tindakan Tidak Aman" {{ old('kategori_bahaya', $data->kategori_bahaya) == 'Tindakan Tidak Aman' ? 'selected' : '' }}>Tindakan Tidak Aman</option>
+                                                <option value="Kondisi Tidak Aman" {{ old('kategori_bahaya', $data->kategori_bahaya) == 'Kondisi Tidak Aman' ? 'selected' : '' }}>Kondisi Tidak Aman</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-3 mb-3">
+                                            <label class="form-label">Type Bahaya:</label>
+                                            <select name="type_bahaya" class="form-select">
+                                                <option value="">-- Pilih Type Bahaya --</option>
+                                                <option value="Safety" {{ old('type_bahaya', $data->type_bahaya) == 'Safety' ? 'selected' : '' }}>Safety</option>
+                                                <option value="Health" {{ old('type_bahaya', $data->type_bahaya) == 'Health' ? 'selected' : '' }}>Health</option>
+                                                <option value="Environment" {{ old('type_bahaya', $data->type_bahaya) == 'Environment' ? 'selected' : '' }}>Environment</option>
                                             </select>
                                         </div>
                                     </div>

@@ -533,7 +533,7 @@
                                         </select>
                                     </div>
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <label class="form-label">PIC Tindak Lanjut</label>
                                         <select class="form-select" id="pic" name="pic" required>
                                             @foreach ($data['departemen'] as $dep)
@@ -545,12 +545,31 @@
                                         </select>
                                     </div>
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <label class="form-label">Tingkat Risiko</label>
                                         <select class="form-select" id="tingkatRisiko" name="tingkatRisiko" required>
-                                            <option value="Ringan" {{ old('tingkatRisiko', $report->tingkat_risiko) == 'Ringan' ? 'selected' : '' }}>Ringan</option>
+                                            <option value="Tidak Signifikan" {{ old('tingkatRisiko', $report->tingkat_risiko) == 'Tidak Signifikan' ? 'selected' : '' }}>Tidak Signifikan</option>
+                                            <option value="Rendah" {{ old('tingkatRisiko', $report->tingkat_risiko) == 'Rendah' ? 'selected' : '' }}>Rendah</option>
                                             <option value="Sedang" {{ old('tingkatRisiko', $report->tingkat_risiko) == 'Sedang' ? 'selected' : '' }}>Sedang</option>
                                             <option value="Tinggi" {{ old('tingkatRisiko', $report->tingkat_risiko) == 'Tinggi' ? 'selected' : '' }}>Tinggi</option>
+                                            <option value="Ekstrim" {{ old('tingkatRisiko', $report->tingkat_risiko) == 'Ekstrim' ? 'selected' : '' }}>Ekstrim</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label class="form-label">Kategori Bahaya</label>
+                                        <select class="form-select" id="kategoriBahaya" name="kategoriBahaya" required>
+                                            <option value="Kondisi Tidak Aman" {{ old('kategoriBahaya', $report->kategori_bahaya) == 'Kondisi Tidak Aman' ? 'selected' : '' }}>Kondisi Tidak Aman</option>
+                                            <option value="Tindakan Tidak Aman" {{ old('kategoriBahaya', $report->kategori_bahaya) == 'Tindakan Tidak Aman' ? 'selected' : '' }}>Tindakan Tidak Aman</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label class="form-label">Type Bahaya</label>
+                                        <select class="form-select" id="typeBahaya" name="typeBahaya" required>
+                                            <option value="Safety" {{ old('typeBahaya', $report->type_bahaya) == 'Safety' ? 'selected' : '' }}>Safety</option>
+                                            <option value="Health" {{ old('typeBahaya', $report->type_bahaya) == 'Health' ? 'selected' : '' }}>Health</option>
+                                            <option value="Environtment" {{ old('typeBahaya', $report->type_bahaya) == 'Environtment' ? 'selected' : '' }}>Environtment</option>
                                         </select>
                                     </div>
                                 </div>

@@ -244,14 +244,24 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-4 mb-3">
                                         <label class="form-label">Lokasi:</label>
                                         <input class="form-control" value="{{ $data->lokasi }}" readonly>
                                     </div>
 
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-4 mb-3">
                                         <label class="form-label">Tingkat Risiko:</label>
                                         <input class="form-control" value="{{ $data->tingkat_risiko }}" readonly>
+                                    </div>
+
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Kategori Bahaya:</label>
+                                        <input class="form-control" value="{{ $data->kategori_bahaya }}" readonly>
+                                    </div>
+
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Type Bahaya:</label>
+                                        <input class="form-control" value="{{ $data->type_bahaya }}" readonly>
                                     </div>
                                 </div>
 

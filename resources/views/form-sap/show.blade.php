@@ -179,7 +179,13 @@
         border-color: rgba(245, 158, 11, 0.18);
     }
 
-    .status-risk-ringan {
+    .status-risk-tidak-signifikan {
+        background: rgba(107, 114, 128, 0.12); /* abu-abu */
+        color: #4b5563;
+        border-color: rgba(107, 114, 128, 0.18);
+    }
+
+    .status-risk-rendah {
         background: rgba(34, 197, 94, 0.12);
         color: #15803d;
         border-color: rgba(34, 197, 94, 0.18);
@@ -195,6 +201,12 @@
         background: rgba(239, 68, 68, 0.12);
         color: #b91c1c;
         border-color: rgba(239, 68, 68, 0.18);
+    }
+
+    .status-risk-ekstrim {
+        background: rgba(127, 29, 29, 0.12); /* merah tua */
+        color: #7f1d1d;
+        border-color: rgba(127, 29, 29, 0.25);
     }
 
     .section-card {
@@ -442,9 +454,11 @@
 
                                 @php
                                     $riskClass = 'status-open';
-                                    if (($report->tingkat_risiko ?? '') === 'Ringan') $riskClass = 'status-risk-ringan';
+                                    if (($report->tingkat_risiko ?? '') === 'Tidak Signifikan') $riskClass = 'status-risk-tidak-signifikan';
+                                    if (($report->tingkat_risiko ?? '') === 'Rendah') $riskClass = 'status-risk-rendah';
                                     if (($report->tingkat_risiko ?? '') === 'Sedang') $riskClass = 'status-risk-sedang';
                                     if (($report->tingkat_risiko ?? '') === 'Tinggi') $riskClass = 'status-risk-tinggi';
+                                    if (($report->tingkat_risiko ?? '') === 'Ekstrim') $riskClass = 'status-risk-ekstrim';
                                 @endphp
 
                                 <span class="status-chip {{ $riskClass }}">
@@ -582,14 +596,28 @@
                             </div>
 
                             <div class="row g-3">
-                                <div class="col-md-6">
+                                <div class="col-md-3">
                                     <div class="field-block">
                                         <label class="field-label">Tingkat Risiko</label>
                                         <input type="text" class="field-value" value="{{ $report->tingkat_risiko ?? '-' }}" readonly>
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-md-3">
+                                    <div class="field-block">
+                                        <label class="field-label">Kategori Bahaya</label>
+                                        <input type="text" class="field-value" value="{{ $report->kategori_bahaya ?? '-' }}" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="field-block">
+                                        <label class="field-label">Type Bahaya</label>
+                                        <input type="text" class="field-value" value="{{ $report->type_bahaya ?? '-' }}" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
                                     <div class="field-block">
                                         <label class="field-label">PICA Level</label>
                                         <input type="text" class="field-value" value="{{ $report->level ?? '-' }}" readonly>

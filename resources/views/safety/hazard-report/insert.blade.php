@@ -204,7 +204,7 @@
                                 <div class="mb-3">
                                     <label for="perusahaan" class="form-label">Perusahaan:</label>
                                     <select class="form-select modern-select" data-trigger id="perusahaan" name="perusahaan" required>
-                                        <option value="">--Pilih perusahaan--</option>
+                                        <option value="">Pilih Perusahaan</option>
                                         <option value="PT. SIMS JAYA KALTIM">PT. SIMS JAYA KALTIM</option>
                                         <option value="PT. ABM">PT. ABM</option>
                                         <option value="PT. KJM">PT. KJM</option>
@@ -224,7 +224,7 @@
                                 <div class="mb-3">
                                     <label for="departemen" class="form-label">Departemen:</label>
                                     <select class="form-select modern-select" data-trigger id="departemen" name="departemen" required>
-                                        <option value="">--Pilih Departemen--</option>
+                                        <option value="">Pilih Departemen</option>
                                         @foreach ($dep as $d)
                                             @if ($d->id != 13 && strtoupper($d->keterangan) != 'BOD')
                                                 <option value="{{ $d->id }}">{{ $d->keterangan }}</option>
@@ -235,7 +235,7 @@
                                 <div class="mb-3">
                                     <label for="shift" class="form-label">Shift:</label>
                                     <select class="form-select modern-select" data-trigger id="shift" name="shift" required>
-                                        <option value="">--Pilih Shift--</option>
+                                        <option value="">Pilih Shift</option>
                                         @foreach ($shift as $sh)
                                             <option value="{{ $sh->id }}">{{ $sh->keterangan }}</option>
                                         @endforeach
@@ -290,12 +290,31 @@
                                 <div class="mb-3">
                                     <label for="tingkat_risiko" class="form-label">Tingkat Risiko:</label>
                                     <select class="form-select modern-select" data-trigger id="tingkat_risiko" name="tingkat_risiko">
-                                        <option value="">--Pilih Tingkat Risiko--</option>
+                                        <option value="">Pilih Tingkat Risiko</option>
                                         <option value="Tidak Signifikan">Tidak Signifikan</option>
                                         <option value="Rendah">Rendah</option>
                                         <option value="Sedang">Sedang</option>
                                         <option value="Tinggi">Tinggi</option>
                                         <option value="Ekstrim">Ekstrim</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="kategori_bahaya" class="form-label">Kategori Bahaya:</label>
+                                    <select class="form-select modern-select" data-trigger id="kategori_bahaya" name="kategori_bahaya">
+                                        <option value="">Pilih Kategori Bahaya</option>
+                                        <option value="Tindakan Tidak Aman">Tindakan Tidak Aman</option>
+                                        <option value="Kondisi Tidak Aman">Kondisi Tidak Aman</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="type_bahaya" class="form-label">Type Bahaya:</label>
+                                    <select class="form-select modern-select" data-trigger id="type_bahaya" name="type_bahaya">
+                                        <option value="">Pilih Type Bahaya</option>
+                                        <option value="Safety">Safety</option>
+                                        <option value="Health">Health</option>
+                                        <option value="Environment">Environment</option>
                                     </select>
                                 </div>
 

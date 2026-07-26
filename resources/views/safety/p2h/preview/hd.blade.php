@@ -163,11 +163,11 @@ table td {
                                             <i class="ph-duotone ph-pencil-simple-line f-22"></i>
                                         </a>
                                     </li>
-                                    <li class="list-inline-item align-bottom me-2">
+                                    {{-- <li class="list-inline-item align-bottom me-2">
                                         <a href="{{ route('p2h.download', $data->first()->UUID) }}" target="_blank" class="avtar avtar-s btn-link-secondary">
                                             <i class="ph-duotone ph-download-simple f-22"></i>
                                         </a>
-                                    </li>
+                                    </li> --}}
                                     <li class="list-inline-item align-bottom me-2">
                                         <a href="{{ route('p2h.cetak', $data->first()->UUID) }}" target="_blank" class="avtar avtar-s btn-link-secondary">
                                             <i class="ph-duotone ph-printer f-22"></i>

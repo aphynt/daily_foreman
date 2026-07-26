@@ -410,10 +410,29 @@
                                     <label for="tingkatRisiko" class="form-label">Tingkat Risiko</label>
                                     <select class="form-select" id="tingkatRisiko" name="tingkatRisiko" required>
                                         <option value="Tidak Signifikan">Tidak Signifikan</option>
-                                        <option value="Ringan">Ringan</option>
+                                        <option value="Rendah">Rendah</option>
                                         <option value="Sedang">Sedang</option>
                                         <option value="Tinggi">Tinggi</option>
                                         <option value="Ekstrim">Ekstrim</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="kategoriBahaya" class="form-label">Kategori Bahaya</label>
+                                    <select class="form-select modern-select" data-trigger id="kategoriBahaya" name="kategoriBahaya" required>
+                                        <option value="">Pilih Kategori Bahaya</option>
+                                        <option value="Tindakan Tidak Aman">Tindakan Tidak Aman</option>
+                                        <option value="Kondisi Tidak Aman">Kondisi Tidak Aman</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="typeBahaya" class="form-label">Type Bahaya</label>
+                                    <select class="form-select modern-select" data-trigger id="typeBahaya" name="typeBahaya" required>
+                                        <option value="">Pilih Type Bahaya</option>
+                                        <option value="Safety">Safety</option>
+                                        <option value="Health">Health</option>
+                                        <option value="Environment">Environment</option>
                                     </select>
                                 </div>
 
