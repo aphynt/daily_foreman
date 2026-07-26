@@ -409,9 +409,11 @@
                                 <div class="mb-3">
                                     <label for="tingkatRisiko" class="form-label">Tingkat Risiko</label>
                                     <select class="form-select" id="tingkatRisiko" name="tingkatRisiko" required>
+                                        <option value="Tidak Signifikan">Tidak Signifikan</option>
                                         <option value="Ringan">Ringan</option>
                                         <option value="Sedang">Sedang</option>
                                         <option value="Tinggi">Tinggi</option>
+                                        <option value="Ekstrim">Ekstrim</option>
                                     </select>
                                 </div>
 
