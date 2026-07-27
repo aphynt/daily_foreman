@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\LaporanHarianController;
 use App\Http\Controllers\APIController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\FuelServiceURLController;
+use App\Http\Controllers\HealthyMenuController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +41,7 @@ Route::get('/fuel/getDataFuel/Transfer', [FuelServiceURLController::class, 'getD
 Route::get('/fuel/getDataFuel/Transfer', [FuelServiceURLController::class, 'getDataFuelTransfer'])->name('fuel.get.transfer');
 
 Route::post('/attendance/receive', [AttendanceController::class, 'receive']);
+Route::get('/healthy-menu', [HealthyMenuController::class, 'index']);
 
 
 // Route::get('/laporan-pengawas', [APIController::class, 'laporanPengawas'])->name('api.laporan-pengawas');
