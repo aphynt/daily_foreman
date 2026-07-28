@@ -65,16 +65,39 @@ class InspeksiPICAExport implements
         $isClose = (int) ($item->is_finish ?? 0) === 1;
 
         $inspectors = collect([
-            $item->inspektor1 ?? null,
-            $item->inspektor2 ?? null,
-            $item->inspektor3 ?? null,
-            $item->inspektor4 ?? null,
-            $item->inspektor5 ?? null,
-        ])->filter(function ($value) {
-            return !is_null($value) && trim($value) !== '';
-        })->map(function ($value) {
-            return '- ' . trim($value);
-        })->implode("\n");
+            [
+                'nama' => $item->inspektor1 ?? null,
+                'dept' => $item->departemen_inspektor1 ?? null,
+            ],
+            [
+                'nama' => $item->inspektor2 ?? null,
+                'dept' => $item->departemen_inspektor2 ?? null,
+            ],
+            [
+                'nama' => $item->inspektor3 ?? null,
+                'dept' => $item->departemen_inspektor3 ?? null,
+            ],
+            [
+                'nama' => $item->inspektor4 ?? null,
+                'dept' => $item->departemen_inspektor4 ?? null,
+            ],
+            [
+                'nama' => $item->inspektor5 ?? null,
+                'dept' => $item->departemen_inspektor5 ?? null,
+            ],
+        ])->filter(function ($item) {
+            return !empty(trim($item['nama'] ?? ''));
+        })->map(function ($item) {
+
+            $text = '- ' . trim($item['nama']);
+
+            if (!empty($item['dept'])) {
+                $text .= "\n  Dept : " . $item['dept'];
+            }
+
+            return $text;
+
+        })->implode("\n\n");
 
         return [
             $this->no++,

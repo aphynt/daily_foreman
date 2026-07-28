@@ -429,6 +429,17 @@ MSG;
             ->leftJoin('users as us', 'sr.foreman_id', 'us.id')
             ->leftJoin('ref_departemen as dep', 'sr.departemen_pic', 'dep.id')
             ->leftJoin('ref_departemen as dep2', 'us.departemen_id', 'dep2.id')
+            ->leftJoin('users as u1', 'sr.inspektor1', '=', 'u1.name')
+            ->leftJoin('users as u2', 'sr.inspektor2', '=', 'u2.name')
+            ->leftJoin('users as u3', 'sr.inspektor3', '=', 'u3.name')
+            ->leftJoin('users as u4', 'sr.inspektor4', '=', 'u4.name')
+            ->leftJoin('users as u5', 'sr.inspektor5', '=', 'u5.name')
+
+            ->leftJoin('ref_departemen as dp1', 'u1.departemen_id', '=', 'dp1.id')
+            ->leftJoin('ref_departemen as dp2', 'u2.departemen_id', '=', 'dp2.id')
+            ->leftJoin('ref_departemen as dp3', 'u3.departemen_id', '=', 'dp3.id')
+            ->leftJoin('ref_departemen as dp4', 'u4.departemen_id', '=', 'dp4.id')
+            ->leftJoin('ref_departemen as dp5', 'u5.departemen_id', '=', 'dp5.id')
             ->leftJoin('ref_shift as sh', 'sr.shift', 'sh.id')
             ->select(
                 'sr.uuid',
@@ -448,6 +459,11 @@ MSG;
                 'sr.inspektor3',
                 'sr.inspektor4',
                 'sr.inspektor5',
+                'dp1.keterangan as departemen_inspektor1',
+                'dp2.keterangan as departemen_inspektor2',
+                'dp3.keterangan as departemen_inspektor3',
+                'dp4.keterangan as departemen_inspektor4',
+                'dp5.keterangan as departemen_inspektor5',
                 'sr.file_temuan',
                 'sr.file_temuan2',
                 'sr.file_temuan3',

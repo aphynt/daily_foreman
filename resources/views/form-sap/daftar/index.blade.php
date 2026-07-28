@@ -135,6 +135,9 @@
     #pc-datepicker-10 .form-control {
         min-height: 38px;
     }
+    .text-cell{
+        white-space: pre-wrap;
+    }
 
 </style>
 
@@ -298,13 +301,36 @@
                                             <td class="text-cell">{{ $item->level ?? '-' }}</td>
                                             <td class="text-cell">{{ $item->area ?? '-' }}</td>
                                             <td class="text-cell">
-                                                {{ implode(', ', array_filter([
-                                                    $item->inspektor1,
-                                                    $item->inspektor2,
-                                                    $item->inspektor3,
-                                                    $item->inspektor4,
-                                                    $item->inspektor5
-                                                ])) ?: '-' }}
+                                                @php
+                                                    $inspektors = [];
+
+                                                    if($item->inspektor1){
+                                                        $inspektors[] = $item->inspektor1 .
+                                                            ($item->departemen_inspektor1 ? "\nDept : ".$item->departemen_inspektor1 : '');
+                                                    }
+
+                                                    if($item->inspektor2){
+                                                        $inspektors[] = $item->inspektor2 .
+                                                            ($item->departemen_inspektor2 ? "\nDept : ".$item->departemen_inspektor2 : '');
+                                                    }
+
+                                                    if($item->inspektor3){
+                                                        $inspektors[] = $item->inspektor3 .
+                                                            ($item->departemen_inspektor3 ? "\nDept : ".$item->departemen_inspektor3 : '');
+                                                    }
+
+                                                    if($item->inspektor4){
+                                                        $inspektors[] = $item->inspektor4 .
+                                                            ($item->departemen_inspektor4 ? "\nDept : ".$item->departemen_inspektor4 : '');
+                                                    }
+
+                                                    if($item->inspektor5){
+                                                        $inspektors[] = $item->inspektor5 .
+                                                            ($item->departemen_inspektor5 ? "\nDept : ".$item->departemen_inspektor5 : '');
+                                                    }
+                                                @endphp
+
+                                                {!! nl2br(e(implode("\n\n", $inspektors))) !!}
                                             </td>
                                             <td class="text-cell">{{ $item->temuan ?? '-' }}</td>
 
@@ -323,7 +349,7 @@
                                             </td> --}}
 
                                             <td class="text-center-cell">{{ $item->tingkat_risiko ?? '-' }}</td>
-                                            <td class="text-center-cell">{{ $item->tindak_lanjut ?? '-' }}</td>
+                                            <td class="text-cell">{{ $item->tindak_lanjut ?? '-' }}</td>
                                             <td class="text-center-cell">
                                                 {{ $item->due_date ? date('d-m-Y', strtotime($item->due_date)) : '-' }}
                                             </td>
@@ -407,7 +433,7 @@
     autoWidth: false,
     scrollX: false,
     columnDefs: [
-        { targets: [0, 1, 6, 8, 10, 11, 12], className: 'text-center align-middle' },
+        { targets: [0, 1, 8, 10, 11, 12], className: 'text-center align-middle' },
         { targets: [12], orderable: false, searchable: false }
     ],
     buttons: [
