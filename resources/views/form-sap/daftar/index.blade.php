@@ -385,7 +385,7 @@
                                                     <span class="badge bg-success">Rincian</span>
                                                 </a>
 
-                                                @if (Auth::user()->role == 'ADMIN')
+                                                @if (Auth::user()->role == 'ADMIN' || Auth::user()->nik == $item->nik_pic)
                                                     <a href="#">
                                                         <span
                                                             class="badge bg-danger"

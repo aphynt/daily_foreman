@@ -14,6 +14,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\File;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use App\Models\RefConf;
 
 class KKHController extends Controller
 {
@@ -281,7 +282,14 @@ class KKHController extends Controller
             ->get()
             ->keyBy('nik');
 
-        $kkhRows->transform(function ($row) use ($currentUserRole, $userRoles) {
+        $specialVerifierNiks = json_decode(
+            RefConf::where('id', 32)->value('value'),
+            true
+        ) ?? [];
+
+        $isSpecialVerifier = in_array(Auth::user()->nik, $specialVerifierNiks);
+
+        $kkhRows->transform(function ($row) use ($currentUserRole, $userRoles, $isSpecialVerifier) {
             $role = optional($userRoles->get($row->NIK_PENGISI))->role;
             $row->JABATAN = strtoupper(trim($role ?? '-'));
 
@@ -323,19 +331,19 @@ class KKHController extends Controller
                     } else {
                         switch ($jabatanPengisi) {
                             case 'FOREMAN':
-                                $allowedToVerify = in_array($currentUserRole, ['SUPERVISOR', 'SUPERINTENDENT', 'MANAGEMENT']);
+                                $allowedToVerify = $isSpecialVerifier || in_array($currentUserRole, ['SUPERVISOR', 'SUPERINTENDENT', 'MANAGEMENT']);
                                 break;
                             case 'SUPERVISOR':
-                                $allowedToVerify = in_array($currentUserRole, ['MANAGEMENT', 'SUPERINTENDENT']);
+                                $allowedToVerify = $isSpecialVerifier || in_array($currentUserRole, ['MANAGEMENT', 'SUPERINTENDENT']);
                                 break;
                             case 'SUPERINTENDENT':
-                                $allowedToVerify = in_array($currentUserRole, ['MANAGEMENT', 'SUPERINTENDENT']);
+                                $allowedToVerify = $isSpecialVerifier || in_array($currentUserRole, ['MANAGEMENT', 'SUPERINTENDENT']);
                                 break;
                             case 'MANAGEMENT':
-                                $allowedToVerify = in_array($currentUserRole, ['SUPERINTENDENT']);
+                                $allowedToVerify = $isSpecialVerifier || in_array($currentUserRole, ['SUPERINTENDENT']);
                                 break;
                             default:
-                                $allowedToVerify = in_array($currentUserRole, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']);
+                                $allowedToVerify = $isSpecialVerifier || in_array($currentUserRole, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']);
                         }
                     }
                 }
