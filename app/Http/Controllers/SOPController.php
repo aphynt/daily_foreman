@@ -32,6 +32,10 @@ class SOPController extends Controller
             });
         }
 
+        // SORTING
+        $query->orderBy('dep.keterangan', 'asc')
+            ->orderBy('sop.nama_file', 'asc');
+
         $sop = $query->get();
 
         return view('sop.index', compact('sop'));
