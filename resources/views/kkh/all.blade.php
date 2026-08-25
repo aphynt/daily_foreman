@@ -36,7 +36,7 @@
                                 <label for="tanggalKKH">Tanggal</label>
                                 <input type="text" id="tanggalKKH" class="form-control" name="tanggalKKH">
                             </div>
-                            <div class="col-6 col-md-2 mb-2">
+                            <div class="col-6 col-md-1 mb-2">
                                 <label for="shift">Shift</label>
                                 <select class="form-select" name="shift" id="shift">
                                     <option value="Semua">Semua</option>
@@ -73,8 +73,18 @@
                                     </select>
                                 </div>
                             @endif
-                            <div class="col-6 col-md-2 mb-2">
-                                <label for="cluster">Kategori Operasional</label>
+                            <div class="col-6 col-md-3 mb-2">
+                                <label for="section">Section</label>
+                                <select class="form-select" name="section" id="section" data-trigger>
+                                    <option value="Semua">Semua</option>
+
+                                    @foreach ($section as $s)
+                                        <option value="{{ $s }}">{{ $s }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-1 mb-2">
+                                <label for="cluster">Kategori</label>
                                 <select class="form-select" name="cluster" id="cluster">
                                     <option value="Semua">Semua</option>
                                     <option value="HD">HD</option>
@@ -90,7 +100,7 @@
                                     <option value="Sudah Diverifikasi">Sudah Diverifikasi</option>
                                 </select>
                             </div>
-                            <div class="col-12 col-md-2 mb-2 d-flex align-items-end">
+                            <div class="col-12 col-md-1 mb-2 d-flex align-items-end">
                                 <button id="cariKKH" class="btn btn-primary w-100" style="padding-top:10px;padding-bottom:10px;">Tampilkan</button>
                             </div>
                         </div>
@@ -258,6 +268,8 @@
                     d.shift = shift;
                     var departemen = $('#departemen').val();
                     d.departemen = departemen;
+                    var section = $('#section').val();
+                    d.section = section;
                     var statusVerifikasi = $('#statusVerifikasi').val();
                     d.statusVerifikasi = statusVerifikasi;
                     delete d.columns;
@@ -269,6 +281,7 @@
                 {
                     data: 'NAMA_PENGISI',
                     className: 'desktop-only'
+
                 },
                 {
                     data: 'NIK_PENGISI',
@@ -277,10 +290,22 @@
                 {
                     data: null,
                     className: 'mobile-pengisi',
-                    render: function(data,type,row){
+                    render: function(data, type, row) {
+
+                        let nama = row.NAMA_PENGISI || '-';
+
+                        if (nama.length > 20) {
+                            nama = nama.substring(0, 20) + '...';
+                        }
+
                         return `
-                            <div style="font-weight:600">${row.NAMA_PENGISI}</div>
-                            <div style="color:#6b7280">${row.NIK_PENGISI}</div>
+                            <div style="font-weight:600"
+                                title="${row.NAMA_PENGISI || ''}">
+                                ${nama}
+                            </div>
+                            <div style="color:#6b7280">
+                                ${row.NIK_PENGISI || '-'}
+                            </div>
                         `;
                     }
                 },

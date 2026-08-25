@@ -32,6 +32,7 @@ use App\Http\Controllers\Produksi\SOPProduksiController;
 use App\Http\Controllers\Produksi\VerifikasiKLKHController;
 
 use App\Http\Controllers\Engineering\StagingPlanController;
+use App\Http\Controllers\TrainingCenter\DiggibilityController;
 
 use App\Http\Controllers\IT\KLKHITController;
 
@@ -651,6 +652,13 @@ Route::group(['middleware' => ['auth']], function(){
         );
 
     })->name('fileStagingPlan.show');
+
+    //Diggibility
+    Route::get('/diggibility', [DiggibilityController::class, 'index'])->name('diggibility')->middleware('canAccess');
+    Route::get('/diggibility/insert', [DiggibilityController::class, 'insert'])->name('diggibility.insert');
+    Route::post('/diggibility/post', [DiggibilityController::class, 'post'])->name('diggibility.post');
+    Route::get('/diggibility/show/{id}', [DiggibilityController::class, 'show'])->name('diggibility.show');
+    Route::delete('/diggibility/destroy/{id}', [DiggibilityController::class, 'destroy'])->name('diggibility.destroy');
 
     // Log
     Route::get('/log/index', [LogController::class, 'index'])->name('log.index')->middleware('canAccess');

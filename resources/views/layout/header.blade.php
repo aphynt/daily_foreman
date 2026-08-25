@@ -1,5 +1,26 @@
 <header class="pc-header">
-
+<style>
+    .user-avtar{
+        width:45px !important;
+        height:45px !important;
+        min-width:45px;
+        min-height:45px;
+        border-radius:50% !important;
+        object-fit:cover !important;
+        object-position:center 20% !important;
+        display:block;
+    }
+    .profile-user-avatar{
+        width:65px !important;
+        height:65px !important;
+        min-width:65px;
+        min-height:65px;
+        border-radius:50% !important;
+        object-fit:cover !important;
+        object-position:center 20% !important;
+        display:block;
+    }
+</style>
     <div class="header-wrapper">
         <!-- [Mobile Media Block] start -->
         <div class="me-auto pc-mob-drp">
@@ -21,7 +42,7 @@
                 <li class="dropdown pc-h-item header-user-profile"><a
                         class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"
                         role="button" aria-haspopup="false" data-bs-auto-close="outside" aria-expanded="false"><img
-                            src="{{ asset('dashboard/assets') }}/images/user/avatar-1.png" alt="user-image" class="user-avtar"></a>
+                            src="{{ Auth::user()->avatar ? 'https://hrlink.ptsims.co.id/asset/foto/karyawan/' . Auth::user()->avatar : asset('dashboard/assets/images/user/avatar-1.png') }}" alt="user-image" class="user-avtar"></a>
                     <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown">
                         <div class="dropdown-header d-flex align-items-center justify-content-between">
                             <h5 class="m-0">Profile</h5>
@@ -30,8 +51,9 @@
                             <div class="profile-notification-scroll position-relative"
                                 style="max-height: calc(100vh - 225px)">
                                 <div class="d-flex mb-1">
-                                    <div class="flex-shrink-0"><img src="{{ Auth::user()->avatar ? asset('storage/avatar/'.Auth::user()->avatar) : asset('dashboard/assets') }}/images/user/avatar-1.png"
-                                            alt="user-image" class="user-avtar wid-35"></div>
+                                    <div class="flex-shrink-0"><img src="{{ Auth::user()->avatar ? 'https://hrlink.ptsims.co.id/asset/foto/karyawan/' . Auth::user()->avatar : asset('dashboard/assets/images/user/avatar-1.png') }}"
+                                    alt="user-image"
+                                    class="user-avtar wid-35"></div>
                                     <div class="flex-grow-1 ms-3">
                                         <h6 class="mb-1">{{ Auth::user()->name }}</h6><span><a href="#" style="color:#001932;">{{ Auth::user()->nik }}</a></span>
                                     </div>

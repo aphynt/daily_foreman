@@ -388,7 +388,7 @@
                             @if (canAccess('klkh.ogs'))<a href="{{ route('klkh.ogs') }}" class="list-group-item">KLKH OGS</a>@endif
                             @if (canAccess('klkh.batubara'))<a href="{{ route('klkh.batubara') }}" class="list-group-item">KLKH Batubara</a>@endif
                             @if (canAccess('klkh.simpangempat'))<a href="{{ route('klkh.simpangempat') }}" class="list-group-item">KLKH INTERSECTION (Simpang Empat)</a>@endif
-                            @if (canAccess('klkh.it'))<a href="{{ route('klkh.it') }}" class="list-group-item">KLKH IT</a>@endif
+                            @if (canAccess('klkh.it'))<a href="{{ route('klkh.it') }}" class="list-group-item">KLKH Troubleshooting IT</a>@endif
                             @if (canAccess('inspeksi.jalantambang'))<a href="{{ route('inspeksi.jalantambang') }}" class="list-group-item">Inspeksi Tambang - Jalan Tambang</a>@endif
                             @if (canAccess('inspeksi.disposal'))<a href="{{ route('inspeksi.disposal') }}" class="list-group-item">Inspeksi Tambang - Disposal</a>@endif
                             @if (canAccess('inspeksi.frontloading'))<a href="{{ route('inspeksi.frontloading') }}" class="list-group-item">Inspeksi Tambang - Front Loading</a>@endif

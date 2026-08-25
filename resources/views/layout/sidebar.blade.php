@@ -23,7 +23,7 @@
                 <div class="card pc-user-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
-                            <div class="flex-shrink-0"><img src="{{ Auth::user()->avatar ? asset('storage/avatar/'.Auth::user()->avatar) : asset('dashboard/assets') }}/images/user/avatar-1.png"
+                            <div class="flex-shrink-0"><img src="{{ Auth::user()->avatar ? 'https://hrlink.ptsims.co.id/asset/foto/karyawan/' . Auth::user()->avatar : asset('dashboard/assets/images/user/avatar-1.png') }}" alt="user-image" class="user-avtar"
                                     alt="user-image" class="user-avtar wid-45 rounded-circle"></div>
                             <div class="flex-grow-1 ms-3 me-2">
                                 <h6 class="mb-0" style="font-size: 12px">{{ Auth::user()->name }}</h6>
@@ -70,6 +70,10 @@
 
                     @if (canAccess('stagingplan'))
                     <li class="pc-item"><a href="{{ route('stagingplan') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/blueprint.png" alt="NT"></span><span class="pc-mtext">Staging Plan</span></a></li>
+                    @endif
+
+                    @if (canAccess('diggibility'))
+                    <li class="pc-item"><a href="{{ route('diggibility') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/blasting.png" alt="NT"></span><span class="pc-mtext">Diggibility</span></a></li>
                     @endif
 
                     {{-- PAYLOAD --}}

@@ -593,6 +593,12 @@ class HazardReportController extends Controller
                     $verificationNumber = RefConf::where('id', 22)->value('value');
                 }else if($request->departemen == 9){
                     $verificationNumber = RefConf::where('id', 24)->value('value');
+                }else if($request->departemen == 14 && $request->perusahaan == 'PT. ABM'){
+                    $verificationNumber = RefConf::where('id', 33)->value('value');
+                }else if($request->departemen == 14 && $request->perusahaan == 'PT. SM'){
+                    $verificationNumber = RefConf::where('id', 34)->value('value');
+                }else if($request->departemen == 14 && $request->perusahaan == 'PT. KJM'){
+                    $verificationNumber = RefConf::where('id', 35)->value('value');
                 }else if($request->departemen == 14){
                     $verificationNumber = null;
                 }

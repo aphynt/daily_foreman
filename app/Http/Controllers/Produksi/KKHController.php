@@ -23,7 +23,16 @@ class KKHController extends Controller
     {
         $dep = DB::connection('kkh')->table('db_payroll.dbo.tm_departemen')->where('IsDept', true)->get();
 
-        return view('kkh.all', compact('dep'));
+        $section = DB::connection('kkh')
+        ->table('db_payroll.dbo.z_tbl_assct')
+        ->select('section')
+        ->whereNotNull('section')
+        ->where('section', '<>', '')
+        ->groupBy('section')
+        ->orderBy('section')
+        ->pluck('section');
+
+        return view('kkh.all', compact('dep', 'section'));
     }
 
     public function name()
@@ -93,12 +102,14 @@ class KKHController extends Controller
             ->leftJoin('db_payroll.dbo.tbl_data_hr as hr', 'kkh.nik', '=', 'hr.nik')
             ->leftJoin('db_payroll.dbo.tbl_data_hr as hr2', 'kkh.nik_pengawas', '=', 'hr2.nik')
             ->leftJoin('db_payroll.dbo.tm_departemen as dp', 'hr.ID_Departemen', '=', 'dp.ID_Departemen')
+            ->leftJoin('db_payroll.dbo.z_tbl_assct as ass', 'hr.No_KTP', '=', 'ass.no_ktp')
             ->leftJoin('db_payroll.dbo.tm_perusahaan as pr', 'hr.ID_Perusahaan', '=', 'pr.ID_Perusahaan')
             ->select(
                 'kkh.id',
                 'kkh.tgl',
                 'kkh.nik',
                 'dp.ID_Departemen',
+                'ass.section',
                 DB::raw("FORMAT(kkh.tgl_input, 'HH:mm') as TANGGAL_DIBUAT"),
                 'hr.Nik as NIK_PENGISI',
                 'hr.Nama as NAMA_PENGISI',
@@ -216,6 +227,10 @@ class KKHController extends Controller
 
         if ($request->filled('departemen') && $request->departemen !== 'Semua') {
             $kkh->where('dp.ID_Departemen', $request->departemen);
+        }
+
+        if ($request->section && $request->section !== 'Semua') {
+            $kkh->where('ass.section', $request->section);
         }
 
 
@@ -337,10 +352,10 @@ class KKHController extends Controller
                                 $allowedToVerify = $isSpecialVerifier || in_array($currentUserRole, ['MANAGEMENT', 'SUPERINTENDENT']);
                                 break;
                             case 'SUPERINTENDENT':
-                                $allowedToVerify = $isSpecialVerifier || in_array($currentUserRole, ['MANAGEMENT', 'SUPERINTENDENT']);
+                                $allowedToVerify = $isSpecialVerifier || in_array($currentUserRole, ['MANAGEMENT', 'SUPERINTENDENT']) && Auth::user()->nik != $row->NIK_PENGISI;
                                 break;
                             case 'MANAGEMENT':
-                                $allowedToVerify = $isSpecialVerifier || in_array($currentUserRole, ['SUPERINTENDENT']);
+                                $allowedToVerify = $isSpecialVerifier;
                                 break;
                             default:
                                 $allowedToVerify = $isSpecialVerifier || in_array($currentUserRole, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT']);

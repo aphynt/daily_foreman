@@ -1,7 +1,38 @@
 @include('layout.head', ['title' => 'Profil'])
 @include('layout.sidebar')
 @include('layout.header')
-
+<style>
+    .profile-main-avatar{
+        width:100px !important;
+        height:100px !important;
+        min-width:100px;
+        min-height:100px;
+        border-radius:50% !important;
+        object-fit:cover !important;
+        object-position:center 15% !important;
+        display:block;
+    }
+    .user-avtar{
+        width:45px !important;
+        height:45px !important;
+        min-width:45px;
+        min-height:45px;
+        border-radius:50% !important;
+        object-fit:cover !important;
+        object-position:center 20% !important;
+        display:block;
+    }
+    .profile-main-avatar{
+        width:200px !important;
+        height:200px !important;
+        min-width:200px;
+        min-height:200px;
+        border-radius:50% !important;
+        object-fit:cover !important;
+        object-position:center 12% !important;
+        display:block;
+    }
+</style>
 
 <div class="pc-container">
     <div class="pc-content">
@@ -40,10 +71,14 @@
                                 <div class="card">
                                     <div class="card-body position-relative">
                                         <div class="position-absolute end-0 top-0 p-3"><span
-                                                class="badge bg-primary">Summary</span></div>
+                                                class="badge bg-primary">Photo</span></div>
                                         <div class="text-center mt-3">
-                                                <div class="chat-avtar d-inline-flex mx-auto"><img class="rounded-circle img-fluid wid-70"
-                                                    src="{{ Auth::user()->avatar ? asset('storage/avatar/'.Auth::user()->avatar) : asset('dashboard/assets') }}/images/user/avatar-1.png"></div>
+                                                <div class="chat-avtar d-inline-flex mx-auto">
+                                                    <img
+                                                        src="{{ Auth::user()->avatar ? 'https://hrlink.ptsims.co.id/asset/foto/karyawan/' . Auth::user()->avatar : asset('dashboard/assets/images/user/avatar-1.png') }}"
+                                                        alt="user-image"
+                                                        class="profile-main-avatar">
+                                                </div>
                                             <h5 class="mb-0">{{ Auth::user()->name }}</h5>
                                             <p class="text-muted text-sm">{{ Auth::user()->role }}</p>
                                             <hr class="my-3 border border-secondary-subtle">

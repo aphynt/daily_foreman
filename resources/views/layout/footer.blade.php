@@ -3,16 +3,13 @@
         <div class="row mt-3">
             <div class="col my-1">
                 <p class="m-0 text-muted" style="font-size: 9pt;">
-                    © 2024 All Rights Reserved •
-                    Developed  by
-                    <a href="https://ahmadfadillah.my.id/" target="_blank" class="fw-semibold text-decoration-none">
-                        IT
-                    </a>
+                    © 2024 All Rights Reserved
+                    
                 </p>
             </div>
             <div class="col-auto my-1">
                 <ul class="list-inline footer-link mb-0">
-                    <li class="list-inline-item"><a href="http://poka.ptsims.co.id" target="_blank" style="font-size: 8pt">Portal Karyawan</a></li>
+                    <li class="list-inline-item"><a href="https://ahmadfadillah.my.id" target="_blank" style="font-size: 8pt">Developed by <b>IT</b></a></li>
                 </ul>
             </div>
         </div>
