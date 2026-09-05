@@ -1,8 +1,15 @@
 @include('layout.head', ['title' => 'Analisis Kualitas Material Blasting'])
 @include('layout.sidebar')
 @include('layout.header')
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
 .dig-page{
     background:#eef3f6;
     min-height:calc(100vh - 70px);
@@ -166,7 +173,7 @@
 }
 .dig-cards{
     display:grid;
-    grid-template-columns:repeat(4,1fr);
+    grid-template-columns:repeat(2,1fr);
     gap:8px;
     margin-bottom:12px;
 }
@@ -179,9 +186,6 @@
 }
 .dig-card.normal{
     border-left-color:#2467b1;
-}
-.dig-card.indikasi{
-    border-left-color:#e38b15;
 }
 .dig-card.keras{
     border-left-color:#d5413b;
@@ -230,9 +234,6 @@
 .dig-area-box.area-bagus{
     border-color:#28a879;
 }
-.dig-area-box.area-indikasi{
-    border-color:#e58a0b;
-}
 .dig-area-box.area-keras{
     border-color:#d34842;
 }
@@ -250,10 +251,6 @@
 .badge-bagus{
     background:#dff3e9;
     color:#188357;
-}
-.badge-indikasi{
-    background:#fff0d6;
-    color:#b86d08;
 }
 .badge-keras{
     background:#fbe1df;
@@ -280,9 +277,6 @@
 .dig-mini .mini-bagus{
     background:#f3faf7;
 }
-.dig-mini .mini-indikasi{
-    background:#fff9ee;
-}
 .dig-mini .mini-keras{
     background:#fff5f4;
 }
@@ -298,9 +292,6 @@
 }
 .area-bagus .dig-progress span{
     background:#22966f;
-}
-.area-indikasi .dig-progress span{
-    background:#e38b15;
 }
 .area-keras .dig-progress span{
     background:#d5413b;
@@ -333,10 +324,6 @@
 .badge-bagus{
     background:#dff3e9;
     color:#188357;
-}
-.badge-indikasi{
-    background:#fff0d6;
-    color:#b86d08;
 }
 .badge-keras{
     background:#fbe1df;
@@ -490,12 +477,32 @@
     margin:14px 0 11px;
 }
 .report-status{
-    display:inline-block;
-    background:#e7f0fa;
-    color:#1d5790;
-    padding:8px 12px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:8px 18px;
+    border-radius:999px;
+    font-size:13px;
     font-weight:800;
+    letter-spacing:.5px;
     margin-bottom:12px;
+    border:1px solid transparent;
+}
+.report-status.status-bagus{
+    background:#dcfce7;
+    color:#15803d;
+    border-color:#86efac;
+}
+.report-status.status-keras{
+    background:#fee2e2;
+    color:#b91c1c;
+    border-color:#fca5a5;
+}
+#reportKategoriBottom.status-bagus{
+    color:#15803d;
+}
+#reportKategoriBottom.status-keras{
+    color:#b91c1c;
 }
 .report-average{
     border:2px solid #1c59a0;
@@ -794,72 +801,69 @@
         grid-template-columns:1fr;
     }
 }
-@media(max-width:600px){
-    .dig-hero{
-        min-height:190px;
-        padding:22px 18px;
+@media (max-width: 600px) {
+
+    .dig-filter {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
     }
-    .dig-new{
-        right:18px;
-        bottom:18px;
+
+    .dig-filter > div {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
     }
-    .dig-summary{
-        grid-template-columns:1fr;
+
+    .dig-filter label {
+        display: block;
+        width: 100%;
+        margin-bottom: 6px;
+        font-size: 14px;
+        box-sizing: border-box;
     }
-    .dig-summary-item{
-        border-right:0;
-        border-bottom:1px solid #d5dfe7;
+
+    .dig-filter select,
+    .dig-filter input {
+        display: block;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        height: 46px;
+        box-sizing: border-box !important;
+        padding: 7px 12px;
+        border: 1px solid #bdcdd9;
+        border-radius: 8px;
+        background: #fff;
+        color: #345675;
+        font-size: 16px;
     }
-    .dig-filter{
-        grid-template-columns:1fr 1fr;
+
+    /* Khusus input tanggal */
+    .dig-filter input[type="date"] {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        display: block;
+        margin: 0;
+        padding-left: 12px;
+        padding-right: 8px;
+        overflow: hidden;
     }
-    .dig-cards{
-        grid-template-columns:1fr 1fr;
-    }
-    .dig-report-grid{
-        grid-template-columns:1fr;
-    }
-    .dig-report-grid div{
-        border-right:0;
-        border-bottom:1px solid #d7e0e7;
-    }
-    .report-overlay{
-        padding:8px;
-    }
-    .report-modal{
-        max-height:98vh;
-    }
-    .report-body{
-        padding:20px 15px;
-    }
-    .report-info{
-        grid-template-columns:1fr;
-    }
-    .report-info > div,
-    .report-info > div:nth-child(even){
-        border-right:0;
-    }
-    .report-footer-info{
-        flex-direction:column;
-    }
-    .report-actions{
-        flex-wrap:wrap;
-    }
-    .report-btn-pdf{
-        flex:1;
-    }
-    .dig-modal-box{
-        padding:22px;
-    }
-    .dig-modal-info{
-        grid-template-columns:1fr;
-    }
-    .dig-modal-info div{
-        border-right:0;
-        border-bottom:1px solid #d4dee7;
-    }
-    .dig-modal-info div:last-child{
-        border-bottom:0;
+
+    .dig-filter button {
+        width: 100%;
+        max-width: 100%;
+        height: 46px;
+        margin-top: 2px;
+        box-sizing: border-box;
+        border-radius: 8px;
+        font-size: 16px;
     }
 }
 </style>
@@ -869,7 +873,6 @@
         <div class="dig-wrap">
 
             <div class="dig-hero">
-                {{-- <div class="dig-kicker">DATABASE TEAM / LIVE</div> --}}
                 <div class="dig-title">ANALISIS KUALITAS<br>MATERIAL BLASTING.</div>
                 <a href="{{ route('diggibility.insert') }}" class="dig-new">＋ Laporan baru</a>
             </div>
@@ -944,16 +947,6 @@
                     <div class="big">{{ $totalBagus }}</div>
                     <div class="small">{{ $persenBagus }}% laporan</div>
                 </div>
-                <div class="dig-card normal">
-                    <div class="dig-label">Material Normal</div>
-                    <div class="big">{{ $totalBagus }}</div>
-                    <div class="small">{{ $persenBagus }}% laporan</div>
-                </div>
-                <div class="dig-card indikasi">
-                    <div class="dig-label">Indikasi Keras</div>
-                    <div class="big">{{ $totalIndikasi }}</div>
-                    <div class="small">{{ $persenIndikasi }}% perlu perhatian</div>
-                </div>
                 <div class="dig-card keras">
                     <div class="dig-label">Material Keras</div>
                     <div class="big">{{ $totalKeras }}</div>
@@ -968,8 +961,8 @@
                 <div class="dig-area-grid">
                     @foreach(['Sisi Highwall','Sisi Tengah','Sisi Freeface'] as $namaArea)
                         @php
-                            $item = $area->get($namaArea, ['total'=>0,'bagus'=>0,'indikasi'=>0,'keras'=>0]);
-                            $status = $item['keras'] > 0 ? 'keras' : ($item['indikasi'] > 0 ? 'indikasi' : 'bagus');
+                            $item = $area->get($namaArea, ['total'=>0,'bagus'=>0,'keras'=>0]);
+                            $status = $item['keras'] > 0 ? 'keras' : 'bagus';
                         @endphp
                         <div class="dig-area-box area-{{ $status }}">
                             <div class="dig-area-head">
@@ -978,21 +971,18 @@
                                     <span class="area-badge badge-bagus">DOMINAN BAGUS</span>
                                 @elseif($status === 'keras' && $item['total'] > 0)
                                     <span class="area-badge badge-keras">PRIORITAS EVALUASI</span>
-                                @elseif($status === 'indikasi' && $item['total'] > 0)
-                                    <span class="area-badge badge-indikasi">INDIKASI</span>
                                 @endif
                             </div>
                             <div class="dig-area-value">{{ $item['total'] }} <small>laporan</small></div>
                             <div class="dig-mini">
                                 <div class="mini-bagus"><b>{{ $item['bagus'] }}</b>Bagus</div>
-                                <div class="mini-indikasi"><b>{{ $item['indikasi'] }}</b>Indikasi</div>
                                 <div class="mini-keras"><b>{{ $item['keras'] }}</b>Keras</div>
                             </div>
                             <div class="dig-progress">
-                                <span style="width:{{ $item['total'] ? (($status === 'bagus' ? $item['bagus'] : ($status === 'indikasi' ? $item['indikasi'] : $item['keras'])) / $item['total']) * 100 : 0 }}%"></span>
+                                <span style="width:{{ $item['total'] ? (($status === 'bagus' ? $item['bagus'] : $item['keras']) / $item['total']) * 100 : 0 }}%"></span>
                             </div>
                             <div class="area-summary">
-                                {{ $item['total'] ? round(($item['bagus'] / $item['total']) * 100) : 0 }}% Material Bagus · {{ $item['indikasi'] }} temuan indikasi · {{ $item['keras'] }} temuan keras
+                                {{ $item['total'] ? round(($item['bagus'] / $item['total']) * 100) : 0 }}% Material Bagus · {{ $item['keras'] }} temuan keras
                             </div>
                         </div>
                     @endforeach
@@ -1050,11 +1040,9 @@
             <div>
                 @forelse($data->take(30) as $item)
                     @php
-                        $badge = match($item->kategori) {
-                            'MATERIAL BAGUS' => 'badge-bagus',
-                            'INDIKASI MATERIAL KERAS' => 'badge-indikasi',
-                            default => 'badge-keras'
-                        };
+                        $badge = $item->kategori === 'MATERIAL BAGUS'
+                            ? 'badge-bagus'
+                            : 'badge-keras';
                     @endphp
 
                     <div class="dig-report">
@@ -1125,7 +1113,7 @@
             <div class="report-line"></div>
 
             <div class="report-status" id="reportKategori">
-                MATERIAL NORMAL
+                MATERIAL BAGUS
             </div>
 
             <div class="report-average">
@@ -1143,7 +1131,7 @@
                 </div>
 
                 <div class="report-average-info">
-                    <span id="reportKategoriBottom">MATERIAL NORMAL</span>
+                    <span id="reportKategoriBottom">MATERIAL BAGUS</span>
                     <span>•</span>
                     <span id="reportArea">SISI HIGHWALL</span>
                 </div>
@@ -1219,6 +1207,16 @@
         </div>
 
         <div class="report-actions">
+            <button type="button" id="btnSendWA" class="btn" style="background:#25D366; color:#fff; font-weight:800;">
+                Kirim ke WhatsApp
+            </button>
+            <button id="btnDownload" class="btn btn-primary">Download Gambar</button>
+            <button
+                type="button"
+                id="btnDownloadReport"
+                class="report-btn report-btn-close">
+                Download PDF
+            </button>
             <button
                 type="button"
                 class="report-btn report-btn-close"
@@ -1226,29 +1224,21 @@
                 Tutup
             </button>
 
-            {{-- <button
-                type="button"
-                class="report-btn report-btn-print"
-                onclick="printReport()">
-                ⇩ &nbsp; Cetak
-            </button> --}}
-
-            {{-- <button
-                type="button"
-                class="report-btn report-btn-pdf"
-                onclick="sendReportPdf()">
-                ➤ &nbsp; Download PDF
-            </button> --}}
-
         </div>
 
     </div>
 </div>
+<!-- Container tersembunyi untuk merender template download.blade.php -->
+<div id="hidden-render-area" style="position: fixed; left: -9999px; top: 0; background: #ffffff; z-index: -1;"></div>
 @include('layout.footer')
 
 <script>
+    let currentReportId = null;
+
     async function showReport(id)
     {
+        currentReportId = id;
+
         try {
             const response = await fetch(
                 "{{ url('/diggibility/show') }}/" + id
@@ -1260,6 +1250,11 @@
                 throw new Error(result.message || 'Data tidak ditemukan.');
             }
             const d = result.data;
+
+            document.getElementById('btnDownloadReport').onclick = function() {
+                downloadReport(id);
+            };
+
             document.getElementById('reportId').textContent = d.uuid || d.id || '-';
             document.getElementById('reportWaktu').textContent = formatReportDate(d.tanggal, d.jam);
             document.getElementById('reportUnit').textContent = d.no_unit || '-';
@@ -1272,8 +1267,27 @@
             document.getElementById('reportPassesBucket').textContent = d.passes_bucket || '-';
             document.getElementById('reportTotalPasses').textContent = d.total_passes || 0;
             document.getElementById('reportAverage').textContent = Number(d.average_digging_time || 0).toFixed(2);
-            document.getElementById('reportKategori').textContent = d.kategori || '-';
-            document.getElementById('reportKategoriBottom').textContent = d.kategori || '-';
+
+            const reportKategori = document.getElementById('reportKategori');
+            const reportKategoriBottom = document.getElementById('reportKategoriBottom');
+            const kategori = d.kategori || '-';
+
+            reportKategori.textContent = kategori;
+            reportKategoriBottom.textContent = kategori;
+
+            // Reset warna kategori terlebih dahulu.
+            reportKategori.classList.remove('status-bagus', 'status-keras');
+            reportKategoriBottom.classList.remove('status-bagus', 'status-keras');
+
+            // Hanya ada 2 kategori: BAGUS dan KERAS.
+            if (kategori === 'MATERIAL BAGUS') {
+                reportKategori.classList.add('status-bagus');
+                reportKategoriBottom.classList.add('status-bagus');
+            } else if (kategori === 'MATERIAL KERAS') {
+                reportKategori.classList.add('status-keras');
+                reportKategoriBottom.classList.add('status-keras');
+            }
+
             document.getElementById('reportArea').textContent = d.keterangan_area || '-';
             document.getElementById('reportCreatedBy').textContent = d.nama_pic || '-';
             const passBody = document.getElementById('reportPassBody');
@@ -1308,6 +1322,137 @@
 
         }
     }
+
+    function downloadReport(id) {
+        window.location.href = "{{ url('/diggibility/download') }}/" + id;
+    }
+
+    document.getElementById('btnDownload').addEventListener('click', async function() {
+        if (!currentReportId) {
+            alert('Pilih laporan terlebih dahulu.');
+            return;
+        }
+
+        const btn = this;
+        const originalText = btn.textContent;
+        btn.textContent = 'Menyiapkan Gambar...';
+        btn.disabled = true;
+
+        try {
+            // 1. Ambil HTML template download.blade.php dari backend
+            const response = await fetch("{{ url('/diggibility/preview') }}/" + currentReportId);
+            if (!response.ok) throw new Error('Gagal mengambil template laporan.');
+
+            const htmlContent = await response.text();
+
+            // 2. Masukkan ke dalam container tersembunyi
+            const container = document.getElementById('hidden-render-area');
+            container.innerHTML = htmlContent;
+
+            // Beri jeda sejenak agar browser selesai me-render layout CSS
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            // 3. Konversi konten template ke Gambar menggunakan html2canvas
+            const canvas = await html2canvas(container, {
+                scale: 2,           // Resolusi tajam
+                useCORS: true,      // Mendukung gambar eksternal / logo jika ada
+                backgroundColor: '#ffffff'
+            });
+
+            // 4. Trigger download file PNG
+            const link = document.createElement('a');
+            link.download = `Digging Time - ${currentReportId}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+
+            // 5. Bersihkan kembali container
+            container.innerHTML = '';
+        } catch (err) {
+            console.error(err);
+            alert(err.message || 'Gagal menghasilkan gambar dari template.');
+        } finally {
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }
+    });
+
+    document.getElementById('btnSendWA').addEventListener('click', async function () {
+        if (!currentReportId) {
+            Swal.fire({ 
+                icon: 'warning', 
+                title: 'Peringatan', 
+                text: 'Pilih laporan terlebih dahulu!' 
+            });
+            return;
+        }
+        const btn = this;
+        const originalText = btn.textContent;
+        btn.textContent = 'Memproses & Mengirim...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch("{{ url('/diggibility/preview') }}/" + currentReportId);
+            if (!response.ok) throw new Error('Gagal mengambil template laporan.');
+            const htmlContent = await response.text();
+
+            const container = document.getElementById('hidden-render-area');
+            container.innerHTML = htmlContent;
+
+            await new Promise(resolve => setTimeout(resolve, 250));
+
+            const canvas = await html2canvas(container, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff'
+            });
+
+            canvas.toBlob(async function (blob) {
+                container.innerHTML = ''; // Reset container
+
+                const formData = new FormData();
+                formData.append('image', blob, `Digging_Time_${currentReportId}.png`);
+
+                const token = document.querySelector('meta[name="csrf-token"]') 
+                    ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') 
+                    : '{{ csrf_token() }}';
+
+                const sendReq = await fetch("{{ url('/diggibility/send-whatsapp') }}/" + currentReportId, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': token,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+
+                const sendRes = await sendReq.json();
+
+                btn.textContent = originalText;
+                btn.disabled = false;
+                closeReport();
+
+                if (sendReq.ok && sendRes.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Terkirim!',
+                        text: sendRes.message
+                    });
+                } else {
+                    throw new Error(sendRes.message || 'Gagal mengirim WhatsApp.');
+                }
+            }, 'image/png');
+
+        } catch (err) {
+            console.error(err);
+            btn.textContent = originalText;
+            btn.disabled = false;
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: err.message || 'Terjadi kesalahan sistem.'
+            });
+        }
+    });
 
     async function deleteReport(id)
     {

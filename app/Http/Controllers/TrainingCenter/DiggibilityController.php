@@ -12,6 +12,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Spatie\Browsershot\Browsershot;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
+use App\Http\Controllers\WhatsAppController;
 
 class DiggibilityController extends Controller
 {
@@ -45,47 +50,88 @@ class DiggibilityController extends Controller
             $query->whereDate('tanggal', '<=', $request->tanggal_sampai);
         }
 
-        $data = $query->with('passes')->orderByDesc('id')->get();
+        $data = $query
+            ->with('passes')
+            ->orderByDesc('id')
+            ->get();
 
         $totalLaporan = $data->count();
-        $totalPengawas = $data->pluck('nama_pengawas')->filter()->unique()->count();
 
-        $totalBagus = $data->where('kategori', 'MATERIAL BAGUS')->count();
-        $totalIndikasi = $data->where('kategori', 'INDIKASI MATERIAL KERAS')->count();
-        $totalKeras = $data->where('kategori', 'MATERIAL KERAS')->count();
+        $totalPengawas = $data
+            ->pluck('nama_pengawas')
+            ->filter()
+            ->unique()
+            ->count();
 
-        $totalKategori = $totalBagus + $totalIndikasi + $totalKeras;
+        $totalBagus = $data
+            ->where('kategori', 'MATERIAL BAGUS')
+            ->count();
 
-        $persenBagus = $totalKategori ? round(($totalBagus / $totalKategori) * 100) : 0;
-        $persenIndikasi = $totalKategori ? round(($totalIndikasi / $totalKategori) * 100) : 0;
-        $persenKeras = $totalKategori ? round(($totalKeras / $totalKategori) * 100) : 0;
+        $totalKeras = $data
+            ->where('kategori', 'MATERIAL KERAS')
+            ->count();
 
-        $area = $data->groupBy('keterangan_area')->map(function ($items) {
-            return [
-                'total' => $items->count(),
-                'bagus' => $items->where('kategori', 'MATERIAL BAGUS')->count(),
-                'indikasi' => $items->where('kategori', 'INDIKASI MATERIAL KERAS')->count(),
-                'keras' => $items->where('kategori', 'MATERIAL KERAS')->count(),
-            ];
-        });
+        $totalKategori = $totalBagus + $totalKeras;
 
-        $lokasi = $data->groupBy('lokasi')->map(function ($items) {
-            return [
-                'total' => $items->count(),
-                'bagus' => $items->where('kategori', 'MATERIAL BAGUS')->count(),
-                'keras' => $items->where('kategori', 'MATERIAL KERAS')->count(),
-            ];
-        });
+        $persenBagus = $totalKategori
+            ? round(($totalBagus / $totalKategori) * 100)
+            : 0;
 
-        $trend = $data->groupBy(function ($item) {
-            return \Carbon\Carbon::parse($item->tanggal)->format('Y-m-d');
-        })->map(function ($items) {
-            return [
-                'total' => $items->count(),
-                'bagus' => $items->where('kategori', 'MATERIAL BAGUS')->count(),
-                'keras' => $items->where('kategori', 'MATERIAL KERAS')->count(),
-            ];
-        })->sortKeys();
+        $persenKeras = $totalKategori
+            ? round(($totalKeras / $totalKategori) * 100)
+            : 0;
+
+        $area = $data
+            ->groupBy('keterangan_area')
+            ->map(function ($items) {
+                return [
+                    'total' => $items->count(),
+
+                    'bagus' => $items
+                        ->where('kategori', 'MATERIAL BAGUS')
+                        ->count(),
+
+                    'keras' => $items
+                        ->where('kategori', 'MATERIAL KERAS')
+                        ->count(),
+                ];
+            });
+
+        $lokasi = $data
+            ->groupBy('lokasi')
+            ->map(function ($items) {
+                return [
+                    'total' => $items->count(),
+
+                    'bagus' => $items
+                        ->where('kategori', 'MATERIAL BAGUS')
+                        ->count(),
+
+                    'keras' => $items
+                        ->where('kategori', 'MATERIAL KERAS')
+                        ->count(),
+                ];
+            });
+
+        $trend = $data
+            ->groupBy(function ($item) {
+                return \Carbon\Carbon::parse($item->tanggal)
+                    ->format('Y-m-d');
+            })
+            ->map(function ($items) {
+                return [
+                    'total' => $items->count(),
+
+                    'bagus' => $items
+                        ->where('kategori', 'MATERIAL BAGUS')
+                        ->count(),
+
+                    'keras' => $items
+                        ->where('kategori', 'MATERIAL KERAS')
+                        ->count(),
+                ];
+            })
+            ->sortKeys();
 
         $pengawas = DiggibilityTimeSession::where('statusenabled', 1)
             ->whereNotNull('nama_pengawas')
@@ -110,10 +156,8 @@ class DiggibilityController extends Controller
             'totalLaporan',
             'totalPengawas',
             'totalBagus',
-            'totalIndikasi',
             'totalKeras',
             'persenBagus',
-            'persenIndikasi',
             'persenKeras',
             'area',
             'lokasi',
@@ -165,6 +209,7 @@ class DiggibilityController extends Controller
             'operator_fit' => 'nullable|string|max:10',
             'kinerja_operator_rendah' => 'nullable|string|max:10',
             'keterangan_area' => 'nullable|string|max:500',
+            'keterangan_tambahan' => 'nullable|string|max:500',
             'passes' => 'required|array|min:1|max:20',
             'passes.*.pass_no' => 'required|integer|min:1|max:20',
             'passes.*.digging_time' => 'required|numeric|min:0',
@@ -178,10 +223,8 @@ class DiggibilityController extends Controller
             $totalDiggingTime = $passes->sum(fn($pass) => (float) $pass['digging_time']);
             $average = $totalPasses > 0 ? round($totalDiggingTime / $totalPasses, 2) : 0;
 
-            if ($average <= 12) {
+            if ($average <= 12.59) {
                 $kategori = 'MATERIAL BAGUS';
-            } elseif ($average < 15) {
-                $kategori = 'INDIKASI MATERIAL KERAS';
             } else {
                 $kategori = 'MATERIAL KERAS';
             }
@@ -207,6 +250,7 @@ class DiggibilityController extends Controller
                 'operator_fit' => $validated['operator_fit'] ?? null,
                 'kinerja_operator_rendah' => $validated['kinerja_operator_rendah'] ?? null,
                 'keterangan_area' => $validated['keterangan_area'] ?? null,
+                'keterangan_tambahan' => $validated['keterangan_tambahan'] ?? null,
                 'kategori' => $kategori,
                 'total_passes' => $totalPasses,
                 'total_digging_time' => round($totalDiggingTime, 2),
@@ -274,6 +318,112 @@ class DiggibilityController extends Controller
         return response()->json([
             'success' => true,
             'data' => $data,
+        ]);
+    }
+
+    public function download($id)
+    {
+        $data = DiggibilityTimeSession::query()
+            ->leftJoin('users', 'users.id', '=', 'tc_diggibility_timesession.pic')
+            ->where('tc_diggibility_timesession.id', $id)
+            ->where('tc_diggibility_timesession.statusenabled', 1)
+            ->select(
+                'tc_diggibility_timesession.*',
+                'users.name as nama_pic'
+            )
+            ->with('passes')
+            ->firstOrFail();
+
+        // dd($data);
+
+        //PDF
+        $pdf = PDF::loadView('diggibility.pdf', compact('data'));
+        return $pdf->download('Digging Time.pdf');
+    }
+
+    public function previewTemplate($id)
+    {
+        $data = DiggibilityTimeSession::query()
+            ->leftJoin('users', 'users.id', '=', 'tc_diggibility_timesession.pic')
+            ->where('tc_diggibility_timesession.id', $id)
+            ->where('tc_diggibility_timesession.statusenabled', 1)
+            ->select(
+                'tc_diggibility_timesession.*',
+                'users.name as nama_pic'
+            )
+            ->with('passes')
+            ->firstOrFail();
+
+        return view('diggibility.download', compact('data'));
+    }
+
+    public function sendWhatsapp(Request $request, $id)
+    {
+        $request->validate([
+            'image' => 'required|image|max:5120', // Maks 5MB
+        ]);
+
+        $data = DiggibilityTimeSession::query()
+            ->leftJoin('users', 'users.id', '=', 'tc_diggibility_timesession.pic')
+            ->where('tc_diggibility_timesession.id', $id)
+            ->where('tc_diggibility_timesession.statusenabled', 1)
+            ->select(
+                'tc_diggibility_timesession.*',
+                'users.name as nama_pic',
+                'users.no_hp' 
+            )
+            ->with('passes')
+            ->firstOrFail();
+
+        $rawNumber = trim($data->no_hp ?? '');
+        if ($rawNumber === '') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Nomor WhatsApp PIC kosong atau belum diatur pada profil user.'
+            ], 422);
+        }
+
+        $targetNumber = $data->no_hp;
+
+        if (empty($targetNumber)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Nomor WhatsApp tujuan tidak ditemukan pada data profil/laporan ini.'
+            ], 422);
+        }
+        $targetNumber = preg_replace('/[^0-9]/', '', $targetNumber);
+        if (str_starts_with($targetNumber, '0')) {
+            $targetNumber = '62' . substr($targetNumber, 1);
+        } elseif (str_starts_with($targetNumber, '8')) {
+            $targetNumber = '62' . $targetNumber;
+        }
+
+        $path = $request->file('image')->store('diggibility', 'public');
+        $imageUrl = asset('storage/' . $path);
+
+        $caption = "*MONITORING DIGGIBILITY MATERIAL BLASTING*\n\n"
+                 . "• Unit: *{$data->no_unit}*\n"
+                 . "• Lokasi: {$data->lokasi}\n"
+                 . "• Kategori: *{$data->kategori}*\n"
+                 . "• Avg Digging Time: *{$data->average_digging_time} Detik*\n"
+                 . "• Pengawas: {$data->nama_pengawas}\n\n"
+                 . "_Laporan digital diggibility terlampir pada gambar._";
+
+        $waController = new WhatsAppController();
+        $result = $waController->sendMessageImage($targetNumber, $caption, $imageUrl);
+
+        if (isset($result['status']) && $result['status'] === 'error') {
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'] ?? 'Gagal mengirim pesan WhatsApp.',
+                'details' => $result
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Laporan berhasil dikirim ke nomor ' . $targetNumber,
+            'data' => $result
         ]);
     }
 

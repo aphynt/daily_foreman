@@ -73,7 +73,7 @@
                     @endif
 
                     @if (canAccess('diggibility'))
-                    <li class="pc-item"><a href="{{ route('diggibility') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/blasting.png" alt="NT"></span><span class="pc-mtext">Diggibility</span></a></li>
+                    <li class="pc-item"><a href="{{ route('diggibility') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/blasting.png" alt="NT"></span><span class="pc-mtext">Digging Time</span></a></li>
                     @endif
 
                     {{-- PAYLOAD --}}

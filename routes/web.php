@@ -656,6 +656,10 @@ Route::group(['middleware' => ['auth']], function(){
     //Diggibility
     Route::get('/diggibility', [DiggibilityController::class, 'index'])->name('diggibility')->middleware('canAccess');
     Route::get('/diggibility/insert', [DiggibilityController::class, 'insert'])->name('diggibility.insert');
+    Route::get('/diggibility/download/{id}', [DiggibilityController::class, 'download'])->name('diggibility.download');
+    Route::get('/diggibility/preview/{id}', [DiggibilityController::class, 'previewTemplate'])->name('diggibility.preview');
+    Route::post('/diggibility/send-whatsapp/{id}', [DiggibilityController::class, 'sendWhatsapp'])->name('diggibility.sendWhatsapp');
+    Route::get('/diggibility/wa/{id}', [DiggibilityController::class, 'wa'])->name('diggibility.wa');
     Route::post('/diggibility/post', [DiggibilityController::class, 'post'])->name('diggibility.post');
     Route::get('/diggibility/show/{id}', [DiggibilityController::class, 'show'])->name('diggibility.show');
     Route::delete('/diggibility/destroy/{id}', [DiggibilityController::class, 'destroy'])->name('diggibility.destroy');

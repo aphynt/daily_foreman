@@ -112,35 +112,10 @@
         text-transform: uppercase;
     }
 
-    .control-buttons {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-        margin-bottom: 8px;
-    }
-
-    .control-btn {
-        height: 61px;
-        border: 0;
-        font-size: 17px;
-        font-weight: 800;
-        letter-spacing: .5px;
-    }
-
-    .btn-digging {
-        background: #205798;
-        color: white;
-    }
-
-    .btn-stop {
-        background: #edf2f5;
-        color: #7c8ea0;
-    }
-
-    .btn-stop.active {
-        background: #efb0aa;
-        color: #a5332a;
-    }
+    .control-buttons { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 8px; }
+    .control-btn { width: 100%; height: 61px; border: 0; font-size: 17px; font-weight: 800; letter-spacing: .5px; cursor: pointer; transition: .15s ease; }
+    .btn-digging { background: #205798; color: white; }
+    .btn-digging.is-running { background: #efb0aa; color: #a5332a; }
 
     .btn-cancel-last {
         width: 100%;
@@ -159,16 +134,9 @@
         margin-bottom: 12px;
     }
 
-    .pass-box {
-        height: 55px;
-        background: #e9eef2;
-        color: #7890a5;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 9px;
-        font-weight: 800;
-    }
+    .pass-box { height: 55px; background: #e9eef2; color: #7890a5; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 9px; font-weight: 800; text-align: center; line-height: 1.1; }
+    .pass-box .pass-no { font-size: 14px; }
+    .pass-box .pass-time { font-size: 10px; font-weight: 700; }
 
     .pass-box.done {
         background: #ef792d;
@@ -554,7 +522,7 @@
                     <div class="left-body">
                         <div class="stats">
                             <div class="stat">
-                                <div class="stat-label">Total Passes</div>
+                                <div class="stat-label">Total Bucket</div>
                                 <div class="stat-value">
                                     <span id="totalPasses">0</span>
                                     <small style="font-size:10px">/ maks. 30</small>
@@ -578,10 +546,6 @@
                         <div class="control-buttons">
                             <button type="button" id="btnDigging" class="control-btn btn-digging">
                                 ◯ &nbsp; DIGGING
-                            </button>
-
-                            <button type="button" id="btnStop" class="control-btn btn-stop" disabled>
-                                ■ &nbsp; STOP
                             </button>
                         </div>
 
@@ -616,6 +580,7 @@
                         <div class="mt-2" style="font-size:10px;color:#7d91a5">Standard Digging Time:
                             <b>maks. 11 detik</b>
                         </div>
+                        <div class="mt-1" style="font-size:10px;color:#24804e">Draft tersimpan otomatis di browser.</div>
                     </div>
                 </div>
 
@@ -735,13 +700,13 @@
                             <div class="form-group">
                                 <div class="option-title">Jumlah Passes Bucket</div>
                                 <div class="choice-group">
-                                    <button type="button" class="choice-btn" data-name="passes_bucket" data-value="4 Passes">4 Passes</button>
-                                    <button type="button" class="choice-btn" data-name="passes_bucket" data-value="5 Passes">5 Passes</button>
-                                    <button type="button" class="choice-btn" data-name="passes_bucket" data-value="> 5 Passes">> 5 Passes</button>
+                                    <button type="button" class="choice-btn" data-name="passes_bucket" data-value="4 Passes">4 Bucket</button>
+                                    <button type="button" class="choice-btn" data-name="passes_bucket" data-value="5 Passes">5 Bucket</button>
+                                    <button type="button" class="choice-btn" data-name="passes_bucket" data-value="> 5 Passes">> 5 Bucket</button>
                                 </div>
                                 <input type="hidden" id="passes_bucket">
                             </div>
-                            <div class="form-row">
+                            {{-- <div class="form-row">
                                 <div class="form-group">
                                     <div class="option-title">Operator dalam kondisi fit?</div>
                                     <div class="choice-group">
@@ -758,7 +723,7 @@
                                     </div>
                                     <input type="hidden" id="kinerja_operator_rendah" value="Tidak">
                                 </div>
-                            </div>
+                            </div> --}}
                             <div class="form-group">
                                 <div class="option-title">Keterangan Area
                                     <span class="required">*</span>
@@ -769,6 +734,10 @@
                                     <button type="button" class="choice-btn" data-name="keterangan_area" data-value="Sisi Freeface">Sisi Freeface</button>
                                 </div>
                                 <input type="hidden" id="keterangan_area">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Keterangan Tambahan (jika ada)</label>
+                                <input type="text" class="form-control" id="keterangan_tambahan">
                             </div>
                             <button type="button" class="save-btn" id="btnSave">➤ &nbsp; SIMPAN DATA AKHIR</button>
                         </form>
@@ -862,6 +831,8 @@
         document.getElementById('nama_operator').value = oprName;
     });
 
+    const DRAFT_KEY = 'diggibility_draft_v1';
+
     let currentPass = 0;
     let passes = [];
     let startTime = null;
@@ -869,172 +840,211 @@
 
     const timerDisplay = document.getElementById('timerDisplay');
     const btnDigging = document.getElementById('btnDigging');
-    const btnStop = document.getElementById('btnStop');
-    btnDigging.addEventListener('click', function () {
-        if (passes.length >= 30) {
-            alert('Maksimal 30 pass.');
-            return;
-        }
 
+    function getDraftFormData() {
+        return {
+            no_unit: document.getElementById('no_unit').value,
+            tinggi_jenjang: document.getElementById('tinggi_jenjang').value,
+            lokasi: document.getElementById('lokasi').value,
+            titik_koordinat: document.getElementById('titik_koordinat').value,
+            jenis_material: document.getElementById('jenis_material').value,
+            nik_operator: document.getElementById('nik_operator').value,
+            nama_operator: document.getElementById('nama_operator').value,
+            nama_pengawas: document.getElementById('nama_pengawas').value,
+            passes_bucket: document.getElementById('passes_bucket').value,
+            operator_fit: document.getElementById('operator_fit')?.value || 'Ya',
+            kinerja_operator_rendah: document.getElementById('kinerja_operator_rendah')?.value || 'Tidak',
+            keterangan_area: document.getElementById('keterangan_area').value,
+            keterangan_tambahan: document.getElementById('keterangan_tambahan').value
+        };
+    }
+
+    function saveDraft() {
+        try {
+            localStorage.setItem(DRAFT_KEY, JSON.stringify({
+                version: 1, saved_at: Date.now(), currentPass, passes, startTime,
+                form: getDraftFormData()
+            }));
+        } catch (error) { console.warn('Draft tidak dapat disimpan:', error); }
+    }
+
+    function clearDraft() {
+        try { localStorage.removeItem(DRAFT_KEY); }
+        catch (error) { console.warn('Draft tidak dapat dihapus:', error); }
+    }
+
+    function updateControlButton() {
+        const running = !!startTime;
+        btnDigging.classList.toggle('is-running', running);
+        btnDigging.innerHTML = running ? '■ &nbsp; STOP' : '▶ &nbsp; DIGGING';
+    }
+
+    function startDigging() {
+        if (passes.length >= 30) { alert('Maksimal 30 pass.'); return; }
+        if (startTime) return;
         startTime = Date.now();
-        timerInterval = setInterval(updateTimer, 10);
-        btnDigging.disabled = true;
-        btnStop.disabled = false;
-        btnStop.classList.add('active');
-    });
+        updateControlButton();
+        updateTimer();
+        timerInterval = setInterval(updateTimer, 100);
+        saveDraft();
+        renderPasses();
+    }
 
-
-    btnStop.addEventListener('click', function () {
-        if (!startTime) {
-            return;
-        }
+    function stopDigging() {
+        if (!startTime) return;
         const duration = (Date.now() - startTime) / 1000;
         clearInterval(timerInterval);
         timerInterval = null;
         currentPass++;
-        passes.push({
-            pass_no: currentPass,
-            digging_time: parseFloat(duration.toFixed(2))
-        });
-
+        passes.push({ pass_no: currentPass, digging_time: parseFloat(duration.toFixed(2)) });
         startTime = null;
         timerDisplay.textContent = '00:00.00';
-        btnDigging.disabled = false;
-        btnStop.disabled = true;
-        btnStop.classList.remove('active');
+        updateControlButton();
         renderPasses();
+        saveDraft();
+    }
+
+    // Satu tombol: DIGGING -> STOP -> DIGGING -> STOP
+    btnDigging.addEventListener('click', function () {
+        startTime ? stopDigging() : startDigging();
     });
 
-    function updateTimer()
-    {
+    function updateTimer() {
         if (!startTime) return;
-        const elapsed = Date.now() - startTime;
+        const elapsed = Math.max(0, Date.now() - startTime);
         const totalSeconds = elapsed / 1000;
         const minutes = Math.floor(totalSeconds / 60);
         const seconds = Math.floor(totalSeconds % 60);
         const milliseconds = Math.floor((elapsed % 1000) / 10);
-        timerDisplay.textContent =
-            `${String(minutes).padStart(2,'0')}:` +
-            `${String(seconds).padStart(2,'0')}.` +
-            `${String(milliseconds).padStart(2,'0')}`;
+        timerDisplay.textContent = `${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}.${String(milliseconds).padStart(2,'0')}`;
     }
 
-    function renderPasses()
-    {
+    function renderPasses() {
         const tbody = document.getElementById('passTableBody');
         tbody.innerHTML = '';
+        if (!passes.length) {
+            tbody.innerHTML = `<tr><td colspan="2" class="text-center" style="color:#94a3b8">Belum ada pengukuran</td></tr>`;
+        }
         passes.forEach(pass => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>
-                    ${String(pass.pass_no).padStart(2,'0')}
-                </td>
-                <td>
-                    ${pass.digging_time.toFixed(2)}
-                    <small style="color:#8294a5">
-                        detik
-                    </small>
-                </td>
-            `;
+            tr.innerHTML = `<td>${String(pass.pass_no).padStart(2,'0')}</td><td>${Number(pass.digging_time).toFixed(2)} <small style="color:#8294a5">detik</small></td>`;
             tbody.appendChild(tr);
         });
-
         document.getElementById('totalPasses').textContent = passes.length;
         calculateAverage();
+        document.querySelectorAll('.pass-box').forEach(box => {
+            const no = parseInt(box.dataset.pass);
+            const pass = passes.find(p => p.pass_no === no);
 
-        document.querySelectorAll('.pass-box')
-            .forEach(box => {
-                const no = parseInt(box.dataset.pass);
-                box.classList.remove(
-                    'done',
-                    'current'
-                );
+            box.classList.remove('done', 'current');
 
-                if (
-                    passes.some(
-                        p => p.pass_no === no
-                    )
-                ) {
-                    box.classList.add('done');
-                }
+            if (pass) {
+                box.style.background = '#198754';
+                box.style.color = '#fff';
 
-            });
+                box.innerHTML = `
+                    <span class="pass-no">${String(no)}</span>
+                    <span class="pass-time">
+                        ${Number(pass.digging_time).toFixed(2)} dtk
+                    </span>
+                `;
+            } else {
+                box.style.background = '';
+                box.style.color = '';
+
+                box.innerHTML = `
+                    <span class="pass-no">${no}</span>
+                `;
+            }
+        });
+        if (startTime && passes.length < 30) {
+            const box = document.querySelector(`.pass-box[data-pass="${passes.length + 1}"]`);
+            box?.classList.add('current');
+            box?.insertAdjacentHTML('beforeend','<span class="pass-time">RUNNING</span>');
+        }
     }
 
-    function calculateAverage()
-    {
+    function calculateAverage() {
         if (!passes.length) {
             document.getElementById('averageTime').textContent = '0.00';
             document.getElementById('categoryDisplay').textContent = 'BELUM ADA DATA';
             return;
         }
-
-
-        const total =
-            passes.reduce(
-                (sum, item) =>
-                    sum + item.digging_time,
-                0
-            );
-
+        const total = passes.reduce((sum,item) => sum + Number(item.digging_time),0);
         const average = total / passes.length;
         document.getElementById('averageTime').textContent = average.toFixed(2);
-
         let category;
-        if (average <= 12) {
-            category = 'MATERIAL BAGUS';
-        } else if (average < 15) {
-            category = 'INDIKASI MATERIAL KERAS';
-        } else {
-            category = 'MATERIAL KERAS';
-        }
-
+        if (average <= 12.59) category = 'MATERIAL BAGUS';
+        else category = 'MATERIAL KERAS';
         document.getElementById('categoryDisplay').textContent = category;
     }
 
-    document.getElementById('btnCancelLast')
-        .addEventListener('click', function () {
-            if (!passes.length) {
-                alert('Belum ada pengukuran.');
-                return;
-            }
+    document.getElementById('btnCancelLast').addEventListener('click', function () {
+        if (!passes.length) {
+            showValidationToastAll(['Belum ada pengukuran']);
+            return;
+        }
+        passes.pop();
+        currentPass = passes.length;
+        renderPasses();
+        saveDraft();
+    });
 
-
-            passes.pop();
-
-            currentPass = passes.length;
-            renderPasses();
+    function restoreChoiceButtons() {
+        document.querySelectorAll('.choice-btn').forEach(btn => {
+            const hidden = document.getElementById(btn.dataset.name);
+            btn.classList.toggle('active', hidden && hidden.value === btn.dataset.value);
         });
+    }
 
-    document.querySelectorAll('.choice-btn')
-        .forEach(button => {
-            button.addEventListener('click', function () {
-                const name = this.dataset.name;
-                const value = this.dataset.value;
-                document.getElementById(name).value = value;
-                document
-                    .querySelectorAll(
-                        `.choice-btn[data-name="${name}"]`
-                    )
-                    .forEach(btn => {
-                        btn.classList.remove('active');
-                    });
-                this.classList.add('active');
-            });
-
+    function restoreDraft() {
+        let draft = null;
+        try {
+            const raw = localStorage.getItem(DRAFT_KEY);
+            if (raw) draft = JSON.parse(raw);
+        } catch (error) { console.warn('Draft tidak dapat dibaca:', error); }
+        if (!draft) { updateControlButton(); renderPasses(); return; }
+        const form = draft.form || {};
+        Object.keys(form).forEach(id => {
+            const element = document.getElementById(id);
+            if (element && form[id] !== undefined && form[id] !== null) element.value = form[id];
         });
+        passes = Array.isArray(draft.passes) ? draft.passes.map(p => ({pass_no:Number(p.pass_no),digging_time:Number(p.digging_time)})) : [];
+        currentPass = Number(draft.currentPass) || passes.length;
+        startTime = draft.startTime ? Number(draft.startTime) : null;
+        restoreChoiceButtons();
+        renderPasses();
+        updateControlButton();
+        if (startTime) { updateTimer(); timerInterval = setInterval(updateTimer,100); }
+    }
+
+    document.querySelectorAll('#diggingForm input, #diggingForm select').forEach(element => {
+        element.addEventListener('input',saveDraft);
+        element.addEventListener('change',saveDraft);
+    });
+
+    document.querySelectorAll('.choice-btn').forEach(button => {
+        button.addEventListener('click',function () {
+            const hidden = document.getElementById(this.dataset.name);
+            if (hidden) hidden.value = this.dataset.value;
+            document.querySelectorAll(`.choice-btn[data-name="${this.dataset.name}"]`).forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            saveDraft();
+        });
+    });
+
+    document.addEventListener('visibilitychange',function () {
+        saveDraft();
+        if (document.visibilityState === 'visible' && startTime) updateTimer();
+    });
+    window.addEventListener('pagehide',saveDraft);
+    window.addEventListener('beforeunload',saveDraft);
+    restoreDraft();
 
     document.getElementById('btnSave').addEventListener('click', async function () {
             if (passes.length === 0) {
-                if (
-                    !confirm(
-                        'Belum ada data digging time.\n\n' +
-                        'Anda belum memasukkan pass.\n\n' +
-                        'Tetap simpan?'
-                    )
-                ) {
-                    return;
-                }
+                showValidationToastAll(['Data digging time belum ada']);
+                return;
             }
 
             const noUnit = document.getElementById('no_unit').value.trim();
@@ -1111,6 +1121,8 @@
             const namaPengawas =
                 pengawasOption?.dataset.nama || '';
 
+            saveDraft();
+
             const data = {
                 tanggal: new Date().toISOString().substring(0, 10),
                 jam: new Date().toTimeString().substring(0, 5),
@@ -1124,9 +1136,10 @@
                 nik_pengawas: nikPengawas,
                 nama_pengawas: namaPengawas,
                 passes_bucket: document.getElementById('passes_bucket').value,
-                operator_fit: document.getElementById('operator_fit').value,
-                kinerja_operator_rendah: document.getElementById('kinerja_operator_rendah').value,
+                // operator_fit: document.getElementById('operator_fit').value,
+                // kinerja_operator_rendah: document.getElementById('kinerja_operator_rendah').value,
                 keterangan_area: document.getElementById('keterangan_area').value,
+                keterangan_tambahan: document.getElementById('keterangan_tambahan').value,
                 passes: passes
             };
 
@@ -1159,15 +1172,18 @@
                         'Gagal menyimpan data.'
                     );
                 }
+                clearDraft();
+
                 showSuccessModal(
                     result.data.kategori,
                     result.data.average
                 );
 
-                // resetForm();
+
                 setTimeout(() => {
                     window.location.href = "{{ route('diggibility') }}";
                 }, 3000);
+
             } catch (error) {
                 console.error(error);
                 showErrorModal(
@@ -1178,6 +1194,7 @@
             } finally {
                 button.disabled = false;
                 button.innerHTML = '➤ &nbsp; SIMPAN DATA AKHIR';
+                resetForm();
             }
         });
 
@@ -1268,6 +1285,23 @@
 
         message.textContent =
             'Mohon lengkapi: ' + fields.join(', ') + '.';
+
+        toast.classList.add('show');
+
+        clearTimeout(window.validationToastTimer);
+
+        window.validationToastTimer = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 4000);
+    }
+
+    function showValidationToastAll(fields)
+    {
+        const toast = document.getElementById('validationToast');
+        const message = document.getElementById('validationToastMessage');
+
+        message.textContent =
+            fields.join(', ') + '.';
 
         toast.classList.add('show');
 

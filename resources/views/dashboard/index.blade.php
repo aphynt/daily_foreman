@@ -310,6 +310,19 @@
                 </div>
                 @endif
 
+                @if (canAccess('diggibility'))
+                <div class="col-4 col-md-4 col-xxl-4">
+                    <a href="{{ route('diggibility') }}" class="text-decoration-none">
+                        <div class="card mb-3">
+                            <div class="card-body text-center" style="padding-left:2px; padding-right:2px;">
+                                <img class="img-fluid card-img-top" src="{{ asset('dashboard/assets') }}/images/widget/blasting.png" style="max-width: 20px">
+                                <h6 class="card-title" style="font-size:11px">Digging Time</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endif
+
                 @if (canAccess('production.index'))
                 <div class="col-4 col-md-4 col-xxl-4">
                     <a href="{{ route('production.index') }}" class="text-decoration-none">
