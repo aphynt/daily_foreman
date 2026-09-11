@@ -75,8 +75,254 @@
         height: 180px;
         object-fit: cover;
     }
-</style>
+    .hazard-checklist-wrapper {
+        animation: hazardFadeIn .25s ease;
+    }
 
+    @keyframes hazardFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-5px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .hazard-checklist-card {
+        border: 1px solid #e4e6ef;
+        border-radius: 14px;
+        overflow: hidden;
+        background: #ffffff;
+
+        box-shadow:
+            0 3px 8px rgba(0, 0, 0, 0.03),
+            0 8px 24px rgba(0, 0, 0, 0.04);
+    }
+
+    .hazard-checklist-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        background: linear-gradient(
+            135deg,
+            rgba(37, 99, 235, 0.08),
+            rgba(79, 70, 229, 0.04)
+        );
+        border-bottom: 1px solid #e4e6ef;
+    }
+
+    .hazard-checklist-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #2563eb;
+        color: #ffffff;
+        flex-shrink: 0;
+    }
+
+    .hazard-checklist-icon i {
+        font-size: 21px;
+    }
+
+    .hazard-checklist-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #212529;
+    }
+
+    .hazard-checklist-subtitle {
+        margin-top: 2px;
+        font-size: 12px;
+        color: #6c757d;
+    }
+
+    .hazard-checklist-body {
+        padding: 14px;
+    }
+
+    .hazard-check-item {
+        position: relative;
+        width: 100%;
+        min-height: 52px;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 10px 12px;
+        margin: 0;
+        border: 1px solid #e4e6ef;
+        border-radius: 10px;
+        background: #ffffff;
+        cursor: pointer;
+        transition: all .18s ease;
+        user-select: none;
+    }
+
+    .hazard-check-item:hover {
+        border-color: #93b4f5;
+        background: #f7faff;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 9px rgba(37, 99, 235, 0.08);
+    }
+
+    .hazard-checkbox {
+        position: relative;
+        flex: 0 0 auto;
+    }
+
+    .hazard-checkbox input {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .custom-checkmark {
+        width: 21px;
+        height: 21px;
+        border: 2px solid #c5cad3;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+        transition: all .18s ease;
+    }
+
+    .custom-checkmark i {
+        font-size: 14px;
+        color: #ffffff;
+        opacity: 0;
+        transform: scale(.5);
+        transition: all .15s ease;
+    }
+
+    .hazard-checkbox input:checked + .custom-checkmark {
+        border-color: #2563eb;
+        background: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+    }
+
+    .hazard-checkbox input:checked + .custom-checkmark i {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .hazard-check-item:has(
+        .hazard-checkbox input:checked
+    ) {
+        border-color: #87adf8;
+        background: #f3f7ff;
+    }
+
+    .hazard-check-text {
+        flex: 1;
+        color: #343a40;
+        font-size: 13px;
+        line-height: 1.4;
+        font-weight: 500;
+    }
+
+    [data-pc-theme="dark"] .hazard-checklist-card,
+    [data-bs-theme="dark"] .hazard-checklist-card {
+        background: #212936;
+
+        border-color: #3a4553;
+    }
+
+    [data-pc-theme="dark"] .hazard-checklist-header,
+    [data-bs-theme="dark"] .hazard-checklist-header {
+        background: #263242;
+
+        border-color: #3a4553;
+    }
+
+    [data-pc-theme="dark"] .hazard-checklist-title,
+    [data-bs-theme="dark"] .hazard-checklist-title {
+        color: #f8f9fa;
+    }
+
+    [data-pc-theme="dark"] .hazard-checklist-subtitle,
+    [data-bs-theme="dark"] .hazard-checklist-subtitle {
+        color: #adb5bd;
+    }
+
+    [data-pc-theme="dark"] .hazard-check-item,
+    [data-bs-theme="dark"] .hazard-check-item {
+        background: #212936;
+
+        border-color: #3a4553;
+    }
+
+    [data-pc-theme="dark"] .hazard-check-item:hover,
+    [data-bs-theme="dark"] .hazard-check-item:hover {
+        background: #273243;
+
+        border-color: #557092;
+    }
+
+    [data-pc-theme="dark"] .hazard-check-text,
+    [data-bs-theme="dark"] .hazard-check-text {
+        color: #e9ecef;
+    }
+
+    [data-pc-theme="dark"] .custom-checkmark,
+    [data-bs-theme="dark"] .custom-checkmark {
+        background: #18212d;
+
+        border-color: #66717f;
+    }
+
+    [data-pc-theme="dark"]
+    .hazard-checkbox input:checked + .custom-checkmark,
+    [data-bs-theme="dark"]
+    .hazard-checkbox input:checked + .custom-checkmark {
+        background: #2684ff;
+
+        border-color: #2684ff;
+    }
+
+    @media (max-width: 768px) {
+        .hazard-checklist-body {
+            padding: 10px;
+        }
+
+        .hazard-check-item {
+            min-height: 48px;
+            padding: 9px 10px;
+        }
+
+        .hazard-check-text {
+            font-size: 12px;
+        }
+
+    }
+</style>
+@php
+    $detailTemuan = old('detail_temuan', $data->detail_temuan ?? []);
+
+    // Jika data dari database masih berupa JSON string
+    if (is_string($detailTemuan)) {
+
+        $decoded = json_decode($detailTemuan, true);
+
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            $detailTemuan = $decoded;
+        } else {
+            $detailTemuan = [];
+        }
+    }
+
+    if (!is_array($detailTemuan)) {
+        $detailTemuan = [];
+    }
+@endphp
 <section class="pc-container">
     <div class="pc-content">
         <div class="row">
@@ -222,10 +468,11 @@
 
                                         <div class="col-md-3 mb-3">
                                             <label class="form-label">Kategori Bahaya:</label>
-                                            <select name="kategori_bahaya" class="form-select">
+
+                                            <select name="kategori_bahaya" id="kategori_bahaya" class="form-select">
                                                 <option value="">-- Pilih Kategori Bahaya --</option>
-                                                <option value="Tindakan Tidak Aman" {{ old('kategori_bahaya', $data->kategori_bahaya) == 'Tindakan Tidak Aman' ? 'selected' : '' }}>Tindakan Tidak Aman</option>
-                                                <option value="Kondisi Tidak Aman" {{ old('kategori_bahaya', $data->kategori_bahaya) == 'Kondisi Tidak Aman' ? 'selected' : '' }}>Kondisi Tidak Aman</option>
+                                                <option value="Tindakan Tidak Aman" {{ old('kategori_bahaya', $data->kategori_bahaya) == 'Tindakan Tidak Aman' ? 'selected' : '' }} >Tindakan Tidak Aman</option>
+                                                <option value="Kondisi Tidak Aman" {{ old('kategori_bahaya', $data->kategori_bahaya) == 'Kondisi Tidak Aman' ? 'selected' : '' }} >Kondisi Tidak Aman</option>
                                             </select>
                                         </div>
 
@@ -335,6 +582,157 @@
                                 <input type="text" name="catatan_verified_scc" class="form-control" value="{{ old('catatan_verified_scc', $data->catatan_verified_scc) }}">
                                 {{-- <textarea name="catatan_verified_scc" class="form-control">{{ old('catatan_verified_scc', $data->catatan_verified_scc) }}</textarea> --}}
                             </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div
+                                            id="checklistKondisiTidakAman"
+                                            class="hazard-checklist-wrapper mb-4 {{ old('kategori_bahaya', $data->kategori_bahaya) === 'Kondisi Tidak Aman' ? '' : 'd-none' }}"
+                                        >
+                                            <div class="hazard-checklist-card">
+
+                                                <div class="hazard-checklist-header">
+                                                    <div class="hazard-checklist-icon">
+                                                        <i class="ti ti-alert-triangle"></i>
+                                                    </div>
+
+                                                    <div>
+                                                        <div class="hazard-checklist-title">
+                                                            Kondisi Tidak Aman
+                                                        </div>
+
+                                                        <div class="hazard-checklist-subtitle">
+                                                            Pilih trend temuan yang sesuai
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="hazard-checklist-body">
+
+                                                    @php
+                                                        $kondisiTidakAman = [
+                                                            'Sarana Pelindung/Pengaman tidak memadai',
+                                                            'APD tidak memadai, tidak layak/rusak',
+                                                            'Alat, peralatan dan material yang rusak',
+                                                            'Area kerja sempit dan Ruang Gerak Terbatas',
+                                                            'Bahaya kebakaran dan ledakan',
+                                                            'Pemeliharaan kebersihan/housekeeping yang buruk',
+                                                            'Kondisi lingkungan berbahaya (nature factor) : (Gas, debu, asap, gas beracun, kabut, angin ribut, Gempa, lapisan labil, retakan)',
+                                                            'Paparan kebisingan',
+                                                            'Paparan radiasi',
+                                                            'Paparan terhadap suhu tinggi atau rendah',
+                                                            'Pencahayaan yang kurang atau berlebihan/silau',
+                                                            'Ventilasi yang tidak memadai',
+                                                            'Sistem dan sarana peringatan yang tidak memadai',
+                                                            'Kondisi area kerja yang berbahaya (job factor) : (Jalan licin, Jalan bergelombang, blind spot, batuan gantung, superelevasi negatif)',
+                                                        ];
+                                                    @endphp
+
+                                                    <div class="row g-2">
+
+                                                        @foreach($kondisiTidakAman as $index => $item)
+
+                                                            <div class="col-md-6 col-12">
+
+                                                                <label
+                                                                    class="hazard-check-item"
+                                                                    for="kta_{{ $index }}"
+                                                                >
+                                                                    <div class="hazard-checkbox">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            name="detail_temuan[]"
+                                                                            id="kta_{{ $index }}"
+                                                                            value="{{ $item }}"
+                                                                            class="hazard-detail-checkbox kta-checkbox"
+                                                                            {{ in_array($item, $detailTemuan, true) ? 'checked' : '' }}
+                                                                        >
+
+                                                                        <span class="custom-checkmark">
+                                                                            <i class="ti ti-check"></i>
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="hazard-check-text">
+                                                                        {{ $item }}
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            id="checklistTindakanTidakAman"
+                                            class="hazard-checklist-wrapper mb-4 {{ old('kategori_bahaya', $data->kategori_bahaya) === 'Tindakan Tidak Aman' ? '' : 'd-none' }}"
+                                        >
+                                            <div class="hazard-checklist-card">
+
+                                                <div class="hazard-checklist-header">
+                                                    <div class="hazard-checklist-icon">
+                                                        <i class="ti ti-user-exclamation"></i>
+                                                    </div>
+
+                                                    <div>
+                                                        <div class="hazard-checklist-title">
+                                                            Tindakan Tidak Aman
+                                                        </div>
+
+                                                        <div class="hazard-checklist-subtitle">
+                                                            Pilih trend temuan yang sesuai
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="hazard-checklist-body">
+                                                    @php
+                                                        $tindakanTidakAman = [
+                                                            'Mengoperasikan unit tanpa wewenang',
+                                                            'Gagal Memberi peringatan',
+                                                            'Gagal mengamankan, memperkokoh',
+                                                            'Mengoperasikan unit/peralatan di luar prosedur yang ditentukan',
+                                                            'Membuat peralatan safety tidak berfungsi',
+                                                            'Menggunakan peralatan yang rusak',
+                                                            'Tidak memakai APD secara benar',
+                                                            'Pemuatan / pembebanan material tidak sesuai prosedur',
+                                                            'Penempatan material/peralatan/unit tidak sesuai prosedur',
+                                                            'Mengangkat dengan cara yang salah',
+                                                            'Berada pada posisi/daerah yang tidak aman',
+                                                            'Memperbaiki unit/alat yang sedang beroperasi atau berenergi',
+                                                            'Berada di bawah pengaruh obat-obatan atau alcohol',
+                                                            'Bercanda berlebihan atau tidak serius melakukan pekerjaan',
+                                                            'Menggunakan peralatan yang tidak sesuai',
+                                                            'Mengabaikan pengamanan (tidak menerapkan LOTO/Barikade/Safety Cone)',
+                                                        ];
+                                                    @endphp
+                                                    <div class="row g-2">
+                                                        @foreach($tindakanTidakAman as $index => $item)
+                                                            <div class="col-md-6 col-12">
+                                                                <label class="hazard-check-item" for="tta_{{ $index }}" >
+                                                                    <div class="hazard-checkbox">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            name="detail_temuan[]"
+                                                                            id="tta_{{ $index }}"
+                                                                            value="{{ $item }}"
+                                                                            class="hazard-detail-checkbox tta-checkbox"
+                                                                            {{ in_array($item, $detailTemuan, true) ? 'checked' : '' }}
+                                                                        >
+                                                                        <span class="custom-checkmark">
+                                                                            <i class="ti ti-check"></i>
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="hazard-check-text">
+                                                                        {{ $item }}
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                             @if ($data->status == 0)
                                 <div class="d-flex gap-2">
@@ -567,8 +965,57 @@
         if (form && submitBtn) {
             form.addEventListener('submit', function () {
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Updating...';
+                submitBtn.innerHTML =
+                    '<i class="fas fa-spinner fa-spin me-1"></i> Updating...';
             });
+
         }
+
+        const kategoriBahaya = document.getElementById('kategori_bahaya');
+        const kondisiTidakAman = document.getElementById('checklistKondisiTidakAman');
+        const tindakanTidakAman = document.getElementById('checklistTindakanTidakAman');
+
+        function toggleHazardChecklist() {
+            if (!kategoriBahaya) {
+                return;
+            }
+            const kategori = kategoriBahaya.value;
+
+            kondisiTidakAman.classList.add('d-none');
+            tindakanTidakAman.classList.add('d-none');
+            document.querySelectorAll('.kta-checkbox').forEach(function (checkbox) {
+                checkbox.disabled = true;
+            });
+
+            document.querySelectorAll('.tta-checkbox').forEach(function (checkbox) {
+                checkbox.disabled = true;
+            });
+
+            if (kategori === 'Kondisi Tidak Aman') {
+                kondisiTidakAman.classList.remove('d-none');
+                document.querySelectorAll('.kta-checkbox').forEach(function (checkbox) {
+                    checkbox.disabled = false;
+                });
+
+            }
+
+            if (kategori === 'Tindakan Tidak Aman') {
+                tindakanTidakAman.classList.remove('d-none');
+                document.querySelectorAll('.tta-checkbox').forEach(function (checkbox) {
+                    checkbox.disabled = false;
+                });
+            }
+        }
+
+        if (kategoriBahaya) {
+
+            kategoriBahaya.addEventListener(
+                'change',
+                toggleHazardChecklist
+            );
+            toggleHazardChecklist();
+
+        }
+
     });
 </script>

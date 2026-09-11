@@ -14,6 +14,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ObservasiBankController extends Controller
 {
@@ -135,6 +137,21 @@ class ObservasiBankController extends Controller
                 }
             }
 
+            $dokumentasi = [];
+            for ($i = 1; $i <= 3; $i++) {
+                $field = "dokumentasi_foto_{$i}";
+                $dokumentasi[$field] = null;
+
+                if ($request->hasFile($field)) {
+                    $file = $request->file($field);
+                    $fileName = time() . '_' . $i . '_' . $file->getClientOriginalName();
+                    $path = "observasi_bank/{$field}";
+
+                    Storage::disk('production_public')->putFileAs($path, $file, $fileName);
+                    $dokumentasi[$field] = rtrim(config('app.url'), '/') . "/storage/{$path}/{$fileName}";
+                }
+            }
+
             $saveFile = function ($fieldName, $relativeFolder) use ($request) {
 
                 if (!$request->hasFile($fieldName)) {
@@ -154,10 +171,6 @@ class ObservasiBankController extends Controller
                 return rtrim(env('APP_URL'), '/')
                     . '/storage/' . trim($relativeFolder, '/') . '/' . $fileName;
             };
-
-            $dokumentasiFoto1 = $saveFile('dokumentasi_foto_1', 'observasi_bank/dokumentasi');
-            $dokumentasiFoto2 = $saveFile('dokumentasi_foto_2', 'observasi_bank/dokumentasi');
-            $dokumentasiFoto3 = $saveFile('dokumentasi_foto_3', 'observasi_bank/dokumentasi');
 
             $dataToInsert = [
                 'uuid' => (string) Uuid::uuid4(),
@@ -282,9 +295,9 @@ class ObservasiBankController extends Controller
                 'pengawas1' => $pengawas1,
                 'nama_pengawas1' => $namaPengawas1,
 
-                'dokumentasi_foto_1' => $dokumentasiFoto1,
-                'dokumentasi_foto_2' => $dokumentasiFoto2,
-                'dokumentasi_foto_3' => $dokumentasiFoto3,
+                'dokumentasi_foto_1' => $dokumentasi['dokumentasi_foto_1'],
+                'dokumentasi_foto_2' => $dokumentasi['dokumentasi_foto_2'],
+                'dokumentasi_foto_3' => $dokumentasi['dokumentasi_foto_3'],
 
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
@@ -329,6 +342,58 @@ class ObservasiBankController extends Controller
         }
 
         return view('observasi-bank.preview', compact('data'));
+    }
+
+    public function cetak($uuid)
+    {
+        $data['report'] = DB::table('se_observasi_bank as ob')
+            ->leftJoin('ref_departemen as dep', 'ob.departemen_id', '=', 'dep.id')
+            ->leftJoin('users as us1', 'ob.petugas1', '=', 'us1.nik')
+            ->leftJoin('users as us2', 'ob.petugas2', '=', 'us2.nik')
+            ->leftJoin('users as us3', 'ob.petugas3', '=', 'us3.nik')
+            ->leftJoin('users as us4', 'ob.petugas4', '=', 'us4.nik')
+            ->leftJoin('users as us5', 'ob.petugas5', '=', 'us5.nik')
+            ->leftJoin('users as us6', 'ob.pengawas1', '=', 'us6.nik')
+            ->select(
+                'ob.*',
+                'dep.keterangan as departemen',
+                'us1.name as nama_petugas1',
+                'us2.name as nama_petugas2',
+                'us3.name as nama_petugas3',
+                'us4.name as nama_petugas4',
+                'us5.name as nama_petugas5',
+                'us6.position as jabatan_pengawas1',
+                'ob.pengawas1 as verified_pengawas1'
+            )
+            ->where('ob.uuid', $uuid)
+            ->where('ob.statusenabled', 1)
+            ->first();
+
+        if($data['report'] == null){
+            return redirect()->back()->with('info', 'Maaf, data tidak ditemukan');
+        }else {
+            $item = $data['report'];
+
+            $qrTempFolder = storage_path('app/public/qr-temp');
+            if (!File::exists($qrTempFolder)) {
+                File::makeDirectory($qrTempFolder, 0755, true);
+            }
+
+            if ($item->verified_pengawas1 != null) {
+                $fileName = 'verified_pengawas1' . $item->uuid . '.png';
+                $filePath = $qrTempFolder . DIRECTORY_SEPARATOR . $fileName;
+
+                QrCode::size(150)
+                    ->format('png')
+                    ->generate(route('verified.index', ['encodedNik' => base64_encode($item->verified_pengawas1)]), $filePath);
+
+                $item->verified_pengawas1 = asset('storage/qr-temp/' . $fileName);
+            } else {
+                $item->verified_pengawas1 = null;
+            }
+        }
+
+        return view('observasi-bank.cetak', compact('data'));
     }
 
 

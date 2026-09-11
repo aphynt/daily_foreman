@@ -57,6 +57,15 @@ use App\Http\Controllers\Safety\InspeksiOGSController;
 use App\Http\Controllers\Safety\InspeksiSlurryPumpController;
 use App\Http\Controllers\Safety\InspeksiFrontLoadingController;
 use App\Http\Controllers\Safety\InspeksiWorkshopController;
+use App\Http\Controllers\Safety\InspeksiMessMalamController;
+use App\Http\Controllers\Safety\InspeksiRuangOfficeController;
+use App\Http\Controllers\Safety\InspeksiFuelSkidController;
+use App\Http\Controllers\Safety\InspeksiTPSLimbahB3Controller;
+use App\Http\Controllers\Safety\InspeksiGudangB3Controller;
+use App\Http\Controllers\Safety\InspeksiSumpController;
+use App\Http\Controllers\Safety\InspeksiPenilaianTerhadapKantin;
+use App\Http\Controllers\Safety\DashboardSafetyController;
+use App\Http\Controllers\Safety\InspeksiElementPenilaianTerhadapKantinController;
 use App\Http\Controllers\Safety\InspeksiWorksopController;
 use App\Http\Controllers\Safety\JobPendingSafetyController;
 use App\Http\Controllers\Safety\ObservasiBankController;
@@ -516,12 +525,87 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/inspeksi/tidakterencana/cetak/{uuid}', [InspeksiTidakTerencanaController::class, 'cetak'])->name('inspeksi.tidakterencana.cetak');
     Route::get('/inspeksi/tidakterencana/download/{uuid}', [InspeksiTidakTerencanaController::class, 'download'])->name('inspeksi.tidakterencana.download');
 
+    //Inspeksi Mess Malam
+    Route::get('/inspeksi/messmalam', [InspeksiMessMalamController::class, 'index'])->name('inspeksi.messmalam');
+    Route::get('/inspeksi/messmalam/insert', [InspeksiMessMalamController::class, 'insert'])->name('inspeksi.messmalam.insert')->middleware('canAccess');
+    Route::post('/inspeksi/messmalam/post', [InspeksiMessMalamController::class, 'post'])->name('inspeksi.messmalam.post');
+    Route::get('/inspeksi/messmalam/delete/{uuid}', [InspeksiMessMalamController::class, 'delete'])->name('inspeksi.messmalam.delete');
+    Route::get('/inspeksi/messmalam/preview/{uuid}', [InspeksiMessMalamController::class, 'preview'])->name('inspeksi.messmalam.preview');
+    Route::get('/inspeksi/messmalam/bundlepdf', [InspeksiMessMalamController::class, 'bundlepdf'])->name('inspeksi.messmalam.bundlepdf');
+    Route::get('/inspeksi/messmalam/cetak/{uuid}', [InspeksiMessMalamController::class, 'cetak'])->name('inspeksi.messmalam.cetak');
+    Route::get('/inspeksi/messmalam/download/{uuid}', [InspeksiMessMalamController::class, 'download'])->name('inspeksi.messmalam.download');
+
+    //Inspeksi Ruang Office
+    Route::get('/inspeksi/ruangoffice', [InspeksiRuangOfficeController::class, 'index'])->name('inspeksi.ruangoffice');
+    Route::get('/inspeksi/ruangoffice/insert', [InspeksiRuangOfficeController::class, 'insert'])->name('inspeksi.ruangoffice.insert')->middleware('canAccess');
+    Route::post('/inspeksi/ruangoffice/post', [InspeksiRuangOfficeController::class, 'post'])->name('inspeksi.ruangoffice.post');
+    Route::get('/inspeksi/ruangoffice/delete/{uuid}', [InspeksiRuangOfficeController::class, 'delete'])->name('inspeksi.ruangoffice.delete');
+    Route::get('/inspeksi/ruangoffice/preview/{uuid}', [InspeksiRuangOfficeController::class, 'preview'])->name('inspeksi.ruangoffice.preview');
+    Route::get('/inspeksi/ruangoffice/bundlepdf', [InspeksiRuangOfficeController::class, 'bundlepdf'])->name('inspeksi.ruangoffice.bundlepdf');
+    Route::get('/inspeksi/ruangoffice/cetak/{uuid}', [InspeksiRuangOfficeController::class, 'cetak'])->name('inspeksi.ruangoffice.cetak');
+    Route::get('/inspeksi/ruangoffice/download/{uuid}', [InspeksiRuangOfficeController::class, 'download'])->name('inspeksi.ruangoffice.download');
+
+    //Inspeksi Fuel Skid
+    Route::get('/inspeksi/fuelskid', [InspeksiFuelSkidController::class, 'index'])->name('inspeksi.fuelskid');
+    Route::get('/inspeksi/fuelskid/insert', [InspeksiFuelSkidController::class, 'insert'])->name('inspeksi.fuelskid.insert')->middleware('canAccess');
+    Route::post('/inspeksi/fuelskid/post', [InspeksiFuelSkidController::class, 'post'])->name('inspeksi.fuelskid.post');
+    Route::get('/inspeksi/fuelskid/delete/{uuid}', [InspeksiFuelSkidController::class, 'delete'])->name('inspeksi.fuelskid.delete');
+    Route::get('/inspeksi/fuelskid/preview/{uuid}', [InspeksiFuelSkidController::class, 'preview'])->name('inspeksi.fuelskid.preview');
+    Route::get('/inspeksi/fuelskid/bundlepdf', [InspeksiFuelSkidController::class, 'bundlepdf'])->name('inspeksi.fuelskid.bundlepdf');
+    Route::get('/inspeksi/fuelskid/cetak/{uuid}', [InspeksiFuelSkidController::class, 'cetak'])->name('inspeksi.fuelskid.cetak');
+    Route::get('/inspeksi/fuelskid/download/{uuid}', [InspeksiFuelSkidController::class, 'download'])->name('inspeksi.fuelskid.download');
+
+    //Inspeksi TPS Limbah B3
+    Route::get('/inspeksi/tpslimbahb3', [InspeksiTPSLimbahB3Controller::class, 'index'])->name('inspeksi.tpslimbahb3');
+    Route::get('/inspeksi/tpslimbahb3/insert', [InspeksiTPSLimbahB3Controller::class, 'insert'])->name('inspeksi.tpslimbahb3.insert')->middleware('canAccess');
+    Route::post('/inspeksi/tpslimbahb3/post', [InspeksiTPSLimbahB3Controller::class, 'post'])->name('inspeksi.tpslimbahb3.post');
+    Route::get('/inspeksi/tpslimbahb3/delete/{uuid}', [InspeksiTPSLimbahB3Controller::class, 'delete'])->name('inspeksi.tpslimbahb3.delete');
+    Route::get('/inspeksi/tpslimbahb3/preview/{uuid}', [InspeksiTPSLimbahB3Controller::class, 'preview'])->name('inspeksi.tpslimbahb3.preview');
+    Route::get('/inspeksi/tpslimbahb3/bundlepdf', [InspeksiTPSLimbahB3Controller::class, 'bundlepdf'])->name('inspeksi.tpslimbahb3.bundlepdf');
+    Route::get('/inspeksi/tpslimbahb3/cetak/{uuid}', [InspeksiTPSLimbahB3Controller::class, 'cetak'])->name('inspeksi.tpslimbahb3.cetak');
+    Route::get('/inspeksi/tpslimbahb3/download/{uuid}', [InspeksiTPSLimbahB3Controller::class, 'download'])->name('inspeksi.tpslimbahb3.download');
+
+    //Inspeksi Gudang B3
+    Route::get('/inspeksi/gudangb3', [InspeksiGudangB3Controller::class, 'index'])->name('inspeksi.gudangb3');
+    Route::get('/inspeksi/gudangb3/insert', [InspeksiGudangB3Controller::class, 'insert'])->name('inspeksi.gudangb3.insert')->middleware('canAccess');
+    Route::post('/inspeksi/gudangb3/post', [InspeksiGudangB3Controller::class, 'post'])->name('inspeksi.gudangb3.post');
+    Route::get('/inspeksi/gudangb3/delete/{uuid}', [InspeksiGudangB3Controller::class, 'delete'])->name('inspeksi.gudangb3.delete');
+    Route::get('/inspeksi/gudangb3/preview/{uuid}', [InspeksiGudangB3Controller::class, 'preview'])->name('inspeksi.gudangb3.preview');
+    Route::get('/inspeksi/gudangb3/bundlepdf', [InspeksiGudangB3Controller::class, 'bundlepdf'])->name('inspeksi.gudangb3.bundlepdf');
+    Route::get('/inspeksi/gudangb3/cetak/{uuid}', [InspeksiGudangB3Controller::class, 'cetak'])->name('inspeksi.gudangb3.cetak');
+    Route::get('/inspeksi/gudangb3/download/{uuid}', [InspeksiGudangB3Controller::class, 'download'])->name('inspeksi.gudangb3.download');
+
+    //Inspeksi Sump
+    Route::get('/inspeksi/sump', [InspeksiSumpController::class, 'index'])->name('inspeksi.sump');
+    Route::get('/inspeksi/sump/insert', [InspeksiSumpController::class, 'insert'])->name('inspeksi.sump.insert')->middleware('canAccess');
+    Route::post('/inspeksi/sump/post', [InspeksiSumpController::class, 'post'])->name('inspeksi.sump.post');
+    Route::get('/inspeksi/sump/delete/{uuid}', [InspeksiSumpController::class, 'delete'])->name('inspeksi.sump.delete');
+    Route::get('/inspeksi/sump/preview/{uuid}', [InspeksiSumpController::class, 'preview'])->name('inspeksi.sump.preview');
+    Route::get('/inspeksi/sump/bundlepdf', [InspeksiSumpController::class, 'bundlepdf'])->name('inspeksi.sump.bundlepdf');
+    Route::get('/inspeksi/sump/cetak/{uuid}', [InspeksiSumpController::class, 'cetak'])->name('inspeksi.sump.cetak');
+    Route::get('/inspeksi/sump/download/{uuid}', [InspeksiSumpController::class, 'download'])->name('inspeksi.sump.download');
+
+    //Inspeksi Element Penilaian Terhadap Kantin
+    Route::get('/inspeksi/penilaianterhadapkantin', [InspeksiElementPenilaianTerhadapKantinController::class, 'index'])->name('inspeksi.penilaianterhadapkantin');
+    Route::get('/inspeksi/penilaianterhadapkantin/insert', [InspeksiElementPenilaianTerhadapKantinController::class, 'insert'])->name('inspeksi.penilaianterhadapkantin.insert')->middleware('canAccess');
+    Route::post('/inspeksi/penilaianterhadapkantin/post', [InspeksiElementPenilaianTerhadapKantinController::class, 'post'])->name('inspeksi.penilaianterhadapkantin.post');
+    Route::get('/inspeksi/penilaianterhadapkantin/delete/{uuid}', [InspeksiElementPenilaianTerhadapKantinController::class, 'delete'])->name('inspeksi.penilaianterhadapkantin.delete');
+    Route::get('/inspeksi/penilaianterhadapkantin/preview/{uuid}', [InspeksiElementPenilaianTerhadapKantinController::class, 'preview'])->name('inspeksi.penilaianterhadapkantin.preview');
+    Route::get('/inspeksi/penilaianterhadapkantin/bundlepdf', [InspeksiElementPenilaianTerhadapKantinController::class, 'bundlepdf'])->name('inspeksi.penilaianterhadapkantin.bundlepdf');
+    Route::get('/inspeksi/penilaianterhadapkantin/cetak/{uuid}', [InspeksiElementPenilaianTerhadapKantinController::class, 'cetak'])->name('inspeksi.penilaianterhadapkantin.cetak');
+    Route::get('/inspeksi/penilaianterhadapkantin/download/{uuid}', [InspeksiElementPenilaianTerhadapKantinController::class, 'download'])->name('inspeksi.penilaianterhadapkantin.download');
+
+    //Dashboard Safety
+    Route::get('/safety/dashboard', [DashboardSafetyController::class, 'index'])->name('safety.dashboard');
+
     //Observasi Bank
     Route::get('/observasibank', [ObservasiBankController::class, 'index'])->name('observasibank');
     Route::get('/observasibank/insert', [ObservasiBankController::class, 'insert'])->name('observasibank.insert')->middleware('canAccess');
     Route::post('/observasibank/post', [ObservasiBankController::class, 'post'])->name('observasibank.post');
     Route::get('/observasibank/delete/{id}', [ObservasiBankController::class, 'delete'])->name('observasibank.delete');
     Route::get('/observasibank/preview/{uuid}', [ObservasiBankController::class, 'preview'])->name('observasibank.preview');
+    Route::get('/observasibank/download/{uuid}', [ObservasiBankController::class, 'download'])->name('observasibank.download');
+    Route::get('/observasibank/cetak/{uuid}', [ObservasiBankController::class, 'cetak'])->name('observasibank.cetak');
 
     //Paylaod & Ritation
     Route::get('/payloadritation/all', [PayloadRitationController::class, 'index'])->name('payloadritation.index');

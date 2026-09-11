@@ -392,7 +392,7 @@
                 </div>
             </div>
             <div class="footer">
-            © 2025 <strong>PT. SIMS JAYA KALTIM</strong>
+            © 2024 <strong>PT. SIMS JAYA KALTIM</strong>
         </div>
         </div>
     </div>

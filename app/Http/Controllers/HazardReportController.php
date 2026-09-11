@@ -391,6 +391,7 @@ class HazardReportController extends Controller
             'hz.created_at',
             'hz.dokumentasi_perbaikan_1',
             'hz.dokumentasi_perbaikan_2',
+            'hz.detail_temuan',
         )
         ->where('hz.statusenabled', true)
         ->where('hz.uuid', $uuid)->first();
@@ -501,6 +502,18 @@ class HazardReportController extends Controller
                 return redirect()->back()->with('info', 'Hazard Report tidak bisa diedit karena sudah diproses departemen.');
             }
 
+            $detailTemuan = $request->input('detail_temuan', []);
+            if (!is_array($detailTemuan)) {
+                $detailTemuan = [];
+            }
+            $detailTemuan = array_values(
+                array_unique(
+                    array_filter(
+                        array_map('trim', $detailTemuan)
+                    )
+                )
+            );
+
 
             $dokumentasi_1 = $data->dokumentasi_1;
             $dokumentasi_2 = $data->dokumentasi_2;
@@ -559,6 +572,10 @@ class HazardReportController extends Controller
                 'dokumentasi_1'      => $dokumentasi_1,
                 'dokumentasi_2'      => $dokumentasi_2,
                 'catatan_verified_scc' => $request->has('catatan_verified_scc') ? $request->catatan_verified_scc : $data->catatan_verified_scc,
+                'detail_temuan' => json_encode(
+                    $detailTemuan,
+                    JSON_UNESCAPED_UNICODE
+                ),
             ];
 
             if ($aksi == 'terima') {
@@ -568,95 +585,7 @@ class HazardReportController extends Controller
                 $updateData['scc'] = Auth::user()->nik;
                 $updateData['verified_datetime_scc'] = Carbon::now();
 
-                //Send to SR
-                $waController = new WhatsAppController();
-
-                if($request->departemen == 2){
-                    $verificationNumber = RefConf::where('id', 14)->value('value');
-                }else if($request->departemen == 3){
-                    $verificationNumber = RefConf::where('id', 20)->value('value');
-                }else if($request->departemen == 4){
-                    $verificationNumber = RefConf::where('id', 18)->value('value');
-                }else if($request->departemen == 5){
-                    $verificationNumber = RefConf::where('id', 19)->value('value');
-                }else if($request->departemen == 6){
-                    $verificationNumber = RefConf::where('id', 16)->value('value');
-                }else if($request->departemen == 7){
-                    $verificationNumber = RefConf::where('id', 17)->value('value');
-                }else if($request->departemen == 8){
-                    $verificationNumber = RefConf::where('id', 13)->value('value');
-                }else if($request->departemen == 10){
-                    $verificationNumber = RefConf::where('id', 23)->value('value');
-                }else if($request->departemen == 11){
-                    $verificationNumber = RefConf::where('id', 21)->value('value');
-                }else if($request->departemen == 17){
-                    $verificationNumber = RefConf::where('id', 22)->value('value');
-                }else if($request->departemen == 9){
-                    $verificationNumber = RefConf::where('id', 24)->value('value');
-                }else if($request->departemen == 14 && $request->perusahaan == 'PT. ABM'){
-                    $verificationNumber = RefConf::where('id', 33)->value('value');
-                }else if($request->departemen == 14 && $request->perusahaan == 'PT. SM'){
-                    $verificationNumber = RefConf::where('id', 34)->value('value');
-                }else if($request->departemen == 14 && $request->perusahaan == 'PT. KJM'){
-                    $verificationNumber = RefConf::where('id', 35)->value('value');
-                }else if($request->departemen == 14){
-                    $verificationNumber = null;
-                }
-
-                $tanggalPelaporan = Carbon::parse($data->tanggal_pelaporan)->locale('id');
-                $departemen = Departemen::where('id', $request->departemen)->value('keterangan');
-                $hariTanggal = $tanggalPelaporan->translatedFormat('l d F Y');
-                $jam = $tanggalPelaporan->format('H:i') . ' Wita';
-
-                // $nomorLaporan = (int) substr($no_inspeksi, -4);
-                $nomorLaporan = $data->no_inspeksi;
-
-                $formatBulletList = function ($text) {
-                    $lines = preg_split('/\r\n|\r|\n/', trim((string) $text));
-                    $lines = array_filter(array_map('trim', $lines));
-
-                    return count($lines) ? "- " . implode("\n- ", $lines) : "-";
-                };
-
-                $kepadaText = $request->has('kepada') ? $request->kepada : $data->kepada;
-
-                $risikoText = $formatBulletList($request->risiko);
-                $pengendalianAwalText = $formatBulletList($request->pengendalian_awal);
-                $tindakanPerbaikanText = $formatBulletList($request->tindakan_perbaikan);
-
-                $hazardReportMessage = <<<MSG
-                《HAZARD REPORT》
-
-                No. $nomorLaporan
-
-                - Kepada        : {$kepadaText}
-                - Prush/Dept.   : {$departemen}
-                - Hari/tgl.     : $hariTanggal
-                - Jam           : $jam
-                - Lokasi        : {$request->lokasi}
-
-                *# HAZARD/ BAHAYA*
-                - {$request->bahaya}
-
-                *# RISIKO*
-                $risikoText
-
-                *# PENGENDALIAN AWAL*
-                $pengendalianAwalText
-
-                *# TINDAKAN PERBAIKAN YANG HARUS DI LAKUKAN*
-                $tindakanPerbaikanText
-
-                Mohon bantuannya untuk melakukan pengecekan dan verifikasi laporan tersebut di aplikasi Daily Foreman
-                _Pesan ini dikirim secara otomatis. Mohon tidak membalas pesan ini._
-                MSG;
-
-                $verificationWaResult = $waController->sendMessageImage($verificationNumber, $hazardReportMessage, $dokumentasi_1);
-
-                FacadesLog::info('WA Send Result Verification', [
-                    'number' => $verificationNumber,
-                    'result' => $verificationWaResult
-                ]);
+                
             }
 
             if ($aksi == 'tolak') {

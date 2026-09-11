@@ -32,10 +32,37 @@
         width: 100%;
     }
 
-    .table td, .table th {
+    .table td,
+    .table th {
         word-wrap: break-word;
+        overflow-wrap: break-word;
         white-space: normal;
         vertical-align: middle;
+    }
+
+    .preview-input,
+    .preview-textarea,
+    .preview-select {
+        background-color: #f8fafc !important;
+        color: #212529 !important;
+        border-color: #dee2e6 !important;
+        opacity: 1 !important;
+        box-shadow: none !important;
+    }
+
+    .preview-input[readonly],
+    .preview-textarea[readonly],
+    .preview-select[disabled] {
+        background-color: #f8fafc !important;
+        color: #212529 !important;
+        border-color: #dee2e6 !important;
+        opacity: 1 !important;
+        -webkit-text-fill-color: #212529 !important;
+        cursor: default;
+    }
+
+    .preview-textarea {
+        resize: none;
     }
 
     .note-warning {
@@ -47,14 +74,82 @@
         color: #664d03;
     }
 
-    .preview-input,
-    .preview-textarea,
-    .preview-select {
-        background: #f8fafc !important;
+    .note-warning p,
+    .note-warning strong {
+        color: inherit !important;
     }
 
-    .preview-textarea {
-        resize: none;
+    input[type="checkbox"].check-readonly {
+        -webkit-appearance: none;
+        appearance: none;
+
+        width: 16px;
+        height: 16px;
+        min-width: 16px;
+        min-height: 16px;
+
+        margin: 0;
+        padding: 0;
+
+        border: 1.5px solid #9ca3af;
+        border-radius: 3px;
+
+        background-color: #ffffff;
+
+        display: inline-grid;
+        place-content: center;
+
+        vertical-align: middle;
+
+        pointer-events: none;
+        cursor: default;
+
+        opacity: 1 !important;
+        filter: none !important;
+
+        transition:
+            background-color 0.15s ease,
+            border-color 0.15s ease;
+    }
+
+    /* tanda centang */
+    input[type="checkbox"].check-readonly::before {
+        content: "";
+
+        width: 5px;
+        height: 9px;
+
+        border: solid #ffffff;
+        border-width: 0 2px 2px 0;
+
+        transform: rotate(45deg) scale(0);
+        transform-origin: center;
+
+        margin-top: -2px;
+
+        transition: transform 0.1s ease;
+    }
+
+    /* checkbox tercentang */
+    input[type="checkbox"].check-readonly:checked {
+        background-color: #0d6efd !important;
+        border-color: #0d6efd !important;
+    }
+
+    input[type="checkbox"].check-readonly:checked::before {
+        transform: rotate(45deg) scale(1);
+    }
+
+    /* disabled jangan dibuat transparan oleh browser */
+    input[type="checkbox"].check-readonly:disabled {
+        opacity: 1 !important;
+        filter: none !important;
+        cursor: default;
+    }
+
+    .table td.text-center input.check-readonly {
+        display: inline-grid;
+        vertical-align: middle;
     }
 
     .photo-grid {
@@ -66,7 +161,7 @@
     .photo-card {
         border: 1px solid #dee2e6;
         border-radius: 10px;
-        background: #fff;
+        background: #ffffff;
         overflow: hidden;
     }
 
@@ -94,14 +189,189 @@
         background: #f8fafc;
     }
 
-    .check-readonly {
-        pointer-events: none;
-        transform: scale(1.1);
+    [data-pc-theme="dark"] .preview-input,
+    [data-pc-theme="dark"] .preview-textarea,
+    [data-pc-theme="dark"] .preview-select,
+    [data-bs-theme="dark"] .preview-input,
+    [data-bs-theme="dark"] .preview-textarea,
+    [data-bs-theme="dark"] .preview-select {
+        background-color: #212936 !important;
+        color: #e9ecef !important;
+        border-color: #3a4553 !important;
+
+        opacity: 1 !important;
+        box-shadow: none !important;
+
+        -webkit-text-fill-color: #e9ecef !important;
+    }
+
+    [data-pc-theme="dark"] .preview-input[readonly],
+    [data-pc-theme="dark"] .preview-textarea[readonly],
+    [data-pc-theme="dark"] .preview-select[disabled],
+    [data-bs-theme="dark"] .preview-input[readonly],
+    [data-bs-theme="dark"] .preview-textarea[readonly],
+    [data-bs-theme="dark"] .preview-select[disabled] {
+        background-color: #212936 !important;
+        color: #e9ecef !important;
+        border-color: #3a4553 !important;
+
+        opacity: 1 !important;
+
+        -webkit-text-fill-color: #e9ecef !important;
+    }
+
+    /* placeholder dark */
+    [data-pc-theme="dark"] .preview-input::placeholder,
+    [data-pc-theme="dark"] .preview-textarea::placeholder,
+    [data-bs-theme="dark"] .preview-input::placeholder,
+    [data-bs-theme="dark"] .preview-textarea::placeholder {
+        color: #8c98a5 !important;
+        opacity: 1;
+    }
+
+    [data-pc-theme="dark"] label:not(.bg-primary),
+    [data-bs-theme="dark"] label:not(.bg-primary) {
+        color: #e9ecef;
+    }
+
+    [data-pc-theme="dark"] h3,
+    [data-pc-theme="dark"] h4,
+    [data-pc-theme="dark"] h5,
+    [data-pc-theme="dark"] h6,
+    [data-bs-theme="dark"] h3,
+    [data-bs-theme="dark"] h4,
+    [data-bs-theme="dark"] h5,
+    [data-bs-theme="dark"] h6 {
+        color: #f8f9fa;
+    }
+
+    [data-pc-theme="dark"] hr,
+    [data-bs-theme="dark"] hr {
+        border-color: #36404d;
+        opacity: 1;
+    }
+
+    [data-pc-theme="dark"] .table,
+    [data-bs-theme="dark"] .table {
+        --bs-table-bg: transparent;
+        --bs-table-color: #e9ecef;
+        --bs-table-border-color: #3a4553;
+
+        color: #e9ecef;
+        border-color: #3a4553;
+    }
+
+    [data-pc-theme="dark"] .table > :not(caption) > * > *,
+    [data-bs-theme="dark"] .table > :not(caption) > * > * {
+        background-color: transparent !important;
+        color: #e9ecef !important;
+        border-color: #3a4553 !important;
+        box-shadow: none !important;
+    }
+
+    [data-pc-theme="dark"] .table td,
+    [data-pc-theme="dark"] .table th,
+    [data-bs-theme="dark"] .table td,
+    [data-bs-theme="dark"] .table th {
+        color: #e9ecef !important;
+        border-color: #3a4553 !important;
+    }
+
+    /* Header table */
+    [data-pc-theme="dark"] .table-primary,
+    [data-pc-theme="dark"] .table-primary > th,
+    [data-pc-theme="dark"] .table-primary > td,
+    [data-bs-theme="dark"] .table-primary,
+    [data-bs-theme="dark"] .table-primary > th,
+    [data-bs-theme="dark"] .table-primary > td {
+        --bs-table-bg: #263c59;
+        --bs-table-color: #ffffff;
+        --bs-table-border-color: #3b536f;
+
+        background-color: #263c59 !important;
+        color: #ffffff !important;
+        border-color: #3b536f !important;
+    }
+
+    [data-pc-theme="dark"] input[type="checkbox"].check-readonly,
+    [data-bs-theme="dark"] input[type="checkbox"].check-readonly {
+        background-color: #18212d !important;
+        border-color: #66717f !important;
+
+        opacity: 1 !important;
+        filter: none !important;
+    }
+
+    /* Sudah dicentang */
+    [data-pc-theme="dark"] input[type="checkbox"].check-readonly:checked,
+    [data-bs-theme="dark"] input[type="checkbox"].check-readonly:checked {
+        background-color: #2684ff !important;
+        border-color: #2684ff !important;
+
+        opacity: 1 !important;
+        filter: none !important;
+    }
+
+    [data-pc-theme="dark"] input[type="checkbox"].check-readonly:checked::before,
+    [data-bs-theme="dark"] input[type="checkbox"].check-readonly:checked::before {
+        border-color: #ffffff !important;
+    }
+
+    [data-pc-theme="dark"] input[type="checkbox"].check-readonly:disabled,
+    [data-bs-theme="dark"] input[type="checkbox"].check-readonly:disabled {
+        opacity: 1 !important;
+        filter: none !important;
+    }
+
+    [data-pc-theme="dark"] .note-warning,
+    [data-bs-theme="dark"] .note-warning {
+        background-color: #332d1b;
+        border-left-color: #d4b106;
+        color: #ffe69c;
+    }
+
+    [data-pc-theme="dark"] .photo-card,
+    [data-bs-theme="dark"] .photo-card {
+        background: #212936;
+        border-color: #3a4553;
+    }
+
+    [data-pc-theme="dark"] .photo-card img,
+    [data-bs-theme="dark"] .photo-card img {
+        background: #18212d;
+    }
+
+    [data-pc-theme="dark"] .photo-meta,
+    [data-bs-theme="dark"] .photo-meta {
+        color: #adb5bd;
+        border-color: #3a4553;
+    }
+
+    [data-pc-theme="dark"] .empty-photo,
+    [data-bs-theme="dark"] .empty-photo {
+        background: #212936;
+        color: #adb5bd;
+        border-color: #495563;
+    }
+
+    [data-pc-theme="dark"] input[type="date"].preview-input::-webkit-calendar-picker-indicator,
+    [data-pc-theme="dark"] input[type="time"].preview-input::-webkit-calendar-picker-indicator,
+    [data-bs-theme="dark"] input[type="date"].preview-input::-webkit-calendar-picker-indicator,
+    [data-bs-theme="dark"] input[type="time"].preview-input::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        opacity: 0.75;
     }
 
     @media (max-width: 768px) {
         .photo-grid {
             grid-template-columns: 1fr;
+        }
+
+        input[type="checkbox"].check-readonly {
+            width: 17px;
+            height: 17px;
+            min-width: 17px;
+            min-height: 17px;
         }
     }
 </style>
@@ -114,9 +384,9 @@
                     <div class="col-sm-12 col-md-6 col-xxl-4">
                         <h3>Preview Observasi BANK</h3>
                     </div>
-                    <div class="col-sm-12 col-md-6 text-md-end mt-2 mt-md-0">
+                    {{-- <div class="col-sm-12 col-md-6 text-md-end mt-2 mt-md-0">
                         <a href="{{ route('observasibank') }}" class="btn btn-primary btn-sm">Kembali</a>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>
@@ -674,6 +944,35 @@
                                         Belum ada dokumentasi foto.
                                     </div>
                                 @endif
+                            </div>
+                           <div class="card-body p-3">
+                                <div class="d-flex justify-content-end align-items-center gap-2 flex-wrap">
+
+                                    {{-- Kembali --}}
+                                    <a href="javascript:void(0)"
+                                    onclick="window.history.back()"
+                                    class="btn btn-outline-secondary rounded-pill px-3 py-2 d-flex align-items-center gap-2">
+                                        <i class="ti ti-arrow-left fs-5"></i>
+                                        <span>Kembali</span>
+                                    </a>
+
+                                    {{-- Download --}}
+                                    {{-- <a href="{{ route('observasibank.download', $report->uuid) }}"
+                                    target="_blank"
+                                    class="btn btn-outline-success rounded-pill px-3 py-2 d-flex align-items-center gap-2">
+                                        <i class="ph-duotone ph-download-simple fs-5"></i>
+                                        <span>Download</span>
+                                    </a> --}}
+
+                                    {{-- Cetak --}}
+                                    <a href="{{ route('observasibank.cetak', $report->uuid) }}"
+                                    target="_blank"
+                                    class="btn btn-primary rounded-pill px-3 py-2 d-flex align-items-center gap-2">
+                                        <i class="ph-duotone ph-printer fs-5"></i>
+                                        <span>Cetak</span>
+                                    </a>
+
+                                </div>
                             </div>
                         </div>
                     </div>

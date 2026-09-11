@@ -169,9 +169,93 @@
     .btn-upload:active {
         transform: scale(0.97);
     }
+    .detail-temuan-box {
+        padding: 12px;
+        border: 1px solid #e4e6ef;
+        border-radius: 12px;
+        background: #f8f9fb;
+    }
 
+    .detail-temuan-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 46px;
+        padding: 9px 12px;
+        border: 1px solid #dfe3ea;
+        border-radius: 9px;
+        background: #ffffff;
+    }
+
+    .detail-temuan-check {
+        width: 22px;
+        height: 22px;
+        flex: 0 0 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 5px;
+        background: #2563eb;
+        color: #ffffff;
+    }
+
+    .detail-temuan-check i {
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .detail-temuan-text {
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 1.4;
+        color: #343a40;
+    }
+
+    .detail-temuan-empty {
+        padding: 12px;
+        border: 1px dashed #ced4da;
+        border-radius: 10px;
+        background: #f8f9fa;
+        color: #6c757d;
+        font-style: italic;
+    }
+
+    [data-pc-theme="dark"] .detail-temuan-box,
+    [data-bs-theme="dark"] .detail-temuan-box {
+        background: #1b2430;
+
+        border-color: #3a4553;
+    }
+
+    [data-pc-theme="dark"] .detail-temuan-item,
+    [data-bs-theme="dark"] .detail-temuan-item {
+        background: #212936;
+        border-color: #3a4553;
+    }
+
+    [data-pc-theme="dark"] .detail-temuan-text,
+    [data-bs-theme="dark"] .detail-temuan-text {
+        color: #e9ecef;
+    }
+
+    [data-pc-theme="dark"] .detail-temuan-empty,
+    [data-bs-theme="dark"] .detail-temuan-empty {
+        background: #212936;
+        border-color: #3a4553;
+        color: #adb5bd;
+    }
 </style>
+@php
+    $detailTemuan = $data->detail_temuan ?? [];
 
+    if (is_string($detailTemuan)) {
+        $detailTemuan = json_decode($detailTemuan, true) ?? [];
+    }
+
+    if (!is_array($detailTemuan)) {
+        $detailTemuan = [];
+    }
+@endphp
 <section class="pc-container">
     <div class="pc-content">
         <div class="row">
@@ -264,7 +348,33 @@
                                         <input class="form-control" value="{{ $data->type_bahaya }}" readonly>
                                     </div>
                                 </div>
-
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        Trend Temuan:
+                                    </label>
+                                    @if(count($detailTemuan) > 0)
+                                        <div class="detail-temuan-box">
+                                            <div class="row g-2">
+                                                @foreach($detailTemuan as $item)
+                                                    <div class="col-md-6 col-12">
+                                                        <div class="detail-temuan-item">
+                                                            <div class="detail-temuan-check">
+                                                                <i class="ti ti-check"></i>
+                                                            </div>
+                                                            <div class="detail-temuan-text">
+                                                                {{ $item }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div class="detail-temuan-empty">
+                                            Tidak ada trend temuan.
+                                        </div>
+                                    @endif
+                                </div>
                                 <div class="mb-3">
                                     <label class="form-label">Bahaya:</label>
                                     <textarea class="form-control" readonly>{{ $data->bahaya }}</textarea>

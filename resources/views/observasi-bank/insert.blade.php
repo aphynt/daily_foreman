@@ -895,11 +895,11 @@
                                 </div>
                                 <hr>
                                 <div class="row mb-3">
-                                    <h5>XIII. Dokumentasi Foto</h5>
+                                    <h5>XIII. Dokumentasi</h5>
 
                                     <div class="upload-grid">
                                         <div class="upload-card">
-                                            <label>Dokumentasi Foto 1</label>
+                                            <label>Dokumentasi 1</label>
                                             <input type="file"
                                                 class="form-control form-control-sm"
                                                 name="dokumentasi_foto_1"
@@ -908,7 +908,7 @@
                                         </div>
 
                                         <div class="upload-card">
-                                            <label>Dokumentasi Foto 2</label>
+                                            <label>Dokumentasi 2</label>
                                             <input type="file"
                                                 class="form-control form-control-sm"
                                                 name="dokumentasi_foto_2"
@@ -917,7 +917,7 @@
                                         </div>
 
                                         <div class="upload-card">
-                                            <label>Dokumentasi Foto 3</label>
+                                            <label>Dokumentasi 3</label>
                                             <input type="file"
                                                 class="form-control form-control-sm"
                                                 name="dokumentasi_foto_3"

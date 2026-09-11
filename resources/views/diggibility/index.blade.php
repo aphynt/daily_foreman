@@ -10,862 +10,899 @@
         box-sizing: border-box;
     }
 
-.dig-page{
-    background:#eef3f6;
-    min-height:calc(100vh - 70px);
-    padding:18px 22px;
-}
-.dig-wrap{
-    max-width:1500px;
-    margin:auto;
-}
-.dig-hero{
-    position:relative;
-    min-height:176px;
-    padding:30px 28px;
-    margin-bottom:16px;
-    overflow:hidden;
-    color:#fff;
-    background:
-        radial-gradient(circle at 85% 30%,rgba(25,105,190,.35),transparent 32%),
-        linear-gradient(115deg,#020b16 0%,#071b31 38%,#0b3157 72%,#02070d 100%);
-    box-shadow:0 8px 25px rgba(0,25,55,.18);
-}
-.dig-hero::before{
-    content:"";
-    position:absolute;
-    width:420px;
-    height:420px;
-    right:-180px;
-    top:-230px;
-    border-radius:50%;
-    background:rgba(24,112,205,.18);
-    filter:blur(20px);
-}
-.dig-hero::after{
-    content:"";
-    position:absolute;
-    width:300px;
-    height:1px;
-    right:80px;
-    bottom:35px;
-    background:linear-gradient(90deg,transparent,rgba(67,158,236,.5),transparent);
-    transform:rotate(-18deg);
-}
-.dig-kicker{
-    position:relative;
-    z-index:2;
-    letter-spacing:2px;
-    font-weight:800;
-    margin-bottom:6px;
-}
-.dig-title{
-    position:relative;
-    z-index:2;
-    line-height:.92;
-    font-weight:900;
-    margin:0 0 10px;
-    text-transform:uppercase;
-    max-width:650px;
-    font-size: 30px;
-}
-.dig-sub{
-    position:relative;
-    z-index:2;
-    opacity:.85;
-}
-.dig-new{
-    position:absolute;
-    z-index:3;
-    right:25px;
-    bottom:25px;
-    background:#f47b2b;
-    color:#fff;
-    border:0;
-    padding:12px 20px;
-    font-weight:800;
-    text-decoration:none;
-    transition:.2s;
-}
-.dig-new:hover{
-    background:#ff9145;
-    transform:translateY(-2px);
-    box-shadow:0 6px 15px rgba(244,123,43,.3);
-}
-.dig-summary{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    background:#fff;
-    border:1px solid #ccd9e2;
-    margin-bottom:16px;
-}
-.dig-summary-item{
-    min-height:72px;
-    padding:13px 18px;
-    border-right:1px solid #d5dfe7;
-}
-.dig-summary-item:last-child{
-    border-right:0;
-}
-.dig-label{
-    color:#71869a;
-    text-transform:uppercase;
-    font-weight:800;
-    letter-spacing:.4px;
-}
-.dig-number{
-    line-height:1;
-    margin-top:4px;
-    font-weight:900;
-    color:#174473;
-}
-.dig-section{
-    background:#fff;
-    border:1px solid #c4d3de;
-    padding:17px;
-    margin-bottom:12px;
-}
-.dig-section-title{
-    line-height:1;
-    font-weight:900;
-    color:#174476;
-    text-transform:uppercase;
-}
-.dig-section-sub{
-    color:#74899c;
-    margin:6px 0 14px;
-}
-.dig-filter{
-    display:grid;
-    grid-template-columns:1.2fr 1.2fr 1.1fr .9fr .9fr auto;
-    gap:9px;
-    border-top:1px solid #d8e1e8;
-    padding-top:14px;
-}
-.dig-filter label{
-    display:block;
-    color:#5e7387;
-    font-weight:800;
-    margin-bottom:5px;
-}
-.dig-filter select,
-.dig-filter input{
-    width:100%;
-    height:36px;
-    border:1px solid #bdcdd9;
-    background:#fff;
-    color:#345675;
-    padding:5px 10px;
-    outline:none;
-}
-.dig-filter select:focus,
-.dig-filter input:focus{
-    border-color:#1e568e;
-}
-.dig-filter button{
-    height:36px;
-    background:#fff;
-    border:1px solid #aebfce;
-    color:#345a78;
-    font-weight:900;
-    padding:0 15px;
-    margin-top:18px;
-}
-.dig-cards{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:8px;
-    margin-bottom:12px;
-}
-.dig-card{
-    min-height:91px;
-    background:#fff;
-    border-left:3px solid #23966f;
-    padding:14px 15px;
-    box-shadow:0 2px 7px rgba(30,60,80,.05);
-}
-.dig-card.normal{
-    border-left-color:#2467b1;
-}
-.dig-card.keras{
-    border-left-color:#d5413b;
-}
-.dig-card .big{
-    line-height:1;
-    margin:5px 0;
-    font-weight:900;
-    color:#17446f;
-}
-.dig-card .small{
-    color:#7890a3;
-}
-
-.dig-area-title{
-    font-weight:900;
-    color:#174476;
-    text-transform:uppercase;
-    margin-bottom:7px;
-}
-.dig-area-value{
-    line-height:1;
-    font-weight:900;
-    color:#164b78;
-}
-.dig-area-value small{
-    font-weight:600;
-    color:#71869a;
-}
-.dig-area-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:8px;
-}
-.dig-area-grid-lokasi{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:8px;
-}
-.dig-area-box{
-    min-height:145px;
-    background:#fff;
-    border:1px solid #cbd8e2;
-    padding:13px;
-}
-.dig-area-box.area-bagus{
-    border-color:#28a879;
-}
-.dig-area-box.area-keras{
-    border-color:#d34842;
-}
-.dig-area-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-}
-.area-badge{
-    padding:4px 7px;
-    font-weight:900;
-    white-space:nowrap;
-}
-.badge-bagus{
-    background:#dff3e9;
-    color:#188357;
-}
-.badge-keras{
-    background:#fbe1df;
-    color:#c43b34;
-}
-.dig-mini{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:5px;
-    margin-top:9px;
-}
-.dig-mini div{
-    background:#f8fafb;
-    border:1px solid #d6e0e6;
-    padding:7px;
-    color:#71869a;
-}
-.dig-mini b{
-    display:block;
-    line-height:1;
-    color:#174476;
-    margin-bottom:3px;
-}
-.dig-mini .mini-bagus{
-    background:#f3faf7;
-}
-.dig-mini .mini-keras{
-    background:#fff5f4;
-}
-.dig-progress{
-    height:6px;
-    background:#e5ebef;
-    margin:11px 0 7px;
-    overflow:hidden;
-}
-.dig-progress span{
-    display:block;
-    height:100%;
-}
-.area-bagus .dig-progress span{
-    background:#22966f;
-}
-.area-keras .dig-progress span{
-    background:#d5413b;
-}
-.area-summary{
-    color:#71869a;
-    margin-top:6px;
-}
-
-.dig-table{
-    width:100%;
-    border-collapse:collapse;
-}
-.dig-table th{
-    background:#eef3f6;
-    color:#617b91;
-    text-align:left;
-    padding:9px;
-}
-.dig-table td{
-    border-top:1px solid #dce4e9;
-    padding:9px;
-    color:#345572;
-}
-.dig-badge{
-    padding:7px 10px;
-    font-weight:900;
-    white-space:nowrap;
-}
-.badge-bagus{
-    background:#dff3e9;
-    color:#188357;
-}
-.badge-keras{
-    background:#fbe1df;
-    color:#c43b34;
-}
-.dig-report{
-    border:1px solid #cbd8e2;
-    background:#fff;
-    margin-top:9px;
-    padding:14px;
-}
-.dig-report-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-.dig-report-date{
-    color:#7890a4;
-    margin-bottom:3px;
-}
-.dig-report-unit{
-    font-weight:900;
-    color:#174476;
-}
-.dig-report-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    background:#f5f8fa;
-    margin-top:9px;
-}
-.dig-report-grid div{
-    padding:10px 12px;
-    border-right:1px solid #d7e0e7;
-}
-.dig-report-grid div:last-child{
-    border-right:0;
-}
-.dig-report-grid span{
-    display:block;
-    color:#7b8fa1;
-    text-transform:uppercase;
-    margin-bottom:3px;
-}
-.dig-report-grid b{
-    color:#1a4268;
-}
-.dig-report-foot{
-    display:flex;
-    align-items:center;
-    margin-top:10px;
-    color:#8293a2;
-}
-.dig-report-foot .dig-view{
-    margin-left:8px;
-}
-.dig-report-foot .dig-view:first-of-type{
-    margin-left:auto;
-}
-.dig-view{
-    border:1px solid #b8cad8;
-    background:#fff;
-    padding:7px 11px;
-    color:#355a78;
-    font-weight:800;
-}
-.report-overlay{
-    position:fixed;
-    inset:0;
-    z-index:9999;
-    background:rgba(15,35,52,.78);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:18px;
-}
-.report-overlay.show{
-    display:flex;
-}
-.report-modal{
-    width:min(765px,100%);
-    max-height:96vh;
-    background:#fff;
-    box-shadow:0 20px 60px rgba(0,0,0,.3);
-    display:flex;
-    flex-direction:column;
-}
-.report-header{
-    height:74px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:12px 18px;
-    border-bottom:1px solid #d7e0e7;
-}
-.report-brand{
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-.report-logo{
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    border:1px solid #d5dfe7;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#1b4d83;
-}
-.report-brand-small{
-    color:#607991;
-    font-weight:800;
-    letter-spacing:1.5px;
-}
-.report-brand-title{
-    color:#174a80;
-    font-weight:900;
-    letter-spacing:1px;
-}
-.report-close{
-    width:34px;
-    height:34px;
-    border:0;
-    background:#edf3f7;
-    color:#42647f;
-    cursor:pointer;
-}
-.report-body{
-    padding:30px 38px;
-    overflow-y:auto;
-    background:
-        radial-gradient(circle at 10% 20%,rgba(220,228,234,.2),transparent 25%),
-        #fff;
-}
-.report-title{
-    text-align:center;
-    color:#174574;
-}
-.report-title h2{
-    margin:0;
-    font-weight:900;
-}
-.report-title div{
-    color:#627b91;
-    letter-spacing:1px;
-    margin-top:4px;
-}
-.report-line{
-    height:1px;
-    background:#1d5aa0;
-    margin:14px 0 11px;
-}
-.report-status{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    padding:8px 18px;
-    border-radius:999px;
-    font-size:13px;
-    font-weight:800;
-    letter-spacing:.5px;
-    margin-bottom:12px;
-    border:1px solid transparent;
-}
-.report-status.status-bagus{
-    background:#dcfce7;
-    color:#15803d;
-    border-color:#86efac;
-}
-.report-status.status-keras{
-    background:#fee2e2;
-    color:#b91c1c;
-    border-color:#fca5a5;
-}
-#reportKategoriBottom.status-bagus{
-    color:#15803d;
-}
-#reportKategoriBottom.status-keras{
-    color:#b91c1c;
-}
-.report-average{
-    border:2px solid #1c59a0;
-    background:#e7f0fa;
-    text-align:center;
-    padding:18px;
-}
-.report-average-label{
-    color:#1d4f82;
-    font-weight:800;
-    letter-spacing:1px;
-}
-.report-average-value{
-    color:#15529a;
-    font-weight:900;
-    line-height:1;
-    margin-top:6px;
-    font-size: 60px;
-}
-.report-average-unit{
-    color:#24517e;
-    font-weight:800;
-}
-.report-average-info{
-    display:flex;
-    justify-content:center;
-    gap:7px;
-    border-top:1px solid #b6cae0;
-    width:max-content;
-    max-width:100%;
-    margin:10px auto 0;
-    padding-top:7px;
-    color:#24517e;
-    font-weight:800;
-}
-.report-info{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    border:1px solid #cbd8e2;
-    margin-top:14px;
-}
-.report-info > div{
-    min-height:54px;
-    padding:9px 12px;
-    border-right:1px solid #d5dfe7;
-    border-bottom:1px solid #d5dfe7;
-}
-.report-info > div:nth-child(even){
-    border-right:0;
-}
-.report-info span{
-    display:block;
-    color:#70869a;
-    font-weight:800;
-    margin-bottom:3px;
-}
-.report-info b{
-    color:#183f65;
-}
-.report-footer-info{
-    display:flex;
-    justify-content:space-between;
-    gap:20px;
-    padding:14px 0 5px;
-    color:#71879a;
-}
-.report-pass-section{
-    margin-top:15px;
-    border-top:1px solid #d5dfe7;
-    padding-top:12px;
-}
-.report-pass-title{
-    color:#174574;
-    font-weight:900;
-    margin-bottom:7px;
-}
-.report-pass-section table{
-    width:100%;
-    border-collapse:collapse;
-}
-.report-pass-section th{
-    background:#1e5795;
-    color:#fff;
-    padding:8px;
-    text-align:left;
-}
-.report-pass-section td{
-    border:1px solid #d6e0e7;
-    padding:7px 9px;
-    color:#345675;
-}
-.report-actions{
-    display:flex;
-    justify-content:flex-end;
-    gap:8px;
-    padding:14px 18px;
-    background:#f1f5f8;
-    border-top:1px solid #d5dfe7;
-}
-.report-btn{
-    border:0;
-    padding:11px 18px;
-    font-weight:800;
-    cursor:pointer;
-}
-.report-btn-delete{
-    background:#fbe3e1;
-    color:#c43b34;
-    border:1px solid #efc2be;
-}
-.report-btn-delete:hover{
-    background:#c43b34;
-    color:#fff;
-}
-
-.report-btn-close{
-    background:#e8eef2;
-    color:#365675;
-}
-.report-btn-print{
-    background:#e8eef2;
-    color:#365675;
-}
-.report-btn-pdf{
-    background:#205798;
-    color:#fff;
-    min-width:180px;
-}
-.dig-modal{
-    position:fixed;
-    inset:0;
-    z-index:99999;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    background:rgba(10,28,45,.72);
-    padding:20px;
-}
-.dig-modal.show{
-    display:flex;
-}
-.dig-modal-box{
-    width:100%;
-    max-width:440px;
-    background:#fff;
-    border:1px solid #d5e0e8;
-    box-shadow:0 20px 60px rgba(0,0,0,.25);
-    text-align:center;
-    padding:30px;
-    animation:digModalIn .2s ease-out;
-}
-.dig-modal-icon{
-    width:58px;
-    height:58px;
-    margin:0 auto 15px;
-    border-radius:50%;
-    background:#dff3e7;
-    color:#188357;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-weight:900;
-    border:3px solid #bce4ce;
-}
-.dig-modal-icon.error{
-    background:#fbe3e1;
-    color:#c43b34;
-    border-color:#f1c0bc;
-}
-.dig-modal-title{
-    color:#174476;
-    font-weight:900;
-    margin-bottom:8px;
-}
-.dig-modal-text{
-    color:#71869a;
-    margin-bottom:20px;
-}
-.dig-modal-info{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    border:1px solid #d4dee7;
-    margin-bottom:20px;
-    text-align:left;
-}
-.dig-modal-info div{
-    padding:12px;
-    background:#f7f9fb;
-    border-right:1px solid #d4dee7;
-}
-.dig-modal-info div:last-child{
-    border-right:0;
-}
-.dig-modal-info span{
-    display:block;
-    color:#7890a5;
-    margin-bottom:4px;
-}
-.dig-modal-info b{
-    color:#174476;
-}
-.dig-modal-button{
-    width:100%;
-    height:43px;
-    border:0;
-    background:#205798;
-    color:#fff;
-    font-weight:800;
-    cursor:pointer;
-}
-.dig-modal-button:hover{
-    background:#174a82;
-}
-.error-button{
-    background:#c43b34;
-}
-.validation-toast{
-    position:fixed;
-    top:20px;
-    left:50%;
-    transform:translate(-50%,-140%);
-    z-index:99999;
-    min-width:320px;
-    max-width:520px;
-    background:#3d0505;
-    color:#fff;
-    border-radius:8px;
-    padding:13px 16px;
-    display:flex;
-    align-items:center;
-    gap:10px;
-    box-shadow:0 8px 25px rgba(0,0,0,.25);
-    opacity:0;
-    transition:all .35s ease;
-}
-.validation-toast.show{
-    transform:translate(-50%,0);
-    opacity:1;
-}
-.validation-toast-icon{
-    width:16px;
-    height:16px;
-    border-radius:50%;
-    background:#ff9b9b;
-    color:#651111;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-weight:900;
-    flex:none;
-}
-.validation-toast-title{
-    font-weight:800;
-    margin-bottom:2px;
-}
-.validation-toast-message{
-    color:#ffb5b5;
-}
-.field-error{
-    border-color:#d63d3d !important;
-    background:#fff8f8 !important;
-}
-.field-error-text{
-    color:#d63d3d;
-    margin-top:4px;
-}
-@keyframes digModalIn{
-    from{
-        opacity:0;
-        transform:translateY(12px) scale(.97);
+    .dig-page{
+        background:#eef3f6;
+        min-height:calc(100vh - 70px);
+        padding:18px 22px;
     }
-    to{
-        opacity:1;
-        transform:translateY(0) scale(1);
+    .dig-wrap{
+        max-width:1500px;
+        margin:auto;
     }
-}
-@media(max-width:1100px){
-    .dig-filter{
+    .dig-hero{
+        position:relative;
+        min-height:176px;
+        padding:30px 28px;
+        margin-bottom:16px;
+        overflow:hidden;
+        color:#fff;
+        background:
+            radial-gradient(circle at 85% 30%,rgba(25,105,190,.35),transparent 32%),
+            linear-gradient(115deg,#020b16 0%,#071b31 38%,#0b3157 72%,#02070d 100%);
+        box-shadow:0 8px 25px rgba(0,25,55,.18);
+    }
+    .dig-hero::before{
+        content:"";
+        position:absolute;
+        width:420px;
+        height:420px;
+        right:-180px;
+        top:-230px;
+        border-radius:50%;
+        background:rgba(24,112,205,.18);
+        filter:blur(20px);
+    }
+    .dig-hero::after{
+        content:"";
+        position:absolute;
+        width:300px;
+        height:1px;
+        right:80px;
+        bottom:35px;
+        background:linear-gradient(90deg,transparent,rgba(67,158,236,.5),transparent);
+        transform:rotate(-18deg);
+    }
+    .dig-kicker{
+        position:relative;
+        z-index:2;
+        letter-spacing:2px;
+        font-weight:800;
+        margin-bottom:6px;
+    }
+    .dig-title{
+        position:relative;
+        z-index:2;
+        line-height:.92;
+        font-weight:900;
+        margin:0 0 10px;
+        text-transform:uppercase;
+        max-width:650px;
+        font-size: 30px;
+    }
+    .dig-sub{
+        position:relative;
+        z-index:2;
+        opacity:.85;
+    }
+    .dig-new{
+        position:absolute;
+        z-index:3;
+        right:25px;
+        bottom:25px;
+        background:#f47b2b;
+        color:#fff;
+        border:0;
+        padding:12px 20px;
+        font-weight:800;
+        text-decoration:none;
+        transition:.2s;
+    }
+    .dig-new:hover{
+        background:#ff9145;
+        transform:translateY(-2px);
+        box-shadow:0 6px 15px rgba(244,123,43,.3);
+    }
+    .dig-summary{
+        display:grid;
         grid-template-columns:repeat(3,1fr);
+        background:#fff;
+        border:1px solid #ccd9e2;
+        margin-bottom:16px;
+    }
+    .dig-summary-item{
+        min-height:72px;
+        padding:13px 18px;
+        border-right:1px solid #d5dfe7;
+    }
+    .dig-summary-item:last-child{
+        border-right:0;
+    }
+    .dig-label{
+        color:#71869a;
+        text-transform:uppercase;
+        font-weight:800;
+        letter-spacing:.4px;
+    }
+    .dig-number{
+        line-height:1;
+        margin-top:4px;
+        font-weight:900;
+        color:#174473;
+    }
+    .dig-section{
+        background:#fff;
+        border:1px solid #c4d3de;
+        padding:17px;
+        margin-bottom:12px;
+    }
+    .dig-section-title{
+        line-height:1;
+        font-weight:900;
+        color:#174476;
+        text-transform:uppercase;
+    }
+    .dig-section-sub{
+        color:#74899c;
+        margin:6px 0 14px;
+    }
+    .dig-filter{
+        display:grid;
+        grid-template-columns:1.2fr 1.2fr 1.1fr .9fr .9fr auto;
+        gap:9px;
+        border-top:1px solid #d8e1e8;
+        padding-top:14px;
+    }
+    .dig-filter label{
+        display:block;
+        color:#5e7387;
+        font-weight:800;
+        margin-bottom:5px;
+    }
+    .dig-filter select,
+    .dig-filter input{
+        width:100%;
+        height:36px;
+        border:1px solid #bdcdd9;
+        background:#fff;
+        color:#345675;
+        padding:5px 10px;
+        outline:none;
+    }
+    .dig-filter select:focus,
+    .dig-filter input:focus{
+        border-color:#1e568e;
     }
     .dig-filter button{
-        margin-top:0;
-    }
-}
-@media(max-width:800px){
-    .dig-page{
-        padding:12px;
+        height:36px;
+        background:#fff;
+        border:1px solid #aebfce;
+        color:#345a78;
+        font-weight:900;
+        padding:0 15px;
+        margin-top:18px;
     }
     .dig-cards{
+        display:grid;
         grid-template-columns:repeat(2,1fr);
+        gap:8px;
+        margin-bottom:12px;
+    }
+    .dig-card{
+        min-height:91px;
+        background:#fff;
+        border-left:3px solid #23966f;
+        padding:14px 15px;
+        box-shadow:0 2px 7px rgba(30,60,80,.05);
+    }
+    .dig-card.normal{
+        border-left-color:#2467b1;
+    }
+    .dig-card.keras{
+        border-left-color:#d5413b;
+    }
+    .dig-card .big{
+        line-height:1;
+        margin:5px 0;
+        font-weight:900;
+        color:#17446f;
+    }
+    .dig-card .small{
+        color:#7890a3;
+    }
+
+    .dig-area-title{
+        font-weight:900;
+        color:#174476;
+        text-transform:uppercase;
+        margin-bottom:7px;
+    }
+    .dig-area-value{
+        line-height:1;
+        font-weight:900;
+        color:#164b78;
+    }
+    .dig-area-value small{
+        font-weight:600;
+        color:#71869a;
     }
     .dig-area-grid{
-        grid-template-columns:1fr;
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:8px;
     }
     .dig-area-grid-lokasi{
-        grid-template-columns:1fr;
+        display:grid;
+        grid-template-columns:repeat(2,1fr);
+        gap:8px;
     }
-}
-@media (max-width: 600px) {
+    .dig-area-box{
+        min-height:145px;
+        background:#fff;
+        border:1px solid #cbd8e2;
+        padding:13px;
+    }
+    .dig-area-box.area-bagus{
+        border-color:#28a879;
+    }
+    .dig-area-box.area-keras{
+        border-color:#d34842;
+    }
+    .dig-area-head{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:8px;
+    }
+    .dig-table-scroll {
+        max-height: 300px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
 
-    .dig-filter {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        gap: 12px;
+    .dig-table-scroll .dig-table {
         width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
+        border-collapse: collapse;
     }
 
-    .dig-filter > div {
-        width: 100%;
-        min-width: 0;
-        max-width: 100%;
-        box-sizing: border-box;
-    }
-
-    .dig-filter label {
-        display: block;
-        width: 100%;
-        margin-bottom: 6px;
-        font-size: 14px;
-        box-sizing: border-box;
-    }
-
-    .dig-filter select,
-    .dig-filter input {
-        display: block;
-        width: 100% !important;
-        min-width: 0 !important;
-        max-width: 100% !important;
-        height: 46px;
-        box-sizing: border-box !important;
-        padding: 7px 12px;
-        border: 1px solid #bdcdd9;
-        border-radius: 8px;
+    .dig-table-scroll .dig-table thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
         background: #fff;
-        color: #345675;
-        font-size: 16px;
+    }
+    .dig-report-scroll {
+        max-height: 800px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-right: 6px;
     }
 
-    /* Khusus input tanggal */
-    .dig-filter input[type="date"] {
-        width: 100% !important;
-        min-width: 0 !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-        display: block;
-        margin: 0;
-        padding-left: 12px;
-        padding-right: 8px;
-        overflow: hidden;
+
+    .dig-report-scroll::-webkit-scrollbar {
+        width: 6px;
     }
 
-    .dig-filter button {
-        width: 100%;
-        max-width: 100%;
-        height: 46px;
-        margin-top: 2px;
-        box-sizing: border-box;
-        border-radius: 8px;
-        font-size: 16px;
+    .dig-report-scroll::-webkit-scrollbar-thumb {
+        background: #c4c4c4;
+        border-radius: 10px;
     }
-}
+
+    .dig-report-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .area-badge{
+        padding:4px 7px;
+        font-weight:900;
+        white-space:nowrap;
+    }
+    .badge-bagus{
+        background:#dff3e9;
+        color:#188357;
+    }
+    .badge-keras{
+        background:#fbe1df;
+        color:#c43b34;
+    }
+    .dig-mini{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:5px;
+        margin-top:9px;
+    }
+    .dig-mini div{
+        background:#f8fafb;
+        border:1px solid #d6e0e6;
+        padding:7px;
+        color:#71869a;
+    }
+    .dig-mini b{
+        display:block;
+        line-height:1;
+        color:#174476;
+        margin-bottom:3px;
+    }
+    .dig-mini .mini-bagus{
+        background:#f3faf7;
+    }
+    .dig-mini .mini-keras{
+        background:#fff5f4;
+    }
+    .dig-progress{
+        height:6px;
+        background:#e5ebef;
+        margin:11px 0 7px;
+        overflow:hidden;
+    }
+    .dig-progress span{
+        display:block;
+        height:100%;
+    }
+    .area-bagus .dig-progress span{
+        background:#22966f;
+    }
+    .area-keras .dig-progress span{
+        background:#d5413b;
+    }
+    .area-summary{
+        color:#71869a;
+        margin-top:6px;
+    }
+
+    .dig-table{
+        width:100%;
+        border-collapse:collapse;
+    }
+    .dig-table th{
+        background:#eef3f6;
+        color:#617b91;
+        text-align:left;
+        padding:9px;
+    }
+    .dig-table td{
+        border-top:1px solid #dce4e9;
+        padding:9px;
+        color:#345572;
+    }
+    .dig-badge{
+        padding:7px 10px;
+        font-weight:900;
+        white-space:nowrap;
+    }
+    .badge-bagus{
+        background:#dff3e9;
+        color:#188357;
+    }
+    .badge-keras{
+        background:#fbe1df;
+        color:#c43b34;
+    }
+    .dig-report{
+        border:1px solid #cbd8e2;
+        background:#fff;
+        margin-top:9px;
+        padding:14px;
+    }
+    .dig-report-head{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+    }
+    .dig-report-date{
+        color:#7890a4;
+        margin-bottom:3px;
+    }
+    .dig-report-unit{
+        font-weight:900;
+        color:#174476;
+    }
+    .dig-report-grid{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        background:#f5f8fa;
+        margin-top:9px;
+    }
+    .dig-report-grid div{
+        padding:10px 12px;
+        border-right:1px solid #d7e0e7;
+    }
+    .dig-report-grid div:last-child{
+        border-right:0;
+    }
+    .dig-report-grid span{
+        display:block;
+        color:#7b8fa1;
+        text-transform:uppercase;
+        margin-bottom:3px;
+    }
+    .dig-report-grid b{
+        color:#1a4268;
+    }
+    .dig-report-foot{
+        display:flex;
+        align-items:center;
+        margin-top:10px;
+        color:#8293a2;
+    }
+    .dig-report-foot .dig-view{
+        margin-left:8px;
+    }
+    .dig-report-foot .dig-view:first-of-type{
+        margin-left:auto;
+    }
+    .dig-view{
+        border:1px solid #b8cad8;
+        background:#fff;
+        padding:7px 11px;
+        color:#355a78;
+        font-weight:800;
+    }
+    .report-overlay{
+        position:fixed;
+        inset:0;
+        z-index:9999;
+        background:rgba(15,35,52,.78);
+        display:none;
+        align-items:center;
+        justify-content:center;
+        padding:18px;
+    }
+    .report-overlay.show{
+        display:flex;
+    }
+    .report-modal{
+        width:min(765px,100%);
+        max-height:96vh;
+        background:#fff;
+        box-shadow:0 20px 60px rgba(0,0,0,.3);
+        display:flex;
+        flex-direction:column;
+    }
+    .report-header{
+        height:74px;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        padding:12px 18px;
+        border-bottom:1px solid #d7e0e7;
+    }
+    .report-brand{
+        display:flex;
+        align-items:center;
+        gap:10px;
+    }
+    .report-logo{
+        width:42px;
+        height:42px;
+        border-radius:50%;
+        border:1px solid #d5dfe7;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:#1b4d83;
+    }
+    .report-brand-small{
+        color:#607991;
+        font-weight:800;
+        letter-spacing:1.5px;
+    }
+    .report-brand-title{
+        color:#174a80;
+        font-weight:900;
+        letter-spacing:1px;
+    }
+    .report-close{
+        width:34px;
+        height:34px;
+        border:0;
+        background:#edf3f7;
+        color:#42647f;
+        cursor:pointer;
+    }
+    .report-body{
+        padding:30px 38px;
+        overflow-y:auto;
+        background:
+            radial-gradient(circle at 10% 20%,rgba(220,228,234,.2),transparent 25%),
+            #fff;
+    }
+    .report-title{
+        text-align:center;
+        color:#174574;
+    }
+    .report-title h2{
+        margin:0;
+        font-weight:900;
+    }
+    .report-title div{
+        color:#627b91;
+        letter-spacing:1px;
+        margin-top:4px;
+    }
+    .report-line{
+        height:1px;
+        background:#1d5aa0;
+        margin:14px 0 11px;
+    }
+    .report-status{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        padding:8px 18px;
+        border-radius:999px;
+        font-size:13px;
+        font-weight:800;
+        letter-spacing:.5px;
+        margin-bottom:12px;
+        border:1px solid transparent;
+    }
+    .report-status.status-bagus{
+        background:#dcfce7;
+        color:#15803d;
+        border-color:#86efac;
+    }
+    .report-status.status-keras{
+        background:#fee2e2;
+        color:#b91c1c;
+        border-color:#fca5a5;
+    }
+    #reportKategoriBottom.status-bagus{
+        color:#15803d;
+    }
+    #reportKategoriBottom.status-keras{
+        color:#b91c1c;
+    }
+    .report-average{
+        border:2px solid #1c59a0;
+        background:#e7f0fa;
+        text-align:center;
+        padding:18px;
+    }
+    .report-average-label{
+        color:#1d4f82;
+        font-weight:800;
+        letter-spacing:1px;
+    }
+    .report-average-value{
+        color:#15529a;
+        font-weight:900;
+        line-height:1;
+        margin-top:6px;
+        font-size: 60px;
+    }
+    .report-average-unit{
+        color:#24517e;
+        font-weight:800;
+    }
+    .report-average-info{
+        display:flex;
+        justify-content:center;
+        gap:7px;
+        border-top:1px solid #b6cae0;
+        width:max-content;
+        max-width:100%;
+        margin:10px auto 0;
+        padding-top:7px;
+        color:#24517e;
+        font-weight:800;
+    }
+    .report-info{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        border:1px solid #cbd8e2;
+        margin-top:14px;
+    }
+    .report-info > div{
+        min-height:54px;
+        padding:9px 12px;
+        border-right:1px solid #d5dfe7;
+        border-bottom:1px solid #d5dfe7;
+    }
+    .report-info > div:nth-child(even){
+        border-right:0;
+    }
+    .report-info span{
+        display:block;
+        color:#70869a;
+        font-weight:800;
+        margin-bottom:3px;
+    }
+    .report-info b{
+        color:#183f65;
+    }
+    .report-footer-info{
+        display:flex;
+        justify-content:space-between;
+        gap:20px;
+        padding:14px 0 5px;
+        color:#71879a;
+    }
+    .report-pass-section{
+        margin-top:15px;
+        border-top:1px solid #d5dfe7;
+        padding-top:12px;
+    }
+    .report-pass-title{
+        color:#174574;
+        font-weight:900;
+        margin-bottom:7px;
+    }
+    .report-pass-section table{
+        width:100%;
+        border-collapse:collapse;
+    }
+    .report-pass-section th{
+        background:#1e5795;
+        color:#fff;
+        padding:8px;
+        text-align:left;
+    }
+    .report-pass-section td{
+        border:1px solid #d6e0e7;
+        padding:7px 9px;
+        color:#345675;
+    }
+    .report-actions{
+        display:flex;
+        justify-content:flex-end;
+        gap:8px;
+        padding:14px 18px;
+        background:#f1f5f8;
+        border-top:1px solid #d5dfe7;
+    }
+    .report-btn{
+        border:0;
+        padding:11px 18px;
+        font-weight:800;
+        cursor:pointer;
+    }
+    .report-btn-delete{
+        background:#fbe3e1;
+        color:#c43b34;
+        border:1px solid #efc2be;
+    }
+    .report-btn-delete:hover{
+        background:#c43b34;
+        color:#fff;
+    }
+
+    .report-btn-close{
+        background:#e8eef2;
+        color:#365675;
+    }
+    .report-btn-print{
+        background:#e8eef2;
+        color:#365675;
+    }
+    .report-btn-pdf{
+        background:#205798;
+        color:#fff;
+        min-width:180px;
+    }
+    .dig-modal{
+        position:fixed;
+        inset:0;
+        z-index:99999;
+        display:none;
+        align-items:center;
+        justify-content:center;
+        background:rgba(10,28,45,.72);
+        padding:20px;
+    }
+    .dig-modal.show{
+        display:flex;
+    }
+    .dig-modal-box{
+        width:100%;
+        max-width:440px;
+        background:#fff;
+        border:1px solid #d5e0e8;
+        box-shadow:0 20px 60px rgba(0,0,0,.25);
+        text-align:center;
+        padding:30px;
+        animation:digModalIn .2s ease-out;
+    }
+    .dig-modal-icon{
+        width:58px;
+        height:58px;
+        margin:0 auto 15px;
+        border-radius:50%;
+        background:#dff3e7;
+        color:#188357;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-weight:900;
+        border:3px solid #bce4ce;
+    }
+    .dig-modal-icon.error{
+        background:#fbe3e1;
+        color:#c43b34;
+        border-color:#f1c0bc;
+    }
+    .dig-modal-title{
+        color:#174476;
+        font-weight:900;
+        margin-bottom:8px;
+    }
+    .dig-modal-text{
+        color:#71869a;
+        margin-bottom:20px;
+    }
+    .dig-modal-info{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        border:1px solid #d4dee7;
+        margin-bottom:20px;
+        text-align:left;
+    }
+    .dig-modal-info div{
+        padding:12px;
+        background:#f7f9fb;
+        border-right:1px solid #d4dee7;
+    }
+    .dig-modal-info div:last-child{
+        border-right:0;
+    }
+    .dig-modal-info span{
+        display:block;
+        color:#7890a5;
+        margin-bottom:4px;
+    }
+    .dig-modal-info b{
+        color:#174476;
+    }
+    .dig-modal-button{
+        width:100%;
+        height:43px;
+        border:0;
+        background:#205798;
+        color:#fff;
+        font-weight:800;
+        cursor:pointer;
+    }
+    .dig-modal-button:hover{
+        background:#174a82;
+    }
+    .error-button{
+        background:#c43b34;
+    }
+    .validation-toast{
+        position:fixed;
+        top:20px;
+        left:50%;
+        transform:translate(-50%,-140%);
+        z-index:99999;
+        min-width:320px;
+        max-width:520px;
+        background:#3d0505;
+        color:#fff;
+        border-radius:8px;
+        padding:13px 16px;
+        display:flex;
+        align-items:center;
+        gap:10px;
+        box-shadow:0 8px 25px rgba(0,0,0,.25);
+        opacity:0;
+        transition:all .35s ease;
+    }
+    .validation-toast.show{
+        transform:translate(-50%,0);
+        opacity:1;
+    }
+    .validation-toast-icon{
+        width:16px;
+        height:16px;
+        border-radius:50%;
+        background:#ff9b9b;
+        color:#651111;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-weight:900;
+        flex:none;
+    }
+    .validation-toast-title{
+        font-weight:800;
+        margin-bottom:2px;
+    }
+    .validation-toast-message{
+        color:#ffb5b5;
+    }
+    .field-error{
+        border-color:#d63d3d !important;
+        background:#fff8f8 !important;
+    }
+    .field-error-text{
+        color:#d63d3d;
+        margin-top:4px;
+    }
+    @keyframes digModalIn{
+        from{
+            opacity:0;
+            transform:translateY(12px) scale(.97);
+        }
+        to{
+            opacity:1;
+            transform:translateY(0) scale(1);
+        }
+    }
+    @media(max-width:1100px){
+        .dig-filter{
+            grid-template-columns:repeat(3,1fr);
+        }
+        .dig-filter button{
+            margin-top:0;
+        }
+    }
+    @media(max-width:800px){
+        .dig-page{
+            padding:12px;
+        }
+        .dig-cards{
+            grid-template-columns:repeat(2,1fr);
+        }
+        .dig-area-grid{
+            grid-template-columns:1fr;
+        }
+        .dig-area-grid-lokasi{
+            grid-template-columns:1fr;
+        }
+    }
+    @media (max-width: 600px) {
+
+        .dig-filter {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 12px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .dig-filter > div {
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .dig-filter label {
+            display: block;
+            width: 100%;
+            margin-bottom: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .dig-filter select,
+        .dig-filter input {
+            display: block;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            height: 46px;
+            box-sizing: border-box !important;
+            padding: 7px 12px;
+            border: 1px solid #bdcdd9;
+            border-radius: 8px;
+            background: #fff;
+            color: #345675;
+            font-size: 16px;
+        }
+
+        /* Khusus input tanggal */
+        .dig-filter input[type="date"] {
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+            display: block;
+            margin: 0;
+            padding-left: 12px;
+            padding-right: 8px;
+            overflow: hidden;
+        }
+
+        .dig-filter button {
+            width: 100%;
+            max-width: 100%;
+            height: 46px;
+            margin-top: 2px;
+            box-sizing: border-box;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+    }
 </style>
 
 <div class="pc-container">
@@ -1012,32 +1049,36 @@
                     <div class="dig-label">PERUBAHAN PERIODIK</div>
                     <div class="dig-section-title">TREND KUALITAS HARIAN</div>
 
-                    <table class="dig-table">
-                        <thead>
-                            <tr>
-                                <th>Tanggal</th>
-                                <th>Total</th>
-                                <th>Bagus</th>
-                                <th>Keras</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($trend as $tanggal => $item)
+                    <div class="dig-table-scroll">
+                        <table class="dig-table">
+                            <thead>
                                 <tr>
-                                    <td>{{ $tanggal }}</td>
-                                    <td>{{ $item['total'] }}</td>
-                                    <td>{{ $item['bagus'] }}</td>
-                                    <td>{{ $item['keras'] }}</td>
+                                    <th>Tanggal</th>
+                                    <th>Total</th>
+                                    <th>Bagus</th>
+                                    <th>Keras</th>
                                 </tr>
-                            @empty
-                                <tr><td colspan="4">Belum ada data.</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @forelse($trend as $tanggal => $item)
+                                    <tr>
+                                        <td>{{ $tanggal }}</td>
+                                        <td>{{ $item['total'] }}</td>
+                                        <td>{{ $item['bagus'] }}</td>
+                                        <td>{{ $item['keras'] }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4">Belum ada data.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <div>
+            <div class="dig-report-scroll">
                 @forelse($data->take(30) as $item)
                     @php
                         $badge = $item->kategori === 'MATERIAL BAGUS'
@@ -1051,11 +1092,15 @@
                                 <div class="dig-report-date">
                                     {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}, {{ $item->jam }}
                                 </div>
+
                                 <div class="dig-report-unit">
                                     {{ $item->no_unit }} · {{ $item->lokasi }}
                                 </div>
                             </div>
-                            <span class="dig-badge {{ $badge }}">{{ $item->kategori }}</span>
+
+                            <span class="dig-badge {{ $badge }}">
+                                {{ $item->kategori }}
+                            </span>
                         </div>
 
                         <div class="dig-report-grid">
@@ -1063,10 +1108,12 @@
                                 <span>PENGAWAS</span>
                                 <b>{{ $item->nama_pengawas ?: '-' }}</b>
                             </div>
+
                             <div>
                                 <span>AVG. DIGGING TIME</span>
                                 <b>{{ number_format($item->average_digging_time, 2) }} detik</b>
                             </div>
+
                             <div>
                                 <span>SISI AREA</span>
                                 <b>{{ $item->keterangan_area ?: '-' }}</b>
@@ -1075,12 +1122,26 @@
 
                         <div class="dig-report-foot">
                             <span>♙ Operator: {{ $item->nama_operator ?: '-' }}</span>
-                            <button type="button" class="dig-view" onclick="showReport({{ $item->id }})">▣ Lihat laporan</button>
-                            <button type="button" class="dig-view report-btn-delete" onclick="deleteReport({{ $item->id }})">▣ Hapus</button>
+
+                            <button
+                                type="button"
+                                class="dig-view"
+                                onclick="showReport({{ $item->id }})">
+                                ▣ Lihat laporan
+                            </button>
+
+                            <button
+                                type="button"
+                                class="dig-view report-btn-delete"
+                                onclick="deleteReport({{ $item->id }})">
+                                ▣ Hapus
+                            </button>
                         </div>
                     </div>
                 @empty
-                    <div class="dig-section text-center">Belum ada laporan.</div>
+                    <div class="dig-section text-center">
+                        Belum ada laporan.
+                    </div>
                 @endforelse
             </div>
 
