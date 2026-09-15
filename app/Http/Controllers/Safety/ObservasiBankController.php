@@ -46,12 +46,17 @@ class ObservasiBankController extends Controller
         $baseQuery = DB::table('se_observasi_bank as bank')
         ->leftJoin('users as us', 'bank.pic', '=', 'us.id')
         ->leftJoin('ref_departemen as dep', 'bank.departemen_id', '=', 'dep.id')
-        // ->leftJoin('users as us1', 'bank.pengawas1', '=', 'us1.nik')
-        // ->leftJoin('users as us2', 'bank.inspektor2', '=', 'us2.nik')
-        // ->leftJoin('users as us3', 'bank.inspektor3', '=', 'us3.nik')
-        // ->leftJoin('users as us4', 'bank.inspektor4', '=', 'us4.nik')
-        // ->leftJoin('users as us5', 'bank.inspektor5', '=', 'us5.nik')
-        // ->leftJoin('users as us6', 'bank.penanggungjawab', '=', 'us6.nik')
+        ->leftJoin('users as us1', 'bank.petugas1', '=', 'us1.nik')
+        ->leftJoin('users as us2', 'bank.petugas2', '=', 'us2.nik')
+        ->leftJoin('users as us3', 'bank.petugas3', '=', 'us3.nik')
+        ->leftJoin('users as us4', 'bank.petugas4', '=', 'us4.nik')
+        ->leftJoin('users as us5', 'bank.petugas5', '=', 'us5.nik')
+
+        ->leftJoin('ref_departemen as dp1', 'us1.departemen_id', '=', 'dp1.id')
+        ->leftJoin('ref_departemen as dp2', 'us2.departemen_id', '=', 'dp2.id')
+        ->leftJoin('ref_departemen as dp3', 'us3.departemen_id', '=', 'dp3.id')
+        ->leftJoin('ref_departemen as dp4', 'us4.departemen_id', '=', 'dp4.id')
+        ->leftJoin('ref_departemen as dp5', 'us5.departemen_id', '=', 'dp5.id')
         ->select(
             'bank.id',
             'bank.uuid',
@@ -69,6 +74,16 @@ class ObservasiBankController extends Controller
             'bank.jam',
             'bank.pengawas1 as nik_pengawas1',
             'bank.nama_pengawas1',
+            'us1.name as nama_petugas1',
+            'us2.name as nama_petugas2',
+            'us3.name as nama_petugas3',
+            'us4.name as nama_petugas4',
+            'us5.name as nama_petugas5',
+            'dp1.keterangan as departemen_petugas1',
+            'dp2.keterangan as departemen_petugas2',
+            'dp3.keterangan as departemen_petugas3',
+            'dp4.keterangan as departemen_petugas4',
+            'dp5.keterangan as departemen_petugas5',
         )
         ->where('bank.statusenabled', true)
         ->whereBetween(DB::raw('CONVERT(varchar, bank.tanggal, 23)'), [$startTimeFormatted, $endTimeFormatted]);

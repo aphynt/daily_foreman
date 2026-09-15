@@ -94,6 +94,7 @@
                                         <th colspan="2">PIC</th>
                                         <th rowspan="2">Tanggal</th>
                                         <th rowspan="2">Departemen</th>
+                                        <th rowspan="2">Observer</th>
                                         <th rowspan="2">Nama Pekerjaan</th>
                                         <th rowspan="2">Referensi</th>
                                         <th rowspan="2">Lokasi</th>
@@ -114,6 +115,38 @@
                                                 <td>{{ $item->pic }}</td>
                                             <td>{{ date('d-m-Y', strtotime($item->tanggal)) }} {{ date('H:i', strtotime($item->jam)) }}
                                             <td>{{ $item->departemen }}</td>
+                                            <td class="text-cell">
+                                                @php
+                                                    $petugass = [];
+
+                                                    if($item->nama_petugas1){
+                                                        $petugass[] = $item->nama_petugas1 .
+                                                            ($item->departemen_petugas1 ? "\nDept : ".$item->departemen_petugas1 : '');
+                                                    }
+
+                                                    if($item->nama_petugas2){
+                                                        $petugass[] = $item->nama_petugas2 .
+                                                            ($item->departemen_petugas2 ? "\nDept : ".$item->departemen_petugas2 : '');
+                                                    }
+
+                                                    if($item->nama_petugas3){
+                                                        $petugass[] = $item->nama_petugas3 .
+                                                            ($item->departemen_petugas3 ? "\nDept : ".$item->departemen_petugas3 : '');
+                                                    }
+
+                                                    if($item->nama_petugas4){
+                                                        $petugass[] = $item->nama_petugas4 .
+                                                            ($item->departemen_petugas4 ? "\nDept : ".$item->departemen_petugas4 : '');
+                                                    }
+
+                                                    if($item->nama_petugas5){
+                                                        $petugass[] = $item->nama_petugas5 .
+                                                            ($item->departemen_petugas5 ? "\nDept : ".$item->departemen_petugas5 : '');
+                                                    }
+                                                @endphp
+
+                                                {!! nl2br(e(implode("\n\n", $petugass))) !!}
+                                            </td>
                                             <td>{{ $item->nama_pekerjaan }}</td>
                                             <td>{{ $item->referensi }}</td>
                                             <td>{{ $item->lokasi }}</td>
