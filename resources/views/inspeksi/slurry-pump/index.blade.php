@@ -1,4 +1,4 @@
-@include('layout.head', ['title' => 'Inspeksi Slurry Pump'])
+@include('layout.head', ['title' => 'Inspeksi Sump'])
 @include('layout.sidebar')
 @include('layout.header')
 
@@ -11,7 +11,7 @@
                         <ul class="breadcrumb">
                             {{-- <li class="breadcrumb-item"><a href="javascript: void(0)">Home</a></li> --}}
                             <li class="breadcrumb-item"><a href="javascript: void(0)">Inspeksi</a></li>
-                            <li class="breadcrumb-item"><a href="javascript: void(0)">Slurry Pump</a></li>
+                            <li class="breadcrumb-item"><a href="javascript: void(0)">Sump</a></li>
                         </ul>
                     </div>
                     <div class="col-12">

@@ -1,4 +1,4 @@
-@include('layout.head', ['title' => 'Inspeksi Slurry Pump'])
+@include('layout.head', ['title' => 'Inspeksi Sump'])
 @include('layout.sidebar')
 @include('layout.header')
 
@@ -8,7 +8,7 @@
             <div class="page-block">
                 <div class="row align-items-center">
                     <div class="col-sm-12 col-md-6 col-xxl-4">
-                        <h3>Inspeksi Slurry Pump</h3>
+                        <h3>Inspeksi Sump</h3>
                     </div>
                 </div>
             </div>

@@ -383,10 +383,10 @@ class InspeksiFuelSkidController extends Controller
 
             InspeksiFuelSkid::create($dataToInsert);
 
-            return redirect()->route('inspeksi.fuelskid')->with('success', 'Checlist Inspeksi Fuel Skid berhasil disimpan');
+            return redirect()->route('inspeksi.fuelskid')->with('success', 'Checklist Inspeksi Fuel Skid berhasil disimpan');
 
         } catch (\Throwable $th) {
-            return redirect()->back()->with('info', 'Checlist Inspeksi Fuel Skid gagal disimpan' . $th->getMessage());
+            return redirect()->back()->with('info', 'Checklist Inspeksi Fuel Skid gagal disimpan' . $th->getMessage());
         }
     }
 
@@ -398,10 +398,10 @@ class InspeksiFuelSkidController extends Controller
                 'deleted_by' => Auth::user()->id,
             ]);
 
-            return redirect()->route('inspeksi.fuelskid')->with('success', 'Checlist Inspeksi Fuel Skid berhasil dihapus');
+            return redirect()->route('inspeksi.fuelskid')->with('success', 'Checklist Inspeksi Fuel Skid berhasil dihapus');
 
         } catch (\Throwable $th) {
-            return redirect()->route('inspeksi.fuelskid')->with('info', nl2br('Checlist Inspeksi Fuel Skid gagal dihapus..\n' . $th->getMessage()));
+            return redirect()->route('inspeksi.fuelskid')->with('info', nl2br('Checklist Inspeksi Fuel Skid gagal dihapus..\n' . $th->getMessage()));
         }
     }
 

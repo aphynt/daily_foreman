@@ -161,6 +161,18 @@ return [
             'prefix'   => '',
         ],
 
+        'satu_sims' => [
+            'driver'   => 'sqlsrv',
+            'host'     => '10.72.5.80',
+            'port'     => '1433',
+            'database' => 'db_payroll',
+            'username' => 'sims',
+            'password' => 'sims!234%',
+            'charset'  => 'utf8',
+            'collation' => 'utf8_unicode_ci',
+            'prefix'   => '',
+        ],
+
         'daily' => [
             'driver'   => 'sqlsrv',
             'host'     => '10.10.3.73',

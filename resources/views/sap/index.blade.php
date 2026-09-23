@@ -19,16 +19,29 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <form method="GET" action="">
+                                    <div class="input-group">
+                                        <input type="text" name="search" class="form-control"
+                                            placeholder="Cari nama form / departemen..."
+                                            value="{{ request('search') }}">
+                                        <button class="btn btn-primary">
+                                            <i class="fas fa-search"></i> Cari
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         <div class="dt-responsive table-responsive">
                             <table id="example" class="table table-striped table-hover table-bordered nowrap">
                                 <thead style="text-align: center; vertical-align: middle;">
-                                   <tr>
+                                    <tr>
                                         <th>No</th>
                                         <th>Nama File</th>
                                         <th>Departemen</th>
                                         <th>Aksi</th>
                                     </tr>
-
                                 </thead>
                                 <tbody>
                                     @foreach ($sap as $s)
@@ -47,7 +60,6 @@
                                     @endforeach
                                 </tbody>
                             </table>
-
                         </div>
                     </div>
                 </div>
@@ -57,3 +69,4 @@
 </section>
 
 @include('layout.footer')
+

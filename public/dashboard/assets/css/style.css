@@ -25196,7 +25196,7 @@ pre[class*=language-] {
 
     .page-header .h5,
     .page-header h5 {
-        padding-bottom: 5px;
+        /* padding-bottom: 5px; */
         margin-bottom: 0;
         border-right: none;
         font-size: 14px

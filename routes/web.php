@@ -96,7 +96,12 @@ Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::get('/privacy-policy', [AuthController::class, 'privacyPolicy'])->name('privacy.policy');
 Route::post('/login/post', [AuthController::class, 'login_post'])->name('login.post');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::post('/logout-session', [AuthController::class,'logout_session'])->name('session.logout');
+Route::post('/logout-session', [AuthController::class, 'logout_session'])->name('session.logout');
+Route::get('/lupa-password', [AuthController::class, 'forgotPassword'])->name('password.recovery');
+Route::post('/lupa-password/satu-sims', [AuthController::class, 'resetFromSatuSims'])->name('password.recovery.satu-sims');
+Route::post('/lupa-password/verifikasi-manual', [AuthController::class, 'verifyManualReset'])->name('password.recovery.manual.verify');
+Route::get('/lupa-password/password-baru', [AuthController::class, 'manualResetForm'])->name('password.recovery.manual.form');
+Route::post('/lupa-password/password-baru', [AuthController::class, 'updateManualPassword'])->name('password.recovery.manual.update');
 
 //Payload & Ritation API
 Route::get('/payloadritation/api', [PayloadRitationController::class, 'api'])->name('payloadritation.api');
@@ -576,14 +581,14 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/inspeksi/gudangb3/download/{uuid}', [InspeksiGudangB3Controller::class, 'download'])->name('inspeksi.gudangb3.download');
 
     //Inspeksi Sump
-    Route::get('/inspeksi/sump', [InspeksiSumpController::class, 'index'])->name('inspeksi.sump');
-    Route::get('/inspeksi/sump/insert', [InspeksiSumpController::class, 'insert'])->name('inspeksi.sump.insert')->middleware('canAccess');
-    Route::post('/inspeksi/sump/post', [InspeksiSumpController::class, 'post'])->name('inspeksi.sump.post');
-    Route::get('/inspeksi/sump/delete/{uuid}', [InspeksiSumpController::class, 'delete'])->name('inspeksi.sump.delete');
-    Route::get('/inspeksi/sump/preview/{uuid}', [InspeksiSumpController::class, 'preview'])->name('inspeksi.sump.preview');
-    Route::get('/inspeksi/sump/bundlepdf', [InspeksiSumpController::class, 'bundlepdf'])->name('inspeksi.sump.bundlepdf');
-    Route::get('/inspeksi/sump/cetak/{uuid}', [InspeksiSumpController::class, 'cetak'])->name('inspeksi.sump.cetak');
-    Route::get('/inspeksi/sump/download/{uuid}', [InspeksiSumpController::class, 'download'])->name('inspeksi.sump.download');
+    // Route::get('/inspeksi/sump', [InspeksiSumpController::class, 'index'])->name('inspeksi.sump');
+    // Route::get('/inspeksi/sump/insert', [InspeksiSumpController::class, 'insert'])->name('inspeksi.sump.insert')->middleware('canAccess');
+    // Route::post('/inspeksi/sump/post', [InspeksiSumpController::class, 'post'])->name('inspeksi.sump.post');
+    // Route::get('/inspeksi/sump/delete/{uuid}', [InspeksiSumpController::class, 'delete'])->name('inspeksi.sump.delete');
+    // Route::get('/inspeksi/sump/preview/{uuid}', [InspeksiSumpController::class, 'preview'])->name('inspeksi.sump.preview');
+    // Route::get('/inspeksi/sump/bundlepdf', [InspeksiSumpController::class, 'bundlepdf'])->name('inspeksi.sump.bundlepdf');
+    // Route::get('/inspeksi/sump/cetak/{uuid}', [InspeksiSumpController::class, 'cetak'])->name('inspeksi.sump.cetak');
+    // Route::get('/inspeksi/sump/download/{uuid}', [InspeksiSumpController::class, 'download'])->name('inspeksi.sump.download');
 
     //Inspeksi Element Penilaian Terhadap Kantin
     Route::get('/inspeksi/penilaianterhadapkantin', [InspeksiElementPenilaianTerhadapKantinController::class, 'index'])->name('inspeksi.penilaianterhadapkantin');

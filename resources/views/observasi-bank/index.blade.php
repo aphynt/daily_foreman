@@ -91,7 +91,7 @@
                                     <tr>
                                         <th rowspan="2">No</th>
                                         <th rowspan="2">Tgl Pembuatan</th>
-                                        <th colspan="2">PIC</th>
+                                        <th colspan="2">Pembuat</th>
                                         <th rowspan="2">Tanggal</th>
                                         <th rowspan="2">Departemen</th>
                                         <th rowspan="2">Observer</th>

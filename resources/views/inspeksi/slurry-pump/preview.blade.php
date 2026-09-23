@@ -1,4 +1,4 @@
-@include('layout.head', ['title' => 'Inspeksi Slurry Pump'])
+@include('layout.head', ['title' => 'Inspeksi Pump'])
 @include('layout.sidebar')
 @include('layout.header')
 @php
@@ -27,7 +27,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <h5 style="text-align: center;">DAFTAR PERIKSA INSPEKSI SLURRY PUMP</h5>
+                            <h5 style="text-align: center;">DAFTAR PERIKSA INSPEKSI SUMP</h5>
                             <div class="col-sm-3">
                                 <div class="border rounded p-3">
                                     <h6 class="mb-0">Tanggal:</h6>
