@@ -429,11 +429,26 @@ MSG;
             ->leftJoin('users as us', 'sr.foreman_id', 'us.id')
             ->leftJoin('ref_departemen as dep', 'sr.departemen_pic', 'dep.id')
             ->leftJoin('ref_departemen as dep2', 'us.departemen_id', 'dep2.id')
-            ->leftJoin('users as u1', 'sr.inspektor1', '=', 'u1.name')
-            ->leftJoin('users as u2', 'sr.inspektor2', '=', 'u2.name')
-            ->leftJoin('users as u3', 'sr.inspektor3', '=', 'u3.name')
-            ->leftJoin('users as u4', 'sr.inspektor4', '=', 'u4.name')
-            ->leftJoin('users as u5', 'sr.inspektor5', '=', 'u5.name')
+            ->leftJoin('users as u1', function ($join) {
+                $join->on('sr.inspektor1', '=', 'u1.name')
+                    ->where('u1.statusenabled', 1);
+            })
+            ->leftJoin('users as u2', function ($join) {
+                $join->on('sr.inspektor2', '=', 'u2.name')
+                    ->where('u2.statusenabled', 1);
+            })
+            ->leftJoin('users as u3', function ($join) {
+                $join->on('sr.inspektor3', '=', 'u3.name')
+                    ->where('u3.statusenabled', 1);
+            })
+            ->leftJoin('users as u4', function ($join) {
+                $join->on('sr.inspektor4', '=', 'u4.name')
+                    ->where('u4.statusenabled', 1);
+            })
+            ->leftJoin('users as u5', function ($join) {
+                $join->on('sr.inspektor5', '=', 'u5.name')
+                    ->where('u5.statusenabled', 1);
+            })
 
             ->leftJoin('ref_departemen as dp1', 'u1.departemen_id', '=', 'dp1.id')
             ->leftJoin('ref_departemen as dp2', 'u2.departemen_id', '=', 'dp2.id')
