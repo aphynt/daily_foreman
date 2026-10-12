@@ -548,7 +548,7 @@ class P2HController extends Controller
                 ? (int)$shiftP2H
                 : null;
 
-            $cluster = in_array($request->cluster, ['EX','HD','MG','BD'])
+            $cluster = in_array($request->cluster, ['EX','HD','MG','BD', 'FT', 'WT'])
                 ? $request->cluster
                 : null;
 
@@ -1484,31 +1484,21 @@ class P2HController extends Controller
 
     public function detail(Request $request)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | CHECKLIST GROUP
-        |--------------------------------------------------------------------------
-        */
-        $groups = DB::connection('focus')
-            ->table('FLT_EQUCHECKLISTGROUP')
-            ->select(
-                'EQU_TYPEID',
-                'CHECKLISTGROUPID',
-                'CHECKLISTGROUPDESCRIPTION'
-            )
-            ->get()
-            ->keyBy(fn($row) =>
-                strtoupper(trim($row->EQU_TYPEID))
-                . '_'
-                . strtoupper(trim($row->CHECKLISTGROUPID))
-            );
+        $oprReportTime = Carbon::parse(
+            $request->input('OPR_REPORTTIME')
+        )->format('Y-m-d H:i:s');
 
-        /*
-        |--------------------------------------------------------------------------
-        | CHECKLIST ITEM MASTER
-        |--------------------------------------------------------------------------
-        */
-        $checklistItems = DB::connection('focus')
+        $vhcId = $request->input('VHC_ID');
+
+        $makeChecklistKey = static function ($equTypeId, $groupId, $itemId) {
+            return strtoupper(trim((string) $equTypeId))
+                . '|'
+                . strtoupper(trim((string) $groupId))
+                . '|'
+                . strtoupper(trim((string) $itemId));
+        };
+
+        $checklistMap = DB::connection('focus')
             ->table('FLT_EQUCHECKLISTITEM')
             ->select(
                 'EQU_TYPEID',
@@ -1516,56 +1506,15 @@ class P2HController extends Controller
                 'CHECKLISTITEMID',
                 'CHECKLISTITEMDESCRIPTION'
             )
-            ->get();
+            ->get()
+            ->keyBy(function ($item) use ($makeChecklistKey) {
+                return $makeChecklistKey(
+                    $item->EQU_TYPEID,
+                    $item->CHECKLISTGROUPID,
+                    $item->CHECKLISTITEMID
+                );
+            });
 
-        /*
-|--------------------------------------------------------------------------
-| CHECKLIST ITEM MASTER
-|--------------------------------------------------------------------------
-*/
-$checklistItems = DB::connection('focus')
-    ->table('FLT_EQUCHECKLISTITEM')
-    ->select(
-        'EQU_TYPEID',
-        'CHECKLISTGROUPID',
-        'CHECKLISTITEMID',
-        'CHECKLISTITEMDESCRIPTION'
-    )
-    ->get();
-
-$checklistMap = [];
-
-foreach ($checklistItems as $item) {
-
-    $groupKey = strtoupper(
-        trim((string)$item->CHECKLISTGROUPID)
-    );
-
-    $itemKey = trim(
-        (string)$item->CHECKLISTITEMID
-    );
-
-    $equTypeId = strtoupper(
-        trim((string)$item->EQU_TYPEID)
-    );
-
-    $checklistMap[$groupKey][$itemKey][$equTypeId]
-        = $item->CHECKLISTITEMDESCRIPTION;
-}
-        /*
-        |--------------------------------------------------------------------------
-        | REPORT TIME
-        |--------------------------------------------------------------------------
-        */
-        $oprReportTime = Carbon::parse(
-            $request['OPR_REPORTTIME']
-        )->format('Y-m-d H:i:s');
-
-        /*
-        |--------------------------------------------------------------------------
-        | DETAIL FROM POSTGRES
-        |--------------------------------------------------------------------------
-        */
         $detail = DB::connection('p2h')
             ->table('opr_oprchecklistitem as a')
             ->select(
@@ -1584,10 +1533,7 @@ foreach ($checklistItems as $item) {
                 'a.opr_shiftno',
                 'a.vhc_id'
             )
-            ->where(
-                'a.vhc_id',
-                $request['VHC_ID']
-            )
+            ->where('a.vhc_id', $vhcId)
             ->whereRaw(
                 "date_trunc('second', a.opr_reporttime) = ?::timestamp",
                 [$oprReportTime]
@@ -1596,87 +1542,57 @@ foreach ($checklistItems as $item) {
             ->orderBy('a.checklistitemid')
             ->get();
 
-        /*
-        |--------------------------------------------------------------------------
-        | DESCRIPTION MAPPING
-        |--------------------------------------------------------------------------
-        */
-        $groupKeys = array_keys($checklistMap);
+        if ($detail->isEmpty()) {
+            abort(404, 'Data P2H tidak ditemukan.');
+        }
 
-        usort($groupKeys, fn($a, $b) =>
-            strlen($b) <=> strlen($a)
-        );
+        $detail = $detail
+            ->map(function ($row) use ($checklistMap, $makeChecklistKey) {
 
-        $detail = $detail->map(function ($row)
-            use ($groups, $checklistMap) {
-
-            $groupId = strtoupper(
-                trim((string)$row->checklistgroupid)
-            );
-
-            $itemId = trim(
-                (string)$row->checklistitemid
-            );
-
-            $equTypeId = strtoupper(
-                trim((string)$row->equ_typeid)
-            );
-
-            $description = $checklistMap[$groupId][$itemId][$equTypeId]
-                ?? null;
-
-            if ($description === null) {
-
-                $description = collect(
-                    $checklistMap[$groupId][$itemId] ?? []
-                )->first();
-            }
-
-            $row->checklistitemdescription =
-                $description ?? 'Deskripsi tidak tersedia';
-
-            return $row;
-
-        })
-        ->sortBy('checklistval')
-        ->unique(fn($row) =>
-            strtoupper(
-                trim((string)$row->checklistgroupid)
-            )
-            . '|'
-            . strtoupper(
-                trim((string)$row->checklistitemdescription)
-            )
-        )
-        ->values();
-
-        /*
-        |--------------------------------------------------------------------------
-        | COUNT AA / A
-        |--------------------------------------------------------------------------
-        */
-        $jumlahAATerisi = $detail->filter(function ($item) {
-
-            return $item->checklistval == 0
-                && (
-                    $item->checklistgroupid == 'AA'
-                    || $item->checklistgroupid == 'A'
+                $key = $makeChecklistKey(
+                    $row->equ_typeid,
+                    $row->checklistgroupid,
+                    $row->checklistitemid
                 );
 
-        })->count();
+                $master = $checklistMap->get($key);
 
-        /*
-        |--------------------------------------------------------------------------
-        | HEADER POSTGRES
-        |--------------------------------------------------------------------------
-        */
+                $row->checklistitemdescription = $master
+                    ? $master->CHECKLISTITEMDESCRIPTION
+                    : 'MASTER TIDAK DITEMUKAN (' . $key . ')';
+
+                return $row;
+            })
+            ->unique(function ($row) use ($makeChecklistKey) {
+                return $makeChecklistKey(
+                    $row->equ_typeid,
+                    $row->checklistgroupid,
+                    $row->checklistitemid
+                );
+            })
+            ->values();
+
+        $jumlahAATerisi = $detail
+            ->filter(function ($item) {
+
+                $groupId = strtoupper(
+                    trim((string) $item->checklistgroupid)
+                );
+
+                return (string) $item->checklistval === '0'
+                    && in_array($groupId, ['A', 'AA'], true);
+            })
+            ->count();
+
+        $firstDetail = $detail->first();
+
         $checkdataP2H = ChecklistP2H::where(
                 'vhc_id',
-                $detail->first()->vhc_id
+                $firstDetail->vhc_id
             )
             ->where(
                 'opr_shiftno',
-                $detail->first()->opr_shiftno
+                $firstDetail->opr_shiftno
             )
             ->whereRaw(
                 "date_trunc('second', opr_reporttime) = ?::timestamp",
@@ -1684,270 +1600,145 @@ foreach ($checklistItems as $item) {
             )
             ->first();
 
-        /*
-        |--------------------------------------------------------------------------
-        | VERIFIKASI MEKANIK
-        |--------------------------------------------------------------------------
-        */
-        $verifikasiMekanik = false;
+        $verifikasiMekanik = $checkdataP2H !== null
+            && $checkdataP2H->verified_mekanik !== null;
 
         $detailP2H = collect();
 
-        if ($checkdataP2H != null) {
+        if ($verifikasiMekanik) {
 
-            if ($checkdataP2H->verified_mekanik != null) {
+            $detailP2H = DB::connection('p2h')
+                ->table('opr_oprchecklistitem')
+                ->select(
+                    'uuid as UUID',
+                    'equ_typeid as EQU_TYPEID',
+                    'checklistgroupid as CHECKLISTGROUPID',
+                    'checklistitemid as CHECKLISTITEMID',
+                    'checklistnotes as CHECKLISTNOTES',
+                    'checklistval as CHECKLISTVAL',
+                    'catatan_mekanik as CATATAN_MEKANIK',
+                    'kbj as KBJ',
+                    'jawaban as JAWABAN',
+                    'opr_reporttime as OPR_REPORTTIME',
+                    'opr_shiftdate as OPR_SHIFTDATE',
+                    'opr_shiftno as OPR_SHIFTNO',
+                    'vhc_id as VHC_ID'
+                )
+                ->where(
+                    'vhc_id',
+                    $checkdataP2H->vhc_id
+                )
+                ->whereRaw(
+                    "date_trunc('second', opr_reporttime) = ?::timestamp",
+                    [
+                        Carbon::parse(
+                            $checkdataP2H->opr_reporttime
+                        )->format('Y-m-d H:i:s')
+                    ]
+                )
+                ->orderBy('checklistgroupid')
+                ->orderBy('checklistitemid')
+                ->get();
 
-                $verifikasiMekanik = true;
+            $detailP2H = $detailP2H
+                ->map(function ($item) use (
+                    $checklistMap,
+                    $makeChecklistKey
+                ) {
 
-                $detailP2H = DB::connection('p2h')
-                    ->table('opr_oprchecklistitem')
-                    ->select(
-                        'uuid as UUID',
-                        'checklistgroupid as CHECKLISTGROUPID',
-                        'checklistitemid as CHECKLISTITEMID',
-                        'checklistnotes as CHECKLISTNOTES',
-                        'checklistval as CHECKLISTVAL',
-                        'catatan_mekanik as CATATAN_MEKANIK',
-                        'kbj as KBJ',
-                        'jawaban as JAWABAN',
-                        'opr_reporttime as OPR_REPORTTIME',
-                        'opr_shiftdate as OPR_SHIFTDATE',
-                        'opr_shiftno as OPR_SHIFTNO',
-                        'vhc_id as VHC_ID'
-                    )
-                    ->where(
-                        'vhc_id',
-                        $checkdataP2H->vhc_id
-                    )
-                    ->whereRaw(
-                        "date_trunc('second', opr_reporttime) = ?::timestamp",
-                        [
-                            Carbon::parse(
-                                $checkdataP2H->opr_reporttime
-                            )->format('Y-m-d H:i:s')
-                        ]
-                    )
-                    ->orderBy('checklistgroupid')
-                    ->orderBy('checklistitemid')
-                    ->get();
-
-                $detailP2H = $detailP2H->map(function ($item)
-                    use ($checklistMap) {
-
-                    $groupId = strtoupper(
-                        trim((string)$item->CHECKLISTGROUPID)
+                    $key = $makeChecklistKey(
+                        $item->EQU_TYPEID,
+                        $item->CHECKLISTGROUPID,
+                        $item->CHECKLISTITEMID
                     );
 
-                    $itemId = trim(
-                        (string)$item->CHECKLISTITEMID
-                    );
+                    $master = $checklistMap->get($key);
 
-                    $equTypeId = strtoupper(
-                        trim((string)($item->EQU_TYPEID ?? ''))
-                    );
-
-                    $description =
-                        $checklistMap[$groupId][$itemId][$equTypeId]
-                        ?? null;
-
-                    if ($description === null) {
-
-                        $description = collect(
-                            $checklistMap[$groupId][$itemId] ?? []
-                        )->first();
-                    }
-
-                    $item->CHECKLISTITEMDESCRIPTION =
-                        $description ?? 'Deskripsi tidak tersedia';
+                    $item->CHECKLISTITEMDESCRIPTION = $master
+                        ? $master->CHECKLISTITEMDESCRIPTION
+                        : 'MASTER TIDAK DITEMUKAN (' . $key . ')';
 
                     return $item;
-
                 })
-                ->unique(function ($item) {
-
-                    return strtoupper(
-                        trim($item->CHECKLISTGROUPID)
-                    )
-                    . '|'
-                    . trim($item->CHECKLISTITEMID);
-
+                ->unique(function ($item) use ($makeChecklistKey) {
+                    return $makeChecklistKey(
+                        $item->EQU_TYPEID,
+                        $item->CHECKLISTGROUPID,
+                        $item->CHECKLISTITEMID
+                    );
                 })
                 ->values();
-
-            } else {
-
-                $verifikasiMekanik = false;
-            }
         }
 
-        if ($checkdataP2H == null) {
+        if ($checkdataP2H === null) {
 
-            ChecklistP2H::create([
-
-                'uuid' =>
-                    (string)Uuid::uuid4()->toString(),
-
+            $checkdataP2H = ChecklistP2H::create([
+                'uuid' => (string) Uuid::uuid4()->toString(),
                 'statusenabled' => true,
-
-                'sys_createdby' =>
-                    Auth::user()->nik,
-
+                'sys_createdby' => Auth::user()->nik,
                 'sys_createdat' => now(),
-
-                'vhc_id' =>
-                    $detail->first()->vhc_id,
-
-                'mtr_hourmeter' =>
-                    $request['MTR_HOURMETER'],
-
-                'opr_shiftno' =>
-                    $detail->first()->opr_shiftno,
-
-                'opr_reporttime' =>
-                    $detail->first()->opr_reporttime,
-
-                'opr_shiftdate' =>
-                    $detail->first()->opr_shiftdate,
-
-                'verified_operator' =>
-                    $request['OPR_NRP'],
-
-                'dateverified_operator' =>
-                    $detail->first()->opr_reporttime,
+                'vhc_id' => $firstDetail->vhc_id,
+                'mtr_hourmeter' => $request->input('MTR_HOURMETER'),
+                'opr_shiftno' => $firstDetail->opr_shiftno,
+                'opr_reporttime' => $firstDetail->opr_reporttime,
+                'opr_shiftdate' => $firstDetail->opr_shiftdate,
+                'verified_operator' => $request->input('OPR_NRP'),
+                'dateverified_operator' => $firstDetail->opr_reporttime,
             ]);
         }
 
-
         $detail = $detail->map(function ($row) {
 
-            return (object)[
-
-                'ID' =>
-                    $row->id,
-
-                    'UUID' =>
-                    $row->uuid,
-
-                'EQU_TYPEID' =>
-                    strtoupper($row->equ_typeid ?? ''),
-
-                'CHECKLISTGROUPID' =>
-                    strtoupper($row->checklistgroupid ?? ''),
-
-                'CHECKLISTITEMID' =>
-                    $row->checklistitemid,
-
-                'CHECKLISTNOTES' =>
-                    $row->checklistnotes,
-
-                'CHECKLISTVAL' =>
-                    $row->checklistval,
-
-                'CATATAN_MEKANIK' =>
-                    $row->catatan_mekanik,
-
-                'KBJ' =>
-                    $row->kbj,
-
-                'JAWABAN' =>
-                    $row->jawaban,
-
-                'OPR_REPORTTIME' =>
-                    $row->opr_reporttime,
-
-                'OPR_SHIFTDATE' =>
-                    $row->opr_shiftdate,
-
-                'OPR_SHIFTNO' =>
-                    $row->opr_shiftno,
-
-                'VHC_ID' =>
-                    strtoupper($row->vhc_id ?? ''),
-
-                'CHECKLISTITEMDESCRIPTION' =>
-                    $row->checklistitemdescription ?? null,
+            return (object) [
+                'ID' => $row->id,
+                'UUID' => $row->uuid,
+                'EQU_TYPEID' => strtoupper(
+                    trim((string) $row->equ_typeid)
+                ),
+                'CHECKLISTGROUPID' => strtoupper(
+                    trim((string) $row->checklistgroupid)
+                ),
+                'CHECKLISTITEMID' => $row->checklistitemid,
+                'CHECKLISTNOTES' => $row->checklistnotes,
+                'CHECKLISTVAL' => $row->checklistval,
+                'CATATAN_MEKANIK' => $row->catatan_mekanik,
+                'KBJ' => $row->kbj,
+                'JAWABAN' => $row->jawaban,
+                'OPR_REPORTTIME' => $row->opr_reporttime,
+                'OPR_SHIFTDATE' => $row->opr_shiftdate,
+                'OPR_SHIFTNO' => $row->opr_shiftno,
+                'VHC_ID' => strtoupper(
+                    trim((string) $row->vhc_id)
+                ),
+                'CHECKLISTITEMDESCRIPTION' => $row->checklistitemdescription,
             ];
-        });
+        })->values();
 
-        // dd($detail);
-
-        /*
-        |--------------------------------------------------------------------------
-        | VIEW
-        |--------------------------------------------------------------------------
-        */
         $prefix = substr(
-            $detail->first()->VHC_ID,
+            strtoupper(trim((string) $firstDetail->vhc_id)),
             0,
             2
         );
 
+        $viewMap = [
+            'EX' => 'safety.p2h.detail.ex',
+            'HD' => 'safety.p2h.detail.hd',
+            'BD' => 'safety.p2h.detail.bd',
+            'MG' => 'safety.p2h.detail.mg',
+        ];
 
-        if ($prefix == 'EX') {
+        $view = $viewMap[$prefix] ?? 'safety.p2h.detail.hd';
 
-            return view(
-                'safety.p2h.detail.ex',
-                compact(
-                    'detail',
-                    'jumlahAATerisi',
-                    'verifikasiMekanik',
-                    'detailP2H',
-                    'checkdataP2H'
-                )
-            );
-
-        } elseif ($prefix == 'HD') {
-
-            return view(
-                'safety.p2h.detail.hd',
-                compact(
-                    'detail',
-                    'jumlahAATerisi',
-                    'verifikasiMekanik',
-                    'detailP2H',
-                    'checkdataP2H'
-                )
-            );
-
-        } elseif ($prefix == 'BD') {
-
-            return view(
-                'safety.p2h.detail.bd',
-                compact(
-                    'detail',
-                    'jumlahAATerisi',
-                    'verifikasiMekanik',
-                    'detailP2H',
-                    'checkdataP2H'
-                )
-            );
-
-        } elseif ($prefix == 'MG') {
-
-            return view(
-                'safety.p2h.detail.mg',
-                compact(
-                    'detail',
-                    'jumlahAATerisi',
-                    'verifikasiMekanik',
-                    'detailP2H',
-                    'checkdataP2H'
-                )
-            );
-
-        } else {
-
-            return view(
-                'safety.p2h.detail.hd',
-                compact(
-                    'detail',
-                    'jumlahAATerisi',
-                    'verifikasiMekanik',
-                    'detailP2H',
-                    'checkdataP2H'
-                )
-            );
-        }
+        return view(
+            $view,
+            compact(
+                'detail',
+                'jumlahAATerisi',
+                'verifikasiMekanik',
+                'detailP2H',
+                'checkdataP2H'
+            )
+        );
     }
 
     public function preview($uuid)

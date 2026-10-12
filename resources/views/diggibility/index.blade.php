@@ -1079,7 +1079,7 @@
             </div>
 
             <div class="dig-report-scroll">
-                @forelse($data->take(30) as $item)
+                @forelse($data->take(20) as $item)
                     @php
                         $badge = $item->kategori === 'MATERIAL BAGUS'
                             ? 'badge-bagus'
@@ -1439,10 +1439,10 @@
 
     document.getElementById('btnSendWA').addEventListener('click', async function () {
         if (!currentReportId) {
-            Swal.fire({ 
-                icon: 'warning', 
-                title: 'Peringatan', 
-                text: 'Pilih laporan terlebih dahulu!' 
+            Swal.fire({
+                icon: 'warning',
+                title: 'Peringatan',
+                text: 'Pilih laporan terlebih dahulu!'
             });
             return;
         }
@@ -1473,8 +1473,8 @@
                 const formData = new FormData();
                 formData.append('image', blob, `Digging_Time_${currentReportId}.png`);
 
-                const token = document.querySelector('meta[name="csrf-token"]') 
-                    ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') 
+                const token = document.querySelector('meta[name="csrf-token"]')
+                    ? document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     : '{{ csrf_token() }}';
 
                 const sendReq = await fetch("{{ url('/diggibility/send-whatsapp') }}/" + currentReportId, {

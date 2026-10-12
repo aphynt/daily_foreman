@@ -525,7 +525,7 @@
                                 <div class="stat-label">Total Bucket</div>
                                 <div class="stat-value">
                                     <span id="totalPasses">0</span>
-                                    <small style="font-size:10px">/ maks. 30</small>
+                                    <small style="font-size:10px">/ maks. 20</small>
                                 </div>
                             </div>
 
@@ -554,7 +554,7 @@
                         </button>
 
                         <div class="passes-grid" id="passesGrid">
-                            @for($i = 1; $i <= 30; $i++)
+                            @for($i = 1; $i <= 20; $i++)
                                 <div class="pass-box" data-pass="{{ $i }}">{{ $i }}</div>
                             @endfor
                         </div>
@@ -880,7 +880,7 @@
     }
 
     function startDigging() {
-        if (passes.length >= 30) { alert('Maksimal 30 pass.'); return; }
+        if (passes.length >= 20) { alert('Maksimal 3=20 pass.'); return; }
         if (startTime) return;
         startTime = Date.now();
         updateControlButton();
@@ -957,7 +957,7 @@
                 `;
             }
         });
-        if (startTime && passes.length < 30) {
+        if (startTime && passes.length < 20) {
             const box = document.querySelector(`.pass-box[data-pass="${passes.length + 1}"]`);
             box?.classList.add('current');
             box?.insertAdjacentHTML('beforeend','<span class="pass-time">RUNNING</span>');

@@ -74,6 +74,8 @@
                                     <option value="HD">HD</option>
                                     <option value="MG">MG</option>
                                     <option value="BD">BD</option>
+                                    <option value="FT">FT</option>
+                                    <option value="WT">WT</option>
                                 </select>
                             </div>
                             <div class="col-12 col-md-2 mb-2">
