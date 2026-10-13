@@ -42,17 +42,20 @@ class DiggibilityController extends Controller
             $query->where('jenis_material', $request->jenis_material);
         }
 
-        if ($request->tanggal_mulai) {
-            $query->whereDate('tanggal', '>=', $request->tanggal_mulai);
-        }
+        $tanggalMulai = $request->input('tanggal_mulai') ?: now()->toDateString();
+        $tanggalSampai = $request->input('tanggal_sampai') ?: now()->toDateString();
 
-        if ($request->tanggal_sampai) {
-            $query->whereDate('tanggal', '<=', $request->tanggal_sampai);
-        }
+        $laporan = (clone $query)
+            ->whereDate('tc_diggibility_timesession.tanggal', '>=', $tanggalMulai)
+            ->whereDate('tc_diggibility_timesession.tanggal', '<=', $tanggalSampai)
+            ->with('passes')
+            ->orderByDesc('tc_diggibility_timesession.tanggal')
+            ->orderByDesc('tc_diggibility_timesession.id')
+            ->get();
 
         $data = $query
             ->with('passes')
-            ->orderByDesc('id')
+            ->orderByDesc('tc_diggibility_timesession.id')
             ->get();
 
         $totalLaporan = $data->count();
@@ -153,6 +156,7 @@ class DiggibilityController extends Controller
 
         return view('diggibility.index', compact(
             'data',
+            'laporan',
             'totalLaporan',
             'totalPengawas',
             'totalBagus',
@@ -370,7 +374,7 @@ class DiggibilityController extends Controller
             ->select(
                 'tc_diggibility_timesession.*',
                 'users.name as nama_pic',
-                'users.no_hp' 
+                'users.no_hp'
             )
             ->with('passes')
             ->firstOrFail();

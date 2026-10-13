@@ -966,12 +966,12 @@
 
                     <div>
                         <label>DARI TANGGAL</label>
-                        <input type="date" name="tanggal_mulai" value="{{ request('tanggal_mulai') }}">
+                        <input type="date" name="tanggal_mulai" value="{{ request('tanggal_mulai', now()->toDateString()) }}">
                     </div>
 
                     <div>
                         <label>SAMPAI TANGGAL</label>
-                        <input type="date" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}">
+                        <input type="date" name="tanggal_sampai" value="{{ request('tanggal_sampai', now()->toDateString()) }}">
                     </div>
 
                     <button type="submit">TERAPKAN</button>
@@ -1079,7 +1079,7 @@
             </div>
 
             <div class="dig-report-scroll">
-                @forelse($data->take(20) as $item)
+                @forelse($laporan as $item)
                     @php
                         $badge = $item->kategori === 'MATERIAL BAGUS'
                             ? 'badge-bagus'
