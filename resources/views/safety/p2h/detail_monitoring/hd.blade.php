@@ -51,7 +51,7 @@ $detailFiltered = $detail->filter(function($item) {
                                         </div>
                                     </div>
                                     <div class="col-sm-6 text-sm-end">
-                                        <h6>FM-SHE-26/09/08/05/25</h6>
+                                        <h6>FM-SE-26/10/16/09/26</h6>
                                     </div>
                                 </div>
                             </div>

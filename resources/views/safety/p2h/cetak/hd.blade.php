@@ -72,7 +72,7 @@
 <body>
     <div class="header">
         <img src="{{ asset('dashboard/assets') }}/images/logo-full.png" width="240px">
-        <h5 style="text-align: center;">FM-SHE-26/09/08/05/25</h5>
+        <h5 style="text-align: center;">FM-SE-26/10/16/09/26</h5>
     </div>
     <h1 style="text-align: center;">
         PEMERIKSAAN DAN PERAWATAN HARIAN ( P2H )

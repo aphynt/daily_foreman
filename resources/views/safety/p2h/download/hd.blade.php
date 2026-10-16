@@ -93,7 +93,7 @@
             <thead>
                 <tr>
                     <th class="noborder nobg kiri" style="padding: 0px'margin-top:0px"><img src="{{ public_path('dashboard/assets/images/logo-full.png') }}" width="240px"></th>
-                    <th colspan="10" class="noborder nobg kanan"><p style="margin: 0;">FM-SHE-26/09/08/05/25</p></th>
+                    <th colspan="10" class="noborder nobg kanan"><p style="margin: 0;">FM-SE-26/10/16/09/26</p></th>
                 </tr>
             </thead>
         </table>

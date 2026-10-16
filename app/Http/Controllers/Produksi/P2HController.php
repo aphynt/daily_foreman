@@ -192,6 +192,323 @@ class P2HController extends Controller
             ? date('Y-m-d', strtotime($request->tanggalP2H))
             : null;
 
+        $searchValueTrim = $request->input('search.value');
+
+        $shiftP2H = $request->input('shiftP2H');
+
+        $shiftNo = in_array((int) $shiftP2H, [6, 7], true)
+            ? (int) $shiftP2H
+            : null;
+
+        $cluster = in_array($request->cluster, ['EX', 'HD', 'MG', 'BD', 'FT', 'WT'])
+            ? $request->cluster
+            : null;
+
+        $statusVerifikasi = $request->input('statusVerifikasi');
+
+        $userRoleList = [
+            'FOREMAN',
+            'PJS FOREMAN',
+            'SUPERVISOR',
+            'PJS SUPERVISOR'
+        ];
+
+        $userRole = strtoupper(trim(Auth::user()->role ?? ''));
+        $userDepartemen = (int) (Auth::user()->departemen_id ?? 0);
+
+        $isForeman =
+            in_array($userRole, $userRoleList, true)
+            && in_array($userDepartemen, [7, 11], true);
+
+        $userSection = $isForeman
+            ? strtoupper(trim(Auth::user()->section ?? ''))
+            : null;
+
+        $users = DB::connection('daily_foreman')
+            ->table('users')
+            ->select('nik', 'name')
+            ->get()
+            ->keyBy(fn($u) => trim($u->nik));
+
+        $checklistIds = DB::connection('p2h')
+            ->table('opr_oprchecklist')
+            ->select(
+                'uuid',
+                'vhc_id',
+                'opr_reporttime',
+                'opr_nrp',
+                'opr_shiftno',
+                'opr_shiftdate',
+                'mtr_hourmeter',
+                'verified_operator',
+                'dateverified_operator',
+                'verified_mekanik',
+                'dateverified_mekanik',
+                'verified_foreman',
+                'dateverified_foreman',
+                'verified_supervisor',
+                'dateverified_supervisor'
+            )
+            ->when($shiftNo, fn($q) =>
+                $q->where('opr_shiftno', $shiftNo)
+            )
+            ->when($shiftDate, fn($q) =>
+                $q->whereDate('opr_shiftdate', $shiftDate)
+            )
+            ->when($cluster, fn($q) =>
+                $q->where('vhc_id', 'like', $cluster . '%')
+            )
+            ->when($searchValueTrim, function ($q) use ($searchValueTrim) {
+                $q->where(function ($q2) use ($searchValueTrim) {
+                    $q2->where('opr_nrp', 'ilike', "%{$searchValueTrim}%")
+                        ->orWhere('vhc_id', 'ilike', "%{$searchValueTrim}%");
+                });
+            })
+            ->when(
+                $statusVerifikasi == 'Sudah Diverifikasi',
+                function ($q) {
+                    $q->where(function ($q2) {
+                        $q2->whereNotNull('verified_foreman')
+                            ->orWhereNotNull('verified_supervisor');
+                    });
+                }
+            )
+            ->when(
+                $statusVerifikasi == 'Belum Diverifikasi',
+                function ($q) {
+                    $q->where(function ($q2) {
+                        $q2->whereNull('verified_foreman')
+                            ->whereNull('verified_supervisor');
+                    });
+                }
+            )
+            ->get();
+
+        $notOkCounts = DB::connection('p2h')
+            ->table('opr_oprchecklistitem')
+            ->select(
+                'vhc_id',
+                'opr_reporttime',
+                DB::raw('count(*) as total_notok')
+            )
+            ->whereIn(
+                'vhc_id',
+                $checklistIds->pluck('vhc_id')->unique()->toArray()
+            )
+            ->whereIn(
+                'opr_reporttime',
+                $checklistIds->pluck('opr_reporttime')->unique()->toArray()
+            )
+            ->where('checklistval', 0)
+            ->groupBy('vhc_id', 'opr_reporttime')
+            ->get()
+            ->keyBy(fn($item) =>
+                trim($item->vhc_id) . '_' .
+                Carbon::parse($item->opr_reporttime)->format('Y-m-d H:i:s')
+            );
+
+        $p2hData = DB::connection('p2h')
+            ->table('opr_oprchecklist as p')
+            ->whereIn(
+                'p.vhc_id',
+                $checklistIds->pluck('vhc_id')->unique()->toArray()
+            )
+            ->whereIn(
+                'p.opr_reporttime',
+                $checklistIds->pluck('opr_reporttime')->unique()->toArray()
+            )
+            ->select([
+                'p.*'
+            ])
+            ->get()
+            ->keyBy(fn($row) =>
+                trim($row->vhc_id) . '_' .
+                Carbon::parse($row->opr_reporttime)->format('Y-m-d H:i:s')
+            );
+
+        $results = $checklistIds->map(function ($row)
+            use (
+                $users,
+                $p2hData,
+                $notOkCounts,
+                $isForeman,
+                $userSection,
+                $userDepartemen
+            ) {
+
+            $vhcId = $row->vhc_id ?? null;
+            $vhcPrefix = substr($vhcId ?? '', 0, 2);
+
+            $oprReportTime = $row->opr_reporttime ?? null;
+
+            if (!$vhcId || !$oprReportTime) {
+                return null;
+            }
+
+            $opr_nrp_fix =
+                (substr($row->opr_nrp ?? '', -2) === 'S1')
+                ? substr($row->opr_nrp, 0, -1)
+                : ($row->opr_nrp ?? '');
+
+            $key =
+                trim($vhcId) . '_' .
+                Carbon::parse($oprReportTime)->format('Y-m-d H:i:s');
+
+            $p2h = $p2hData[$key] ?? null;
+
+            $valNotOk = $notOkCounts[$key]->total_notok ?? 0;
+
+            $sectionOk = true;
+
+            if ($isForeman) {
+
+                if ($userDepartemen === 7) {
+
+                    $sectionOk = str_starts_with($vhcId, 'FT');
+
+                } elseif ($userDepartemen === 11 && $userSection) {
+
+                    if (
+                        $userSection == 'WHEEL'
+                        && !str_starts_with($vhcId, 'MG')
+                        && !str_starts_with($vhcId, 'HD')
+                    ) {
+                        $sectionOk = false;
+                    }
+
+                    if (
+                        $userSection == 'TRACK EXCA'
+                        && !str_starts_with($vhcId, 'EX')
+                    ) {
+                        $sectionOk = false;
+                    }
+
+                    if (
+                        $userSection == 'TRACK DOZER'
+                        && !str_starts_with($vhcId, 'BD')
+                    ) {
+                        $sectionOk = false;
+                    }
+                }
+            }
+
+            if (!$sectionOk) {
+                return null;
+            }
+
+            return (object) [
+
+                'VHC_ID' => $vhcId,
+
+                'VHC_PREFIX' => $vhcPrefix,
+
+                'OPR_REPORTTIME' => $oprReportTime,
+
+                'OPR_NRP' => $opr_nrp_fix,
+
+                'PERSONALNAME' =>
+                    $users[trim($opr_nrp_fix ?? '')]->name ?? null,
+
+                'VAL_NOTOK' => $valNotOk,
+
+                'DATEVERIFIED_OPERATOR' =>
+                    $p2h?->opr_reporttime ?? null,
+
+                'VERIFIED_OPERATOR' =>
+                    $p2h?->verified_operator ?? null,
+
+                'DATEVERIFIED_MEKANIK' =>
+                    $p2h?->dateverified_mekanik ?? null,
+
+                'VERIFIED_MEKANIK' =>
+                    $p2h?->verified_mekanik ?? null,
+
+                'NAMAMEKANIK' =>
+                    $users[
+                        trim($p2h?->verified_mekanik ?? '')
+                    ]->name ?? null,
+
+                'DATEVERIFIED_FOREMAN' =>
+                    $p2h?->dateverified_foreman
+                    ?? $p2h?->dateverified_supervisor
+                    ?? null,
+
+                'VERIFIED_FOREMAN' =>
+                    $p2h?->verified_foreman
+                    ?? $p2h?->verified_supervisor
+                    ?? null,
+
+                'NAMAFOREMAN' =>
+                    $users[
+                        trim(
+                            $p2h?->verified_foreman
+                            ?? $p2h?->verified_supervisor
+                            ?? ''
+                        )
+                    ]->name ?? null,
+
+                'DATEVERIFIED_SUPERVISOR' =>
+                    $p2h?->dateverified_supervisor ?? null,
+
+                'VERIFIED_SUPERVISOR' =>
+                    $p2h?->verified_supervisor ?? null,
+
+                'NAMASUPERVISOR' =>
+                    $users[
+                        trim($p2h?->verified_supervisor ?? '')
+                    ]->name ?? null,
+
+                'MTR_HOURMETER' =>
+                    $row->mtr_hourmeter ?? null,
+
+                'OPR_SHIFTDATE' =>
+                    $row->opr_shiftdate ?? null,
+
+                'OPR_SHIFTNO' =>
+                    $row->opr_shiftno ?? null,
+
+                'IS_FOREMAN_ROW' =>
+                    $isForeman && !$sectionOk,
+
+                'SECTION_OK' =>
+                    $sectionOk
+
+            ];
+
+        })->filter()->values();
+
+        $totalRecords = $results->count();
+
+        $results = $results->sort(function ($a, $b) {
+
+            if ($a->VAL_NOTOK != $b->VAL_NOTOK) {
+                return $b->VAL_NOTOK <=> $a->VAL_NOTOK;
+            }
+
+            return strcmp($a->VHC_ID, $b->VHC_ID);
+
+        })->values();
+
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords,
+            'data' => $results
+        ]);
+    }
+
+    public function api_old(Request $request)
+    {
+        $limit = $request->input('length', 10);
+        $offset = $request->input('start', 0);
+
+        $pageNumber = ($limit > 0) ? ($offset / $limit) + 1 : 1;
+        $pageSize = ($limit > 0) ? $limit : 500;
+
+        $shiftDate = !empty($request->tanggalP2H)
+            ? date('Y-m-d', strtotime($request->tanggalP2H))
+            : null;
+
         $searchValueTrim = $request->search['value'] ?? null;
 
         $shiftP2H = $request->input('shiftP2H');
@@ -200,7 +517,7 @@ class P2HController extends Controller
             ? (int)$shiftP2H
             : null;
 
-        $cluster = in_array($request->cluster, ['EX','HD','MG','BD'])
+        $cluster = in_array($request->cluster, ['EX','HD','MG','BD', 'FT', 'WT'])
             ? $request->cluster
             : null;
 
@@ -221,11 +538,6 @@ class P2HController extends Controller
             ? Auth::user()->section
             : null;
 
-        /*
-        |--------------------------------------------------------------------------
-        | USERS (SQL SERVER)
-        |--------------------------------------------------------------------------
-        */
         $users = DB::connection('daily_foreman')
             ->table('users')
             ->select('nik', 'name')
@@ -303,12 +615,6 @@ class P2HController extends Controller
 
             ->get();
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | NOT OK COUNTS
-        |--------------------------------------------------------------------------
-        */
         $notOkCounts = DB::connection('p2h')
             ->table('opr_oprchecklistitem')
             ->select(
@@ -332,11 +638,6 @@ class P2HController extends Controller
                 Carbon::parse($item->opr_reporttime)->format('Y-m-d H:i:s')
             );
 
-        /*
-        |--------------------------------------------------------------------------
-        | P2H DATA (POSTGRESQL)
-        |--------------------------------------------------------------------------
-        */
         $p2hData = DB::connection('p2h')
             ->table('opr_oprchecklist as p')
             ->whereIn(
@@ -356,11 +657,6 @@ class P2HController extends Controller
                 Carbon::parse($row->opr_reporttime)->format('Y-m-d H:i:s')
             );
 
-        /*
-        |--------------------------------------------------------------------------
-        | RESULTS
-        |--------------------------------------------------------------------------
-        */
         $results = $checklistIds->map(function($row)
             use (
                 $users,
@@ -509,11 +805,6 @@ class P2HController extends Controller
 
         $totalRecords = $results->count();
 
-        /*
-        |--------------------------------------------------------------------------
-        | SORTING
-        |--------------------------------------------------------------------------
-        */
         $results = $results->sort(function ($a, $b) {
 
             if ($a->VAL_NOTOK != $b->VAL_NOTOK) {
@@ -569,11 +860,6 @@ class P2HController extends Controller
                 ? Auth::user()->section
                 : null;
 
-            /*
-            |--------------------------------------------------------------------------
-            | USERS (SQL SERVER)
-            |--------------------------------------------------------------------------
-            */
             $users = DB::connection('daily_foreman')
                 ->table('users')
                 ->select('nik', 'name')
@@ -652,12 +938,6 @@ class P2HController extends Controller
 
                 ->get();
 
-
-            /*
-            |--------------------------------------------------------------------------
-            | NOT OK COUNTS
-            |--------------------------------------------------------------------------
-            */
             $notOkCounts = DB::connection('p2h')
                 ->table('opr_oprchecklistitem')
                 ->select(
@@ -681,11 +961,6 @@ class P2HController extends Controller
                     Carbon::parse($item->opr_reporttime)->format('Y-m-d H:i:s')
                 );
 
-            /*
-            |--------------------------------------------------------------------------
-            | P2H DATA (POSTGRESQL)
-            |--------------------------------------------------------------------------
-            */
             $p2hData = DB::connection('p2h')
                 ->table('opr_oprchecklist as p')
                 ->whereIn(
@@ -705,11 +980,6 @@ class P2HController extends Controller
                     Carbon::parse($row->opr_reporttime)->format('Y-m-d H:i:s')
                 );
 
-            /*
-            |--------------------------------------------------------------------------
-            | RESULTS
-            |--------------------------------------------------------------------------
-            */
             $results = $checklistIds->map(function($row)
                 use (
                     $users,
@@ -858,11 +1128,6 @@ class P2HController extends Controller
 
             $totalRecords = $results->count();
 
-            /*
-            |--------------------------------------------------------------------------
-            | SORTING
-            |--------------------------------------------------------------------------
-            */
             $results = $results->sort(function ($a, $b) {
 
                 if ($a->VAL_NOTOK != $b->VAL_NOTOK) {
@@ -915,33 +1180,18 @@ class P2HController extends Controller
         $startTimeFormatted = $start->format('Y-m-d');
         $endTimeFormatted   = $end->format('Y-m-d');
 
-        /*
-        |--------------------------------------------------------------------------
-        | USERS (POSTGRES)
-        |--------------------------------------------------------------------------
-        */
         $users = DB::connection('daily_foreman')
             ->table('users')
             ->select('nik', 'name')
             ->get()
             ->keyBy(fn($u) => trim($u->nik));
 
-        /*
-        |--------------------------------------------------------------------------
-        | SHIFT
-        |--------------------------------------------------------------------------
-        */
         $shiftMap = DB::connection('focus')
             ->table('FLT_SHIFT')
             ->select('SHIFTNO', 'SHIFTDESC')
             ->get()
             ->keyBy('SHIFTNO');
 
-        /*
-        |--------------------------------------------------------------------------
-        | DATA P2H POSTGRES
-        |--------------------------------------------------------------------------
-        */
         $data = DB::connection('p2h')
             ->table('opr_oprchecklist as p2h')
             ->select(
@@ -967,10 +1217,10 @@ class P2HController extends Controller
             )
             ->where(function ($query) {
 
-        $query->whereNotNull('p2h.verified_foreman')
-            ->orWhereNotNull('p2h.verified_supervisor');
+            $query->whereNotNull('p2h.verified_foreman')
+                ->orWhereNotNull('p2h.verified_supervisor');
 
-    })
+        })
             ->where('p2h.statusenabled', true)
             ->get()
             ->map(function ($row) use ($users, $shiftMap) {
@@ -1003,11 +1253,6 @@ class P2HController extends Controller
 
             });
 
-        /*
-        |--------------------------------------------------------------------------
-        | RETURN VIEW
-        |--------------------------------------------------------------------------
-        */
         return view(
             'safety.p2h.show',
             compact('data')
@@ -1025,12 +1270,6 @@ class P2HController extends Controller
     DB::beginTransaction();
 
     try {
-
-        /*
-        |--------------------------------------------------------------------------
-        | MASTER CHECKLIST
-        |--------------------------------------------------------------------------
-        */
         $checklistItems = DB::connection('focus')
             ->table('FLT_EQUCHECKLISTITEM')
             ->select(
@@ -1051,11 +1290,6 @@ class P2HController extends Controller
                 = $item->checklistitemdescription;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | DETAIL
-        |--------------------------------------------------------------------------
-        */
         $oprReportTime = Carbon::parse(
             $request['OPR_REPORTTIME']
         )->format('Y-m-d H:i:s');
@@ -1083,11 +1317,6 @@ class P2HController extends Controller
             ->orderBy('a.checklistgroupid')
             ->get();
 
-        /*
-        |--------------------------------------------------------------------------
-        | MAPPING DESCRIPTION
-        |--------------------------------------------------------------------------
-        */
         $groupKeys = array_keys($checklistMap);
 
         usort($groupKeys, function ($a, $b) {
@@ -1127,21 +1356,15 @@ class P2HController extends Controller
                     }
                 }
             }
-
             if ($description === null) {
-
                 foreach ($groupKeys as $groupKey) {
-
                     if (isset($checklistMap[$groupKey][$itemId])) {
-
-                        $description =
-                            $checklistMap[$groupKey][$itemId];
+                        $description = $checklistMap[$groupKey][$itemId];
 
                         break;
                     }
                 }
             }
-
             $row->checklistitemdescription =
                 $description ?? null;
 
@@ -1170,11 +1393,6 @@ class P2HController extends Controller
             ], 404);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | HEADER POSTGRES
-        |--------------------------------------------------------------------------
-        */
         $checkdataP2H = ChecklistP2H::where(
                 'vhc_id',
                 $first->vhc_id
@@ -1196,22 +1414,9 @@ class P2HController extends Controller
             ], 404);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | USER
-        |--------------------------------------------------------------------------
-        */
         $user = Auth::user();
-
         $role = strtoupper(trim($user->role));
-
         $departemenId = (int)$user->departemen_id;
-
-        /*
-        |--------------------------------------------------------------------------
-        | UPDATE DATA
-        |--------------------------------------------------------------------------
-        */
         if ($departemenId == 11) {
 
             $updateData = [
@@ -1220,9 +1425,7 @@ class P2HController extends Controller
             ];
 
         } elseif ($departemenId == 8) {
-
             $updateData = match ($role) {
-
                 'FOREMAN' => [
                     'verified_foreman' => $user->nik,
                     'dateverified_foreman' => now(),
@@ -1240,23 +1443,14 @@ class P2HController extends Controller
             };
 
         } else {
-
             abort(
                 403,
                 'Departemen tidak memiliki akses.'
             );
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | UPDATE HEADER
-        |--------------------------------------------------------------------------
-        */
         $checkdataP2H->update($updateData);
-
-
         foreach ($detail as $item) {
-
             $groupKey = strtoupper(
                 trim((string)$item->checklistgroupid)
             );
@@ -1457,12 +1651,6 @@ class P2HController extends Controller
             ]);
         }
 
-        // dd($detailP2H);
-        // dd($detail);
-
-        // dd($verifikasiMekanik);
-        // dd($jumlahAATerisi);
-
         if(substr($detail->first()->VHC_ID, 0, 2) == 'EX'){
             return view('safety.p2h.detail_monitoring.ex', compact('detail', 'jumlahAATerisi', 'verifikasiMekanik', 'detailP2H', 'checkdataP2H'));
 
@@ -1474,6 +1662,12 @@ class P2HController extends Controller
 
         }elseif(substr($detail->first()->VHC_ID, 0, 2) == 'MG'){
             return view('safety.p2h.detail_monitoring.mg', compact('detail', 'jumlahAATerisi', 'verifikasiMekanik', 'detailP2H', 'checkdataP2H'));
+
+        }elseif(substr($detail->first()->VHC_ID, 0, 2) == 'FT'){
+            return view('safety.p2h.detail_monitoring.ft', compact('detail', 'jumlahAATerisi', 'verifikasiMekanik', 'detailP2H', 'checkdataP2H'));
+
+        }elseif(substr($detail->first()->VHC_ID, 0, 2) == 'WT'){
+            return view('safety.p2h.detail_monitoring.wt', compact('detail', 'jumlahAATerisi', 'verifikasiMekanik', 'detailP2H', 'checkdataP2H'));
 
         }else{
             return view('safety.p2h.detail_monitoring.hd', compact('detail', 'jumlahAATerisi', 'verifikasiMekanik', 'detailP2H', 'checkdataP2H'));
@@ -1725,6 +1919,8 @@ class P2HController extends Controller
             'HD' => 'safety.p2h.detail.hd',
             'BD' => 'safety.p2h.detail.bd',
             'MG' => 'safety.p2h.detail.mg',
+            'FT' => 'safety.p2h.detail.ft',
+            'WT' => 'safety.p2h.detail.wt',
         ];
 
         $view = $viewMap[$prefix] ?? 'safety.p2h.detail.hd';
@@ -1819,30 +2015,17 @@ class P2HController extends Controller
         });
 
         $data->transform(function ($item) use ($shift, $users, $checklistItems) {
-
-            $item->SHIFTDESC =
-                $shift[$item->OPR_SHIFTNO]->SHIFTDESC ?? null;
-
-            $item->NAMAOPERATOR =
-                $users[$item->VERIFIED_OPERATOR]->name ?? null;
-
-            $item->NAMAMEKANIK =
-                $users[$item->VERIFIED_MEKANIK]->name ?? null;
-
-            $item->NAMAFOREMAN =
-                $users[$item->VERIFIED_FOREMAN]->name ?? null;
-
+            $item->SHIFTDESC = $shift[$item->OPR_SHIFTNO]->SHIFTDESC ?? null;
+            $item->NAMAOPERATOR = $users[$item->VERIFIED_OPERATOR]->name ?? null;
+            $item->NAMAMEKANIK = $users[$item->VERIFIED_MEKANIK]->name ?? null;
+            $item->NAMAFOREMAN = $users[$item->VERIFIED_FOREMAN]->name ?? null;
             $item->NAMASUPERVISOR = $users[$item->VERIFIED_SUPERVISOR]->name ?? null;
-
             $item->NAMASUPERINTENDENT = $users[$item->VERIFIED_SUPERINTENDENT]->name ?? null;
-
             $key =
-            $item->EQU_TYPEID . '_' .
-            $item->GROUPID . '_' .
-            $item->ITEMID;
-
-        $item->ITEMDESCRIPTION =
-            $checklistItems[$key]->CHECKLISTITEMDESCRIPTION ?? null;
+                $item->EQU_TYPEID . '_' .
+                $item->GROUPID . '_' .
+                $item->ITEMID;
+            $item->ITEMDESCRIPTION = $checklistItems[$key]->CHECKLISTITEMDESCRIPTION ?? null;
 
             return $item;
         });
@@ -1862,6 +2045,12 @@ class P2HController extends Controller
 
         }elseif(substr($data->first()->VHC_ID, 0, 2) == 'MG'){
             return view('safety.p2h.preview.mg', compact('data'));
+
+        }elseif(substr($data->first()->VHC_ID, 0, 2) == 'FT'){
+            return view('safety.p2h.preview.ft', compact('data'));
+
+        }elseif(substr($data->first()->VHC_ID, 0, 2) == 'WT'){
+            return view('safety.p2h.preview.wt', compact('data'));
 
         }else{
             return view('safety.p2h.preview.hd', compact('data'));
@@ -2078,6 +2267,25 @@ class P2HController extends Controller
 
             ->get();
 
+        if ($data->isEmpty()) {
+            return redirect()->back()->with('info', 'Maaf, data tidak ditemukan');
+        }
+
+        $p2h = $data->first();
+
+        $appLogin = DB::connection('focus')
+            ->table('dbo.APP_LOGIN')
+            ->select(
+                'VHC_ID',
+                'OPR_REPORTTIME',
+                'LGN_HOURMETER'
+            )
+            ->where('VHC_ID', $p2h->VHC_ID)
+            ->where('LGN_TYPE', 0)
+            ->orderByDesc('OPR_REPORTTIME')
+            ->orderByDesc('ID')
+            ->first();
+
         $shift = DB::connection('focus')
             ->table('dbo.FLT_SHIFT')
             ->get()
@@ -2098,37 +2306,21 @@ class P2HController extends Controller
                 $item->CHECKLISTITEMID;
         });
 
-        $data->transform(function ($item) use ($shift, $users, $checklistItems) {
+        $data->transform(function ($item) use ($shift, $users, $checklistItems, $appLogin) {
 
-            $item->SHIFTDESC =
-                $shift[$item->OPR_SHIFTNO]->SHIFTDESC ?? null;
-
+            $item->MTR_HOURMETER = $appLogin->LGN_HOURMETER ?? null;
+            $item->SHIFTDESC = $shift[$item->OPR_SHIFTNO]->SHIFTDESC ?? null;
             $operatorNik = $item->VERIFIED_OPERATOR;
-
             if (preg_match('/^\d{4}[A-Z]1$/', $operatorNik)) {
                 $operatorNik = substr($operatorNik, 0, -1);
             }
-
-            $item->NAMAOPERATOR =
-                $users[$operatorNik]->name ?? null;
-
-            $item->NAMAMEKANIK =
-                $users[$item->VERIFIED_MEKANIK]->name ?? null;
-
-            $item->NAMAFOREMAN =
-                $users[$item->VERIFIED_FOREMAN]->name ?? null;
-
+            $item->NAMAOPERATOR = $users[$operatorNik]->name ?? null;
+            $item->NAMAMEKANIK = $users[$item->VERIFIED_MEKANIK]->name ?? null;
+            $item->NAMAFOREMAN = $users[$item->VERIFIED_FOREMAN]->name ?? null;
             $item->NAMASUPERVISOR = $users[$item->VERIFIED_SUPERVISOR]->name ?? null;
-
             $item->NAMASUPERINTENDENT = $users[$item->VERIFIED_SUPERINTENDENT]->name ?? null;
-
-            $key =
-            $item->EQU_TYPEID . '_' .
-            $item->GROUPID . '_' .
-            $item->ITEMID;
-
-        $item->ITEMDESCRIPTION =
-            $checklistItems[$key]->CHECKLISTITEMDESCRIPTION ?? null;
+            $key = $item->EQU_TYPEID . '_' . $item->GROUPID . '_' . $item->ITEMID;
+            $item->ITEMDESCRIPTION = $checklistItems[$key]->CHECKLISTITEMDESCRIPTION ?? null;
 
             return $item;
         });
@@ -2159,7 +2351,6 @@ class P2HController extends Controller
             }
         }
 
-
         if(substr($data->first()->VHC_ID, 0, 2) == 'EX'){
             return view('safety.p2h.cetak.ex', compact('data'));
 
@@ -2171,6 +2362,12 @@ class P2HController extends Controller
 
         }elseif(substr($data->first()->VHC_ID, 0, 2) == 'MG'){
             return view('safety.p2h.cetak.mg', compact('data'));
+
+        }elseif(substr($data->first()->VHC_ID, 0, 2) == 'FT'){
+            return view('safety.p2h.cetak.ft', compact('data'));
+
+        }elseif(substr($data->first()->VHC_ID, 0, 2) == 'WT'){
+            return view('safety.p2h.cetak.wt', compact('data'));
 
         }else{
             return view('safety.p2h.cetak.hd', compact('data'));
@@ -2240,6 +2437,21 @@ class P2HController extends Controller
 
             ->get();
 
+        $p2h = $data->first();
+
+        $appLogin = DB::connection('focus')
+            ->table('dbo.APP_LOGIN')
+            ->select(
+                'VHC_ID',
+                'OPR_REPORTTIME',
+                'LGN_HOURMETER'
+            )
+            ->where('VHC_ID', $p2h->VHC_ID)
+            ->where('LGN_TYPE', 0)
+            ->orderByDesc('OPR_REPORTTIME')
+            ->orderByDesc('ID')
+            ->first();
+
         $shift = DB::connection('focus')
             ->table('dbo.FLT_SHIFT')
             ->get()
@@ -2261,37 +2473,23 @@ class P2HController extends Controller
         });
 
         $data->transform(function ($item) use ($shift, $users, $checklistItems) {
-
-            $item->SHIFTDESC =
-                $shift[$item->OPR_SHIFTNO]->SHIFTDESC ?? null;
-
+            $item->MTR_HOURMETER = $appLogin->LGN_HOURMETER ?? null;
+            $item->SHIFTDESC = $shift[$item->OPR_SHIFTNO]->SHIFTDESC ?? null;
             $operatorNik = $item->VERIFIED_OPERATOR;
-
-            // Jika formatnya seperti 0960S1 maka ubah menjadi 0960S
             if (preg_match('/^\d{4}[A-Z]1$/', $operatorNik)) {
                 $operatorNik = substr($operatorNik, 0, -1);
             }
-
-            $item->NAMAOPERATOR =
-                $users[$operatorNik]->name ?? null;
-
-            $item->NAMAMEKANIK =
-                $users[$item->VERIFIED_MEKANIK]->name ?? null;
-
-            $item->NAMAFOREMAN =
-                $users[$item->VERIFIED_FOREMAN]->name ?? null;
-
+            $item->NAMAOPERATOR = $users[$operatorNik]->name ?? null;
+            $item->NAMAMEKANIK = $users[$item->VERIFIED_MEKANIK]->name ?? null;
+            $item->NAMAFOREMAN = $users[$item->VERIFIED_FOREMAN]->name ?? null;
             $item->NAMASUPERVISOR = $users[$item->VERIFIED_SUPERVISOR]->name ?? null;
-
             $item->NAMASUPERINTENDENT = $users[$item->VERIFIED_SUPERINTENDENT]->name ?? null;
-
             $key =
-            $item->EQU_TYPEID . '_' .
-            $item->GROUPID . '_' .
-            $item->ITEMID;
+                $item->EQU_TYPEID . '_' .
+                $item->GROUPID . '_' .
+                $item->ITEMID;
 
-        $item->ITEMDESCRIPTION =
-            $checklistItems[$key]->CHECKLISTITEMDESCRIPTION ?? null;
+            $item->ITEMDESCRIPTION = $checklistItems[$key]->CHECKLISTITEMDESCRIPTION ?? null;
 
             return $item;
         });
@@ -2388,19 +2586,27 @@ class P2HController extends Controller
 
         if(substr($data->first()->VHC_ID, 0, 2) == 'EX'){
             $pdf = PDF::loadView('safety.p2h.download.ex', compact('data'));
-            return $pdf->download('P2H Excavator-'. $data->first()->OPR_REPORTTIME .'-'. $data->first()->SHIFTDESC .'-'. $data->first()->VHC_ID .'.pdf');
+            return $pdf->download('P2H Excavator -'. $data->first()->OPR_REPORTTIME .'-'. $data->first()->SHIFTDESC .'-'. $data->first()->VHC_ID .'.pdf');
 
         }elseif(substr($data->first()->VHC_ID, 0, 2) == 'HD'){
             $pdf = PDF::loadView('safety.p2h.download.hd', compact('data'));
-            return $pdf->download('P2H Heavy Dump Truck-'. $data->first()->OPR_REPORTTIME .'-'. $data->first()->SHIFTDESC .'-'. $data->first()->VHC_ID .'.pdf');
+            return $pdf->download('P2H Heavy Dump Truck -'. $data->first()->OPR_REPORTTIME .'-'. $data->first()->SHIFTDESC .'-'. $data->first()->VHC_ID .'.pdf');
 
         }elseif(substr($data->first()->VHC_ID, 0, 2) == 'BD'){
             $pdf = PDF::loadView('safety.p2h.download.bd', compact('data'));
-            return $pdf->download('P2H Bull Dozer-'. $data->first()->OPR_REPORTTIME .'-'. $data->first()->SHIFTDESC .'-'. $data->first()->VHC_ID .'.pdf');
+            return $pdf->download('P2H Bull Dozer -'. $data->first()->OPR_REPORTTIME .'-'. $data->first()->SHIFTDESC .'-'. $data->first()->VHC_ID .'.pdf');
 
         }elseif(substr($data->first()->VHC_ID, 0, 2) == 'MG'){
             $pdf = PDF::loadView('safety.p2h.download.mg', compact('data'));
-            return $pdf->download('P2H Motor Grader-'. $data->first()->OPR_REPORTTIME .'-'. $data->first()->SHIFTDESC .'-'. $data->first()->VHC_ID .'.pdf');
+            return $pdf->download('P2H Motor Grader -'. $data->first()->OPR_REPORTTIME .'-'. $data->first()->SHIFTDESC .'-'. $data->first()->VHC_ID .'.pdf');
+
+        }elseif(substr($data->first()->VHC_ID, 0, 2) == 'FT'){
+            $pdf = PDF::loadView('safety.p2h.download.ft', compact('data'));
+            return $pdf->download('P2H Fuel Truck -'. $data->first()->OPR_REPORTTIME .'-'. $data->first()->SHIFTDESC .'-'. $data->first()->VHC_ID .'.pdf');
+
+        }elseif(substr($data->first()->VHC_ID, 0, 2) == 'WT'){
+            $pdf = PDF::loadView('safety.p2h.download.wt', compact('data'));
+            return $pdf->download('P2H Water Truck -'. $data->first()->OPR_REPORTTIME .'-'. $data->first()->SHIFTDESC .'-'. $data->first()->VHC_ID .'.pdf');
 
         }else{
             return redirect()->back()->with('info', 'Data tidak ditemukan');

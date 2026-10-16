@@ -257,13 +257,25 @@ class KKHController extends Controller
             in_array($role, ['ADMIN', 'MANAGEMENT']) ||
             (in_array($role, ['SUPERVISOR', 'SUPERINTENDENT']) && $departemenId == 9);
 
+        // if (!$canSeeAll) {
+        //     $kkh->whereRaw('CAST(hr.ID_Departemen AS INT) = ?', [$departemenId]);
+        // }
+
         if (!$canSeeAll) {
-            $kkh->whereRaw('CAST(hr.ID_Departemen AS INT) = ?', [$departemenId]);
+            if ($departemenId == 14) {
+                $nikLogin = strtoupper(trim($user->nik ?? ''));
+
+                $unsurNik = preg_replace('/[^A-Z]/', '', $nikLogin);
+
+                if ($unsurNik !== '') {
+                    $kkh->whereRaw('UPPER(hr.Nik) LIKE ?', ['%' . $unsurNik . '%']);
+                } else {
+                    $kkh->whereRaw('1 = 0');
+                }
+            } else {
+                $kkh->whereRaw('CAST(hr.ID_Departemen AS INT) = ?', [$departemenId]);
+            }
         }
-
-
-
-
 
         if ($cluster == 'HD' || $cluster == 'EX') {
             $niks = AssignmentOperator::where('CLASS', $cluster)->pluck('NIK');
@@ -567,8 +579,24 @@ class KKHController extends Controller
             (in_array($role, ['SUPERVISOR', 'SUPERINTENDENT']) && $departemenId === 9) ||
             in_array((int) Auth::user()->id, $petugasP3kIds);
 
+        // if (!$canSeeAll) {
+        //     $kkh->whereRaw('CAST(hr.ID_Departemen AS INT) = ?', [$departemenId]);
+        // }
+
         if (!$canSeeAll) {
-            $kkh->whereRaw('CAST(hr.ID_Departemen AS INT) = ?', [$departemenId]);
+            if ($departemenId == 14) {
+                $nikLogin = strtoupper(trim($user->nik ?? ''));
+
+                $unsurNik = preg_replace('/[^A-Z]/', '', $nikLogin);
+
+                if ($unsurNik !== '') {
+                    $kkh->whereRaw('UPPER(hr.Nik) LIKE ?', ['%' . $unsurNik . '%']);
+                } else {
+                    $kkh->whereRaw('1 = 0');
+                }
+            } else {
+                $kkh->whereRaw('CAST(hr.ID_Departemen AS INT) = ?', [$departemenId]);
+            }
         }
 
         $filteredRecords = $kkh->count();
@@ -1020,9 +1048,30 @@ class KKHController extends Controller
                 'hr2.Nama as NAMA_PENGAWAS'
             )
             ->whereNotIn('jb.Jabatan', ['Manager', 'Asisten Manager', 'Superintendent', 'Pjs. Superintendent'])
+            // ->whereDate('kkh.tgl', $now)
+            // ->when(!$canSeeAll, function ($q) use ($departemenId) {
+            //     $q->whereRaw('CAST(hr.Id_Departemen AS INT) = ?', [$departemenId]);
+            // });
             ->whereDate('kkh.tgl', $now)
-            ->when(!$canSeeAll, function ($q) use ($departemenId) {
-                $q->whereRaw('CAST(hr.Id_Departemen AS INT) = ?', [$departemenId]);
+            ->when(!$canSeeAll, function ($q) use ($departemenId, $user) {
+                if ($departemenId === 14) {
+                    $nikLogin = strtoupper(trim($user->nik ?? ''));
+                    $unsurNik = preg_replace('/[^A-Z]/', '', $nikLogin);
+                    if ($unsurNik !== '') {
+                        $q->whereRaw(
+                            'UPPER(hr.Nik) LIKE ?',
+                            ['%' . $unsurNik . '%']
+                        );
+                    } else {
+                        $q->whereRaw('1 = 0');
+                    }
+                } else {
+                    $q->whereRaw(
+                        'CAST(hr.Id_Departemen AS INT) = ?',
+                        [$departemenId]
+                    );
+                }
+
             });
 
         $dataKKH = $kkh->get();
