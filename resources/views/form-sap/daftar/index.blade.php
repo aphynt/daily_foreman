@@ -191,12 +191,12 @@
                                             <i class="fas fa-search"></i> Tampilkan
                                         </button>
 
-                                        @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT']))
-                                            <button
-                                                type="submit"
-                                                name="export"
-                                                value="excel"
-                                                class="btn btn-success">
+                                        @php
+                                            $akses = json_decode(\App\Models\RefConf::where('id', 36)->value('value') ?? '[]', true) ?: [];
+                                        @endphp
+
+                                        @if(in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT']) || in_array(Auth::user()->nik, $akses))
+                                            <button type="submit" name="export" value="excel" class="btn btn-success">
                                                 <i class="fas fa-download"></i> Download
                                             </button>
                                         @endif

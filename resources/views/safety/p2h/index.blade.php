@@ -345,7 +345,17 @@
                                     </a>
                                 `;
                             } else {
-                                if (userDepartemen == 8) {
+                                const departemenId = Number(userDepartemen);
+
+                                const isFT = String(row.VHC_ID || '')
+                                    .toUpperCase()
+                                    .startsWith('FT');
+
+                                const bolehVerifikasi =
+                                    (departemenId === 7 && isFT) ||
+                                    (departemenId === 8 && !isFT);
+
+                                if (bolehVerifikasi) {
                                     return `
                                         <button class="btn-verifikasi badge w-100 border-0"
                                             data-vhc_id="${row.VHC_ID}"
