@@ -61,6 +61,8 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
                 'PENGENDALIAN AWAL',
                 'FOTO PERBAIKAN',
                 'STATUS',
+                'KATEGORI',
+                'DETAIL TEMUAN',
             ],
             [
                 '',
@@ -80,14 +82,19 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
                 '',
                 '',
                 '',
+                '',
+                '',
             ],
         ];
     }
 
     public function map($item): array
     {
-        $fotoTemuan = ($item->dokumentasi_1 ?? null) ?: ($item->dokumentasi_2 ?? null);
-        $fotoPerbaikan = ($item->dokumentasi_perbaikan_1 ?? null) ?: ($item->dokumentasi_perbaikan_2 ?? null);
+        $fotoTemuan = ($item->dokumentasi_1 ?? null)
+            ?: ($item->dokumentasi_2 ?? null);
+
+        $fotoPerbaikan = ($item->dokumentasi_perbaikan_1 ?? null)
+            ?: ($item->dokumentasi_perbaikan_2 ?? null);
 
         return [
             $item->no_inspeksi ?? '-',
@@ -116,6 +123,12 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
                 $item->verified_scc ?? null,
                 $item->verified_penerima ?? null
             ),
+
+            // Kolom R: KATEGORI (KTA / TTA)
+            strtoupper(trim((string) ($item->kategori_bahaya ?? '-'))),
+
+            // Kolom S: DETAIL TEMUAN
+            $this->formatDetailTemuan($item->detail_temuan ?? null),
         ];
     }
 
@@ -126,7 +139,8 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
                 /** @var Worksheet $sheet */
                 $sheet = $event->sheet->getDelegate();
 
-                $sheet->mergeCells('A1:Q1');
+                // Judul laporan
+                $sheet->mergeCells('A1:S1');
                 $sheet->setCellValue('A1', '"' . $this->buildTitle() . '"');
 
                 $sheet->getStyle('A1')->applyFromArray([
@@ -152,6 +166,7 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
 
                 $sheet->getRowDimension(1)->setRowHeight(42);
 
+                // Merge header
                 $sheet->mergeCells('A2:A3');
                 $sheet->mergeCells('B2:E2');
                 $sheet->mergeCells('F2:G2');
@@ -165,13 +180,16 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
                 $sheet->mergeCells('O2:O3');
                 $sheet->mergeCells('P2:P3');
                 $sheet->mergeCells('Q2:Q3');
+                $sheet->mergeCells('R2:R3');
+                $sheet->mergeCells('S2:S3');
 
                 $this->setColumnWidths($sheet);
 
                 $sheet->getRowDimension(2)->setRowHeight(28);
                 $sheet->getRowDimension(3)->setRowHeight(28);
 
-                $sheet->getStyle('A2:Q3')->applyFromArray([
+                // Styling header
+                $sheet->getStyle('A2:S3')->applyFromArray([
                     'font' => [
                         'bold' => true,
                         'size' => 10,
@@ -196,7 +214,8 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
                 $highestRow = $sheet->getHighestRow();
 
                 if ($highestRow >= 4) {
-                    $sheet->getStyle("A4:Q{$highestRow}")->applyFromArray([
+                    // Styling seluruh data
+                    $sheet->getStyle("A4:S{$highestRow}")->applyFromArray([
                         'alignment' => [
                             'vertical' => Alignment::VERTICAL_CENTER,
                             'wrapText' => true,
@@ -217,9 +236,13 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
                         ->getAlignment()
                         ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-                    $sheet->getStyle("Q4:Q{$highestRow}")
+                    $sheet->getStyle("Q4:R{$highestRow}")
                         ->getAlignment()
                         ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+                    $sheet->getStyle("S4:S{$highestRow}")
+                        ->getAlignment()
+                        ->setHorizontal(Alignment::HORIZONTAL_LEFT);
                 }
 
                 for ($row = 4; $row <= $highestRow; $row++) {
@@ -227,19 +250,55 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
 
                     $sheet->getStyle('D' . $row)->getFont()->setBold(true);
                     $sheet->getStyle('G' . $row)->getFont()->setBold(true);
+                    $sheet->getStyle('R' . $row)->getFont()->setBold(true);
 
-                    $riskText = strtoupper((string) $sheet->getCell('L' . $row)->getValue());
-                    $this->applyRiskStyle($sheet, 'L' . $row, $riskText);
+                    // Warna nilai risiko
+                    $riskText = strtoupper(
+                        (string) $sheet->getCell('L' . $row)->getValue()
+                    );
 
-                    $status = trim((string) $sheet->getCell('Q' . $row)->getValue());
+                    $this->applyRiskStyle(
+                        $sheet,
+                        'L' . $row,
+                        $riskText
+                    );
+
+                    // Status tetap di kolom Q
+                    $status = trim(
+                        (string) $sheet->getCell('Q' . $row)->getValue()
+                    );
 
                     if ($status !== 'Close') {
                         $status = 'Open';
                     }
 
                     $sheet->setCellValue('Q' . $row, $status);
-                    $this->applyStatusStyle($sheet, 'Q' . $row, $status);
 
+                    $this->applyStatusStyle(
+                        $sheet,
+                        'Q' . $row,
+                        $status
+                    );
+
+                    // Styling kategori
+                    $sheet->getStyle('R' . $row)
+                        ->getAlignment()
+                        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+                    // Styling detail temuan
+                    $sheet->getStyle('S' . $row)
+                        ->getAlignment()
+                        ->setHorizontal(Alignment::HORIZONTAL_LEFT);
+
+                    $sheet->getStyle('S' . $row)
+                        ->getAlignment()
+                        ->setVertical(Alignment::VERTICAL_CENTER);
+
+                    $sheet->getStyle('S' . $row)
+                        ->getAlignment()
+                        ->setWrapText(true);
+
+                    // Foto temuan: kolom M
                     $fotoTemuan = $sheet->getCell('M' . $row)->getValue();
 
                     if (!empty($fotoTemuan)) {
@@ -257,6 +316,7 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
                         }
                     }
 
+                    // Foto perbaikan: kolom P
                     $fotoPerbaikan = $sheet->getCell('P' . $row)->getValue();
 
                     if (!empty($fotoPerbaikan)) {
@@ -305,6 +365,10 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
         $sheet->getColumnDimension('O')->setWidth(28);
         $sheet->getColumnDimension('P')->setWidth(35);
         $sheet->getColumnDimension('Q')->setWidth(12);
+
+        // Kolom baru
+        $sheet->getColumnDimension('R')->setWidth(14);
+        $sheet->getColumnDimension('S')->setWidth(55);
     }
 
     protected function getPerusahaanByNik(?string $nik): string
@@ -337,13 +401,14 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
             $end = Carbon::parse($this->endDate);
 
             if ($start->format('m-Y') === $end->format('m-Y')) {
-                return 'PICA HAZARD REPORT PERIODE ' . strtoupper($start->translatedFormat('F Y'));
+                return 'PICA HAZARD REPORT PERIODE '
+                    . strtoupper($start->translatedFormat('F Y'));
             }
 
-            return 'PICA HAZARD REPORT PERIODE ' .
-                strtoupper($start->format('d M Y')) .
-                ' - ' .
-                strtoupper($end->format('d M Y'));
+            return 'PICA HAZARD REPORT PERIODE '
+                . strtoupper($start->format('d M Y'))
+                . ' - '
+                . strtoupper($end->format('d M Y'));
         } catch (\Throwable $e) {
             return 'PICA HAZARD REPORT';
         }
@@ -362,8 +427,52 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
         }
     }
 
-    protected function normalizeStatus($status, $verifiedScc = null, $verifiedPenerima = null): string
+    /**
+     * Mengubah detail_temuan berbentuk JSON menjadi teks biasa.
+     * Jika berisi beberapa item, setiap item ditampilkan pada baris baru.
+     */
+    protected function formatDetailTemuan($value): string
     {
+        if ($value === null || $value === '') {
+            return '-';
+        }
+
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $value = $decoded;
+            } else {
+                return trim($value) !== '' ? trim($value) : '-';
+            }
+        }
+
+        if (!is_array($value)) {
+            return trim((string) $value) !== ''
+                ? trim((string) $value)
+                : '-';
+        }
+
+        $details = array_filter(
+            array_map(
+                fn ($detail) => is_scalar($detail)
+                    ? trim((string) $detail)
+                    : '',
+                $value
+            ),
+            fn ($detail) => $detail !== ''
+        );
+
+        return !empty($details)
+            ? implode("\n", $details)
+            : '-';
+    }
+
+    protected function normalizeStatus(
+        $status,
+        $verifiedScc = null,
+        $verifiedPenerima = null
+    ): string {
         $status = strtoupper(trim((string) $status));
         $verifiedScc = strtoupper(trim((string) $verifiedScc));
         $verifiedPenerima = strtoupper(trim((string) $verifiedPenerima));
@@ -379,8 +488,11 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
         return 'Open';
     }
 
-    protected function applyRiskStyle(Worksheet $sheet, string $cell, string $riskText): void
-    {
+    protected function applyRiskStyle(
+        Worksheet $sheet,
+        string $cell,
+        string $riskText
+    ): void {
         $riskText = strtoupper(trim($riskText));
 
         $fillColor = null;
@@ -422,8 +534,11 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
         $sheet->getStyle($cell)->applyFromArray($style);
     }
 
-    protected function applyStatusStyle(Worksheet $sheet, string $cell, string $status): void
-    {
+    protected function applyStatusStyle(
+        Worksheet $sheet,
+        string $cell,
+        string $status
+    ): void {
         $isClose = strtoupper($status) === 'CLOSE';
 
         $sheet->getStyle($cell)->applyFromArray([
@@ -434,7 +549,9 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
             ],
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => $isClose ? '198754' : 'DC3545'],
+                'startColor' => [
+                    'rgb' => $isClose ? '198754' : 'DC3545',
+                ],
             ],
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
@@ -507,7 +624,11 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
         $maxWidth = 300;
         $maxHeight = 190;
 
-        $ratio = min($maxWidth / $width, $maxHeight / $height, 1);
+        $ratio = min(
+            $maxWidth / $width,
+            $maxHeight / $height,
+            1
+        );
 
         $newWidth = max(1, (int) floor($width * $ratio));
         $newHeight = max(1, (int) floor($height * $ratio));
@@ -530,7 +651,9 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
             $height
         );
 
-        $tempPath = storage_path('app/temp_hazard_export_image_' . uniqid() . '.jpg');
+        $tempPath = storage_path(
+            'app/temp_hazard_export_image_' . uniqid() . '.jpg'
+        );
 
         imagejpeg($newImage, $tempPath, 70);
 
@@ -556,15 +679,23 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
             if (!empty($parsed['path'])) {
                 $decodedPath = rawurldecode($parsed['path']);
 
-                $publicStoragePath = public_path(ltrim($decodedPath, '/'));
+                $publicStoragePath = public_path(
+                    ltrim($decodedPath, '/')
+                );
 
                 if (is_file($publicStoragePath)) {
                     return $publicStoragePath;
                 }
 
                 if (str_starts_with($decodedPath, '/storage/')) {
-                    $relativeStoragePath = substr($decodedPath, strlen('/storage/'));
-                    $storagePath = storage_path('app/public/' . $relativeStoragePath);
+                    $relativeStoragePath = substr(
+                        $decodedPath,
+                        strlen('/storage/')
+                    );
+
+                    $storagePath = storage_path(
+                        'app/public/' . $relativeStoragePath
+                    );
 
                     if (is_file($storagePath)) {
                         return $storagePath;
@@ -598,7 +729,9 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
     {
         $url = $this->normalizeImageUrl($url);
 
-        $tempPath = storage_path('app/temp_hazard_download_image_' . uniqid() . '.tmp');
+        $tempPath = storage_path(
+            'app/temp_hazard_download_image_' . uniqid() . '.tmp'
+        );
 
         $file = @fopen($tempPath, 'wb');
 
@@ -625,7 +758,12 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
         curl_close($ch);
         fclose($file);
 
-        if (!$success || $httpCode >= 400 || !is_file($tempPath) || filesize($tempPath) <= 0) {
+        if (
+            !$success ||
+            $httpCode >= 400 ||
+            !is_file($tempPath) ||
+            filesize($tempPath) <= 0
+        ) {
             @unlink($tempPath);
             return null;
         }
@@ -641,22 +779,39 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
 
         $parts = parse_url($url);
 
-        if (!$parts || empty($parts['scheme']) || empty($parts['host'])) {
+        if (
+            !$parts ||
+            empty($parts['scheme']) ||
+            empty($parts['host'])
+        ) {
             return $url;
         }
 
         $scheme = $parts['scheme'];
         $host = $parts['host'];
-        $port = isset($parts['port']) ? ':' . $parts['port'] : '';
+        $port = isset($parts['port'])
+            ? ':' . $parts['port']
+            : '';
 
         $path = $parts['path'] ?? '';
-        $query = isset($parts['query']) ? '?' . $parts['query'] : '';
-        $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
+        $query = isset($parts['query'])
+            ? '?' . $parts['query']
+            : '';
+        $fragment = isset($parts['fragment'])
+            ? '#' . $parts['fragment']
+            : '';
 
-        $encodedPath = implode('/', array_map(function ($segment) {
-            return rawurlencode(rawurldecode($segment));
-        }, explode('/', $path)));
+        $encodedPath = implode(
+            '/',
+            array_map(
+                function ($segment) {
+                    return rawurlencode(rawurldecode($segment));
+                },
+                explode('/', $path)
+            )
+        );
 
-        return $scheme . '://' . $host . $port . $encodedPath . $query . $fragment;
+        return $scheme . '://' . $host . $port
+            . $encodedPath . $query . $fragment;
     }
 }

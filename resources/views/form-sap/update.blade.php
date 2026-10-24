@@ -30,6 +30,49 @@
     ]);
 @endphp
 
+@php
+    $sapKondisiTidakAman = [
+        "Sarana Pelindung/Pengaman tidak memadai",
+        "APD tidak memadai, tidak layak/rusak",
+        "Alat, peralatan dan material yang rusak",
+        "Area kerja sempit dan Ruang Gerak Terbatas",
+        "Bahaya kebakaran dan ledakan",
+        "Pemeliharaan kebersihan/housekeeping yang buruk",
+        "Kondisi lingkungan berbahaya (nature factor) : (Gas, debu, asap, gas beracun, kabut, angin ribut, Gempa, lapisan labil, retakan)",
+        "Paparan kebisingan",
+        "Paparan radiasi",
+        "Paparan terhadap suhu tinggi atau rendah",
+        "Pencahayaan yang kurang atau berlebihan/silau",
+        "Ventilasi yang tidak memadai",
+        "Sistem dan sarana peringatan yang tidak memadai",
+        "Kondisi area kerja yang berbahaya (job factor) : (Jalan licin, Jalan bergelombang, blind spot, batuan gantung, superelevasi negatif)",
+    ];
+    $sapTindakanTidakAman = [
+        "Mengoperasikan unit tanpa wewenang",
+        "Gagal Memberi peringatan",
+        "Gagal mengamankan, memperkokoh",
+        "Mengoperasikan unit/peralatan di luar prosedur yang ditentukan",
+        "Membuat peralatan safety tidak berfungsi",
+        "Menggunakan peralatan yang rusak",
+        "Tidak memakai APD secara benar",
+        "Pemuatan / pembebanan material tidak sesuai prosedur",
+        "Penempatan material/peralatan/unit tidak sesuai prosedur",
+        "Mengangkat dengan cara yang salah",
+        "Berada pada posisi/daerah yang tidak aman",
+        "Memperbaiki unit/alat yang sedang beroperasi atau berenergi",
+        "Berada di bawah pengaruh obat-obatan atau alcohol",
+        "Bercanda berlebihan atau tidak serius melakukan pekerjaan",
+        "Menggunakan peralatan yang tidak sesuai",
+        "Mengabaikan pengamanan (tidak menerapkan LOTO/Barikade/Safety Cone)",
+    ];
+    $savedDetailTemuan = $report->detail_temuan ?? [];
+    if (is_string($savedDetailTemuan)) { $savedDetailTemuan = json_decode($savedDetailTemuan, true) ?? []; }
+    if (!is_array($savedDetailTemuan)) { $savedDetailTemuan = []; }
+    $detailTemuan = old('detail_temuan', $savedDetailTemuan);
+    if (!is_array($detailTemuan)) { $detailTemuan = []; }
+@endphp
+
+
 <style>
     :root {
         --sap-primary: #2563eb;
@@ -410,6 +453,15 @@
     }
 </style>
 
+<style>
+.sap-trend-card{border:1px solid #e2e8f0;border-radius:14px;background:#fff;overflow:hidden;box-shadow:0 4px 14px rgba(15,23,42,.04)}
+.sap-trend-heading{display:flex;align-items:center;gap:12px;padding:14px 16px;background:linear-gradient(135deg,rgba(37,99,235,.08),rgba(79,70,229,.04));border-bottom:1px solid #e2e8f0;color:#1e293b}
+.sap-trend-heading>i{font-size:22px;color:#2563eb}.sap-trend-heading .small{color:#64748b;margin-top:2px}
+.sap-trend-item{display:flex;align-items:flex-start;gap:10px;width:100%;height:100%;padding:11px 12px;border:1px solid #e2e8f0;border-radius:10px;background:#fff;cursor:pointer;transition:.18s ease;font-size:.9rem;line-height:1.4}
+.sap-trend-item:hover{border-color:#93b4f5;background:#f7faff}.sap-trend-item input{margin-top:3px;flex:0 0 auto;accent-color:#2563eb}.sap-trend-item:has(input:checked){border-color:#2563eb;background:#eff6ff}
+</style>
+
+
 <section class="pc-container">
     <div class="pc-content">
         <div class="row">
@@ -571,6 +623,28 @@
                                             <option value="Health" {{ old('typeBahaya', $report->type_bahaya) == 'Health' ? 'selected' : '' }}>Health</option>
                                             <option value="Environtment" {{ old('typeBahaya', $report->type_bahaya) == 'Environtment' ? 'selected' : '' }}>Environtment</option>
                                         </select>
+                                    </div>
+                                </div>
+
+                                {{-- TREND TEMUAN: checklist mengikuti referensi Hazard Report --}}
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Trend Temuan</label>
+                                    <div class="text-muted small mb-3">Pilih satu atau lebih trend temuan yang sesuai. Daftar mengikuti Kategori Bahaya.</div>
+                                    <div id="sapChecklistKondisi" class="sap-trend-card mb-3 {{ old('kategoriBahaya', $report->kategori_bahaya ?? '') === 'Kondisi Tidak Aman' ? '' : 'd-none' }}">
+                                        <div class="sap-trend-heading"><i class="ti ti-alert-triangle"></i><div><strong>Kondisi Tidak Aman</strong><div class="small">Pilih trend temuan yang sesuai</div></div></div>
+                                        <div class="row g-2 p-3">
+                                            @foreach($sapKondisiTidakAman as $i => $item)
+                                                <div class="col-md-6 col-12"><label class="sap-trend-item" for="sap_kta_{{ $i }}"><input id="sap_kta_{{ $i }}" type="checkbox" name="detail_temuan[]" value="{{ $item }}" {{ in_array($item, $detailTemuan, true) ? 'checked' : '' }}><span>{{ $item }}</span></label></div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <div id="sapChecklistTindakan" class="sap-trend-card {{ old('kategoriBahaya', $report->kategori_bahaya ?? '') === 'Tindakan Tidak Aman' ? '' : 'd-none' }}">
+                                        <div class="sap-trend-heading"><i class="ti ti-user-exclamation"></i><div><strong>Tindakan Tidak Aman</strong><div class="small">Pilih trend temuan yang sesuai</div></div></div>
+                                        <div class="row g-2 p-3">
+                                            @foreach($sapTindakanTidakAman as $i => $item)
+                                                <div class="col-md-6 col-12"><label class="sap-trend-item" for="sap_tta_{{ $i }}"><input id="sap_tta_{{ $i }}" type="checkbox" name="detail_temuan[]" value="{{ $item }}" {{ in_array($item, $detailTemuan, true) ? 'checked' : '' }}><span>{{ $item }}</span></label></div>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -907,5 +981,27 @@ document.addEventListener('DOMContentLoaded', function () {
             HTMLFormElement.prototype.submit.call(formSAP);
         }
     });
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const kategori = document.getElementById('kategoriBahaya');
+    const kondisi = document.getElementById('sapChecklistKondisi');
+    const tindakan = document.getElementById('sapChecklistTindakan');
+    if (!kategori || !kondisi || !tindakan) return;
+    function toggleTrend() {
+        const value = kategori.value;
+        kondisi.classList.toggle('d-none', value !== 'Kondisi Tidak Aman');
+        tindakan.classList.toggle('d-none', value !== 'Tindakan Tidak Aman');
+        // Hapus pilihan pada kategori yang disembunyikan agar data tidak rancu.
+        const hidden = value === 'Kondisi Tidak Aman' ? tindakan : kondisi;
+        if (value === 'Kondisi Tidak Aman' || value === 'Tindakan Tidak Aman') {
+            hidden.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+        }
+    }
+    kategori.addEventListener('change', toggleTrend);
+    toggleTrend();
 });
 </script>

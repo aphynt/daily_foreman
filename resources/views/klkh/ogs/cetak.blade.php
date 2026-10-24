@@ -13,112 +13,148 @@
             size: A4;
             margin: 5mm;
         }
-
         body {
             font-family: Arial, sans-serif;
             /* line-height: 1.6; */
             font-size: 12px;
         }
-
         .container {
             width: 100%;
         }
-
         h1 {
             text-align: center;
             font-size: 20px;
             margin-bottom: 20px;
         }
-
         h2 {
             text-align: center;
             font-size: 20px;
             margin-bottom: 15px;
         }
-
         h5 {
             margin: 1px;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 5px;
         }
-
         th,
         td {
             border: 1px solid #000;
             padding: 1.4px;
-            /*text-align: center;*/
+            /* text-align: center; */
         }
-
         th {
             background-color: #D0CECE;
             text-align: center;
         }
-
-
-
         h3 {
             font-size: 18px;
             margin-bottom: 10px;
         }
-
         .point-table {
             margin-top: 5px;
         }
-
         tr th {
             text-align: left;
         }
-
         .kanan {
             text-align: right;
         }
-
         .noborder {
             border-top-color: white;
             border-bottom: none;
             border-left: none;
             border-right: none;
         }
-
         .nobg{
             background-color: white;
         }
-
         .center {
             text-align: center;
         }
-
         .box {
             display: flex;
             justify-content: space-between;
         }
-
         .box-vcenter {
             display: flex;
             justify-content: space-between;
             align-items: center;
             align-content: center;
         }
+        .klkh-photo-page {
+            page-break-before: always;
+            break-before: page;
+            width: 100%;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+        .klkh-photo-header {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+        .klkh-photo-header td {
+            border: none;
+            padding: 0;
+            vertical-align: top;
+        }
+        .klkh-photo-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 12px 0;
+        }
+        .klkh-photo-meta {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+        .klkh-photo-meta td {
+            border: none;
+            padding: 3px 5px;
+        }
+        .klkh-photo-grid {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+        .klkh-photo-item {
+            width: 50%;
+            text-align: center;
+            border: 1px solid #000;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .klkh-photo-item img {
+            display: block;
+            width: 100%;
+            height: 330px;
+            object-fit: contain;
+            margin: 8px auto 0;
+        }
+        .klkh-photo-empty {
+            height: 330px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
     </style>
 </head>
-
 <body>
     <div class="container">
         <table class="point-table">
             <thead>
                 <tr>
-                    <th class="noborder nobg" style="padding: 0px'margin-bttom:0px"><img src="{{ asset('dashboard/assets') }}/images/logo-full.png" width="240px"></th>
+                    <th class="noborder nobg" style="padding: 0px; margin-bottom: 0px"><img src="{{ asset('dashboard/assets') }}/images/logo-full.png" width="240px"></th>
                     <th colspan="5" class="noborder nobg kanan"><p style="margin: 0;">FM-PRD-71/01/16/02/26</p></th>
                 </tr>
             </thead>
         </table>
         <div class="box-vcenter" style="display: flex; align-items: center; justify-content: space-between;">
-
-
         </div>
         <hr>
         <h1>Pemeriksaan Kesiapan Kerja Harian & Kelayakan Lingkungan Kerja Harian (KLKH) Departemen Produksi Area OGS</h1>
@@ -180,6 +216,7 @@
                     <td class="center">{!! $ogs->ceceran_oli_check == 'false' ? '✔️' : "" !!}</td>
                     <td class="center">{!! $ogs->ceceran_oli_check == 'n/a' ? '✔️' : "" !!}</td>
                     <td>{!! $ogs->ceceran_oli_note !!}</td>
+                </tr>
                 <tr>
                     <td class="center">4</td>
                     <td>Tidak ada genangan air</td>
@@ -188,12 +225,13 @@
                     <td class="center">{!! $ogs->genangan_air_check == 'n/a' ? '✔️' : "" !!}</td>
                     <td>{!! $ogs->genangan_air_note !!}</td>
                 </tr>
-                <th class="center">B</th>
-                <th>Rambu</th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
+                <tr>
+                    <th class="center">B</th>
+                    <th>Rambu</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
                 <tr>
                     <td class="center">1</td>
@@ -251,12 +289,13 @@
                     <td class="center">{!! $ogs->emergency_call_check == 'n/a' ? '✔️' : "" !!}</td>
                     <td>{!! $ogs->emergency_call_note !!}</td>
                 </tr>
-                <th class="center">C</th>
-                <th>Lokasi Kerja</th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
+                <tr>
+                    <th class="center">C</th>
+                    <th>Lokasi Kerja</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
                 <tr>
                     <td class="center">1</td>
@@ -366,7 +405,6 @@
         </table>
         Catatan:
         <p class="mb-0">{!! $ogs->additional_notes !!}</p>
-
         <table style="width: 100%; text-align: center; border-spacing: 10px;">
             <tbody>
                 <tr>
@@ -403,7 +441,61 @@
                 </tr>
             </tbody>
         </table>
-
+    </div>
+    <div class="klkh-photo-page">
+        @php
+            $photoOne = data_get($ogs, 'dokumentasi_1') ?: data_get($ogs, 'dokumentasi_foto_1') ?: data_get($ogs, 'foto_1');
+            $photoTwo = data_get($ogs, 'dokumentasi_2') ?: data_get($ogs, 'dokumentasi_foto_2') ?: data_get($ogs, 'foto_2');
+            $resolveOgsPhoto = function ($path) {
+                if (empty($path)) return null;
+                if (strpos($path, 'http://') === 0 || strpos($path, 'https://') === 0) return $path;
+                if (strpos($path, '/storage/') === 0) return asset(ltrim($path, '/'));
+                if (strpos($path, 'storage/') === 0) return asset($path);
+                return asset('storage/' . ltrim($path, '/'));
+            };
+            $photoOneUrl = $resolveOgsPhoto($photoOne);
+            $photoTwoUrl = $resolveOgsPhoto($photoTwo);
+        @endphp
+        <table class="klkh-photo-header">
+            <tr>
+                <td><img src="{{ asset('dashboard/assets/images/logo-full.png') }}" style="width: 220px;" alt="Logo"></td>
+                <td style="text-align: right;">FM-PRD-71/01/16/02/26</td>
+            </tr>
+        </table>
+        <hr>
+        <div class="klkh-photo-title">DOKUMENTASI FOTO PEMERIKSAAN KKH & KLKH AREA OGS</div>
+        <table class="klkh-photo-meta">
+            <tr>
+                <td><strong>PIT</strong></td>
+                <td>: {{ $ogs->pit }}</td>
+                <td><strong>Shift</strong></td>
+                <td>: {{ $ogs->shift }}</td>
+            </tr>
+            <tr>
+                <td><strong>Hari/Tanggal</strong></td>
+                <td>: {{ Carbon::parse($ogs->date)->locale('id')->isoFormat('dddd, D MMMM YYYY') }}</td>
+                <td><strong>Jam</strong></td>
+                <td>: {{ Carbon::parse($ogs->time)->locale('id')->isoFormat('HH:mm') }}</td>
+            </tr>
+        </table>
+        <div class="klkh-photo-grid">
+            <div class="klkh-photo-item">
+                <strong>Dokumentasi Foto 1</strong>
+                @if ($photoOneUrl)
+                    <img src="{{ $photoOneUrl }}" alt="Dokumentasi Foto 1">
+                @else
+                    <div class="klkh-photo-empty">Foto 1 belum tersedia</div>
+                @endif
+            </div>
+            <div class="klkh-photo-item">
+                <strong>Dokumentasi Foto 2</strong>
+                @if ($photoTwoUrl)
+                    <img src="{{ $photoTwoUrl }}" alt="Dokumentasi Foto 2">
+                @else
+                    <div class="klkh-photo-empty">Foto 2 belum tersedia</div>
+                @endif
+            </div>
+        </div>
     </div>
 </body>
 <script>

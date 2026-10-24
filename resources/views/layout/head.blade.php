@@ -38,6 +38,63 @@
     <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/fonts/feather.css">
     <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/fonts/fontawesome.css">
     <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/fonts/material.css">
+    <script>
+        (function () {
+            const key = 'fms-theme-mode';
+            const modes = ['light', 'dark', 'auto'];
+            const media = window.matchMedia('(prefers-color-scheme: dark)');
+            function getMode() {
+                try {
+                    const value = localStorage.getItem(key);
+                    return modes.includes(value) ? value : 'light';
+                } catch (error) {
+                    return 'light';
+                }
+            }
+            function resolvedMode(mode) {
+                return mode === 'auto' ? (media.matches ? 'dark' : 'light') : mode;
+            }
+            function syncButtons(mode) {
+                document.querySelectorAll('.theme-layout .preset-btn').forEach(function (button) {
+                    const value = button.getAttribute('data-value');
+                    const selected = mode === 'auto' ? value === 'default' : value === (mode === 'light' ? 'true' : 'false');
+                    button.classList.toggle('active', selected);
+                    button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+                });
+            }
+            window.setAppTheme = function (mode, persist = true) {
+                if (!modes.includes(mode)) mode = 'light';
+                if (persist) {
+                    try {
+                        localStorage.setItem(key, mode);
+                    } catch (error) {}
+                }
+                const theme = resolvedMode(mode);
+                document.documentElement.setAttribute('data-pc-theme', theme);
+                if (document.body) document.body.setAttribute('data-pc-theme', theme);
+                syncButtons(mode);
+            };
+            window.getAppTheme = getMode;
+            document.addEventListener('click', function (event) {
+                const button = event.target.closest('.theme-layout .preset-btn');
+                if (!button) return;
+                const value = button.getAttribute('data-value');
+                const mode = value === 'true' ? 'light' : value === 'false' ? 'dark' : value === 'default' ? 'auto' : null;
+                if (!mode) return;
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                window.setAppTheme(mode);
+            }, true);
+            function refreshTheme() {
+                window.setAppTheme(getMode(), false);
+            }
+            document.addEventListener('DOMContentLoaded', refreshTheme);
+            window.addEventListener('pageshow', refreshTheme);
+            if (media.addEventListener) media.addEventListener('change', function () {
+                if (getMode() === 'auto') refreshTheme();
+            });
+        })();
+    </script>
     <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/css/style.css" id="main-style-link">
     <script src="{{ asset('dashboard/assets') }}/js/tech-stack.js"></script>
     <script src="{{ asset('dashboard/assets') }}/js/hak-akses.js"></script>
@@ -57,6 +114,7 @@
 </head>
 
 <body data-pc-preset="preset-1" data-pc-sidebar-caption="true" data-pc-layout="vertical" data-pc-direction="ltr" data-pc-theme_contrast="" data-pc-theme="light">
+    <script>window.setAppTheme(window.getAppTheme(), false);</script>
     <!-- [ Pre-loader ] start -->
     {{-- <div id="loading-overlay">
         <div class="spinner"></div>

@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Ramsey\Uuid\Uuid;
 
@@ -453,6 +454,20 @@ class KLKHBatuBaraController extends Controller
     {
         // dd($request->all());
         try {
+            $dokumentasi = [];
+            for ($i = 1; $i <= 3; $i++) {
+                $field = "dokumentasi_{$i}";
+                $dokumentasi[$field] = null;
+
+                if ($request->hasFile($field)) {
+                    $file = $request->file($field);
+                    $fileName = time() . '_' . $i . '_' . $file->getClientOriginalName();
+                    $path = "klkh/batubara/{$field}";
+
+                    Storage::disk('production_public')->putFileAs($path, $file, $fileName);
+                    $dokumentasi[$field] = rtrim(config('app.url'), '/') . "/storage/{$path}/{$fileName}";
+                }
+            }
 
             $data = $request->all();
             $dataToInsert = [
@@ -513,6 +528,8 @@ class KLKHBatuBaraController extends Controller
                     'median_jalan_note' => $data['median_jalan_note'] ?? null,
                     'additional_notes' => $data['additional_notes'] ?? null,
                     'superintendent' => $data['superintendent'] ?? null,
+                    'dokumentasi_1' => $dokumentasi['dokumentasi_1'],
+                    'dokumentasi_2' => $dokumentasi['dokumentasi_2'],
             ];
             // /** @var \App\Models\User $user */
             // $user = Auth::user();

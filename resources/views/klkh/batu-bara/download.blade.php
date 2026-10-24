@@ -3,6 +3,40 @@
 @php
     use Carbon\Carbon;
 @endphp
+@php
+    $fotoDokumentasi = [];
+    foreach (['dokumentasi_1', 'dokumentasi_2'] as $field) {
+        $value = trim((string) ($bb->{$field} ?? ''));
+        if ($value === '') {
+            continue;
+        }
+        $pathUrl = parse_url($value, PHP_URL_PATH) ?: $value;
+        $storagePart = strstr($pathUrl, '/storage/');
+        $localPath = null;
+        if ($storagePart !== false) {
+            $relativePath = ltrim(substr($storagePart, strlen('/storage/')), '/');
+            $candidate = storage_path('app/public/' . $relativePath);
+            if (is_file($candidate)) {
+                $localPath = $candidate;
+            } else {
+                $candidate = public_path('storage/' . $relativePath);
+                if (is_file($candidate)) {
+                    $localPath = $candidate;
+                }
+            }
+        }
+        if (!$localPath && !preg_match('~^https?://~i', $value)) {
+            $candidate = public_path(ltrim($value, '/'));
+            if (is_file($candidate)) {
+                $localPath = $candidate;
+            }
+        }
+        $fotoDokumentasi[] = [
+            'label' => $field === 'dokumentasi_1' ? 'Dokumentasi 1' : 'Dokumentasi 2',
+            'src' => $localPath ?: $value,
+        ];
+    }
+@endphp
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,99 +47,172 @@
             size: A4;
             margin: 5mm;
         }
-
         body {
             font-family: Arial, sans-serif;
-            /* line-height: 1.6; */
+            /\ line-height: 1.6; \/
             font-size: 12px;
         }
-
         .container {
             width: 100%;
         }
-
         h1 {
             text-align: center;
             font-size: 20px;
             margin-bottom: 20px;
         }
-
         h2 {
             text-align: center;
             font-size: 20px;
             margin-bottom: 15px;
         }
-
         h5 {
             margin: 1px;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 5px;
         }
-
         th,
         td {
             border: 1px solid #000;
             padding: 3px;
-            /*text-align: center;*/
+            /\text-align: center;\/
         }
-
         th {
             background-color: #D0CECE;
             text-align: center;
         }
-
-
-
         h3 {
             font-size: 18px;
             margin-bottom: 10px;
         }
-
         .point-table {
             margin-top: 5px;
         }
-
         tr th {
             text-align: left;
         }
-
         .kanan {
             text-align: right;
         }
-
         .noborder {
             border-top-color: white;
             border-bottom: none;
             border-left: none;
             border-right: none;
         }
-
         .nobg{
             background-color: white;
         }
-
         .center {
             text-align: center;
         }
-
         .box {
             display: flex;
             justify-content: space-between;
         }
-
         .box-vcenter {
             display: flex;
             justify-content: space-between;
             align-items: center;
             align-content: center;
         }
+
+        .lampiran-foto {
+            page-break-before: always;
+            break-before: page;
+            width: 100%;
+            color: #111;
+            font-family: Arial, sans-serif;
+        }
+        .lampiran-header {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .lampiran-header td {
+            border: none;
+            background: white;
+            padding: 0;
+        }
+        .lampiran-header img {
+            width: 200px;
+            max-height: 65px;
+            object-fit: contain;
+        }
+        .lampiran-title {
+            text-align: center;
+            font-size: 17px;
+            font-weight: bold;
+            margin: 12px 0 4px;
+        }
+        .lampiran-subtitle {
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .lampiran-meta td {
+            border: 1px solid #bbb;
+            padding: 6px;
+            font-size: 11px;
+        }
+        .lampiran-label {
+            background: #f1f3f5;
+            font-weight: bold;
+            width: 15%;
+        }
+        .lampiran-foto-heading {
+            margin: 14px 0 10px;
+            padding: 9px;
+            background: #0d6efd;
+            color: #fff;
+            text-align: center;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .lampiran-foto-table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+        }
+        .lampiran-foto-table td {
+            width: 50%;
+            vertical-align: top;
+            border: none;
+            padding: 0 5px;
+        }
+        .lampiran-foto-card {
+            border: 1px solid #b5bdc8;
+            page-break-inside: avoid;
+        }
+        .lampiran-foto-caption {
+            text-align: center;
+            font-weight: bold;
+            background: #eef2f6;
+            border-bottom: 1px solid #b5bdc8;
+            padding: 8px;
+            font-size: 12px;
+        }
+        .lampiran-foto-box {
+            height: 220mm;
+            text-align: center;
+            padding: 7px;
+        }
+        .lampiran-foto-box img {
+            max-width: 100%;
+            max-height: 213mm;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+        .lampiran-kosong {
+            padding: 60px 10px;
+            text-align: center;
+            color: #666;
+        }
     </style>
 </head>
-
 <body>
     <div class="container">
         <table class="point-table">
@@ -117,8 +224,6 @@
             </thead>
         </table>
         <div class="box-vcenter" style="display: flex; align-items: center; justify-content: space-between;">
-
-
         </div>
         <hr>
         <h1>Pemeriksaan Kesiapan Kerja Harian & Kelayakan Lingkungan Kerja Harian (KLKH) Departemen Produksi Area Batubara</h1>
@@ -360,7 +465,6 @@
         </table>
         Catatan:
         <p class="mb-0">{!! $bb->additional_notes !!}</p>
-
         <table style="width: 100%; text-align: center; border-spacing: 10px;">
             <tbody>
                 <tr>
@@ -397,7 +501,53 @@
                 </tr>
             </tbody>
         </table>
-
+    </div>
+    <div class="lampiran-foto">
+        <table class="lampiran-header">
+            <tr>
+                <td><img src="{{ public_path('dashboard/assets/images/logo-full.png') }}" alt="SIMS"></td>
+                <td style="text-align:right;vertical-align:top;font-size:11px;font-weight:bold;">FM-PRD-72/00/12/03/24</td>
+            </tr>
+        </table>
+        <hr>
+        <div class="lampiran-title">DOKUMENTASI FOTO</div>
+        <div class="lampiran-subtitle">PEMERIKSAAN KKH &amp; KLKH AREA BATUBARA</div>
+        <table class="lampiran-meta">
+            <tr>
+                <td class="lampiran-label">PIT</td>
+                <td>{{ $bb->pit ?? '-' }}</td>
+                <td class="lampiran-label">Shift</td>
+                <td>{{ $bb->shift ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="lampiran-label">Tanggal</td>
+                <td>{{ !empty($bb->date) ? Carbon::parse($bb->date)->locale('id')->isoFormat('D MMMM YYYY') : '-' }}</td>
+                <td class="lampiran-label">Jam</td>
+                <td>{{ !empty($bb->time) ? Carbon::parse($bb->time)->format('H:i') : '-' }}</td>
+            </tr>
+        </table>
+        <div class="lampiran-foto-heading">DOKUMENTASI PEMERIKSAAN</div>
+        @if(count($fotoDokumentasi))
+            <table class="lampiran-foto-table">
+                <tr>
+                    @foreach($fotoDokumentasi as $foto)
+                        <td>
+                            <div class="lampiran-foto-card">
+                                <div class="lampiran-foto-caption">{{ $foto['label'] }}</div>
+                                <div class="lampiran-foto-box">
+                                    <img src="{{ $foto['src'] }}" alt="{{ $foto['label'] }}">
+                                </div>
+                            </div>
+                        </td>
+                    @endforeach
+                    @if(count($fotoDokumentasi) === 1)
+                        <td></td>
+                    @endif
+                </tr>
+            </table>
+        @else
+            <div class="lampiran-kosong">Belum ada foto dokumentasi.</div>
+        @endif
     </div>
 </body>
 </html>

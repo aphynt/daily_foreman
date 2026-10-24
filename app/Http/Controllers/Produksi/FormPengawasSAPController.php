@@ -108,6 +108,10 @@ class FormPengawasSAPController extends Controller
                 $tanggal_perbaikan = Carbon::now();
             }
 
+            $detailTemuan = $request->input('detail_temuan', []);
+            if (!is_array($detailTemuan)) { $detailTemuan = []; }
+            $detailTemuan = array_values(array_unique(array_filter(array_map('trim', $detailTemuan))));
+
             $report = SAPReport::create([
                 'uuid' => (string) Uuid::uuid4()->toString(),
                 'foreman_id' => Auth::user()->id,
@@ -128,6 +132,7 @@ class FormPengawasSAPController extends Controller
                 'tingkat_risiko' => $request->tingkatRisiko,
                 'kategori_bahaya' => $request->kategoriBahaya,
                 'type_bahaya' => $request->typeBahaya,
+                'detail_temuan' => json_encode($detailTemuan, JSON_UNESCAPED_UNICODE),
                 'tindak_lanjut' => $request->tindakLanjut,
                 'risiko' => $request->risiko,
                 'departemen_pic' => $request->departemen,
@@ -315,7 +320,12 @@ MSG;
                 $fileTindakLanjut3 = $newFileTindakLanjut3;
             }
 
+            $detailTemuan = $request->input('detail_temuan', []);
+            if (!is_array($detailTemuan)) { $detailTemuan = []; }
+            $detailTemuan = array_values(array_unique(array_filter(array_map('trim', $detailTemuan))));
+
             $dataUpdate = [
+                'detail_temuan' => json_encode($detailTemuan, JSON_UNESCAPED_UNICODE),
                 'temuan' => $request->temuan,
                 'tindak_lanjut' => $request->tindakLanjut,
                 'risiko' => $request->risiko,
@@ -699,7 +709,12 @@ MSG;
                     'result' => $verificationWaResult
                 ]);
 
+            $detailTemuan = $request->input('detail_temuan', []);
+            if (!is_array($detailTemuan)) { $detailTemuan = []; }
+            $detailTemuan = array_values(array_unique(array_filter(array_map('trim', $detailTemuan))));
+
             $dataUpdate = [
+                'detail_temuan' => json_encode($detailTemuan, JSON_UNESCAPED_UNICODE),
                 'temuan' => $request->temuan,
                 'tindak_lanjut' => $request->tindakLanjut,
                 'risiko' => $request->risiko,

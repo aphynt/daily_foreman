@@ -36,6 +36,12 @@
     ]);
 @endphp
 
+@php
+    $detailTemuan = $report->detail_temuan ?? [];
+    if (is_string($detailTemuan)) { $detailTemuan = json_decode($detailTemuan, true) ?? []; }
+    if (!is_array($detailTemuan)) { $detailTemuan = []; }
+@endphp
+
 <style>
     :root {
         --sap-primary: #2563eb;
@@ -617,6 +623,20 @@
                                     </div>
                                 </div>
 
+                                <div class="col-12 mt-3">
+                                    <div class="field-block">
+                                        <label class="field-label">Trend Temuan</label>
+                                        @if(count($detailTemuan) > 0)
+                                            <div class="row g-2 mt-1">
+                                                @foreach($detailTemuan as $item)
+                                                    <div class="col-md-6 col-12"><div style="display:flex;gap:10px;align-items:flex-start;padding:11px 12px;border:1px solid #dbe3ef;border-radius:10px;background:#f8fafc;height:100%;"><span style="color:#2563eb;font-weight:700">✓</span><span>{{ $item }}</span></div></div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <div class="empty-state">Belum ada trend temuan yang dipilih.</div>
+                                        @endif
+                                    </div>
+                                </div>
                                 <div class="col-md-3">
                                     <div class="field-block">
                                         <label class="field-label">PICA Level</label>

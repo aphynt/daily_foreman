@@ -18,7 +18,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="container mt-3">
-                            <form action="{{ route('klkh.haul-road.post') }}" method="POST" id="submitFormKLKHHaulRoad">
+                            <form action="{{ route('klkh.haul-road.post') }}" method="POST" id="submitFormKLKHHaulRoad" enctype="multipart/form-data">
                                 @csrf
                                 <!-- Inputan di atas tabel -->
                                 <div class="row mb-3">
@@ -383,10 +383,34 @@
                                                             </select>
                                     </div>
                                 </div>
+                                <div class="row mb-3">
+                                    <div class="upload-grid">
+                                        <div class="upload-card">
+                                            <label>Dokumentasi/Evidence 1</label>
+                                            <input type="file"
+                                                class="form-control form-control-sm"
+                                                name="dokumentasi_1"
+                                                accept="image/*">
+                                            <div class="upload-note">Format disarankan: JPG, PNG, WEBP.</div>
+                                        </div>
 
-                                <!-- Tombol Submit -->
+                                        <div class="upload-card">
+                                            <label>Dokumentasi/Evidence 2 (jika ada)</label>
+                                            <input type="file"
+                                                class="form-control form-control-sm"
+                                                name="dokumentasi_2"
+                                                accept="image/*">
+                                            <div class="upload-note">Opsional, isi jika ada dokumentasi tambahan.</div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="text-center mt-3">
-                                    <button type="submit" class="btn btn-primary btn-sm" id="submitButtonKLKHHaulRoad">Submit</button>
+                                    <button type="submit"
+                                        class="btn btn-primary btn-lg px-5 py-2"
+                                        id="submitFormKLKHHaulRoad">
+                                        Submit
+                                    </button>
                                 </div>
                             </form>
 

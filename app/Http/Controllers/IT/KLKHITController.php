@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class KLKHITController extends Controller
 {
@@ -22,63 +23,17 @@ class KLKHITController extends Controller
     {
         session(['requestTimeHaulRoad' => $request->all()]);
 
-        if (empty($request->rangeStart) || empty($request->rangeEnd)){
-            $time = new DateTime();
-            $startDate = $time->format('Y-m-d');
-            $endDate = $time->format('Y-m-d');
-
-            $start = new DateTime("$startDate");
-            $end = new DateTime("$endDate");
-
-        }else{
-            $start = new DateTime("$request->rangeStart");
-            $end = new DateTime("$request->rangeEnd");
+        if (empty($request->rangeStart) || empty($request->rangeEnd)) {
+            $start = new DateTime();
+            $end = new DateTime();
+        } else {
+            $start = new DateTime($request->rangeStart);
+            $end = new DateTime($request->rangeEnd);
         }
-
 
         $startTimeFormatted = $start->format('Y-m-d');
         $endTimeFormatted = $end->format('Y-m-d');
 
-
-        $baseQuery = DB::table('it_klkh as it')
-        ->leftJoin('users as us', 'it.pic', '=', 'us.id')
-        ->leftJoin('ref_region as ar', 'it.pit_id', '=', 'ar.id')
-        ->leftJoin('users as us3', 'it.pengawas', '=', 'us3.nik')
-        ->leftJoin('users as us4', 'it.diketahui', '=', 'us4.nik')
-        ->select(
-            'it.id',
-            'it.uuid',
-            'it.pic as pic_id',
-            'us.name as pic',
-            'us.nik as nik_pic',
-            DB::raw('CONVERT(varchar, it.created_at, 120) as tanggal_pembuatan'),
-            'it.statusenabled',
-            'it.lokasi',
-            'it.pekerjaan',
-            'ar.keterangan as pit',
-            'it.pengawas as nik_pengawas',
-            'us3.name as nama_pengawas',
-            'it.diketahui as nik_diketahui',
-            'us4.name as nama_diketahui',
-            'it.verified_pengawas',
-            'it.verified_diketahui',
-            'it.date',
-            'it.time',
-        )
-        ->where('it.statusenabled', true)
-        ->whereBetween(DB::raw('CONVERT(varchar, it.date, 23)'), [$startTimeFormatted, $endTimeFormatted]);
-
-        if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'])) {
-            $baseQuery->orWhere('pic', Auth::user()->id);
-        }
-
-
-        // $baseQuery = $baseQuery->where(function($query) {
-        //     $query->where('it.pengawas', Auth::user()->nik)
-        //           ->orWhere('it.diketahui', Auth::user()->nik);
-        // });
-
-        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         $nikBypass = array_merge(
@@ -86,6 +41,36 @@ class KLKHITController extends Controller
             getConfigArrayById(31)
         );
 
+        $baseQuery = DB::table('it_klkh as it')
+            ->leftJoin('users as us', 'it.pic', '=', 'us.id')
+            ->leftJoin('ref_region as ar', 'it.pit_id', '=', 'ar.id')
+            ->leftJoin('users as us3', 'it.pengawas', '=', 'us3.nik')
+            ->leftJoin('users as us4', 'it.diketahui', '=', 'us4.nik')
+            ->select(
+                'it.id',
+                'it.uuid',
+                'it.pic as pic_id',
+                'us.name as pic',
+                'us.nik as nik_pic',
+                DB::raw('CONVERT(varchar, it.created_at, 120) as tanggal_pembuatan'),
+                'it.statusenabled',
+                'it.lokasi',
+                'it.pekerjaan',
+                'ar.keterangan as pit',
+                'it.pengawas as nik_pengawas',
+                'us3.name as nama_pengawas',
+                'it.diketahui as nik_diketahui',
+                'us4.name as nama_diketahui',
+                'it.verified_pengawas',
+                'it.verified_diketahui',
+                'it.date',
+                'it.time'
+            )
+            ->where('it.statusenabled', 1)
+            ->whereBetween(
+                DB::raw('CONVERT(varchar, it.date, 23)'),
+                [$startTimeFormatted, $endTimeFormatted]
+            );
 
         if (!in_array($user->nik, $nikBypass)) {
             $baseQuery->where(function ($query) use ($user) {
@@ -119,7 +104,20 @@ class KLKHITController extends Controller
         try {
 
             $data = $request->all();
-            // dd($data);
+            $dokumentasi = [];
+            for ($i = 1; $i <= 3; $i++) {
+                $field = "dokumentasi_{$i}";
+                $dokumentasi[$field] = null;
+
+                if ($request->hasFile($field)) {
+                    $file = $request->file($field);
+                    $fileName = time() . '_' . $i . '_' . $file->getClientOriginalName();
+                    $path = "klkh/it/{$field}";
+
+                    Storage::disk('production_public')->putFileAs($path, $file, $fileName);
+                    $dokumentasi[$field] = rtrim(config('app.url'), '/') . "/storage/{$path}/{$fileName}";
+                }
+            }
 
             $dataToInsert = [
 
@@ -190,6 +188,9 @@ class KLKHITController extends Controller
                 'date_verified_pengawas' => Carbon::now(),
                 'catatan_verified_pengawas' => $data['catatan_verified_pengawas'] ?? null,
 
+                'dokumentasi_1' => $dokumentasi['dokumentasi_1'],
+                'dokumentasi_2' => $dokumentasi['dokumentasi_2'],
+
                 'diketahui' => $data['diketahui'] ?? null,
             ];
 
@@ -200,6 +201,22 @@ class KLKHITController extends Controller
 
         } catch (\Throwable $th) {
             return redirect()->back()->with('info', 'KLKH gagal disimpan' . $th->getMessage());
+        }
+    }
+
+    public function delete($id)
+    {
+        dd($id);
+        try {
+            KLKHIT::where('id', $id)->update([
+                'statusenabled' => false,
+                'deleted_by' => Auth::user()->id,
+            ]);
+
+            return redirect()->route('klkh.it')->with('success', 'KLKH berhasil dihapus');
+
+        } catch (\Throwable $th) {
+            return redirect()->route('klkh.it')->with('info', nl2br('KLKH gagal dihapus..\n' . $th->getMessage()));
         }
     }
 

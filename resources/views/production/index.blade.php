@@ -1,413 +1,324 @@
 @include('layout.head', ['title' => 'Produksi Per Jam'])
 @include('layout.sidebar')
 @include('layout.header')
-<script src="{{ asset('dashboard/assets') }}/js/plugins/apexcharts.min.js"></script>
+
+@php
+    $actual = (float) ($data['actual'] ?? 0);
+    $plan = (float) ($data['plan'] ?? 0);
+    $percent = $plan > 0 ? ($actual / $plan) * 100 : 0;
+    $progressWidth = max(0, min($percent, 100));
+    $progressColor = $percent < 65 ? '#dc5259' : ($percent <= 85 ? '#d88c20' : ($percent <= 100 ? '#16845b' : '#497fe5'));
+    $isSiang = ($data['waktu'] ?? 'Siang') === 'Siang';
+    $tabs = $isSiang
+        ? [
+            ['id' => 'shift-siang', 'label' => 'Shift Siang', 'key' => 'Siang'],
+            ['id' => 'history-shift-malam', 'label' => 'History Shift Malam', 'key' => 'HistoryMalam'],
+        ]
+        : [
+            ['id' => 'shift-malam', 'label' => 'Shift Malam', 'key' => 'Malam'],
+            ['id' => 'history-shift-siang', 'label' => 'History Shift Siang', 'key' => 'HistorySiang'],
+        ];
+@endphp
+
 <style>
-    .staging-img {
-        max-width: 700px;
-        object-fit: contain;
+    .production-page {
+        --prd-bg: #ffffff;
+        --prd-subtle: #f5f7fb;
+        --prd-border: #e0e6ef;
+        --prd-text: #182638;
+        --prd-muted: #56677e;
+        --prd-track: #e8edf4;
+        --prd-active: #245cbe;
+        --prd-active-text: #ffffff;
+        color: var(--prd-text);
     }
-
-    /* Tablet */
-    @media (max-width: 992px) {
-        .staging-img {
-            max-width: 320px;
-        }
+    [data-pc-theme="dark"] .production-page,
+    [data-bs-theme="dark"] .production-page,
+    [data-theme="dark"] .production-page,
+    body.dark .production-page,
+    body.dark-mode .production-page {
+        --prd-bg: #202b3c;
+        --prd-subtle: #172234;
+        --prd-border: #405069;
+        --prd-text: #f2f6fc;
+        --prd-muted: #c3cee0;
+        --prd-track: #39485d;
+        --prd-active: #78aaff;
+        --prd-active-text: #102139;
     }
-
-    /* Mobile */
-    @media (max-width: 576px) {
-        .staging-img {
-            max-width: 320px;
-        }
+    .production-page .prd-card {
+        background: var(--prd-bg);
+        border: 1px solid var(--prd-border);
+        border-radius: 14px;
+        box-shadow: 0 3px 14px rgba(8, 25, 52, .045);
+        overflow: hidden;
+    }
+    .production-page .prd-heading {
+        color: var(--prd-text) !important;
+        font-weight: 700;
+        font-size: 1.1rem;
+        line-height: 1.4;
+    }
+    .production-page .prd-muted {
+        color: var(--prd-muted) !important;
+    }
+    .production-page .prd-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        flex-shrink: 0;
+        border-radius: 12px;
+        background: var(--prd-subtle);
+        color: var(--prd-active);
+        font-size: 21px;
+    }
+    .production-page .prd-kpi {
+        font-size: clamp(1.6rem, 2.2vw, 2.15rem);
+        line-height: 1.2;
+        letter-spacing: -.04em;
+        font-weight: 750;
+        color: var(--prd-text);
+        font-variant-numeric: tabular-nums;
+    }
+    .production-page .prd-stat {
+        padding: 12px 14px;
+        background: var(--prd-subtle);
+        border: 1px solid var(--prd-border);
+        border-radius: 10px;
+    }
+    .production-page .prd-stat strong,
+    .production-page .prd-value,
+    .production-page .prd-hour,
+    .production-page .prd-rate {
+        color: var(--prd-text) !important;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+    }
+    .production-page .prd-progress {
+        height: 14px;
+        border-radius: 999px;
+        background: var(--prd-track);
+        overflow: hidden;
+    }
+    .production-page .prd-progress .progress-bar {
+        border-radius: 999px;
+        transition: width .2s ease;
+    }
+    .production-page .prd-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        border-bottom: 1px solid var(--prd-border);
+        padding-bottom: 14px;
+    }
+    .production-page .prd-tabs .nav-link {
+        color: var(--prd-text) !important;
+        background: var(--prd-subtle);
+        border: 1px solid var(--prd-border);
+        border-radius: 9px;
+        padding: 10px 15px;
+        font-size: .9rem;
+        font-weight: 650;
+    }
+    .production-page .prd-tabs .nav-link.active {
+        background: var(--prd-active) !important;
+        color: var(--prd-active-text) !important;
+        border-color: var(--prd-active) !important;
+    }
+    .production-page .prd-hour-row {
+        padding: 14px 0;
+        border-bottom: 1px solid var(--prd-border);
+    }
+    .production-page .prd-hour-row:last-child {
+        border-bottom: 0;
+    }
+    .production-page .prd-hour {
+        font-size: .96rem;
+        white-space: nowrap;
+    }
+    .production-page .prd-value {
+        font-size: .9rem;
+    }
+    .production-page .prd-rate {
+        font-size: .85rem;
+        white-space: nowrap;
+    }
+    .production-page .prd-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 9px;
+        border: 1px solid var(--prd-border);
+        border-radius: 8px;
+        background: var(--prd-subtle);
+        color: var(--prd-text);
+        font-size: .82rem;
+        font-weight: 650;
+    }
+    .production-page .prd-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+    .production-page .prd-empty {
+        text-align: center;
+        padding: 35px 12px;
+        color: var(--prd-muted);
+    }
+    @media (max-width: 767.98px) {
+        .production-page .prd-card .card-body { padding: 17px; }
+        .production-page .prd-hour-row { padding: 12px 0; }
+        .production-page .prd-tabs .nav-item { flex: 1; }
+        .production-page .prd-tabs .nav-link { width: 100%; text-align: center; padding: 9px; }
     }
 </style>
+
 <div class="pc-container">
-    <div class="pc-content">
+    <div class="pc-content production-page">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+            <div>
+                <h4 class="prd-heading mb-1">Produksi Per Jam</h4>
+            </div>
+            <span class="prd-pill"><i class="ti ti-refresh"></i> Refresh otomatis 5 menit</span>
+        </div>
 
-        {{-- ================= ROW UTAMA ================= --}}
-        <div class="row">
-
-            {{-- =========================================================
-            | KOLOM KIRI
-            ========================================================== --}}
-            <div class="col-xl-4 col-md-6">
-
-                {{-- ===== CARD SUMMARY ===== --}}
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center my-3">
-                            <div class="flex-shrink-0">
-                                <div class="avtar avtar-s bg-light-success">
-                                    <i class="ti ti-list-check f-20"></i>
-                                </div>
-                            </div>
-                            <div class="flex-grow-1 ms-3">
-                                <h5 class="mb-0">Produksi Overburden</h5>
+        <div class="row g-3 align-items-start">
+            <div class="col-xl-4 col-lg-5">
+                <div class="card prd-card mb-0">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <span class="prd-icon"><i class="ti ti-chart-bar"></i></span>
+                            <div>
+                                <h5 class="prd-heading mb-0">Produksi Overburden</h5>
                             </div>
                         </div>
 
-                        <div class="my-3">
-                            <p class="mb-2">
-                                Tasks done
-                                <span class="float-end">
-                                    {{ number_format($data['plan'] != 0 ? ($data['actual'] / $data['plan']) * 100 : 0, 2) }}%
-                                </span>
-                            </p>
-
-                            @php
-                                $percent = $data['plan'] != 0
-                                    ? ($data['actual'] / $data['plan']) * 100
-                                    : 0;
-
-                                if ($percent < 65) {
-                                    $color = '#fb8078'; // merah
-                                } elseif ($percent <= 85) {
-                                    $color = '#ffa500'; // orange
-                                } elseif ($percent <= 100) {
-                                    $color = '#039201'; // hijau
-                                } else {
-                                    $color = '#4e7be6'; // biru
-                                }
-
-                                $percentFormatted = number_format($percent, 2);
-                                $width = min($percent, 100); // supaya tidak overflow
-                            @endphp
-
-                            <div class="progress" style="height: 20px;">
-                                <div class="progress-bar"
-                                    role="progressbar"
-                                    style="width: {{ $width }}%; background-color: {{ $color }};"
-                                    aria-valuenow="{{ $percentFormatted }}"
-                                    aria-valuemin="0"
-                                    aria-valuemax="100">
-                                    {{ $percentFormatted }}%
-                                </div>
+                        <div class="d-flex align-items-end justify-content-between gap-2 mb-2">
+                            <div>
+                                <div class="prd-muted small mb-1">Pencapaian</div>
+                                <div class="prd-kpi">{{ number_format($percent, 2, ',', '.') }}%</div>
                             </div>
                         </div>
+                        <div class="progress prd-progress mb-4" role="progressbar" aria-valuenow="{{ round($progressWidth, 2) }}" aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar" style="width: {{ $progressWidth }}%; background-color: {{ $progressColor }};"></div>
+                        </div>
 
-                        <div class="d-grid gap-3">
-                            <div class="btn btn-link-secondary">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1 mx-2 text-start">Actual</div>
-                                    <div class="badge bg-light-dark">
-                                        {{ number_format($data['actual'], 0, ',', '.') }} BCM
-                                    </div>
+                        <div class="row g-2">
+                            <div class="col-sm-6 col-lg-12 col-xxl-6">
+                                <div class="prd-stat h-100">
+                                    <div class="prd-muted small mb-1">Actual</div>
+                                    <strong>{{ number_format($actual, 0, ',', '.') }} BCM</strong>
                                 </div>
                             </div>
-
-                            <div class="btn btn-link-secondary">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1 mx-2 text-start">Plan</div>
-                                    <div class="badge bg-light-dark">
-                                        {{ number_format($data['plan'], 0, ',', '.') }} BCM
-                                    </div>
+                            <div class="col-sm-6 col-lg-12 col-xxl-6">
+                                <div class="prd-stat h-100">
+                                    <div class="prd-muted small mb-1">Plan</div>
+                                    <strong>{{ number_format($plan, 0, ',', '.') }} BCM</strong>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                {{-- @if($data['staging'])
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <div class="card-header align-items-center justify-content-between">
-                            <h5 class="mb-0">Staging Plan</h5>
-                            <img src="{{ $data['staging']->image }}" alt="Staging Plan" class="staging-img">
-                        </div>
-                        <a href="{{ $data['staging']->image }}" class="btn btn-primary w-50" style="padding-top:5px;padding-bottom:5px;" download>
-                            Download Gambar
-                        </a>
-                    </div>
-                </div>
-                @endif --}}
             </div>
 
-            <div class="col-xl-8 col-md-6">
-
-                <div class="card">
-                    <div class="card-body pc-component">
-                        {{-- <h5 class="mb-3">Basic Pills</h5> --}}
-                        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                            @if ($data['waktu'] == 'Siang')
-                            <li class="nav-item"><a class="nav-link active" id="shift-siang-tab" data-bs-toggle="pill"
-                                    href="#shift-siang" role="tab" aria-controls="shift-siang"
-                                    aria-selected="true">Shift
-                                    Siang</a>
-                            </li>
-
-                            <li class="nav-item"><a class="nav-link" id="history-shift-malam-tab" data-bs-toggle="pill"
-                                    href="#history-shift-malam" role="tab" aria-controls="history-shift-malam"
-                                    aria-selected="false">History Shift
-                                    Malam</a></li>
-                            @else
-                            <li class="nav-item"><a class="nav-link active" id="shift-malam-tab" data-bs-toggle="pill"
-                                    href="#shift-malam" role="tab" aria-controls="shift-malam"
-                                    aria-selected="true">Shift
-                                    Malam</a></li>
-
-                            <li class="nav-item"><a class="nav-link" id="history-shift-siang-tab" data-bs-toggle="pill"
-                                    href="#history-shift-siang" role="tab" aria-controls="history-shift-siang"
-                                    aria-selected="false">History Shift
-                                    Siang</a></li>
-                            @endif
+            <div class="col-xl-8 col-lg-7">
+                <div class="card prd-card mb-0">
+                    <div class="card-body p-4">
+                        <h5 class="prd-heading mb-3">Rincian Produksi per Jam</h5>
+                        <ul class="nav nav-pills prd-tabs mb-3" role="tablist">
+                            @foreach ($tabs as $index => $tab)
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link {{ $index === 0 ? 'active' : '' }}"
+                                            id="{{ $tab['id'] }}-tab"
+                                            data-bs-toggle="pill"
+                                            data-bs-target="#{{ $tab['id'] }}"
+                                            type="button"
+                                            role="tab"
+                                            aria-controls="{{ $tab['id'] }}"
+                                            aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
+                                        {{ $tab['label'] }}
+                                    </button>
+                                </li>
+                            @endforeach
                         </ul>
-                        <div class="tab-content" id="pills-tabContent">
-                            <div class="tab-pane fade show @if ($data['waktu'] == 'Siang') active @endif"
-                                id="shift-siang" role="tabpanel" aria-labelledby="shift-siang-tab">
-                                <div class="col-xl-12 col-md-6">
-                                    <div class="card">
-                                        <div class="card-body pc-component">
-                                            @foreach ($data['kategori']['Siang'] as $item)
-                                            <div class="row mb-4">
-                                                <div class="col-12 col-md-2">
-                                                    <label for="">{{ $item->HOUR }}:00</label>
+
+                        <div class="tab-content">
+                            @foreach ($tabs as $index => $tab)
+                                <div class="tab-pane fade {{ $index === 0 ? 'show active' : '' }}"
+                                     id="{{ $tab['id'] }}"
+                                     role="tabpanel"
+                                     aria-labelledby="{{ $tab['id'] }}-tab"
+                                     tabindex="0">
+                                    @forelse (($data['kategori'][$tab['key']] ?? []) as $item)
+                                        @php
+                                            $hourActual = (float) ($item->PRODUCTION ?? 0);
+                                            $hourPlan = (float) ($item->PLAN_PRODUCTION ?? 0);
+                                            $hourPercent = $hourPlan > 0 ? $hourActual / $hourPlan * 100 : 0;
+                                            $hourWidth = max(0, min($hourPercent, 100));
+                                            $hourColor = $hourPercent < 65 ? '#dc5259' : ($hourPercent <= 85 ? '#d88c20' : ($hourPercent <= 100 ? '#16845b' : '#497fe5'));
+                                        @endphp
+                                        <div class="prd-hour-row">
+                                            <div class="row g-2 align-items-center">
+                                                <div class="col-3 col-md-2">
+                                                    <span class="prd-hour">{{ str_pad((string) $item->HOUR, 2, '0', STR_PAD_LEFT) }}:00</span>
                                                 </div>
-                                                <div class="col-12 col-md-8">
-                                                    <div class="progress" style="height: 20px">
-                                                        <div class="progress-bar" role="progressbar"
-                                                            style="width: {{ number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) }}%;
-                                                            @if (number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) < 65) background-color:#fb8078;
-                                                            @elseif(number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) >= 65 and
-                                                                    number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) <= 85) background-color:#ffa500;
-                                                            @elseif(number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) > 85 and
-                                                                    number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) <= 100) background-color:#039201;
-                                                            @elseif(number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) > 100) background-color:#4e7be6; @endif"
-                                                            aria-valuenow="{{ number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) }}"
-                                                            aria-valuemin="0" aria-valuemax="100">
-                                                            {{ number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) }}%
+                                                <div class="col-9 col-md-7">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div class="progress prd-progress flex-grow-1" role="progressbar" aria-label="Pencapaian pukul {{ $item->HOUR }}" aria-valuenow="{{ round($hourWidth, 2) }}" aria-valuemin="0" aria-valuemax="100">
+                                                            <div class="progress-bar" style="width: {{ $hourWidth }}%; background-color: {{ $hourColor }};"></div>
                                                         </div>
+                                                        <span class="prd-rate">{{ number_format($hourPercent, 2, ',', '.') }}%</span>
                                                     </div>
                                                 </div>
-                                                <div class="col-12 col-md-2">
-                                                    <span style="color: green">
-                                                        {{ round($item->PRODUCTION) }} /
-                                                        {{ round($item->PLAN_PRODUCTION) }}
-                                                    </span>
-                                                    <br>
-                                                    <small style="color:#555">
-                                                        Distance: {{ number_format($item->HAUL_DISTANCE ?? 0,2) }} km
-                                                    </small>
+                                                <div class="col-12 col-md-3 text-md-end ps-3 ps-md-0">
+                                                    <div class="prd-value">{{ number_format($hourActual, 0, ',', '.') }} / {{ number_format($hourPlan, 0, ',', '.') }}</div>
+                                                    <div class="prd-muted small">Distance: {{ number_format($item->HAUL_DISTANCE ?? 0, 2, ',', '.') }} km</div>
                                                 </div>
                                             </div>
-                                            @endforeach
-
                                         </div>
-                                    </div>
+                                    @empty
+                                        <div class="prd-empty">Belum ada data produksi untuk shift ini.</div>
+                                    @endforelse
                                 </div>
-                            </div>
-                            <div class="tab-pane fade" id="history-shift-malam" role="tabpanel"
-                                aria-labelledby="history-shift-malam-tab">
-                                <div class="col-xl-12 col-md-6">
-                                    <div class="card">
-                                        <div class="card-body pc-component">
-                                            @foreach ($data['kategori']['HistoryMalam'] as $item)
-                                            <div class="row mb-4">
-                                                <div class="col-12 col-md-2">
-                                                    <label for="">{{ $item->HOUR }}:00</label>
-                                                </div>
-                                                <div class="col-12 col-md-8">
-                                                    <div class="progress" style="height: 20px">
-                                                        <div class="progress-bar" role="progressbar"
-                                                            style="width: {{ number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) }}%;
-                                                                @if (number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) < 65) background-color:#fb8078;
-                                                                @elseif(number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) >= 65 and
-                                                                        number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) <= 85) background-color:#ffa500;
-                                                                @elseif(number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) > 85 and
-                                                                        number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) <= 100) background-color:#039201;
-                                                                @elseif(number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) > 100) background-color:#4e7be6; @endif"
-                                                            aria-valuenow="{{ number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) }}"
-                                                            aria-valuemin="0" aria-valuemax="100">
-                                                            {{ number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) }}%
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-md-2">
-                                                    <span style="color: green">
-                                                        {{ round($item->PRODUCTION) }} /
-                                                        {{ round($item->PLAN_PRODUCTION) }}
-                                                    </span>
-                                                    <br>
-                                                    <small style="color:#555">
-                                                        Distance: {{ number_format($item->HAUL_DISTANCE ?? 0,2) }} km
-                                                    </small>
-                                                </div>
-                                            </div>
-                                            @endforeach
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade show @if ($data['waktu'] == 'Malam') active @endif"
-                                id="shift-malam" role="tabpanel" aria-labelledby="shift-malam-tab">
-                                <div class="col-xl-12 col-md-6">
-                                    <div class="card">
-                                        <div class="card-body pc-component">
-                                            @foreach ($data['kategori']['Malam'] as $item)
-                                            <div class="row mb-4">
-                                                <div class="col-12 col-md-2">
-                                                    <label for="">{{ $item->HOUR }}:00</label>
-                                                </div>
-                                                <div class="col-12 col-md-8">
-                                                    <div class="progress" style="height: 20px">
-                                                        <div class="progress-bar" role="progressbar"
-                                                            style="width: {{ number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) }}%;
-                                                                @if (number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) < 65) background-color:#fb8078;
-                                                                @elseif(number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) >= 65 and
-                                                                        number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) <= 85) background-color:#ffa500;
-                                                                @elseif(number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) > 85 and
-                                                                        number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) <= 100) background-color:#039201;
-                                                                @elseif(number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) > 100) background-color:#4e7be6; @endif"
-                                                            aria-valuenow="{{ number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) }}"
-                                                            aria-valuemin="0" aria-valuemax="100">
-                                                            {{ number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) }}%
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-md-2">
-                                                    <span style="color: green">
-                                                        {{ round($item->PRODUCTION) }} /
-                                                        {{ round($item->PLAN_PRODUCTION) }}
-                                                    </span>
-                                                    <br>
-                                                    <small style="color:#555">
-                                                        Distance: {{ number_format($item->HAUL_DISTANCE ?? 0,2) }} km
-                                                    </small>
-                                                </div>
-                                            </div>
-                                            @endforeach
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade show" id="history-shift-siang" role="tabpanel"
-                                aria-labelledby="history-shift-siang-tab">
-                                <div class="col-xl-12 col-md-6">
-                                    <div class="card">
-                                        <div class="card-body pc-component">
-                                            @foreach ($data['kategori']['HistorySiang'] as $item)
-                                            <div class="row mb-4">
-                                                <div class="col-12 col-md-2">
-                                                    <label for="">{{ $item->HOUR }}:00</label>
-                                                </div>
-                                                <div class="col-12 col-md-8">
-                                                    <div class="progress" style="height: 20px">
-                                                        <div class="progress-bar" role="progressbar"
-                                                            style="width: {{ number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) }}%;
-                                                            @if (number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) < 65) background-color:#fb8078;
-                                                            @elseif(number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) >= 65 and
-                                                                    number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) <= 85) background-color:#ffa500;
-                                                            @elseif(number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) > 85 and
-                                                                    number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) <= 100) background-color:#039201;
-                                                            @elseif(number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) > 100) background-color:#4e7be6; @endif"
-                                                            aria-valuenow="{{ number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) }}"
-                                                            aria-valuemin="0" aria-valuemax="100">
-                                                            {{ number_format($item->PLAN_PRODUCTION != 0 ? ($item->PRODUCTION / $item->PLAN_PRODUCTION) * 100 : 0, 2) }}%
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-md-2">
-                                                    <span style="color: green">
-                                                        {{ round($item->PRODUCTION) }} /
-                                                        {{ round($item->PLAN_PRODUCTION) }}
-                                                    </span>
-                                                    <br>
-                                                    <small style="color:#555">
-                                                        Distance: {{ number_format($item->HAUL_DISTANCE ?? 0,2) }} km
-                                                    </small>
-                                                </div>
-                                            </div>
-                                            @endforeach
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
+                            @endforeach
                         </div>
-                        <div class="row">
-                            <h6>Keterangan:</h6>
-                            <div class="col-6 col-sm-4 col-md-3 mb-4">
-                                <div class="progress" style="height: 20px">
-                                    <div class="progress-bar" role="progressbar"
-                                        style="width: 100%;background-color:#fb8078" aria-valuenow="100"
-                                        aria-valuemin="0" aria-valuemax="100">
-                                        < 65%</div> </div> </div> <div class="col-6 col-sm-4 col-md-3 mb-4">
-                                            <div class="progress" style="height: 20px">
-                                                <div class="progress-bar" role="progressbar"
-                                                    style="width: 100%;background-color:#ffa500" aria-valuenow="100"
-                                                    aria-valuemin="0" aria-valuemax="100">65 s/d 85 (%)</div>
-                                            </div>
-                                    </div>
-                                    <div class="col-6 col-sm-4 col-md-3 mb-4">
-                                        <div class="progress" style="height: 20px">
-                                            <div class="progress-bar" role="progressbar"
-                                                style="width: 100%;background-color:#039201" aria-valuenow="100"
-                                                aria-valuemin="0" aria-valuemax="100">86 s/d 100 (%)</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 col-sm-4 col-md-3 mb-4">
-                                        <div class="progress" style="height: 20px">
-                                            <div class="progress-bar" role="progressbar"
-                                                style="width: 100%;background-color:#4e7be6" aria-valuenow="100"
-                                                aria-valuemin="0" aria-valuemax="100">> 100 (%)</div>
-                                        </div>
-                                    </div>
-                                </div>
 
+                        <div class="mt-4 pt-3" style="border-top: 1px solid var(--prd-border);">
+                            <h6 class="prd-heading mb-3" style="font-size: .95rem;">Keterangan Pencapaian</h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="prd-pill"><span class="prd-dot" style="background:#dc5259"></span> Di bawah 65%</span>
+                                <span class="prd-pill"><span class="prd-dot" style="background:#d88c20"></span> 65–85%</span>
+                                <span class="prd-pill"><span class="prd-dot" style="background:#16845b"></span> Di atas 85–100%</span>
+                                <span class="prd-pill"><span class="prd-dot" style="background:#497fe5"></span> Di atas 100%</span>
                             </div>
                         </div>
                     </div>
-
                 </div>
-
-            </div> {{-- END ROW --}}
+            </div>
         </div>
     </div>
+</div>
 
-    @include('layout.footer')
+@include('layout.footer')
 
-    <script>
-        setTimeout(function () {
-            location.reload();
-        }, 300000); // 300000 ms = 5 menit
+<script>
+    setTimeout(function () {
+        location.reload();
+    }, 300000);
 
-    </script>
-    <script>
-        function getUrutanJam(mode) {
-            if (mode === 'Malam') {
-                // 19 → 23, lalu 00 → 06
-                return [19, 20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6];
-            }
-            // Siang: 07 → 18
-            return [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
-        }
+    function getUrutanJam(mode) {
+        return mode === 'Malam'
+            ? [19, 20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6]
+            : [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+    }
 
-    </script>
-    <script>
-        "use strict";
-        const categories = [
-            "00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00",
-            "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00",
-            "22:00", "23:00"
-        ];
-
-        const kategori = {
-            "Siang": [],
-            "Malam": []
-        };
-
-        categories.forEach(time => {
-            const hour = parseInt(time.split(":")[0]); // Mendapatkan jam (0-23)
-
-            if (hour >= 7 && hour <= 18) {
-                kategori.Siang.push(time);
-            } else {
-                kategori.Malam.push(time);
-            }
-        });
-
-    </script>
-    {{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> --}}
-
+    const categories = Array.from({length: 24}, (_, hour) => String(hour).padStart(2, '0') + ':00');
+    const kategori = {
+        Siang: categories.filter(time => Number(time.slice(0, 2)) >= 7 && Number(time.slice(0, 2)) <= 18),
+        Malam: categories.filter(time => Number(time.slice(0, 2)) < 7 || Number(time.slice(0, 2)) >= 19)
+    };
+</script>

@@ -16,6 +16,7 @@ use Ramsey\Uuid\Uuid;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use DateTime;
+use Illuminate\Support\Facades\Storage;
 
 class InspeksiJalanTambangController extends Controller
 {
@@ -120,7 +121,20 @@ class InspeksiJalanTambangController extends Controller
     public function post(Request $request)
     {
         try {
+            $dokumentasi = [];
+            for ($i = 1; $i <= 3; $i++) {
+                $field = "dokumentasi_{$i}";
+                $dokumentasi[$field] = null;
 
+                if ($request->hasFile($field)) {
+                    $file = $request->file($field);
+                    $fileName = time() . '_' . $i . '_' . $file->getClientOriginalName();
+                    $path = "inspeksi/jalantambang/{$field}";
+
+                    Storage::disk('production_public')->putFileAs($path, $file, $fileName);
+                    $dokumentasi[$field] = rtrim(config('app.url'), '/') . "/storage/{$path}/{$fileName}";
+                }
+            }
             $data = $request->all();
             // dd($data);
 
@@ -150,12 +164,6 @@ class InspeksiJalanTambangController extends Controller
                 'pit'              => $data['pit'] ?? null,
                 'penanggungjawab' => $data['penanggungjawab'] ?? null,
 
-                /*
-                =======================
-                SECTION 1 — DIMENSI JALAN
-                =======================
-                */
-
                 'dimensi_11_check' => $data['dimensi_11_check'] ?? null,
                 'dimensi_11_action' => $data['dimensi_11_action'] ?? null,
                 'dimensi_11_due' => $data['dimensi_11_due'] ?? null,
@@ -176,13 +184,6 @@ class InspeksiJalanTambangController extends Controller
                 'dimensi_15_action' => $data['dimensi_15_action'] ?? null,
                 'dimensi_15_due' => $data['dimensi_15_due'] ?? null,
 
-
-                /*
-                =======================
-                SECTION 2 — KONDISI FISIK
-                =======================
-                */
-
                 'fisik_21_check' => $data['fisik_21_check'] ?? null,
                 'fisik_21_action' => $data['fisik_21_action'] ?? null,
                 'fisik_21_due' => $data['fisik_21_due'] ?? null,
@@ -198,13 +199,6 @@ class InspeksiJalanTambangController extends Controller
                 'fisik_24_check' => $data['fisik_24_check'] ?? null,
                 'fisik_24_action' => $data['fisik_24_action'] ?? null,
                 'fisik_24_due' => $data['fisik_24_due'] ?? null,
-
-
-                /*
-                =======================
-                SECTION 3 — TANGGUL
-                =======================
-                */
 
                 'tanggul_31_check' => $data['tanggul_31_check'] ?? null,
                 'tanggul_31_action' => $data['tanggul_31_action'] ?? null,
@@ -226,13 +220,6 @@ class InspeksiJalanTambangController extends Controller
                 'tanggul_35_action' => $data['tanggul_35_action'] ?? null,
                 'tanggul_35_due' => $data['tanggul_35_due'] ?? null,
 
-
-                /*
-                =======================
-                SECTION 4 — PATOK
-                =======================
-                */
-
                 'patok_41_check' => $data['patok_41_check'] ?? null,
                 'patok_41_action' => $data['patok_41_action'] ?? null,
                 'patok_41_due' => $data['patok_41_due'] ?? null,
@@ -248,13 +235,6 @@ class InspeksiJalanTambangController extends Controller
                 'patok_44_check' => $data['patok_44_check'] ?? null,
                 'patok_44_action' => $data['patok_44_action'] ?? null,
                 'patok_44_due' => $data['patok_44_due'] ?? null,
-
-
-                /*
-                =======================
-                SECTION 5 — RAMBU
-                =======================
-                */
 
                 'rambu_51_check' => $data['rambu_51_check'] ?? null,
                 'rambu_51_action' => $data['rambu_51_action'] ?? null,
@@ -275,13 +255,6 @@ class InspeksiJalanTambangController extends Controller
                 'rambu_55_check' => $data['rambu_55_check'] ?? null,
                 'rambu_55_action' => $data['rambu_55_action'] ?? null,
                 'rambu_55_due' => $data['rambu_55_due'] ?? null,
-
-
-                /*
-                =======================
-                SECTION 6 — PERSIMPANGAN
-                =======================
-                */
 
                 'simpang_61_check' => $data['simpang_61_check'] ?? null,
                 'simpang_61_action' => $data['simpang_61_action'] ?? null,
@@ -328,6 +301,8 @@ class InspeksiJalanTambangController extends Controller
                 'simpang_611_due' => $data['simpang_611_due'] ?? null,
 
                 'additional_notes' => $data['additional_notes'] ?? null,
+                'dokumentasi_1' => $dokumentasi['dokumentasi_1'],
+                'dokumentasi_2' => $dokumentasi['dokumentasi_2'],
             ];
 
 

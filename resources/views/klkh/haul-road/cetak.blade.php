@@ -13,112 +13,187 @@
             size: A4;
             margin: 5mm;
         }
-
         body {
             font-family: Arial, sans-serif;
-            /* line-height: 1.6; */
-            font-size: 12px;
+            font-size: 11px;
         }
-
         .container {
             width: 100%;
         }
-
         h1 {
             text-align: center;
             font-size: 20px;
             margin-bottom: 20px;
         }
-
         h2 {
             text-align: center;
             font-size: 20px;
             margin-bottom: 15px;
         }
-
         h5 {
             margin: 1px;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 5px;
         }
-
         th,
         td {
             border: 1px solid #000;
             padding: 3px;
-            /*text-align: center;*/
         }
-
         th {
             background-color: #D0CECE;
             text-align: center;
         }
-
-
-
         h3 {
             font-size: 18px;
             margin-bottom: 10px;
         }
-
         .point-table {
             margin-top: 5px;
         }
-
         tr th {
             text-align: left;
         }
-
         .kanan {
             text-align: right;
         }
-
         .noborder {
             border-top-color: white;
             border-bottom: none;
             border-left: none;
             border-right: none;
         }
-
         .nobg{
             background-color: white;
         }
-
         .center {
             text-align: center;
         }
-
         .box {
             display: flex;
             justify-content: space-between;
         }
-
         .box-vcenter {
             display: flex;
             justify-content: space-between;
             align-items: center;
             align-content: center;
         }
+        .klkh-photo-page {
+            break-before: page;
+            page-break-before: always;
+            width: 100%;
+            box-sizing: border-box;
+            color: #111;
+        }
+        .klkh-photo-page .klkh-photo-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .klkh-photo-page .klkh-photo-header img {
+            width: 205px;
+            max-height: 55px;
+            object-fit: contain;
+        }
+        .klkh-photo-page .klkh-photo-code {
+            font-size: 11px;
+            text-align: right;
+        }
+        .klkh-photo-page h2 {
+            font-size: 19px;
+            line-height: 1.3;
+            margin: 14px 0 5px;
+            text-align: center;
+        }
+        .klkh-photo-page .klkh-photo-subtitle {
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .klkh-photo-page .klkh-photo-info td {
+            padding: 7px 9px;
+            font-size: 11px;
+            border: 1px solid #aaa;
+        }
+        .klkh-photo-page .klkh-photo-info .klkh-photo-label {
+            font-weight: bold;
+            background: #f0f2f5;
+            width: 17%;
+        }
+        .klkh-photo-page .klkh-photo-bar {
+            padding: 9px;
+            font-weight: bold;
+            text-align: center;
+            background: #e8edf4;
+            border: 1px solid #b8c5d4;
+            margin: 12px 0;
+        }
+        .klkh-photo-page .klkh-photo-grid {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+            border-spacing: 8px 0;
+        }
+        .klkh-photo-page .klkh-photo-col {
+            display: table-cell;
+            width: 50%;
+            vertical-align: top;
+            border: 1px solid #c5cbd3;
+        }
+        .klkh-photo-page .klkh-photo-caption {
+            text-align: center;
+            padding: 9px;
+            font-weight: bold;
+            background: #f4f6f8;
+            border-bottom: 1px solid #c5cbd3;
+        }
+        .klkh-photo-page .klkh-photo-frame {
+            height: 570px;
+            text-align: center;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .klkh-photo-page .klkh-photo-frame img {
+            display: block;
+            max-width: 100%;
+            max-height: 545px;
+            width: auto;
+            height: auto;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+        .klkh-photo-page .klkh-photo-empty {
+            padding: 200px 4px 0;
+            color: #777;
+            font-style: italic;
+            text-align: center;
+        }
+        @media print {
+            .klkh-photo-page {
+                page-break-before: always;
+                break-before: page;
+                break-inside: avoid;
+            }
+        }
     </style>
 </head>
-
 <body>
     <div class="container">
         <table class="point-table">
             <thead>
                 <tr>
-                    <th class="noborder nobg" style="padding: 0px'margin-bttom:0px"><img src="{{ asset('dashboard/assets') }}/images/logo-full.png" width="240px"></th>
+                    <th class="noborder nobg" style="padding: 0px; margin-bottom: 0px;"><img src="{{ asset('dashboard/assets') }}/images/logo-full.png" width="240px"></th>
                     <th colspan="5" class="noborder nobg kanan"><p style="margin: 0;">FM-PRD-51/01/18/10/22</p></th>
                 </tr>
             </thead>
         </table>
         <div class="box-vcenter" style="display: flex; align-items: center; justify-content: space-between;">
-
-
         </div>
         <hr>
         <h1>Pemeriksaan Kesiapan Kerja Harian & Kelayakan Lingkungan Kerja Harian (KLKH) Departemen Produksi Area Haul Road</h1>
@@ -288,7 +363,6 @@
         </table>
         Catatan:
         <p class="mb-0">{!! $hr->additional_notes !!}</p>
-
         <table style="width: 100%; text-align: center; border-spacing: 10px;">
             <tbody>
                 <tr>
@@ -325,8 +399,72 @@
                 </tr>
             </tbody>
         </table>
-
     </div>
+    @php
+        $photoUrl = function ($value) {
+            if (empty($value)) {
+                return null;
+            }
+            $value = trim((string) $value);
+            if (preg_match('#^https?://#i', $value)) {
+                return $value;
+            }
+            if (str_starts_with($value, '/storage/')) {
+                return asset(ltrim($value, '/'));
+            }
+            if (str_starts_with($value, 'storage/')) {
+                return asset($value);
+            }
+            return asset('storage/' . ltrim($value, '/'));
+        };
+        $documentation1 = $photoUrl($hr->dokumentasi_1 ?? $hr->dokumentasi_foto_1 ?? $hr->foto_1 ?? null);
+        $documentation2 = $photoUrl($hr->dokumentasi_2 ?? $hr->dokumentasi_foto_2 ?? $hr->foto_2 ?? null);
+    @endphp
+    <section class="klkh-photo-page">
+        <div class="klkh-photo-header">
+            <img src="{{ asset('dashboard/assets/images/logo-full.png') }}" alt="Logo SIMS">
+            <div class="klkh-photo-code">FM-PRD-51/01/18/10/22</div>
+        </div>
+        <hr>
+        <h2>DOKUMENTASI FOTO</h2>
+        <div class="klkh-photo-subtitle">Pemeriksaan KKH &amp; KLKH Departemen Produksi Area Haul Road</div>
+        <table class="klkh-photo-info">
+            <tr>
+                <td class="klkh-photo-label">PIT</td>
+                <td>{{ $hr->pit ?? '-' }}</td>
+                <td class="klkh-photo-label">Shift</td>
+                <td>{{ $hr->shift ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="klkh-photo-label">Hari/Tanggal</td>
+                <td>{{ !empty($hr->date) ? Carbon::parse($hr->date)->locale('id')->isoFormat('dddd, D MMMM YYYY') : '-' }}</td>
+                <td class="klkh-photo-label">Jam</td>
+                <td>{{ !empty($hr->time) ? Carbon::parse($hr->time)->format('H:i') : '-' }}</td>
+            </tr>
+        </table>
+        <div class="klkh-photo-grid">
+            <div class="klkh-photo-col">
+                <div class="klkh-photo-caption">Dokumentasi 1</div>
+                <div class="klkh-photo-frame">
+                    @if ($documentation1)
+                        <img src="{{ $documentation1 }}" alt="Dokumentasi 1">
+                    @else
+                        <div class="klkh-photo-empty">Tidak ada foto dokumentasi</div>
+                    @endif
+                </div>
+            </div>
+            <div class="klkh-photo-col">
+                <div class="klkh-photo-caption">Dokumentasi 2</div>
+                <div class="klkh-photo-frame">
+                    @if ($documentation2)
+                        <img src="{{ $documentation2 }}" alt="Dokumentasi 2">
+                    @else
+                        <div class="klkh-photo-empty">Tidak ada foto dokumentasi</div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </section>
 </body>
 <script>
     window.print();

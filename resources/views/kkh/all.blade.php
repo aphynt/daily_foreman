@@ -3,21 +3,45 @@
 @include('layout.header')
 <style>
 @media (max-width:768px){
-
     #cbtn-selectors tbody td:first-child{
         position: sticky;
         left: 0;
         background: #fff;
         z-index: 2;
-        /* min-width: 100px; */
-    }
 
+    }
     #cbtn-selectors thead tr:first-child th:first-child{
         position: sticky;
         left: 0;
         background: #fff;
         z-index: 3;
     }
+}
+[data-pc-theme="dark"] #cbtn-selectors tbody td.mobile-pengisi,
+[data-bs-theme="dark"] #cbtn-selectors tbody td.mobile-pengisi,
+body.dark #cbtn-selectors tbody td.mobile-pengisi,
+html.dark #cbtn-selectors tbody td.mobile-pengisi,
+[data-pc-theme="dark"] #cbtn-selectors tbody td:first-child,
+[data-bs-theme="dark"] #cbtn-selectors tbody td:first-child {
+    background-color: #202936 !important;
+    color: #ffffff !important;
+}
+[data-pc-theme="dark"] #cbtn-selectors tbody td.mobile-pengisi div,
+[data-pc-theme="dark"] #cbtn-selectors tbody td.mobile-pengisi div[style],
+[data-bs-theme="dark"] #cbtn-selectors tbody td.mobile-pengisi div,
+[data-bs-theme="dark"] #cbtn-selectors tbody td.mobile-pengisi div[style],
+body.dark #cbtn-selectors tbody td.mobile-pengisi div,
+html.dark #cbtn-selectors tbody td.mobile-pengisi div {
+    color: #ffffff !important;
+}
+[data-pc-theme="dark"] #cbtn-selectors thead th.mobile-pengisi,
+[data-bs-theme="dark"] #cbtn-selectors thead th.mobile-pengisi,
+body.dark #cbtn-selectors thead th.mobile-pengisi,
+html.dark #cbtn-selectors thead th.mobile-pengisi,
+[data-pc-theme="dark"] #cbtn-selectors thead tr:first-child th:first-child,
+[data-bs-theme="dark"] #cbtn-selectors thead tr:first-child th:first-child {
+    background-color: #293548 !important;
+    color: #ffffff !important;
 }
 </style>
 <section class="pc-container">
@@ -49,19 +73,15 @@
                                     ->table('users')
                                     ->where('nik', Auth::user()->nik)
                                     ->first();
-
                                 $role = strtoupper(trim($user->role ?? ''));
                                 $departemenId = (int) ($user->departemen_id ?? 0);
-
                                 if ($role === 'SEPERVISOR') {
                                     $role = 'SUPERVISOR';
                                 }
-
                                 $canAccessDepartemenFilter =
                                     in_array($role, ['ADMIN', 'MANAGEMENT']) ||
                                     (in_array($role, ['SUPERVISOR', 'SUPERINTENDENT']) && $departemenId === 9);
                             @endphp
-
                             @if ($canAccessDepartemenFilter)
                                 <div class="col-6 col-md-2 mb-2">
                                     <label for="departemen">Departemen</label>
@@ -77,7 +97,6 @@
                                 <label for="section">Section</label>
                                 <select class="form-select" name="section" id="section" data-trigger>
                                     <option value="Semua">Semua</option>
-
                                     @foreach ($section as $s)
                                         <option value="{{ $s }}">{{ $s }}</option>
                                     @endforeach
@@ -105,7 +124,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -119,7 +137,6 @@
                                     <tr>
                                         <th class="desktop-only" rowspan="2">Nama</th>
                                         <th class="desktop-only" rowspan="2">NIK</th>
-
                                         <th class="mobile-pengisi" rowspan="2">Pengisi</th>
                                         <th rowspan="2" style="white-space: normal !important; min-width: 20px;">Jam Dibuat</th>
                                         <th rowspan="2" style="white-space: normal !important; min-width: 20px;">Jam Pulang</th>
@@ -156,7 +173,6 @@
 </section>
 @include('kkh.modal.verifikasiP3K')
 @include('kkh.modal.verifikasiPengawas')
-
 @include('layout.footer')
 <script>
     (function () {
@@ -168,39 +184,28 @@
     document.addEventListener("DOMContentLoaded", function () {
             const inputTanggal = document.getElementById("tanggalKKH");
             const today = new Date();
-
             const formattedDate = `${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2,
                 '0')}/${today.getFullYear()}`;
             inputTanggal.value = formattedDate;
         });
-
 </script>
 <script>
     let modalVerifikasiPengawas;
-
     $(document).ready(function() {
         modalVerifikasiPengawas = new bootstrap.Modal(document.getElementById('modalVerifikasiPengawas'));
     });
-
     $(document).on('click', '.btn-verifikasi-pengawas-modal', function(e) {
         e.preventDefault();
-
         const rowID = $(this).data('id');
-
         $('#pengawas_row_id').val(rowID);
         $('#pengawas_status_layak').val('');
         $('#catatan_pengawas_modal').val('');
-
         modalVerifikasiPengawas.show();
     });
-
     $(document).on('click', '.btn-pilih-kelayakan', function(e) {
         e.preventDefault();
-
         const statusLayak = $(this).data('status');
-
         $('#pengawas_status_layak').val(statusLayak);
-
         $.ajax({
             url: "{{ route('kkh.verifikasi') }}",
             method: 'POST',
@@ -220,7 +225,6 @@
             }
         });
     });
-
     var table;
     $(document).ready(function() {
         var userRole = "{{ Auth::user()->role }}";
@@ -241,19 +245,18 @@
                 },
                 {
                     extend: 'pdfHtml5',
-                    orientation: 'landscape', // Set orientation menjadi landscape
-                    pageSize: 'A4', // Ukuran halaman (opsional, default A4)
+                    orientation: 'landscape',
+                    pageSize: 'A4',
                     exportOptions: {
                         columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
                     },
                     customize: function (doc) {
-                        // Menyesuaikan margin atau pengaturan tambahan
-                        doc.content[1].margin = [10, 10, 10, 10]; // Atur margin [kiri, atas, kanan, bawah]
+
+                        doc.content[1].margin = [10, 10, 10, 10];
                     }
                 },
                 'colvis'
             ],
-
             processing: true,
             serverSide: true,
             ajax: {
@@ -273,7 +276,7 @@
                     var statusVerifikasi = $('#statusVerifikasi').val();
                     d.statusVerifikasi = statusVerifikasi;
                     delete d.columns;
-                    // delete d.search;
+
                     delete d.order;
                 },
             },
@@ -281,7 +284,6 @@
                 {
                     data: 'NAMA_PENGISI',
                     className: 'desktop-only'
-
                 },
                 {
                     data: 'NIK_PENGISI',
@@ -291,13 +293,10 @@
                     data: null,
                     className: 'mobile-pengisi',
                     render: function(data, type, row) {
-
                         let nama = row.NAMA_PENGISI || '-';
-
                         if (nama.length > 20) {
                             nama = nama.substring(0, 20) + '...';
                         }
-
                         return `
                             <div style="font-weight:600"
                                 title="${row.NAMA_PENGISI || ''}">
@@ -311,7 +310,6 @@
                 },
                 { data: 'TANGGAL_DIBUAT' },
                 { data: 'JAM_PULANG' },
-
                 { data: 'SHIFT' },
                 { data: 'JAM_TIDUR' },
                 { data: 'JAM_BANGUN' },
@@ -319,10 +317,8 @@
                     data: 'TOTAL_TIDUR',
                     render: function(data) {
                         if (data === null || data === '') return '-';
-
                         var nilai = parseFloat(data);
                         var teks = data + ' Jam';
-
                         if (!isNaN(nilai) && nilai < 6) {
                             return '<span style="color:red;">' + teks + '</span>';
                         }
@@ -365,22 +361,18 @@
                     render: function(data, type, row) {
                         const verifP3k = Number(row.verif_p3k) === 1;
                         const verifPengawas = Number(row.ferivikasi_pengawas) === 1;
-
                         const butuhP3k =
                             row.BUTUH_P3K === true ||
                             row.BUTUH_P3K === 1 ||
                             row.BUTUH_P3K === '1';
-
                         const canVerifyP3k =
                             row.CAN_VERIFY_P3K === true ||
                             row.CAN_VERIFY_P3K === 1 ||
                             row.CAN_VERIFY_P3K === '1';
-
                         const canVerifyPengawas =
                             row.CAN_VERIFY_PENGAWAS === true ||
                             row.CAN_VERIFY_PENGAWAS === 1 ||
                             row.CAN_VERIFY_PENGAWAS === '1';
-
                         if (canVerifyP3k) {
                             return `
                                 <div class="d-flex gap-2">
@@ -390,7 +382,6 @@
                                         style="background-color:#15803d; font-size:13px;">
                                         FIT
                                     </button>
-
                                     <button class="btn-verifikasi-p3k btn flex-fill text-white fw-semibold"
                                         data-id="${row.id}"
                                         data-fit="0"
@@ -398,7 +389,6 @@
                                         TIDAK FIT
                                     </button>
                                 </div>
-
                                 <!-- Opsional: CSS hover agar lebih interaktif -->
                                 <style>
                                     .btn-verifikasi-p3k:hover {
@@ -409,14 +399,11 @@
                                 </style>
                             `;
                         }
-
                         if (canVerifyPengawas) {
                             const keluhanBukanFIT = row.KELUHAN !== 'FIT';
                             const sudahVerifikasiP3K = Number(row.verif_p3k) === 1;
                             const pengawasBelumVerifikasi = Number(row.ferivikasi_pengawas) === 0;
-
                             const modalHarusMuncul = keluhanBukanFIT && sudahVerifikasiP3K && pengawasBelumVerifikasi;
-
                             if (modalHarusMuncul) {
                                 return `
                                     <button class="btn-verifikasi-pengawas-modal badge w-100"
@@ -426,7 +413,6 @@
                                     </button>
                                 `;
                             }
-
                             return `
                                 <button class="btn-verifikasi-pengawas badge w-100"
                                     data-id="${row.id}"
@@ -435,26 +421,23 @@
                                 </button>
                             `;
                         }
-
                         if (butuhP3k && !verifP3k) {
                             return `<span class="badge bg-warning text-dark w-100">Menunggu Klinik</span>`;
                         }
-
                         if (!verifPengawas) {
                             return `<span class="badge bg-secondary w-100">Menunggu Pengawas</span>`;
                         }
-
                         return ``;
                     }
                 }
             ],
             columnDefs: [
                 {
-                    targets: [0, 1], // Nama & NIK
+                    targets: [0, 1],
                     visible: window.innerWidth > 768
                 },
                 {
-                    targets: [2], // Pengisi
+                    targets: [2],
                     visible: window.innerWidth <= 768
                 }
             ],
@@ -462,36 +445,26 @@
             "pageLength": 25,
             "lengthMenu": [10, 15, 25, 50],
         });
-
         $('#cariKKH').click(function() {
             table.ajax.reload();
         });
         table.ajax.reload();
     });
-
-
     let modalVerifikasiP3K;
-
 $(document).ready(function() {
     modalVerifikasiP3K = new bootstrap.Modal(document.getElementById('modalVerifikasiP3K'));
 });
-
 $(document).on('click', '.btn-verifikasi-p3k', function(e) {
     e.preventDefault();
-
     const rowID = $(this).data('id');
     const fitOr = $(this).data('fit');
-
     $('#p3k_row_id').val(rowID);
     $('#p3k_fit_or').val(fitOr);
     $('#catatan_p3k_modal').val('');
-
     modalVerifikasiP3K.show();
 });
-
 $('#formVerifikasiP3K').on('submit', function(e) {
     e.preventDefault();
-
     $.ajax({
         url: "{{ route('kkh.verifikasi_p3k') }}",
         method: 'POST',
@@ -510,12 +483,9 @@ $('#formVerifikasiP3K').on('submit', function(e) {
         }
     });
 });
-
 $(document).on('click', '.btn-verifikasi-pengawas', function(e) {
     e.preventDefault();
-
     const rowID = $(this).data('id');
-
     $.ajax({
         url: "{{ route('kkh.verifikasi') }}",
         method: 'POST',
@@ -533,4 +503,3 @@ $(document).on('click', '.btn-verifikasi-pengawas', function(e) {
     });
 });
 </script>
-

@@ -70,6 +70,7 @@ class HazardReportController extends Controller
             'hz.tindakan_perbaikan',
             'hz.tingkat_risiko',
             'hz.kategori_bahaya',
+            'hz.detail_temuan',
             'hz.type_bahaya',
             'hz.pengendalian_awal',
             'hz.status',
@@ -585,7 +586,7 @@ class HazardReportController extends Controller
                 $updateData['scc'] = Auth::user()->nik;
                 $updateData['verified_datetime_scc'] = Carbon::now();
 
-                
+
             }
 
             if ($aksi == 'tolak') {

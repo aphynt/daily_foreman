@@ -3,6 +3,26 @@
 @include('layout.header')
 @php
     use Carbon\Carbon;
+    use Illuminate\Support\Str;
+
+    $report = $ws;
+
+    $isChecked = function ($value) {
+        return (int) $value === 1 ? 'checked' : '';
+    };
+
+    $imageUrl = function ($path) {
+        if (!$path) return null;
+
+        if (Str::startsWith($path, ['http://', 'https://'])) {
+            return $path;
+        }
+
+        return asset('storage/' . ltrim($path, '/'));
+    };
+
+    $foto1 = $imageUrl($report->dokumentasi_1 ?? null);
+    $foto2 = $imageUrl($report->dokumentasi_2 ?? null);
 @endphp
 <section class="pc-container">
     <div class="pc-content">
@@ -568,6 +588,33 @@
                             <div class="col-12"><label class="form-label">Catatan:</label>
                                 <p class="mb-0">{{ $ws->additional_notes }}</p>
                             </div>
+                            <div class="row mb-3">
+                                @if($foto1 || $foto2)
+                                    <div class="photo-grid">
+                                        @if($foto1)
+                                            <div class="photo-card">
+                                                <a href="{{ $foto1 }}" target="_blank">
+                                                    <img src="{{ $foto1 }}" alt="Dokumentasi/Evidence 1">
+                                                </a>
+                                                <div class="photo-meta">Dokumentasi/Evidence 1</div>
+                                            </div>
+                                        @endif
+
+                                        @if($foto2)
+                                            <div class="photo-card">
+                                                <a href="{{ $foto2 }}" target="_blank">
+                                                    <img src="{{ $foto2 }}" alt="Dokumentasi/Evidence 2">
+                                                </a>
+                                                <div class="photo-meta">Dokumentasi/Evidence 2</div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @else
+                                    <div class="empty-photo">
+                                        Tidak ada dokumentasi.
+                                    </div>
+                                @endif
+                            </div>
                              <div class="col-12">
                                 <div class="table-responsive">
                                     <table class="table table-hover mb-0">
@@ -577,7 +624,7 @@
                                                 <th>Nama Inspektor</th>
                                                 <th>NIK</th>
                                                 <th>Jabatan</th>
-                                                <th>Tanda Tangan</th>
+                                                <th>Tertanda</th>
                                             </tr>
                                         </thead>
                                         <tbody class="text-center">

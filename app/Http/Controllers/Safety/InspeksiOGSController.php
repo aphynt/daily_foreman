@@ -16,6 +16,7 @@ use Ramsey\Uuid\Uuid;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use DateTime;
+use Illuminate\Support\Facades\Storage;
 
 class InspeksiOGSController extends Controller
 {
@@ -120,7 +121,20 @@ class InspeksiOGSController extends Controller
     public function post(Request $request)
     {
         try {
+            $dokumentasi = [];
+            for ($i = 1; $i <= 3; $i++) {
+                $field = "dokumentasi_{$i}";
+                $dokumentasi[$field] = null;
 
+                if ($request->hasFile($field)) {
+                    $file = $request->file($field);
+                    $fileName = time() . '_' . $i . '_' . $file->getClientOriginalName();
+                    $path = "inspeksi/ogs/{$field}";
+
+                    Storage::disk('production_public')->putFileAs($path, $file, $fileName);
+                    $dokumentasi[$field] = rtrim(config('app.url'), '/') . "/storage/{$path}/{$fileName}";
+                }
+            }
             $data = $request->all();
             // dd($data);
 
@@ -307,6 +321,9 @@ class InspeksiOGSController extends Controller
                 'rambu_417_due' => $data['rambu_417_due'] ?? null,
 
                 'additional_notes' => $data['additional_notes'] ?? null,
+
+                'dokumentasi_1' => $dokumentasi['dokumentasi_1'],
+                'dokumentasi_2' => $dokumentasi['dokumentasi_2'],
             ];
 
 

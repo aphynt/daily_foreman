@@ -15,6 +15,7 @@ use App\Models\KLKHOGS;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class KLKHOGSController extends Controller
 {
@@ -126,7 +127,20 @@ class KLKHOGSController extends Controller
         // dd($request->all());
 
         try {
+            $dokumentasi = [];
+            for ($i = 1; $i <= 3; $i++) {
+                $field = "dokumentasi_{$i}";
+                $dokumentasi[$field] = null;
 
+                if ($request->hasFile($field)) {
+                    $file = $request->file($field);
+                    $fileName = time() . '_' . $i . '_' . $file->getClientOriginalName();
+                    $path = "klkh/ogs/{$field}";
+
+                    Storage::disk('production_public')->putFileAs($path, $file, $fileName);
+                    $dokumentasi[$field] = rtrim(config('app.url'), '/') . "/storage/{$path}/{$fileName}";
+                }
+            }
             $data = $request->all();
 
             $dataToInsert = [
@@ -187,6 +201,8 @@ class KLKHOGSController extends Controller
                     'jalur_hd_note' => $data['jalur_hd_note'] ?? null,
                     'additional_notes' => $data['additional_notes'] ?? null,
                     'superintendent' => $data['superintendent'] ?? null,
+                    'dokumentasi_1' => $dokumentasi['dokumentasi_1'],
+                    'dokumentasi_2' => $dokumentasi['dokumentasi_2'],
             ];
 
             // /** @var \App\Models\User $user */

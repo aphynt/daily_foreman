@@ -13,112 +13,107 @@
             size: A4;
             margin: 5mm;
         }
-
         body {
             font-family: Arial, sans-serif;
             /* line-height: 1.6; */
             font-size: 12px;
         }
-
         .container {
             width: 100%;
         }
-
         h1 {
             text-align: center;
             font-size: 20px;
             margin-bottom: 20px;
         }
-
         h2 {
             text-align: center;
             font-size: 20px;
             margin-bottom: 15px;
         }
-
         h5 {
             margin: 1px;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 5px;
         }
-
         th,
         td {
             border: 1px solid #000;
             padding: 3px;
-            /*text-align: center;*/
+            /* text-align: center; */
         }
-
         th {
             background-color: #D0CECE;
             text-align: center;
         }
-
-
-
         h3 {
             font-size: 18px;
             margin-bottom: 10px;
         }
-
         .point-table {
             margin-top: 5px;
         }
-
         tr th {
             text-align: left;
         }
-
         .kanan {
             text-align: right;
         }
-
         .noborder {
             border-top-color: white;
             border-bottom: none;
             border-left: none;
             border-right: none;
         }
-
         .nobg{
             background-color: white;
         }
-
         .center {
             text-align: center;
         }
-
         .box {
             display: flex;
             justify-content: space-between;
         }
-
         .box-vcenter {
             display: flex;
             justify-content: space-between;
             align-items: center;
             align-content: center;
         }
+            .klkh-photo-page { page-break-before: always; break-before: page; }
+        .klkh-photo-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .klkh-photo-header img { width: 200px; height: auto; object-fit: contain; }
+        .klkh-photo-code { font-size: 11px; font-weight: bold; }
+        .klkh-photo-page h2 { text-align: center; font-size: 18px; margin: 10px 0; }
+        .klkh-photo-subtitle { text-align: center; font-size: 12px; font-weight: bold; margin-bottom: 12px; }
+        .klkh-photo-info { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+        .klkh-photo-info td { border: 1px solid #000; padding: 6px; font-size: 11px; }
+        .klkh-photo-label { width: 15%; font-weight: bold; }
+        .klkh-photo-bar { background: #D0CECE; border: 1px solid #000; padding: 7px; text-align: center; font-size: 12px; font-weight: bold; margin-bottom: 10px; }
+        .klkh-photo-grid { display: flex; gap: 10px; width: 100%; }
+        .klkh-photo-col { width: 50%; min-width: 0; }
+        .klkh-photo-caption { border: 1px solid #000; border-bottom: 0; text-align: center; padding: 6px; font-weight: bold; font-size: 11px; }
+        .klkh-photo-frame { height: 145mm; border: 1px solid #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .klkh-photo-frame img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+        .klkh-photo-empty { text-align: center; color: #555; font-size: 11px; padding: 10px; }
+        @media print { .klkh-photo-page { page-break-before: always; break-before: page; } }
     </style>
 </head>
-
 <body>
     <div class="container">
         <table class="point-table">
             <thead>
                 <tr>
-                    <th class="noborder nobg" style="padding: 0px'margin-bttom:0px"><img src="{{ asset('dashboard/assets') }}/images/logo-full.png" width="240px"></th>
+                    <th class="noborder nobg" style="padding: 0; margin-bottom: 0;"><img src="{{ asset('dashboard/assets') }}/images/logo-full.png" width="240px"></th>
                     <th colspan="5" class="noborder nobg kanan"><p style="margin: 0;">FM-PRD-50/01/06/09/24</p></th>
                 </tr>
             </thead>
         </table>
         <div class="box-vcenter" style="display: flex; align-items: center; justify-content: space-between;">
-
-
         </div>
         <hr>
         <h1>Pemeriksaan Kesiapan Kerja Harian & Kelayakan Lingkungan Kerja Harian (KLKH) Departemen Produksi Area Loading Point</h1>
@@ -272,7 +267,6 @@
         </table>
         Catatan:
         <p class="mb-0">{!! $lp->additional_notes !!}</p>
-
         <table style="width: 100%; text-align: center; border-spacing: 10px;">
             <tbody>
                 <tr>
@@ -309,8 +303,69 @@
                 </tr>
             </tbody>
         </table>
-
     </div>
+    @php
+        $photoUrl = function ($value) {
+            if (empty($value)) {
+                return null;
+            }
+            $value = trim((string) $value);
+            if (str_starts_with(strtolower($value), 'http://') || str_starts_with(strtolower($value), 'https://')) {
+                return $value;
+            }
+            if (str_starts_with($value, '/storage/') || str_starts_with($value, 'storage/')) {
+                return asset(ltrim($value, '/'));
+            }
+            return asset('storage/' . ltrim($value, '/'));
+        };
+        $documentation1 = $photoUrl($lp->dokumentasi_1 ?? $lp->dokumentasi_foto_1 ?? $lp->foto_1 ?? null);
+        $documentation2 = $photoUrl($lp->dokumentasi_2 ?? $lp->dokumentasi_foto_2 ?? $lp->foto_2 ?? null);
+    @endphp
+    <section class="klkh-photo-page">
+        <div class="klkh-photo-header">
+            <img src="{{ asset('dashboard/assets/images/logo-full.png') }}" alt="Logo SIMS">
+            <div class="klkh-photo-code">FM-PRD-50/01/06/09/24</div>
+        </div>
+        <hr>
+        <h2>DOKUMENTASI FOTO</h2>
+        <div class="klkh-photo-subtitle">Pemeriksaan KKH &amp; KLKH Departemen Produksi Area Loading Point</div>
+        <table class="klkh-photo-info">
+            <tr>
+                <td class="klkh-photo-label">PIT</td>
+                <td>{{ $lp->pit ?? '-' }}</td>
+                <td class="klkh-photo-label">Shift</td>
+                <td>{{ $lp->shift ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="klkh-photo-label">Hari/Tanggal</td>
+                <td>{{ !empty($lp->date) ? Carbon::parse($lp->date)->locale('id')->isoFormat('dddd, D MMMM YYYY') : '-' }}</td>
+                <td class="klkh-photo-label">Jam</td>
+                <td>{{ !empty($lp->time) ? Carbon::parse($lp->time)->format('H:i') : '-' }}</td>
+            </tr>
+        </table>
+        <div class="klkh-photo-grid">
+            <div class="klkh-photo-col">
+                <div class="klkh-photo-caption">Dokumentasi 1</div>
+                <div class="klkh-photo-frame">
+                    @if ($documentation1)
+                        <img src="{{ $documentation1 }}" alt="Dokumentasi 1">
+                    @else
+                        <div class="klkh-photo-empty">Tidak ada foto dokumentasi</div>
+                    @endif
+                </div>
+            </div>
+            <div class="klkh-photo-col">
+                <div class="klkh-photo-caption">Dokumentasi 2</div>
+                <div class="klkh-photo-frame">
+                    @if ($documentation2)
+                        <img src="{{ $documentation2 }}" alt="Dokumentasi 2">
+                    @else
+                        <div class="klkh-photo-empty">Tidak ada foto dokumentasi</div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </section>
 </body>
 <script>
     window.print();

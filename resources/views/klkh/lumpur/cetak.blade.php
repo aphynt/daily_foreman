@@ -13,112 +13,102 @@
             size: A4;
             margin: 5mm;
         }
-
         body {
             font-family: Arial, sans-serif;
             /* line-height: 1.6; */
-            font-size: 12px;
+            font-size: 11px;
         }
-
         .container {
             width: 100%;
         }
-
         h1 {
             text-align: center;
             font-size: 20px;
             margin-bottom: 20px;
         }
-
         h2 {
             text-align: center;
             font-size: 20px;
             margin-bottom: 15px;
         }
-
         h5 {
             margin: 1px;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 5px;
         }
-
         th,
         td {
             border: 1px solid #000;
             padding: 1.4px;
-            /*text-align: center;*/
+            /* text-align: center; */
         }
-
         th {
             background-color: #D0CECE;
             text-align: center;
         }
-
-
-
         h3 {
             font-size: 18px;
             margin-bottom: 10px;
         }
-
         .point-table {
             margin-top: 5px;
         }
-
         tr th {
             text-align: left;
         }
-
         .kanan {
             text-align: right;
         }
-
         .noborder {
             border-top-color: white;
             border-bottom: none;
             border-left: none;
             border-right: none;
         }
-
         .nobg{
             background-color: white;
         }
-
         .center {
             text-align: center;
         }
-
         .box {
             display: flex;
             justify-content: space-between;
         }
-
         .box-vcenter {
             display: flex;
             justify-content: space-between;
             align-items: center;
             align-content: center;
         }
+        .klkh-photo-page { page-break-before: always; break-before: page; }
+        .klkh-photo-header { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
+        .klkh-photo-header td { border: 0; padding: 0; vertical-align: middle; }
+        .klkh-photo-title { text-align: center; font-size: 18px; font-weight: bold; margin: 18px 0 22px; }
+        .klkh-photo-meta { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
+        .klkh-photo-meta td { border: 0; padding: 4px 6px; font-size: 12px; }
+        .klkh-photo-grid { display: table; width: 100%; table-layout: fixed; border-spacing: 10px 0; }
+        .klkh-photo-item { display: table-cell; width: 50%; vertical-align: top; text-align: center; }
+        .klkh-photo-caption { font-weight: bold; margin: 0 0 8px; }
+        .klkh-photo-image { width: 100%; height: 240px; object-fit: contain; border: 1px solid #999; }
+        .klkh-photo-empty { width: 100%; height: 240px; border: 1px dashed #999; display: table-cell; vertical-align: middle; color: #666; }
+        @media screen { .klkh-photo-page { margin-top: 24px; } }
     </style>
 </head>
-
 <body>
     <div class="container">
         <table class="point-table">
             <thead>
                 <tr>
-                    <th class="noborder nobg" style="padding: 0px'margin-bttom:0px"><img src="{{ asset('dashboard/assets') }}/images/logo-full.png" width="240px"></th>
+                    <th class="noborder nobg" style="padding: 0; margin-bottom: 0;"><img src="{{ asset('dashboard/assets') }}/images/logo-full.png" width="240px"></th>
                     <th colspan="5" class="noborder nobg kanan"><p style="margin: 0;">FM-PRD-66/00/13/01/23</p></th>
                 </tr>
             </thead>
         </table>
         <div class="box-vcenter" style="display: flex; align-items: center; justify-content: space-between;">
-
-
         </div>
         <hr>
         <h1>Pemeriksaan Kesiapan Kerja Harian & Kelayakan Lingkungan Kerja Harian (KLKH) Departemen Produksi Area Dumping di Kolam Air/Lumpur</h1>
@@ -423,7 +413,6 @@
         </table>
         Catatan:
         <p class="mb-0">{!! $lpr->additional_notes !!}</p>
-
         <table style="width: 100%; text-align: center; border-spacing: 10px;">
             <tbody>
                 <tr>
@@ -460,8 +449,52 @@
                 </tr>
             </tbody>
         </table>
-
-    </div>
+        <div class="klkh-photo-page">
+            <table class="klkh-photo-header">
+                <tr>
+                    <td><img src="{{ asset('dashboard/assets/images/logo-full.png') }}" style="width: 220px;" alt="Logo"></td>
+                    <td style="text-align: right; font-weight: bold;">FM-PRD-66/00/13/01/23</td>
+                </tr>
+            </table>
+            <h2 class="klkh-photo-title">DOKUMENTASI FOTO PEMERIKSAAN KLKH AREA DUMPING LUMPUR</h2>
+            <table class="klkh-photo-meta">
+                <tr>
+                    <td><strong>PIT:</strong> {{ $lpr->pit ?? '-' }}</td>
+                    <td><strong>Shift:</strong> {{ $lpr->shift ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Hari/Tanggal:</strong> {{ isset($lpr->date) ? Carbon::parse($lpr->date)->locale('id')->isoFormat('dddd, D MMMM YYYY') : '-' }}</td>
+                    <td><strong>Jam:</strong> {{ isset($lpr->time) ? Carbon::parse($lpr->time)->locale('id')->isoFormat('HH:mm') : '-' }}</td>
+                </tr>
+            </table>
+            <div class="klkh-photo-grid">
+                <div class="klkh-photo-item">
+                    <p class="klkh-photo-caption">Dokumentasi Foto 1</p>
+                    @php
+                        $foto1 = $lpr->dokumentasi_1 ?? $lpr->dokumentasi_foto_1 ?? $lpr->foto_1 ?? null;
+                        $foto1Url = $foto1 ? (preg_match('/^https?:\/\//i', $foto1) ? $foto1 : (strpos($foto1, 'storage/') === 0 ? asset($foto1) : asset('storage/' . ltrim($foto1, '/')))) : null;
+                    @endphp
+                    @if ($foto1Url)
+                        <img class="klkh-photo-image" src="{{ $foto1Url }}" alt="Dokumentasi Foto 1">
+                    @else
+                        <div class="klkh-photo-empty">Foto 1 belum tersedia</div>
+                    @endif
+                </div>
+                <div class="klkh-photo-item">
+                    <p class="klkh-photo-caption">Dokumentasi Foto 2</p>
+                    @php
+                        $foto2 = $lpr->dokumentasi_2 ?? $lpr->dokumentasi_foto_2 ?? $lpr->foto_2 ?? null;
+                        $foto2Url = $foto2 ? (preg_match('/^https?:\/\//i', $foto2) ? $foto2 : (strpos($foto2, 'storage/') === 0 ? asset($foto2) : asset('storage/' . ltrim($foto2, '/')))) : null;
+                    @endphp
+                    @if ($foto2Url)
+                        <img class="klkh-photo-image" src="{{ $foto2Url }}" alt="Dokumentasi Foto 2">
+                    @else
+                        <div class="klkh-photo-empty">Foto 2 belum tersedia</div>
+                    @endif
+                </div>
+            </div>
+        </div>
+</div>
 </body>
 <script>
     window.print();

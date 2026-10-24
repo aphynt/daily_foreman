@@ -13,99 +13,163 @@
             size: A4;
             margin: 5mm;
         }
-
         body {
             font-family: Arial, sans-serif;
-            /* line-height: 1.6; */
-            font-size: 12px;
+            font-size: 11px;
         }
-
         .container {
             width: 100%;
         }
-
         h1 {
             text-align: center;
             font-size: 20px;
             margin-bottom: 20px;
         }
-
         h2 {
             text-align: center;
             font-size: 20px;
             margin-bottom: 15px;
         }
-
         h5 {
             margin: 1px;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 5px;
         }
-
         th,
         td {
             border: 1px solid #000;
             padding: 3px;
-            /*text-align: center;*/
+            */text-align: center;*/
         }
-
         th {
             background-color: #D0CECE;
             text-align: center;
         }
-
-
-
         h3 {
             font-size: 18px;
             margin-bottom: 10px;
         }
-
         .point-table {
             margin-top: 5px;
         }
-
         tr th {
             text-align: left;
         }
-
         .kanan {
             text-align: right;
         }
-
         .noborder {
             border-top-color: white;
             border-bottom: none;
             border-left: none;
             border-right: none;
         }
-
         .nobg{
             background-color: white;
         }
-
         .center {
             text-align: center;
         }
-
         .box {
             display: flex;
             justify-content: space-between;
         }
-
         .box-vcenter {
             display: flex;
             justify-content: space-between;
             align-items: center;
             align-content: center;
         }
+
+        .dokumentasi-halaman {
+            page-break-before: always;
+            break-before: page;
+            box-sizing: border-box;
+            width: 100%;
+            min-height: 275mm;
+            padding: 0;
+            color: #111;
+            background: #fff;
+        }
+        .dokumentasi-kop {
+            width: 100%;
+            border: 0;
+        }
+        .dokumentasi-kop td {
+            border: 0;
+            padding: 0;
+            vertical-align: top;
+        }
+        .dokumentasi-judul {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin: 14px 0 12px;
+        }
+        .dokumentasi-info {
+            width: 100%;
+            margin-bottom: 12px;
+            table-layout: fixed;
+        }
+        .dokumentasi-info td {
+            padding: 6px 8px;
+            font-size: 12px;
+            border: 1px solid #bbb;
+        }
+        .dokumentasi-info .label {
+            background: #f2f2f2;
+            font-weight: bold;
+            width: 14%;
+        }
+        .dokumentasi-foto-tabel {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: separate;
+            border-spacing: 7px;
+        }
+        .dokumentasi-foto-tabel td {
+            width: 50%;
+            padding: 0;
+            border: 1px solid #b9c2cb;
+            vertical-align: top;
+            text-align: center;
+        }
+        .dokumentasi-foto-label {
+            padding: 9px;
+            background: #eef2f6;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .dokumentasi-foto-frame {
+            height: 185mm;
+            padding: 8px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .dokumentasi-foto-frame img {
+            max-width: 100%;
+            max-height: 180mm;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+        .dokumentasi-kosong {
+            display: inline-block;
+            margin-top: 70mm;
+            color: #777;
+            font-size: 12px;
+        }
+        @media print {
+            .dokumentasi-halaman {
+                page-break-before: always;
+                break-before: page;
+            }
+        }
     </style>
 </head>
-
 <body>
     <div class="container">
         <table class="point-table">
@@ -117,8 +181,6 @@
             </thead>
         </table>
         <div class="box-vcenter" style="display: flex; align-items: center; justify-content: space-between;">
-
-
         </div>
         <hr>
         <h1>Pemeriksaan Kesiapan Kerja Harian & Kelayakan Lingkungan Kerja Harian (KLKH) Departemen Produksi Area Disposal/Dumping Point</h1>
@@ -344,7 +406,6 @@
         </table>
         Catatan:
         <p class="mb-0">{!! $dp->additional_notes !!}</p>
-
         <table style="width: 100%; text-align: center; border-spacing: 10px;">
             <tbody>
                 <tr>
@@ -381,7 +442,66 @@
                 </tr>
             </tbody>
         </table>
+    </div>
 
+    @php
+        $fotoDokumentasi = function ($value) {
+            if (empty($value)) return null;
+            $value = trim((string) $value);
+            if (preg_match('~^https?://~i', $value) || str_starts_with($value, 'data:image/')) return $value;
+            if (str_starts_with($value, '/')) return asset(ltrim($value, '/'));
+            return asset($value);
+        };
+        $fotoDisposal1 = $fotoDokumentasi($dp->dokumentasi_1 ?? $dp->dokumentasi_foto_1 ?? $dp->foto_1 ?? null);
+        $fotoDisposal2 = $fotoDokumentasi($dp->dokumentasi_2 ?? $dp->dokumentasi_foto_2 ?? $dp->foto_2 ?? null);
+    @endphp
+    <div class="dokumentasi-halaman">
+        <table class="dokumentasi-kop">
+            <tr>
+                <td><img src="{{ asset('dashboard/assets/images/logo-full.png') }}" style="width: 240px; max-height: 65px; object-fit: contain;" alt="Logo SIMS"></td>
+                <td style="text-align: right; font-size: 12px;">FM-PRD-52/01/18/10/22</td>
+            </tr>
+        </table>
+        <hr>
+        <div class="dokumentasi-judul">DOKUMENTASI FOTO<br><span style="font-size: 13px;">KLKH AREA DISPOSAL / DUMPING POINT</span></div>
+        <table class="dokumentasi-info">
+            <tr>
+                <td class="label">PIT</td>
+                <td>{{ $dp->pit ?? '-' }}</td>
+                <td class="label">Shift</td>
+                <td>{{ $dp->shift ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Tanggal</td>
+                <td>{{ !empty($dp->date) ? Carbon::parse($dp->date)->locale('id')->isoFormat('dddd, D MMMM YYYY') : '-' }}</td>
+                <td class="label">Jam</td>
+                <td>{{ !empty($dp->time) ? Carbon::parse($dp->time)->format('H:i') : '-' }}</td>
+            </tr>
+        </table>
+        <table class="dokumentasi-foto-tabel">
+            <tr>
+                <td>
+                    <div class="dokumentasi-foto-label">DOKUMENTASI 1</div>
+                    <div class="dokumentasi-foto-frame">
+                        @if ($fotoDisposal1)
+                            <img src="{{ $fotoDisposal1 }}" alt="Dokumentasi 1">
+                        @else
+                            <span class="dokumentasi-kosong">Tidak ada foto dokumentasi</span>
+                        @endif
+                    </div>
+                </td>
+                <td>
+                    <div class="dokumentasi-foto-label">DOKUMENTASI 2</div>
+                    <div class="dokumentasi-foto-frame">
+                        @if ($fotoDisposal2)
+                            <img src="{{ $fotoDisposal2 }}" alt="Dokumentasi 2">
+                        @else
+                            <span class="dokumentasi-kosong">Tidak ada foto dokumentasi</span>
+                        @endif
+                    </div>
+                </td>
+            </tr>
+        </table>
     </div>
 </body>
 <script>

@@ -62,13 +62,13 @@
                                 @endif
 
                                 {{-- ADMIN & MANAGEMENT --}}
-                                @if (canAccess('klkh.simpangempat.bundlepdf'))
+                                {{-- @if (canAccess('klkh.simpangempat.bundlepdf'))
                                     <a href="{{ route('klkh.simpangempat.bundlepdf') }}" target="_blank">
                                         <span class="badge bg-primary px-3 py-2" style="font-size:14px">
                                             <i class="fas fa-download"></i> Bundle PDF
                                         </span>
                                     </a>
-                                @endif
+                                @endif --}}
 
                             </div>
 

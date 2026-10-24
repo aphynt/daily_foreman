@@ -13,99 +13,167 @@
             size: A4;
             margin: 5mm;
         }
-
         body {
             font-family: Arial, sans-serif;
-            /* line-height: 1.6; */
-            font-size: 12px;
+            font-size: 11px;
         }
-
         .container {
             width: 100%;
         }
-
         h1 {
             text-align: center;
             font-size: 20px;
             margin-bottom: 20px;
         }
-
         h2 {
             text-align: center;
             font-size: 20px;
             margin-bottom: 15px;
         }
-
         h5 {
             margin: 1px;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 5px;
         }
-
         th,
         td {
             border: 1px solid #000;
             padding: 3px;
-            /*text-align: center;*/
         }
-
         th {
             background-color: #D0CECE;
             text-align: center;
         }
-
-
-
         h3 {
             font-size: 18px;
             margin-bottom: 10px;
         }
-
         .point-table {
             margin-top: 5px;
         }
-
         tr th {
             text-align: left;
         }
-
         .kanan {
             text-align: right;
         }
-
         .noborder {
             border-top-color: white;
             border-bottom: none;
             border-left: none;
             border-right: none;
         }
-
         .nobg{
             background-color: white;
         }
-
         .center {
             text-align: center;
         }
-
         .box {
             display: flex;
             justify-content: space-between;
         }
-
         .box-vcenter {
             display: flex;
             justify-content: space-between;
             align-items: center;
             align-content: center;
         }
+
+        .documentation-page {
+            break-before: page;
+            page-break-before: always;
+            box-sizing: border-box;
+            width: 100%;
+            min-height: 277mm;
+            padding: 5mm 3mm;
+            color: #111;
+            background: #fff;
+        }
+        .documentation-heading {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 5mm 0 2mm;
+        }
+        .documentation-subtitle {
+            text-align: center;
+            font-size: 11px;
+            margin-bottom: 5mm;
+        }
+        .documentation-info td {
+            border: 1px solid #ccc;
+            padding: 7px;
+            font-size: 11px;
+        }
+        .documentation-info-label {
+            background: #eee;
+            font-weight: 700;
+            width: 16%;
+        }
+        .documentation-section {
+            background: #0d6efd;
+            color: #fff;
+            font-weight: 700;
+            text-align: center;
+            padding: 8px;
+            margin: 4mm 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .documentation-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 4mm;
+        }
+        .documentation-card {
+            border: 1px solid #bbb;
+            min-width: 0;
+            height: 210mm;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        .documentation-card-title {
+            text-align: center;
+            background: #f0f3f7;
+            border-bottom: 1px solid #bbb;
+            padding: 8px;
+            font-weight: 700;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .documentation-image-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 198mm;
+            padding: 3mm;
+            overflow: hidden;
+        }
+        .documentation-image {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+        .documentation-empty {
+            color: #777;
+            font-size: 12px;
+            text-align: center;
+        }
+        @media print {
+            .documentation-page {
+                break-before: page;
+                page-break-before: always;
+            }
+        }
     </style>
 </head>
-
 <body>
     <div class="container">
         <table class="point-table">
@@ -117,8 +185,6 @@
             </thead>
         </table>
         <div class="box-vcenter" style="display: flex; align-items: center; justify-content: space-between;">
-
-
         </div>
         <hr>
         <h1>Pemeriksaan Kesiapan Kerja Harian & Kelayakan Lingkungan Kerja Harian (KLKH) Departemen Produksi Area Batubara</h1>
@@ -360,7 +426,6 @@
         </table>
         Catatan:
         <p class="mb-0">{!! $bb->additional_notes !!}</p>
-
         <table style="width: 100%; text-align: center; border-spacing: 10px;">
             <tbody>
                 <tr>
@@ -397,10 +462,61 @@
                 </tr>
             </tbody>
         </table>
-
     </div>
+@php
+    $getPhotoUrl = function ($path) {
+        if (empty($path)) return null;
+        $path = trim((string) $path);
+        if (preg_match('~^https?://~i', $path)) return $path;
+        return asset(ltrim($path, '/'));
+    };
+    $documentationPhotos = [
+        $getPhotoUrl($bb->dokumentasi_1 ?? $bb->dokumentasi_foto_1 ?? $bb->foto_1 ?? null),
+        $getPhotoUrl($bb->dokumentasi_2 ?? $bb->dokumentasi_foto_2 ?? $bb->foto_2 ?? null)
+    ];
+@endphp
+<div class="documentation-page">
+    <table class="point-table">
+        <tr>
+            <td class="noborder nobg" style="width:50%;">
+                <img src="{{ asset('dashboard/assets') }}/images/logo-full.png" width="240" alt="Logo SIMS">
+            </td>
+            <td class="noborder nobg kanan" style="width:50%;font-weight:700;">FM-PRD-72/00/12/03/24</td>
+        </tr>
+    </table>
+    <hr>
+    <div class="documentation-heading">DOKUMENTASI</div>
+    <div class="documentation-subtitle">Pemeriksaan Kesiapan Kerja Harian & Kelayakan Lingkungan Kerja Harian (KLKH) Area Batubara</div>
+    <table class="documentation-info">
+        <tr>
+            <td class="documentation-info-label">Tanggal</td>
+            <td>{{ Carbon::parse($bb->date)->locale('id')->isoFormat('D MMMM YYYY') }}</td>
+            <td class="documentation-info-label">PIT</td>
+            <td>{{ $bb->pit ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td class="documentation-info-label">Shift</td>
+            <td>{{ $bb->shift ?? '-' }}</td>
+            <td class="documentation-info-label">Jam</td>
+            <td>{{ !empty($bb->time) ? Carbon::parse($bb->time)->format('H:i') : '-' }}</td>
+        </tr>
+    </table>
+    <div class="documentation-grid">
+        @foreach($documentationPhotos as $index => $photo)
+            <div class="documentation-card">
+                <div class="documentation-card-title">Dokumentasi Foto {{ $index + 1 }}</div>
+                <div class="documentation-image-area">
+                    @if($photo)
+                        <img class="documentation-image" src="{{ $photo }}" alt="Dokumentasi Foto {{ $index + 1 }}">
+                    @else
+                        <span class="documentation-empty">Tidak ada foto</span>
+                    @endif
+                </div>
+            </div>
+        @endforeach
+    </div>
+</div>
 </body>
-
 <script>
     window.print();
 </script>

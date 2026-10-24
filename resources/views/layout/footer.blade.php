@@ -1,20 +1,28 @@
+
 <footer class="pc-footer">
     <div class="footer-wrapper container-fluid">
-        <div class="row mt-3">
-            <div class="col my-1">
-                <p class="m-0 text-muted" style="font-size: 9pt;">
-                    © 2024 All Rights Reserved
-                    
-                </p>
+        <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-2 py-2">
+            <div class="text-center text-md-start">
+                <span class="fw-semibold" style="font-size: 12px;">
+                    © 2024 PT SIMS JAYA KALTIM
+                </span>
+                <span class="d-none d-md-inline mx-2 text-muted">|</span>
+                <span class="d-block d-md-inline text-muted" style="font-size: 11px;">
+                    All Rights Reserved.
+                </span>
             </div>
-            <div class="col-auto my-1">
-                <ul class="list-inline footer-link mb-0">
-                    <li class="list-inline-item"><a href="https://ahmadfadillah.my.id" target="_blank" style="font-size: 8pt">Developed by <b>IT</b></a></li>
-                </ul>
+            <div class="text-center text-md-end">
+                <span class="text-muted" style="font-size: 11px;">
+                    Developed & Maintained by
+                </span>
+                <span class="fw-semibold ms-1" style="font-size: 11px;">
+                    Departemen GA Section IT
+                </span>
             </div>
         </div>
     </div>
 </footer>
+
 <div class="pct-c-btn"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_pc_layout"><i
             class="ph-duotone ph-gear-six"></i></a></div>
 <div class="offcanvas border-0 pct-offcanvas offcanvas-end" tabindex="-1" id="offcanvas_pc_layout">
@@ -32,21 +40,21 @@
                         <div class="row theme-color theme-layout">
                             <div class="col-4">
                                 <div class="d-grid"><button class="preset-btn btn active" data-value="true"
-                                        onclick="layout_change('light');" data-bs-toggle="tooltip" title="Light"><svg
+                                        data-bs-toggle="tooltip" title="Light"><svg
                                             class="pc-icon text-warning">
                                             <use xlink:href="#custom-sun-1"></use>
                                         </svg></button></div>
                             </div>
                             <div class="col-4">
                                 <div class="d-grid"><button class="preset-btn btn" data-value="false"
-                                        onclick="layout_change('dark');" data-bs-toggle="tooltip" title="Dark"><svg
+                                        data-bs-toggle="tooltip" title="Dark"><svg
                                             class="pc-icon">
                                             <use xlink:href="#custom-moon"></use>
                                         </svg></button></div>
                             </div>
                             <div class="col-4">
                                 <div class="d-grid"><button class="preset-btn btn" data-value="default"
-                                        onclick="layout_change_default();" data-bs-toggle="tooltip"
+                                        data-bs-toggle="tooltip"
                                         title="Automatically sets the theme based on user's operating system's color scheme."><span
                                             class="pc-lay-icon d-flex align-items-center justify-content-center"><i
                                                 class="ph-duotone ph-cpu"></i></span></button></div>
@@ -190,6 +198,7 @@
 <script src="{{ asset('dashboard/assets') }}/js/plugins/bootstrap.min.js"></script>
 <script src="{{ asset('dashboard/assets') }}/js/fonts/custom-font.js"></script>
 <script src="{{ asset('dashboard/assets') }}/js/pcoded.js"></script>
+<script>window.setAppTheme(window.getAppTheme(), false);</script>
 <script src="{{ asset('dashboard/assets') }}/js/plugins/feather.min.js"></script>
 <script src="{{ asset('dashboard/assets') }}/cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="{{ asset('dashboard/assets') }}/js/plugins/dataTables.min.js"></script>
@@ -263,10 +272,6 @@
 
 </script>
 <script>
-    layout_change('light');
-
-</script>
-<script>
     change_box_container('false');
 
 </script>
@@ -337,16 +342,11 @@
     document.addEventListener('DOMContentLoaded', function() {
             const currentDate = new Date();
             const today = formatDateToMMDDYYYY(currentDate);
-
-            // Mengambil parameter 'rangeStart' dan 'rangeEnd' dari URL, dengan default ke tanggal hari ini
             const startDate = getQueryParam('rangeStart', today);
             const endDate = getQueryParam('rangeEnd', today);
-
-            // Mencari elemen input dengan id 'range-start' dan 'range-end'
             const rangeStartInput = document.getElementById('range-start');
             const rangeEndInput = document.getElementById('range-end');
 
-            // Menetapkan nilai pada elemen input jika ditemukan
             if (rangeStartInput) {
                 rangeStartInput.value = startDate;
             }
@@ -356,6 +356,7 @@
             }
         });
 </script>
+<script>window.setAppTheme(window.getAppTheme(), false);</script>
 </body>
 
 </html>
