@@ -38,6 +38,15 @@
     <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/fonts/feather.css">
     <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/fonts/fontawesome.css">
     <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/fonts/material.css">
+    @php
+        $assetVersion = static function ($path) {
+            $fullPath = public_path($path);
+
+            return is_file($fullPath)
+                ? filemtime($fullPath)
+                : '1';
+        };
+    @endphp
     <script>
         (function () {
             const key = 'fms-theme-mode';
@@ -95,10 +104,10 @@
             });
         })();
     </script>
-    <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/css/style.css" id="main-style-link">
+    <link rel="stylesheet" href="{{ asset('dashboard/assets/css/style.css') }}?v={{ $assetVersion('dashboard/assets/css/style.css') }}" id="main-style-link">
     <script src="{{ asset('dashboard/assets') }}/js/tech-stack.js"></script>
     <script src="{{ asset('dashboard/assets') }}/js/hak-akses.js"></script>
-    <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/css/style-preset.css">
+    <link rel="stylesheet" href="{{ asset('dashboard/assets/css/style-preset.css') }}?v={{ $assetVersion('dashboard/assets/css/style-preset.css') }}">
     {{-- <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/css/uikit.css"> --}}
     {{-- <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/css/style-spinner.css"> --}}
     <link rel="stylesheet" href="{{ asset('dashboard/assets') }}/css/plugins/datepicker-bs5.min.css">
