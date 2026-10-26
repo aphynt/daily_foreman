@@ -328,6 +328,120 @@ class ObservasiBankController extends Controller
         }
     }
 
+    public function edit(string $uuid)
+    {
+        $observasi = ObservasiBank::where('uuid', $uuid)->firstOrFail();
+
+        $users = [
+            'pit' => Area::where('statusenabled', true)->get(),
+            'departemen' => Departemen::where('statusenabled', true)->get(),
+            'penanggungjawab' => User::whereIn('role', ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT', 'MANAGEMENT'])->orderBy('name')->get(),
+            'petugas' => User::whereIn('role', ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT', 'MANAGEMENT'])->orderBy('name')->get(),
+            'pekerja' => User::where('departemen_id', 9)->orderBy('name')->get(),
+            'pengawas' => User::whereIn('role', ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT', 'MANAGEMENT'])->orderBy('name')->get(),
+        ];
+
+        return view('observasi-bank.edit', compact('observasi', 'users'));
+    }
+
+    public function update(Request $request, string $uuid)
+    {
+        $observasi = ObservasiBank::where('uuid', $uuid)->firstOrFail();
+
+        $checkboxes = [
+            'perilaku_posisi_saat_bekerja', 'perilaku_menggunakan_peralatan',
+            'perilaku_mengangkat_barang', 'perilaku_mengemudi', 'perilaku_menaiki_menuruni_tangga',
+            'apd_pelindung_kepala', 'apd_pelindung_mata', 'apd_pelindung_telinga',
+            'apd_pelindung_pernafasan', 'apd_pelindung_tangan', 'apd_pelindung_kaki',
+            'apd_pelindung_tenggelam', 'apd_loto', 'apd_sabuk_pengaman',
+            'risiko_menabrak', 'risiko_terjepit', 'risiko_terpukul', 'risiko_terpeleset',
+            'risiko_sengatan', 'risiko_gangguan_kesehatan', 'risiko_pencemaran_lingkungan',
+            'risiko_terhirup', 'risiko_kontak',
+            'peralatan_sesuai', 'peralatan_benar', 'peralatan_kondisi',
+            'peralatan_taging', 'peralatan_pelindung',
+            'prosedur_tersedia', 'prosedur_diketahui', 'prosedur_dijalankan',
+            'prosedur_permit', 'prosedur_p2h',
+            'kondisi_area_kebersihan', 'kondisi_area_rambu', 'kondisi_area_akses',
+            'kondisi_area_penyimpanan', 'kondisi_area_suhu', 'kondisi_area_pencahayaan',
+            'kondisi_area_kebisingan', 'kondisi_area_cuaca',
+            'tindakan_kegiatan', 'tindakan_perbaikan_langsung', 'tindakan_perbaikan_lanjutan',
+        ];
+
+        $fields = [
+            'tanggal', 'jam', 'departemen_id', 'nama_pekerjaan', 'referensi',
+            'no_referensi', 'lokasi', 'lokasi_lain',
+            'perilaku_lain_1', 'perilaku_lain_2', 'apd_lain_1', 'apd_lain_2',
+            'risiko_lain_1', 'risiko_lain_2', 'peralatan_lain_1', 'peralatan_lain_2',
+            'prosedur_kerja_lain', 'prosedur_kerja_lain_2',
+            'kondisi_area_lain', 'kondisi_area_lain_2',
+            'perilaku_aman_yang_diamati', 'perilaku_tidak_aman_yang_diamati',
+            'additional_notes',
+            'petugas1', 'petugas2', 'petugas3', 'petugas4', 'petugas5',
+            'pekerja1', 'pekerja2', 'pekerja3', 'pekerja4', 'pekerja5',
+        ];
+
+        for ($i = 1; $i <= 5; $i++) {
+            $fields[] = "tindakan_lanjutan_{$i}";
+            $fields[] = "tindakan_lanjutan_due_{$i}";
+        }
+
+        $rules = [
+            'tanggal' => 'required|date',
+            'jam' => 'required|date_format:H:i',
+            'departemen_id' => 'required|integer',
+            'nama_pekerjaan' => 'required|string|max:255',
+            'pengawas1_mode' => 'required|in:auto,manual',
+            'pengawas1_auto' => 'required_if:pengawas1_mode,auto|nullable|string',
+            'nama_pengawas1_manual' => 'required_if:pengawas1_mode,manual|nullable|string|max:255',
+        ];
+        foreach ($checkboxes as $field) $rules[$field] = 'sometimes|boolean';
+        foreach ($fields as $field) {
+            if (!isset($rules[$field])) $rules[$field] = 'nullable|string';
+        }
+        for ($i = 1; $i <= 5; $i++) {
+            $rules["tindakan_lanjutan_due_{$i}"] = 'nullable|date';
+        }
+        foreach (range(1, 3) as $i) {
+            $rules["dokumentasi_foto_{$i}"] = 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120';
+        }
+
+        $validated = $request->validate($rules);
+        $payload = [];
+        foreach ($fields as $field) $payload[$field] = $validated[$field] ?? null;
+        foreach ($checkboxes as $field) $payload[$field] = $request->boolean($field) ? 1 : 0;
+
+        if ($payload['lokasi'] === 'LAIN-LAIN') {
+            $payload['lokasi'] = $payload['lokasi_lain'];
+        }
+
+        if ($validated['pengawas1_mode'] === 'manual') {
+            $payload['pengawas1'] = null;
+            $payload['nama_pengawas1'] = $validated['nama_pengawas1_manual'];
+        } else {
+            [$nik, $nama] = array_pad(explode('|', $validated['pengawas1_auto'], 2), 2, null);
+            $payload['pengawas1'] = $nik;
+            $payload['nama_pengawas1'] = $nama;
+        }
+
+        foreach (range(1, 3) as $i) {
+            $field = "dokumentasi_foto_{$i}";
+            if (!$request->hasFile($field)) continue;
+
+            $file = $request->file($field);
+            $folder = "observasi_bank/{$field}";
+            $filename = (string) \Illuminate\Support\Str::uuid() . '.' . $file->extension();
+            $path = Storage::disk('production_public')->putFileAs($folder, $file, $filename);
+            if ($path === false) {
+                return back()->withInput()->with('info', 'Gagal upload ' . $field);
+            }
+            $payload[$field] = rtrim(config('app.url'), '/') . '/storage/' . $path;
+        }
+
+        $observasi->update($payload);
+
+        return redirect()->route('observasibank')->with('success', 'Observasi BANK berhasil diperbarui');
+    }
+
     public function preview($uuid)
     {
         $data['report'] = DB::table('se_observasi_bank as ob')

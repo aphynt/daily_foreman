@@ -612,6 +612,8 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/observasibank/preview/{uuid}', [ObservasiBankController::class, 'preview'])->name('observasibank.preview');
     Route::get('/observasibank/download/{uuid}', [ObservasiBankController::class, 'download'])->name('observasibank.download');
     Route::get('/observasibank/cetak/{uuid}', [ObservasiBankController::class, 'cetak'])->name('observasibank.cetak');
+    Route::get('/observasi-bank/{uuid}/edit', [ObservasiBankController::class, 'edit'])->name('observasibank.edit');
+    Route::put('/observasi-bank/{uuid}', [ObservasiBankController::class, 'update'])->name('observasibank.update');
 
     //Paylaod & Ritation
     Route::get('/payloadritation/all', [PayloadRitationController::class, 'index'])->name('payloadritation.index');
