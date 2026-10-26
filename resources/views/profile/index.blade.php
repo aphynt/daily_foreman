@@ -75,7 +75,7 @@
                                         <div class="text-center mt-3">
                                                 <div class="chat-avtar d-inline-flex mx-auto">
                                                     <img
-                                                        src="{{ Auth::user()->avatar ? 'https://hrlink.ptsims.co.id/asset/foto/karyawan/' . Auth::user()->avatar : asset('dashboard/assets/images/user/avatar-1.png') }}"
+                                                        src="{{ Auth::user()->avatar ? route('employee.avatar', ['filename' => Auth::user()->avatar]) : asset('dashboard/assets/images/user/avatar-1.png') }}"
                                                         alt="user-image"
                                                         class="profile-main-avatar">
                                                 </div>

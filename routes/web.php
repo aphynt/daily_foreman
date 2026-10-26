@@ -75,6 +75,7 @@ use App\Http\Controllers\SAPController;
 use App\Http\Controllers\SOPController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifiedController;
+use App\Http\Controllers\EmployeeAvatarController;
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\isAdmin;
 use App\Models\SOP;
@@ -90,7 +91,7 @@ use Illuminate\Support\Facades\Http;
 //     return redirect('/');
 // });
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index')->middleware('auth');
-
+Route::get('/employee-avatar/{filename}', [EmployeeAvatarController::class, 'show'])->name('employee.avatar');
 
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::get('/privacy-policy', [AuthController::class, 'privacyPolicy'])->name('privacy.policy');

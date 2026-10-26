@@ -23,8 +23,7 @@
                 <div class="card pc-user-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
-                            <div class="flex-shrink-0"><img src="{{ Auth::user()->avatar ? 'https://hrlink.ptsims.co.id/asset/foto/karyawan/' . Auth::user()->avatar : asset('dashboard/assets/images/user/avatar-1.png') }}" alt="user-image" class="user-avtar"
-                                    alt="user-image" class="user-avtar wid-45 rounded-circle"></div>
+                            <div class="flex-shrink-0"><img src="{{ Auth::user()->avatar ? route('employee.avatar', ['filename' => Auth::user()->avatar]) : asset('dashboard/assets/images/user/avatar-1.png') }}" alt="Foto profil {{ Auth::user()->name }}" class="user-avtar wid-45 rounded-circle"></div>
                             <div class="flex-grow-1 ms-3 me-2">
                                 <h6 class="mb-0" style="font-size: 12px">{{ Auth::user()->name }}</h6>
                                 <small>{{ Auth::user()->position }}</small>
@@ -49,12 +48,12 @@
 
                 {{-- HOME --}}
                 @if (canAccess('dashboard.index'))
-                <li class="pc-item"><a href="{{ route('dashboard.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/house.png" alt="NT"></span><span class="pc-mtext">Home</span></a></li>
+                <li class="pc-item"><a href="{{ route('dashboard.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/house.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Home</span></a></li>
                 @endif
                 {{-- <li class="pc-item">
                     <a href="http://poka.ptsims.co.id" class="pc-link">
                         <span class="pc-micon">
-                            <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/house.png" alt="NT">
+                            <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/house.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
                         </span>
                         <span class="pc-mtext">SATU SIMS</span>
                     </a>
@@ -62,28 +61,28 @@
                 @if (Auth::user()->role != 'WORKER')
                     {{-- PRODUKSI --}}
                     @if (canAccess('production.index'))
-                    <li class="pc-item"><a href="{{ route('production.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/production.png" alt="NT"></span><span class="pc-mtext">Produksi Per Jam</span></a></li>
+                    <li class="pc-item"><a href="{{ route('production.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/production.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Produksi Per Jam</span></a></li>
                     @endif
                     @if (canAccess('production.ex'))
-                    <li class="pc-item"><a href="{{ route('production.ex') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/production-ex.png" alt="NT"></span><span class="pc-mtext">Produksi EX Per Jam</span></a></li>
+                    <li class="pc-item"><a href="{{ route('production.ex') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/production-ex.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Produksi EX Per Jam</span></a></li>
                     @endif
 
                     @if (canAccess('stagingplan'))
-                    <li class="pc-item"><a href="{{ route('stagingplan') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/blueprint.png" alt="NT"></span><span class="pc-mtext">Staging Plan</span></a></li>
+                    <li class="pc-item"><a href="{{ route('stagingplan') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/blueprint.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Staging Plan</span></a></li>
                     @endif
 
                     @if (canAccess('diggibility'))
-                    <li class="pc-item"><a href="{{ route('diggibility') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/blasting.png" alt="NT"></span><span class="pc-mtext">Digging Time</span></a></li>
+                    <li class="pc-item"><a href="{{ route('diggibility') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/blasting.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Digging Time</span></a></li>
                     @endif
 
                     {{-- PAYLOAD --}}
                     @if (canAccess('payloadritation.exa'))
-                    <li class="pc-item"><a href="{{ route('payloadritation.exa') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/loading.png" alt="NT"></span><span class="pc-mtext">Payload & Ritation</span></a></li>
+                    <li class="pc-item"><a href="{{ route('payloadritation.exa') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/loading.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Payload & Ritation</span></a></li>
                     @endif
 
                     {{-- MONITORING PAYLOAD --}}
                     @if (canAccess('monitoringpayload'))
-                    <li class="pc-item"><a href="{{ route('monitoringpayload') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/kpi.png" alt="NT"></span><span class="pc-mtext">Monitoring Payload</span></a></li>
+                    <li class="pc-item"><a href="{{ route('monitoringpayload') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/kpi.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Monitoring Payload</span></a></li>
                     @endif
 
                     {{-- DASHBOARD --}}
@@ -101,7 +100,7 @@
                     )
                     <li class="pc-item pc-hasmenu">
                         <a href="#!" class="pc-link"><span class="pc-micon">
-                            <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/dashboard.png" alt="DS"> </span><span class="pc-mtext">Dashboard</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
+                            <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/dashboard.png" alt="" aria-hidden="true" loading="lazy" decoding="async"> </span><span class="pc-mtext">Dashboard</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
                         </a>
                         <ul class="pc-submenu">
                             @if (
@@ -160,11 +159,11 @@
                 @endif
 
                 @if (canAccess('sop.index'))
-                <li class="pc-item"><a href="{{ route('sop.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/sop.png" alt="NT"></span><span class="pc-mtext">SOP</span></a></li>
+                <li class="pc-item"><a href="{{ route('sop.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/sop.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">SOP</span></a></li>
                 @endif
 
                 {{-- @if (canAccess('hazard-report.index'))
-                <li class="pc-item"><a href="{{ route('hazard-report.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/hazard.png" alt="NT"></span><span class="pc-mtext">Hazard Report</span></a></li>
+                <li class="pc-item"><a href="{{ route('hazard-report.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/hazard.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Hazard Report</span></a></li>
                 @endif --}}
 
                 @if (Auth::user()->role != 'WORKER')
@@ -187,7 +186,7 @@
 
                     <li class="pc-item pc-hasmenu">
                         <a href="#!" class="pc-link"><span class="pc-micon">
-                            <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/list.png" alt="DS"> </span><span class="pc-mtext">Daftar Laporan</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
+                            <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/list.png" alt="" aria-hidden="true" loading="lazy" decoding="async"> </span><span class="pc-mtext">Daftar Laporan</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
                         </a>
                         <ul class="pc-submenu">
                             @if (canAccess('pengawas-produksi-pitstop.index'))<li class="pc-item"><a class="pc-link" href="{{ route('pengawas-produksi-pitstop.index') }}">Pengawas OB</a></li>@endif
@@ -217,7 +216,7 @@
                     )
                     <li class="pc-item pc-hasmenu">
                         <a href="#!" class="pc-link"><span class="pc-micon">
-                            <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/pencil.png" alt="DS"> </span><span class="pc-mtext">Form Laporan Kerja</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
+                            <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/pencil.png" alt="" aria-hidden="true" loading="lazy" decoding="async"> </span><span class="pc-mtext">Form Laporan Kerja</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
                         </a>
                         <ul class="pc-submenu">
                             @if (canAccess('form-pengawas-new.index'))<li class="pc-item"><a class="pc-link" href="{{ route('form-pengawas-new.index') }}">Pengawas Produksi</a></li>@endif
@@ -231,25 +230,25 @@
                     @endif
 
                     @if (canAccess('sap.index'))
-                    <li class="pc-item"><a href="{{ route('sap.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/to-do-list.png" alt="NT"></span><span class="pc-mtext">Form SAP</span></a></li>
+                    <li class="pc-item"><a href="{{ route('sap.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/to-do-list.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Form SAP</span></a></li>
                     @endif
 
 
 
                     {{-- JOB PENDING --}}
                     @if (canAccess('jobpending.produksi'))
-                    <li class="pc-item"><a href="{{ route('jobpending.produksi') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/job-creation.png" alt="NT"></span><span class="pc-mtext">Job Pending Produksi</span></a></li>
+                    <li class="pc-item"><a href="{{ route('jobpending.produksi') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/job-creation.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Job Pending Produksi</span></a></li>
                     @endif
 
                     {{-- @if (canAccess('jobpending.safety'))
-                    <li class="pc-item"><a href="{{ route('jobpending.safety') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/job-creation.png" alt="NT"></span><span class="pc-mtext">Job Pending Safety</span></a></li>
+                    <li class="pc-item"><a href="{{ route('jobpending.safety') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/job-creation.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Job Pending Safety</span></a></li>
                     @endif --}}
 
                     <li class="pc-item pc-caption"><label>Kesiapan & Verifikasi</label></li>
 
                     {{-- VERIFIKASI --}}
                     @if (canAccess('verifikasi.klkh'))
-                    <li class="pc-item"><a href="{{ route('verifikasi.klkh') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/stamp.png" alt="NT"></span><span class="pc-mtext">Verifikasi KLKH</span></a></li>
+                    <li class="pc-item"><a href="{{ route('verifikasi.klkh') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/stamp.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Verifikasi KLKH</span></a></li>
                     @endif
                     {{-- @if (
                         canAccess('verifikasi.klkh') ||
@@ -257,7 +256,7 @@
                     )
                     <li class="pc-item pc-hasmenu">
                         <a href="#!" class="pc-link"><span class="pc-micon">
-                            <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/stamp.png" alt="DS"> </span><span class="pc-mtext">Verifikasi</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
+                            <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/stamp.png" alt="" aria-hidden="true" loading="lazy" decoding="async"> </span><span class="pc-mtext">Verifikasi</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
                         </a>
                         <ul class="pc-submenu">
                             @if (canAccess('verifikasi.klkh'))<li class="pc-item"><a class="pc-link" href="{{ route('verifikasi.klkh') }}">KLKH</a></li>@endif
@@ -268,14 +267,14 @@
 
                     {{-- P2H UNIT --}}
                     @if (canAccess('p2h.index'))
-                    <li class="pc-item"><a href="{{ route('p2h.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/worker.png" alt="NT"></span><span class="pc-mtext">Verifikasi P2H</span></a></li>
+                    <li class="pc-item"><a href="{{ route('p2h.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/worker.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Verifikasi P2H</span></a></li>
                     @endif
 
                     {{-- KKH --}}
                     @if (canAccess('kkh.all') || canAccess('kkh.name'))
                     <li class="pc-item pc-hasmenu">
                         <a href="#!" class="pc-link"><span class="pc-micon">
-                            <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/ergonomic.png" alt="DS"> </span><span class="pc-mtext">Verifikasi KKH</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span> <span class="pc-badge">2</span>
+                            <img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/ergonomic.png" alt="" aria-hidden="true" loading="lazy" decoding="async"> </span><span class="pc-mtext">Verifikasi KKH</span> <span class="pc-arrow"><i data-feather="chevron-right"></i></span> <span class="pc-badge">2</span>
                         </a>
                         <ul class="pc-submenu">
                             @if (canAccess('kkh.all'))<li class="pc-item"><a class="pc-link" href="{{ route('kkh.all') }}">Seleksi per Tanggal</a></li>@endif
@@ -288,15 +287,15 @@
 
                     {{-- ADMIN / MANAGEMENT --}}
                     @if (canAccess('rosterkerja.produksi'))
-                    <li class="pc-item"><a href="{{ route('rosterkerja.produksi') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/project.png" alt="NT"></span><span class="pc-mtext">Roster Kerja Produksi</span></a></li>
+                    <li class="pc-item"><a href="{{ route('rosterkerja.produksi') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/project.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Roster Kerja Produksi</span></a></li>
                     @endif
 
                     @if (canAccess('rosterkerja.safety'))
-                    <li class="pc-item"><a href="{{ route('rosterkerja.safety') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/project.png" alt="NT"></span><span class="pc-mtext">Roster Kerja Safety</span></a></li>
+                    <li class="pc-item"><a href="{{ route('rosterkerja.safety') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/project.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Roster Kerja Safety</span></a></li>
                     @endif
 
                     @if (canAccess('monitoringlaporankerjaklkh'))
-                    <li class="pc-item"><a href="{{ route('monitoringlaporankerjaklkh') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/spyware.png" alt="NT"></span><span class="pc-mtext">Monitoring Laporan Kerja</span></a></li>
+                    <li class="pc-item"><a href="{{ route('monitoringlaporankerjaklkh') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/spyware.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Monitoring Laporan Kerja</span></a></li>
                     @endif
                 @endif
 
@@ -305,16 +304,16 @@
                 <li class="pc-item pc-caption"><label>Configuration</label></li>
                 @endif
                 @if (canAccess('user.index'))
-                <li class="pc-item"><a href="{{ route('user.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/user.png" alt="NT"></span><span class="pc-mtext">Users</span></a></li>
+                <li class="pc-item"><a href="{{ route('user.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/user.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Users</span></a></li>
                 @endif
                 @if (canAccess('permission.index'))
-                <li class="pc-item"><a href="{{ route('permission.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/user.png" alt="NT"></span><span class="pc-mtext">Permission Route</span></a></li>
+                <li class="pc-item"><a href="{{ route('permission.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/user.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Permission Route</span></a></li>
                 @endif
                 @if (canAccess('reference.index'))
-                <li class="pc-item"><a href="{{ route('reference.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/user.png" alt="NT"></span><span class="pc-mtext">Reference</span></a></li>
+                <li class="pc-item"><a href="{{ route('reference.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/user.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Reference</span></a></li>
                 @endif
                 @if (canAccess('log.index'))
-                <li class="pc-item"><a href="{{ route('log.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/log.png" alt="NT"></span><span class="pc-mtext">Logging User</span></a></li>
+                <li class="pc-item"><a href="{{ route('log.index') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/log.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Logging User</span></a></li>
                 @endif
                 <li class="pc-item pc-caption"></li>
                 <li class="pc-item pc-caption"></li>

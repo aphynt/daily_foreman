@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <title>Login - {{ config('app.name') }}</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,12 +16,13 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Dashboard - Daily Foreman">
     <meta property="og:description" content="Digitalisasi laporan foreman untuk efisiensi alur proses dan peningkatan akurasi data">
-    <meta property="og:image" content="http://foreman.ptsims.co.id/dashboard/assets/images/icon512.png">
-    <meta property="og:url" content="http://foreman.ptsims.co.id">
+    <meta property="og:image" content="{{ asset('dashboard/assets/images/icon512.png') }}">
+    <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:site_name" content="Daily Foreman">
 
     <!-- SweetAlert -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         :root {
@@ -777,7 +778,8 @@
                     <a href="javascript:void(0);" class="brand-logo-wrap" aria-label="PT. SIMS JAYA KALTIM">
                         <img
                             src="{{ asset('dashboard/assets') }}/images/logo-full.png"
-                            alt="Company Logo"
+                            alt="Logo PT SIMS Jaya Kaltim"
+                            decoding="async"
                             class="brand-logo"
                         >
                     </a>
@@ -827,7 +829,7 @@
             <div class="form-panel">
                 <div class="form-wrap">
                     <div class="mobile-logo">
-                        <img src="{{ asset('dashboard/assets') }}/images/logo-full.png" alt="Company Logo">
+                        <img src="{{ asset('dashboard/assets') }}/images/logo-full.png" alt="Logo PT SIMS Jaya Kaltim" decoding="async">
                     </div>
 
                     <div class="secure-badge">

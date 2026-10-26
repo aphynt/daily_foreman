@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Reset Password - {{ config('app.name') }}</title>
     <link rel="icon" href="{{ asset('dashboard/assets') }}/images/icon.png" type="image/x-icon">
     <style>

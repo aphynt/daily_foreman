@@ -23,8 +23,8 @@
     </div>
 </footer>
 
-<div class="pct-c-btn"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_pc_layout"><i
-            class="ph-duotone ph-gear-six"></i></a></div>
+<div class="pct-c-btn"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_pc_layout" aria-label="Buka pengaturan tampilan"><i
+            class="ti ti-settings"></i></a></div>
 <div class="offcanvas border-0 pct-offcanvas offcanvas-end" tabindex="-1" id="offcanvas_pc_layout">
     <div class="offcanvas-header">
         <h5 class="offcanvas-title">Settings</h5><button type="button" class="btn btn-icon btn-link-danger ms-auto"
@@ -57,7 +57,7 @@
                                         data-bs-toggle="tooltip"
                                         title="Automatically sets the theme based on user's operating system's color scheme."><span
                                             class="pc-lay-icon d-flex align-items-center justify-content-center"><i
-                                                class="ph-duotone ph-cpu"></i></span></button></div>
+                                                class="ti ti-cpu"></i></span></button></div>
                             </div>
                         </div>
                     </div>
@@ -104,20 +104,20 @@
                     <h6 class="mb-1">Theme layout</h6>
                     <p class="text-muted text-sm">Choose your layout</p>
                     <div class="theme-main-layout d-flex align-center gap-1 w-100"><a href="#!" data-bs-toggle="tooltip"
-                            title="Vertical" class="active" data-value="vertical"><img
-                                src="{{ asset('dashboard/assets') }}/images/customizer/caption-on.svg" alt="img"
+                            title="Vertical" class="active" data-value="vertical"><img loading="lazy" decoding="async"
+                                src="{{ asset('dashboard/assets') }}/images/customizer/caption-on.svg" alt=""
                                 class="img-fluid"> </a><a href="#!" data-bs-toggle="tooltip" title="Horizontal"
-                            data-value="horizontal"><img
-                                src="{{ asset('dashboard/assets') }}/images/customizer/horizontal.svg" alt="img"
+                            data-value="horizontal"><img loading="lazy" decoding="async"
+                                src="{{ asset('dashboard/assets') }}/images/customizer/horizontal.svg" alt=""
                                 class="img-fluid"> </a><a href="#!" data-bs-toggle="tooltip" title="Color Header"
-                            data-value="color-header"><img
-                                src="{{ asset('dashboard/assets') }}/images/customizer/color-header.svg" alt="img"
+                            data-value="color-header"><img loading="lazy" decoding="async"
+                                src="{{ asset('dashboard/assets') }}/images/customizer/color-header.svg" alt=""
                                 class="img-fluid">
-                        </a><a href="#!" data-bs-toggle="tooltip" title="Compact" data-value="compact"><img
-                                src="{{ asset('dashboard/assets') }}/images/customizer/compact.svg" alt="img"
+                        </a><a href="#!" data-bs-toggle="tooltip" title="Compact" data-value="compact"><img loading="lazy" decoding="async"
+                                src="{{ asset('dashboard/assets') }}/images/customizer/compact.svg" alt=""
                                 class="img-fluid"> </a><a href="#!" data-bs-toggle="tooltip" title="Tab"
-                            data-value="tab"><img src="{{ asset('dashboard/assets') }}/images/customizer/tab.svg"
-                                alt="img" class="img-fluid"></a></div>
+                            data-value="tab"><img loading="lazy" decoding="async" src="{{ asset('dashboard/assets') }}/images/customizer/tab.svg"
+                                alt="" class="img-fluid"></a></div>
                 </li>
                 <li class="list-group-item">
                     <h6 class="mb-1">Sidebar Caption</h6>
@@ -126,16 +126,16 @@
                         <div class="col-6">
                             <div class="d-grid"><button class="preset-btn btn-img btn active" data-value="true"
                                     onclick="layout_caption_change('true');" data-bs-toggle="tooltip"
-                                    title="Caption Show"><img
-                                        src="{{ asset('dashboard/assets') }}/images/customizer/caption-on.svg" alt="img"
+                                    title="Caption Show"><img loading="lazy" decoding="async"
+                                        src="{{ asset('dashboard/assets') }}/images/customizer/caption-on.svg" alt=""
                                         class="img-fluid"></button></div>
                         </div>
                         <div class="col-6">
                             <div class="d-grid"><button class="preset-btn btn-img btn" data-value="false"
                                     onclick="layout_caption_change('false');" data-bs-toggle="tooltip"
-                                    title="Caption Hide"><img
+                                    title="Caption Hide"><img loading="lazy" decoding="async"
                                         src="{{ asset('dashboard/assets') }}/images/customizer/caption-off.svg"
-                                        alt="img" class="img-fluid"></button></div>
+                                        alt="" class="img-fluid"></button></div>
                         </div>
                     </div>
                 </li>
@@ -146,14 +146,14 @@
                         <div class="row theme-color theme-direction">
                             <div class="col-6">
                                 <div class="d-grid"><button class="preset-btn btn-img btn active" data-value="false"
-                                        onclick="layout_rtl_change('false');" data-bs-toggle="tooltip" title="LTR"><img
-                                            src="{{ asset('dashboard/assets') }}/images/customizer/ltr.svg" alt="img"
+                                        onclick="layout_rtl_change('false');" data-bs-toggle="tooltip" title="LTR"><img loading="lazy" decoding="async"
+                                            src="{{ asset('dashboard/assets') }}/images/customizer/ltr.svg" alt=""
                                             class="img-fluid"></button></div>
                             </div>
                             <div class="col-6">
                                 <div class="d-grid"><button class="preset-btn btn-img btn" data-value="true"
-                                        onclick="layout_rtl_change('true');" data-bs-toggle="tooltip" title="RTL"><img
-                                            src="{{ asset('dashboard/assets') }}/images/customizer/rtl.svg" alt="img"
+                                        onclick="layout_rtl_change('true');" data-bs-toggle="tooltip" title="RTL"><img loading="lazy" decoding="async"
+                                            src="{{ asset('dashboard/assets') }}/images/customizer/rtl.svg" alt=""
                                             class="img-fluid"></button></div>
                             </div>
                         </div>
@@ -167,15 +167,15 @@
                             <div class="col-6">
                                 <div class="d-grid"><button class="preset-btn btn-img btn active" data-value="false"
                                         onclick="change_box_container('false')" data-bs-toggle="tooltip"
-                                        title="Full Width"><img
-                                            src="{{ asset('dashboard/assets') }}/images/customizer/full.svg" alt="img"
+                                        title="Full Width"><img loading="lazy" decoding="async"
+                                            src="{{ asset('dashboard/assets') }}/images/customizer/full.svg" alt=""
                                             class="img-fluid"></button></div>
                             </div>
                             <div class="col-6">
                                 <div class="d-grid"><button class="preset-btn btn-img btn" data-value="true"
                                         onclick="change_box_container('true')" data-bs-toggle="tooltip"
-                                        title="Fixed Width"><img
-                                            src="{{ asset('dashboard/assets') }}/images/customizer/fixed.svg" alt="img"
+                                        title="Fixed Width"><img loading="lazy" decoding="async"
+                                            src="{{ asset('dashboard/assets') }}/images/customizer/fixed.svg" alt=""
                                             class="img-fluid"></button></div>
                             </div>
                         </div>
@@ -201,6 +201,8 @@
 <script>window.setAppTheme(window.getAppTheme(), false);</script>
 <script src="{{ asset('dashboard/assets') }}/js/plugins/feather.min.js"></script>
 <script src="{{ asset('dashboard/assets') }}/cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+@unless (request()->routeIs('dashboard.index'))
+{{-- Plugin berikut hanya diperlukan pada halaman tabel/form, bukan halaman dashboard. --}}
 <script src="{{ asset('dashboard/assets') }}/js/plugins/dataTables.min.js"></script>
 <script src="{{ asset('dashboard/assets') }}/js/plugins/dataTables.bootstrap5.min.js"></script>
 <script src="{{ asset('dashboard/assets') }}/js/plugins/buttons.colVis.min.js"></script>
@@ -220,11 +222,15 @@
 {{-- <script src="../../cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script> --}}
 
 <script src="{{ asset('dashboard/assets') }}/js/plugins/clipboard.min.js"></script>
+@endunless
 <script src="{{ asset('dashboard/assets') }}/js/component.js"></script>
 
 <script src="{{ asset('dashboard/assets') }}/js/plugins/notifier.js"></script>
+@unless (request()->routeIs('dashboard.index'))
 <script src="{{ asset('imageCompress') }}/browser-image-compression.js"></script>
+@endunless
     {{-- <script src="{{ asset('dashboard/assets') }}/js/pages/ac-notification.js"></script> --}}
+@unless (request()->routeIs('dashboard.index'))
 <script>
  var timepicker1 = document.querySelector('#pc-timepicker-1');
     var timepicker2 = document.querySelector('#pc-timepicker-2');
@@ -271,6 +277,7 @@
     $('#table-style-hover').DataTable();
 
 </script>
+@endunless
 <script>
     change_box_container('false');
 
@@ -291,6 +298,7 @@
     main_layout_change('vertical');
 
 </script>
+@unless (request()->routeIs('dashboard.index'))
 <script>
    (function () {
         const element1 = document.querySelector('#pc-datepicker-1');
@@ -326,6 +334,7 @@
 });
 
     </script>
+@endunless
 <script>
     function getQueryParam(name, defaultValue) {
         const urlParams = new URLSearchParams(window.location.search);

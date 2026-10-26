@@ -1,15 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <title>{{ config('app.name') }}</title><!-- [Meta] -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,minimal-ui">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="icon" href="{{ asset('dashboard/assets') }}/images/icon.png" type="image/x-icon">
-    <link rel="stylesheet" href="{{ asset('dashboard') }}/assets/fonts/inter/inter.css" id="main-font-link">
-    <!-- [phosphor Icons] https://phosphoricons.com/ -->
-    <link rel="stylesheet" href="{{ asset('dashboard') }}/assets/fonts/phosphor/duotone/style.css">
     <!-- [Tabler Icons] https://tablericons.com -->
     <link rel="stylesheet" href="{{ asset('dashboard') }}/assets/fonts/tabler-icons.min.css"><!-- [Feather Icons] https://feathericons.com -->
     <link rel="stylesheet" href="{{ asset('dashboard') }}/assets/fonts/feather.css">
@@ -43,6 +40,8 @@
                                 <div class="row justify-content-center">
                                     <div class="col-12 text-center">
                                         <img src="{{ asset('dashboard/assets') }}/images/logo-full.png"
+                                            alt="Logo PT SIMS Jaya Kaltim"
+                                            decoding="async"
                                             class="img-fluid"
                                             style="max-width: 400px; width: 100%; height: auto;">
                                     </div>

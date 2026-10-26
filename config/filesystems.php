@@ -76,6 +76,12 @@ return [
             'visibility' => 'public',
         ],
 
+        'employee_photos' => [
+            'driver' => 'local',
+            'root' => '\\\\10.72.4.202\\karyawan',
+            'throw' => false,
+        ],
+
     ],
 
     /*

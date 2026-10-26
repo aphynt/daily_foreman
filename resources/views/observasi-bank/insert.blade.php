@@ -706,6 +706,11 @@
                                     </tbody>
                                 </table>
                             </div>
+                                @php
+                                    $defaultPengawasValue = Auth::user()->nik . '|' . Auth::user()->name;
+                                    $oldPengawasMode = old('pengawas1_mode', 'auto');
+                                    $oldPengawasValue = old('pengawas1_auto', $defaultPengawasValue);
+                                 @endphp
                                 <hr>
                                 <!-- Catatan -->
                                 <div class="form-group mt-3">
@@ -722,7 +727,10 @@
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Petugas / Observer 1</label>
                                         <select class="form-control form-control-sm" name="petugas1" data-trigger>
-                                            <option value="" disabled selected></option>
+                                            <option value="{{ Auth::user()->name }}"
+                                                {{ $oldPengawasValue == $defaultPengawasValue ? 'selected' : '' }}>
+                                                {{ Auth::user()->name }} ({{ Auth::user()->nik }})
+                                            </option>
                                             @foreach ($users['petugas'] as $petugas)
                                                 <option value="{{ $petugas->nik }}"
                                                     {{ old('petugas1') == $petugas->nik ? 'selected' : '' }}>
@@ -827,12 +835,6 @@
                                 <div class="row mb-3">
                                     <h5>XII. Validasi Pengawas / Penanggung Jawab</h5>
 
-                                    @php
-                                        $defaultPengawasValue = Auth::user()->nik . '|' . Auth::user()->name;
-                                        $oldPengawasMode = old('pengawas1_mode', 'auto');
-                                        $oldPengawasValue = old('pengawas1_auto', $defaultPengawasValue);
-                                    @endphp
-
                                     <div class="col-md-12 col-12 px-2 py-2">
 
                                         <div class="form-check form-check-inline">
@@ -928,7 +930,7 @@
                                 </div>
                                 <!-- Tombol Submit -->
                                 <div class="text-center mt-3">
-                                    <button type="submit" class="btn btn-primary btn-sm" id="submitButtonObservasiBank">Submit</button>
+                                    <button type="submit" class="btn btn-primary btn-lg px-5 py-2" id="submitButtonObservasiBank">Submit</button>
                                 </div>
                             </form>
 
