@@ -533,12 +533,39 @@ MSG;
         }
 
         // Hak akses
+        // if (!in_array($user->role, ['ADMIN', 'MANAGEMENT'])) {
+
+        //     $report->where(function ($query) use ($user) {
+
+        //         if (in_array($user->role, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'])) {
+
+        //             $query->where('sr.departemen_pic', $user->departemen_id)
+        //                 ->orWhere('sr.foreman_id', $user->id)
+        //                 ->orWhere('sr.inspektor1', $user->name)
+        //                 ->orWhere('sr.inspektor2', $user->name)
+        //                 ->orWhere('sr.inspektor3', $user->name)
+        //                 ->orWhere('sr.inspektor4', $user->name)
+        //                 ->orWhere('sr.inspektor5', $user->name);
+
+        //         } else {
+
+        //             $query->where('sr.foreman_id', $user->id);
+
+        //         }
+        //     });
+        // }
+
+        // Hak akses
+        $srConfig = RefConf::where('id', 37)
+            ->where('statusenabled', 1)
+            ->value('value');
+
+        $nikSR = json_decode($srConfig ?? '[]', true) ?: [];
+
+        $isSR = in_array($user->nik, $nikSR, true);
         if (!in_array($user->role, ['ADMIN', 'MANAGEMENT'])) {
-
-            $report->where(function ($query) use ($user) {
-
+            $report->where(function ($query) use ($user, $isSR) {
                 if (in_array($user->role, ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'])) {
-
                     $query->where('sr.departemen_pic', $user->departemen_id)
                         ->orWhere('sr.foreman_id', $user->id)
                         ->orWhere('sr.inspektor1', $user->name)
@@ -548,24 +575,26 @@ MSG;
                         ->orWhere('sr.inspektor5', $user->name);
 
                 } else {
-
                     $query->where('sr.foreman_id', $user->id);
-
+                }
+                if ($isSR && !is_null($user->departemen_id)) {
+                    $query->orWhere('us.departemen_id', $user->departemen_id)
+                        ->orWhere('u1.departemen_id', $user->departemen_id)
+                        ->orWhere('u2.departemen_id', $user->departemen_id)
+                        ->orWhere('u3.departemen_id', $user->departemen_id)
+                        ->orWhere('u4.departemen_id', $user->departemen_id)
+                        ->orWhere('u5.departemen_id', $user->departemen_id);
                 }
             });
         }
 
-        // Filter status
         if ($request->filled('status')) {
             $report->where('sr.is_finish', $request->status);
         }
 
         $report = $report->orderBy('sr.created_at', 'DESC')->get();
-
         if ($request->get('export') === 'excel') {
-
             $fileName = "({$startTimeFormatted} - {$endTimeFormatted}) PICA Inspeksi Keselamatan Pertambangan.xlsx";
-
             return Excel::download(
                 new InspeksiPICAExport($report),
                 $fileName

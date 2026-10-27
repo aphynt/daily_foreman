@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Area;
 use App\Models\Departemen;
 use App\Models\ObservasiBank;
+use App\Models\RefConf;
 use App\Models\User;
 use Carbon\Carbon;
 use DateTime;
@@ -84,27 +85,63 @@ class ObservasiBankController extends Controller
             'dp3.keterangan as departemen_petugas3',
             'dp4.keterangan as departemen_petugas4',
             'dp5.keterangan as departemen_petugas5',
+            'us.departemen_id as departemen_pic_id',
+            'us1.departemen_id as departemen_petugas1_id',
+            'us2.departemen_id as departemen_petugas2_id',
+            'us3.departemen_id as departemen_petugas3_id',
+            'us4.departemen_id as departemen_petugas4_id',
+            'us5.departemen_id as departemen_petugas5_id',
         )
         ->where('bank.statusenabled', true)
         ->whereBetween(DB::raw('CONVERT(varchar, bank.tanggal, 23)'), [$startTimeFormatted, $endTimeFormatted]);
 
+        // HAK AKSES
+        // if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'])) {
+        //     $baseQuery->orWhere('pic', Auth::user()->id);
+        // }
 
-        if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'])) {
-            $baseQuery->orWhere('pic', Auth::user()->id);
-        }
+        // $baseQuery = $baseQuery->where(function($query) {
+        //     $query->where('bank.pic', Auth::user()->id)
+        //             ->orWhere('bank.petugas1', Auth::user()->nik)
+        //             ->orWhere('bank.petugas2', Auth::user()->nik)
+        //             ->orWhere('bank.petugas3', Auth::user()->nik)
+        //             ->orWhere('bank.petugas4', Auth::user()->nik)
+        //             ->orWhere('bank.petugas5', Auth::user()->nik);
+        // });
+        // HAK AKSES
 
-        $baseQuery = $baseQuery->where(function($query) {
-            $query->where('bank.pic', Auth::user()->id)
-                    ->orWhere('bank.petugas1', Auth::user()->nik)
-                    ->orWhere('bank.petugas2', Auth::user()->nik)
-                    ->orWhere('bank.petugas3', Auth::user()->nik)
-                    ->orWhere('bank.petugas4', Auth::user()->nik)
-                    ->orWhere('bank.petugas5', Auth::user()->nik);
+        $user = Auth::user();
+        $srConfig = RefConf::where('id', 37)
+            ->where('statusenabled', 1)
+            ->value('value');
+
+        $nikSR = json_decode($srConfig ?? '[]', true) ?: [];
+
+        $isSR = in_array($user->nik, $nikSR, true);
+        if (!in_array($user->role, ['ADMIN', 'MANAGEMENT'])) {
+
+        $baseQuery->where(function ($query) use ($user, $isSR) {
+            $query->where('bank.pic', $user->id)
+                ->orWhere('bank.petugas1', $user->nik)
+                ->orWhere('bank.petugas2', $user->nik)
+                ->orWhere('bank.petugas3', $user->nik)
+                ->orWhere('bank.petugas4', $user->nik)
+                ->orWhere('bank.petugas5', $user->nik);
+
+            if ($isSR && !is_null($user->departemen_id)) {
+                $query->orWhere('us.departemen_id', $user->departemen_id)
+                    ->orWhere('us1.departemen_id', $user->departemen_id)
+                    ->orWhere('us2.departemen_id', $user->departemen_id)
+                    ->orWhere('us3.departemen_id', $user->departemen_id)
+                    ->orWhere('us4.departemen_id', $user->departemen_id)
+                    ->orWhere('us5.departemen_id', $user->departemen_id);
+            }
         });
+    }
 
         $bank = $baseQuery->get();
 
-        return view('observasi-bank.index', compact('bank'));
+        return view('observasi-bank.index', compact('bank', 'isSR'));
     }
 
     public function insert()
@@ -346,101 +383,144 @@ class ObservasiBankController extends Controller
 
     public function update(Request $request, string $uuid)
     {
-        $observasi = ObservasiBank::where('uuid', $uuid)->firstOrFail();
+        try {
+            $observasi = ObservasiBank::where('uuid', $uuid)->firstOrFail();
+            $data = $request->all();
 
-        $checkboxes = [
-            'perilaku_posisi_saat_bekerja', 'perilaku_menggunakan_peralatan',
-            'perilaku_mengangkat_barang', 'perilaku_mengemudi', 'perilaku_menaiki_menuruni_tangga',
-            'apd_pelindung_kepala', 'apd_pelindung_mata', 'apd_pelindung_telinga',
-            'apd_pelindung_pernafasan', 'apd_pelindung_tangan', 'apd_pelindung_kaki',
-            'apd_pelindung_tenggelam', 'apd_loto', 'apd_sabuk_pengaman',
-            'risiko_menabrak', 'risiko_terjepit', 'risiko_terpukul', 'risiko_terpeleset',
-            'risiko_sengatan', 'risiko_gangguan_kesehatan', 'risiko_pencemaran_lingkungan',
-            'risiko_terhirup', 'risiko_kontak',
-            'peralatan_sesuai', 'peralatan_benar', 'peralatan_kondisi',
-            'peralatan_taging', 'peralatan_pelindung',
-            'prosedur_tersedia', 'prosedur_diketahui', 'prosedur_dijalankan',
-            'prosedur_permit', 'prosedur_p2h',
-            'kondisi_area_kebersihan', 'kondisi_area_rambu', 'kondisi_area_akses',
-            'kondisi_area_penyimpanan', 'kondisi_area_suhu', 'kondisi_area_pencahayaan',
-            'kondisi_area_kebisingan', 'kondisi_area_cuaca',
-            'tindakan_kegiatan', 'tindakan_perbaikan_langsung', 'tindakan_perbaikan_lanjutan',
-        ];
-
-        $fields = [
-            'tanggal', 'jam', 'departemen_id', 'nama_pekerjaan', 'referensi',
-            'no_referensi', 'lokasi', 'lokasi_lain',
-            'perilaku_lain_1', 'perilaku_lain_2', 'apd_lain_1', 'apd_lain_2',
-            'risiko_lain_1', 'risiko_lain_2', 'peralatan_lain_1', 'peralatan_lain_2',
-            'prosedur_kerja_lain', 'prosedur_kerja_lain_2',
-            'kondisi_area_lain', 'kondisi_area_lain_2',
-            'perilaku_aman_yang_diamati', 'perilaku_tidak_aman_yang_diamati',
-            'additional_notes',
-            'petugas1', 'petugas2', 'petugas3', 'petugas4', 'petugas5',
-            'pekerja1', 'pekerja2', 'pekerja3', 'pekerja4', 'pekerja5',
-        ];
-
-        for ($i = 1; $i <= 5; $i++) {
-            $fields[] = "tindakan_lanjutan_{$i}";
-            $fields[] = "tindakan_lanjutan_due_{$i}";
-        }
-
-        $rules = [
-            'tanggal' => 'required|date',
-            'jam' => 'required|date_format:H:i',
-            'departemen_id' => 'required|integer',
-            'nama_pekerjaan' => 'required|string|max:255',
-            'pengawas1_mode' => 'required|in:auto,manual',
-            'pengawas1_auto' => 'required_if:pengawas1_mode,auto|nullable|string',
-            'nama_pengawas1_manual' => 'required_if:pengawas1_mode,manual|nullable|string|max:255',
-        ];
-        foreach ($checkboxes as $field) $rules[$field] = 'sometimes|boolean';
-        foreach ($fields as $field) {
-            if (!isset($rules[$field])) $rules[$field] = 'nullable|string';
-        }
-        for ($i = 1; $i <= 5; $i++) {
-            $rules["tindakan_lanjutan_due_{$i}"] = 'nullable|date';
-        }
-        foreach (range(1, 3) as $i) {
-            $rules["dokumentasi_foto_{$i}"] = 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120';
-        }
-
-        $validated = $request->validate($rules);
-        $payload = [];
-        foreach ($fields as $field) $payload[$field] = $validated[$field] ?? null;
-        foreach ($checkboxes as $field) $payload[$field] = $request->boolean($field) ? 1 : 0;
-
-        if ($payload['lokasi'] === 'LAIN-LAIN') {
-            $payload['lokasi'] = $payload['lokasi_lain'];
-        }
-
-        if ($validated['pengawas1_mode'] === 'manual') {
-            $payload['pengawas1'] = null;
-            $payload['nama_pengawas1'] = $validated['nama_pengawas1_manual'];
-        } else {
-            [$nik, $nama] = array_pad(explode('|', $validated['pengawas1_auto'], 2), 2, null);
-            $payload['pengawas1'] = $nik;
-            $payload['nama_pengawas1'] = $nama;
-        }
-
-        foreach (range(1, 3) as $i) {
-            $field = "dokumentasi_foto_{$i}";
-            if (!$request->hasFile($field)) continue;
-
-            $file = $request->file($field);
-            $folder = "observasi_bank/{$field}";
-            $filename = (string) \Illuminate\Support\Str::uuid() . '.' . $file->extension();
-            $path = Storage::disk('production_public')->putFileAs($folder, $file, $filename);
-            if ($path === false) {
-                return back()->withInput()->with('info', 'Gagal upload ' . $field);
+            $pengawas1 = null;
+            $namaPengawas1 = null;
+            $pengawasMode = $data['pengawas1_mode'] ?? 'auto';
+            if ($pengawasMode === 'manual') {
+                $namaPengawas1 = $data['nama_pengawas1_manual'] ?? null;
+            } else {
+                $pengawasValue = $data['pengawas1_auto'] ?? null;
+                if (!empty($pengawasValue)) {
+                    $pengawasParts = explode('|', $pengawasValue, 2);
+                    $pengawas1 = $pengawasParts[0] ?? null;
+                    $namaPengawas1 = $pengawasParts[1] ?? null;
+                }
             }
-            $payload[$field] = rtrim(config('app.url'), '/') . '/storage/' . $path;
+
+            $dataToUpdate = [
+                'tanggal' => $data['tanggal'] ?? null,
+                'jam' => $data['jam'] ?? null,
+                'departemen_id' => $data['departemen_id'] ?? null,
+                'nama_pekerjaan' => $data['nama_pekerjaan'] ?? null,
+                'referensi' => $data['referensi'] ?? null,
+                'no_referensi' => $data['no_referensi'] ?? null,
+                'lokasi_lain' => $data['lokasi_lain'] ?? null,
+                'perilaku_posisi_saat_bekerja' => $data['perilaku_posisi_saat_bekerja'] ?? 0,
+                'perilaku_menggunakan_peralatan' => $data['perilaku_menggunakan_peralatan'] ?? 0,
+                'perilaku_mengangkat_barang' => $data['perilaku_mengangkat_barang'] ?? 0,
+                'perilaku_mengemudi' => $data['perilaku_mengemudi'] ?? 0,
+                'perilaku_menaiki_menuruni_tangga' => $data['perilaku_menaiki_menuruni_tangga'] ?? 0,
+                'perilaku_lain_1' => $data['perilaku_lain_1'] ?? null,
+                'perilaku_lain_2' => $data['perilaku_lain_2'] ?? null,
+                'apd_pelindung_kepala' => $data['apd_pelindung_kepala'] ?? 0,
+                'apd_pelindung_mata' => $data['apd_pelindung_mata'] ?? 0,
+                'apd_pelindung_telinga' => $data['apd_pelindung_telinga'] ?? 0,
+                'apd_pelindung_pernafasan' => $data['apd_pelindung_pernafasan'] ?? 0,
+                'apd_pelindung_tangan' => $data['apd_pelindung_tangan'] ?? 0,
+                'apd_pelindung_kaki' => $data['apd_pelindung_kaki'] ?? 0,
+                'apd_pelindung_tenggelam' => $data['apd_pelindung_tenggelam'] ?? 0,
+                'apd_loto' => $data['apd_loto'] ?? 0,
+                'apd_sabuk_pengaman' => $data['apd_sabuk_pengaman'] ?? 0,
+                'apd_lain_1' => $data['apd_lain_1'] ?? null,
+                'apd_lain_2' => $data['apd_lain_2'] ?? null,
+                'risiko_menabrak' => $data['risiko_menabrak'] ?? 0,
+                'risiko_terjepit' => $data['risiko_terjepit'] ?? 0,
+                'risiko_terpukul' => $data['risiko_terpukul'] ?? 0,
+                'risiko_terpeleset' => $data['risiko_terpeleset'] ?? 0,
+                'risiko_sengatan' => $data['risiko_sengatan'] ?? 0,
+                'risiko_gangguan_kesehatan' => $data['risiko_gangguan_kesehatan'] ?? 0,
+                'risiko_pencemaran_lingkungan' => $data['risiko_pencemaran_lingkungan'] ?? 0,
+                'risiko_terhirup' => $data['risiko_terhirup'] ?? 0,
+                'risiko_kontak' => $data['risiko_kontak'] ?? 0,
+                'risiko_lain_1' => $data['risiko_lain_1'] ?? null,
+                'risiko_lain_2' => $data['risiko_lain_2'] ?? null,
+                'peralatan_sesuai' => $data['peralatan_sesuai'] ?? 0,
+                'peralatan_benar' => $data['peralatan_benar'] ?? 0,
+                'peralatan_kondisi' => $data['peralatan_kondisi'] ?? 0,
+                'peralatan_taging' => $data['peralatan_taging'] ?? 0,
+                'peralatan_pelindung' => $data['peralatan_pelindung'] ?? 0,
+                'peralatan_lain_1' => $data['peralatan_lain_1'] ?? null,
+                'peralatan_lain_2' => $data['peralatan_lain_2'] ?? null,
+                'prosedur_tersedia' => $data['prosedur_tersedia'] ?? 0,
+                'prosedur_diketahui' => $data['prosedur_diketahui'] ?? 0,
+                'prosedur_dijalankan' => $data['prosedur_dijalankan'] ?? 0,
+                'prosedur_permit' => $data['prosedur_permit'] ?? 0,
+                'prosedur_p2h' => $data['prosedur_p2h'] ?? 0,
+                'prosedur_kerja_lain' => $data['prosedur_kerja_lain'] ?? null,
+                'prosedur_kerja_lain_2' => $data['prosedur_kerja_lain_2'] ?? null,
+                'kondisi_area_kebersihan' => $data['kondisi_area_kebersihan'] ?? 0,
+                'kondisi_area_rambu' => $data['kondisi_area_rambu'] ?? 0,
+                'kondisi_area_akses' => $data['kondisi_area_akses'] ?? 0,
+                'kondisi_area_penyimpanan' => $data['kondisi_area_penyimpanan'] ?? 0,
+                'kondisi_area_suhu' => $data['kondisi_area_suhu'] ?? 0,
+                'kondisi_area_pencahayaan' => $data['kondisi_area_pencahayaan'] ?? 0,
+                'kondisi_area_kebisingan' => $data['kondisi_area_kebisingan'] ?? 0,
+                'kondisi_area_cuaca' => $data['kondisi_area_cuaca'] ?? 0,
+                'kondisi_area_lain' => $data['kondisi_area_lain'] ?? null,
+                'kondisi_area_lain_2' => $data['kondisi_area_lain_2'] ?? null,
+                'perilaku_aman_yang_diamati' => $data['perilaku_aman_yang_diamati'] ?? null,
+                'perilaku_tidak_aman_yang_diamati' => $data['perilaku_tidak_aman_yang_diamati'] ?? null,
+                'tindakan_kegiatan' => $data['tindakan_kegiatan'] ?? 0,
+                'tindakan_perbaikan_langsung' => $data['tindakan_perbaikan_langsung'] ?? 0,
+                'tindakan_perbaikan_lanjutan' => $data['tindakan_perbaikan_lanjutan'] ?? 0,
+                'tindakan_lanjutan_1' => $data['tindakan_lanjutan_1'] ?? null,
+                'tindakan_lanjutan_due_1' => $data['tindakan_lanjutan_due_1'] ?? null,
+                'tindakan_lanjutan_2' => $data['tindakan_lanjutan_2'] ?? null,
+                'tindakan_lanjutan_due_2' => $data['tindakan_lanjutan_due_2'] ?? null,
+                'tindakan_lanjutan_3' => $data['tindakan_lanjutan_3'] ?? null,
+                'tindakan_lanjutan_due_3' => $data['tindakan_lanjutan_due_3'] ?? null,
+                'tindakan_lanjutan_4' => $data['tindakan_lanjutan_4'] ?? null,
+                'tindakan_lanjutan_due_4' => $data['tindakan_lanjutan_due_4'] ?? null,
+                'tindakan_lanjutan_5' => $data['tindakan_lanjutan_5'] ?? null,
+                'tindakan_lanjutan_due_5' => $data['tindakan_lanjutan_due_5'] ?? null,
+                'additional_notes' => $data['additional_notes'] ?? null,
+                'petugas1' => $data['petugas1'] ?? null,
+                'petugas2' => $data['petugas2'] ?? null,
+                'petugas3' => $data['petugas3'] ?? null,
+                'petugas4' => $data['petugas4'] ?? null,
+                'petugas5' => $data['petugas5'] ?? null,
+                'pekerja1' => $data['pekerja1'] ?? null,
+                'pekerja2' => $data['pekerja2'] ?? null,
+                'pekerja3' => $data['pekerja3'] ?? null,
+                'pekerja4' => $data['pekerja4'] ?? null,
+                'pekerja5' => $data['pekerja5'] ?? null,
+                'pengawas1' => $pengawas1,
+                'nama_pengawas1' => $namaPengawas1,
+                'lokasi' => ($data['lokasi'] ?? null) === 'LAIN-LAIN'
+                    ? ($data['lokasi_lain'] ?? null)
+                    : ($data['lokasi'] ?? null),
+            ];
+
+            if (($dataToUpdate['lokasi'] ?? null) === 'LAIN-LAIN') {
+                $dataToUpdate['lokasi'] = $data['lokasi_lain'] ?? null;
+            }
+
+            for ($i = 1; $i <= 3; $i++) {
+                $field = "dokumentasi_foto_{$i}";
+                if ($request->hasFile($field)) {
+                    $file = $request->file($field);
+                    $fileName = (string) \Illuminate\Support\Str::uuid() . '.' . $file->getClientOriginalExtension();
+                    $path = "observasi_bank/{$field}";
+                    Storage::disk('production_public')->putFileAs($path, $file, $fileName);
+                    $dataToUpdate[$field] = rtrim(config('app.url'), '/') . "/storage/{$path}/{$fileName}";
+                }
+            }
+
+            foreach ($dataToUpdate as $column => $value) {
+                $observasi->{$column} = $value;
+            }
+            $observasi->save();
+
+            return redirect()->route('observasibank')->with('success', 'Observasi BANK berhasil diperbarui');
+        } catch (\Throwable $th) {
+            return redirect()->back()->withInput()->with('info', 'Observasi BANK gagal diperbarui: ' . $th->getMessage());
         }
-
-        $observasi->update($payload);
-
-        return redirect()->route('observasibank')->with('success', 'Observasi BANK berhasil diperbarui');
     }
+
 
     public function preview($uuid)
     {

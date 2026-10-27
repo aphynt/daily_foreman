@@ -212,8 +212,12 @@
 
                                         <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
 
-                                        {{-- @if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) --}}
-                                        @if(Auth::user()->id == 3)
+                                        @php
+                                            $akses = json_decode(\App\Models\RefConf::where('id', 36)->value('value') ?? '[]', true) ?: [];
+                                        @endphp
+
+                                        @if(Auth::user()->id == 3 || in_array(Auth::user()->nik, $akses))
+
                                             <button
                                                 type="submit"
                                                 name="export"
@@ -223,6 +227,8 @@
                                                 <i class="fas fa-download"></i>
                                                 <span>Download</span>
                                             </button>
+                                        @endif
+                                        @if(Auth::user()->id == 3)
                                             <button
                                                 type="button"
                                                 class="btn btn-warning btn-sm d-inline-flex align-items-center justify-content-center gap-1 px-2"

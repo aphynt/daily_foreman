@@ -83,37 +83,37 @@
                                 <div class="row mb-3">
                                     <div class="col-md-6 col-12 px-2 py-2">
                                         <label>Tanggal</label>
-                                        <input type="date" class="form-control form-control-sm" id="date" name="tanggal" required>
+                                        <input type="date" class="form-control form-control-sm" id="date" name="tanggal" required value="{{ old('tanggal', $observasi->tanggal ? \Illuminate\Support\Carbon::parse($observasi->tanggal)->format('Y-m-d') : '') }}">
                                     </div>
                                     <div class="col-md-6 col-12 px-2 py-2">
                                         <label>Waktu/Jam</label>
-                                        <input type="time" class="form-control form-control-sm" id="time" name="jam" required>
+                                        <input type="time" class="form-control form-control-sm" id="time" name="jam" required value="{{ old('jam', $observasi->jam ? substr((string) $observasi->jam, 0, 5) : '') }}">
                                     </div>
                                     <div class="col-md-6 col-12 px-2 py-2">
                                         <label>Departemen</label>
                                         <select class="form-control form-control-sm pb-2" id="exampleFormControlSelect1" name="departemen_id" required data-trigger>
-                                            <option selected disabled></option>
+                                            <option value="" disabled>Pilih Departemen</option>
                                             @foreach ($users['departemen'] as $dep)
-                                                <option value="{{ $dep->id }}">{{ $dep->keterangan }}</option>
+                                                <option value="{{ $dep->id }}" {{ (string) old('departemen_id', $observasi->departemen_id) === (string) $dep->id ? 'selected' : '' }}>{{ $dep->keterangan }}</option>
                                             @endforeach
                                         </select>
                                     </div>
 
                                     <div class="col-md-6 col-12 px-2 py-2">
                                         <label>Nama Pekerjaan</label>
-                                        <input type="text" class="form-control form-control-sm" name="nama_pekerjaan" required>
+                                        <input type="text" class="form-control form-control-sm" name="nama_pekerjaan" required value="{{ old('nama_pekerjaan', $observasi->nama_pekerjaan) }}">
                                     </div>
                                     <div class="col-md-6 col-12 px-2 py-2">
                                         <label>Referensi</label>
-                                        <input type="text" class="form-control form-control-sm" name="referensi" >
+                                        <input type="text" class="form-control form-control-sm" name="referensi"  value="{{ old('referensi', $observasi->referensi) }}">
                                     </div>
                                     <div class="col-md-6 col-12 px-2 py-2">
                                         <label>No. Referensi</label>
-                                        <input type="text" class="form-control form-control-sm" name="no_referensi" >
+                                        <input type="text" class="form-control form-control-sm" name="no_referensi"  value="{{ old('no_referensi', $observasi->no_referensi) }}">
                                     </div>
                                     <div class="col-md-6 col-12 px-2 py-2">
                                         <label>Lokasi</label>
-                                        <input type="text" class="form-control form-control-sm" name="lokasi" >
+                                        <input type="text" class="form-control form-control-sm" name="lokasi"  value="{{ old('lokasi', $observasi->lokasi) }}">
                                     </div>
                                     {{-- <div class="col-md-6 col-12 px-2 py-2">
                                         <label>Lokasi</label>
@@ -133,7 +133,7 @@
 
                                     {{-- <div class="col-md-6 col-12 px-2 py-2" id="lokasi_lain_container" style="display:none;">
                                         <label>Lokasi Lainnya</label>
-                                        <input type="text" class="form-control form-control-sm" id="lokasi_lain" name="lokasi_lain" placeholder="Masukkan lokasi lainnya">
+                                        <input type="text" class="form-control form-control-sm" id="lokasi_lain" name="lokasi_lain" placeholder="Masukkan lokasi lainnya" value="{{ old('lokasi_lain', $observasi->lokasi_lain) }}">
                                     </div> --}}
                                 </div>
                                 <div class="mb-3">
@@ -158,31 +158,31 @@
                                             <tr>
                                                 <td>Posisi saat bekerja</td>
                                                 <td class="text-center" style="width:60px;">
-                                                    <input type="checkbox" name="perilaku_posisi_saat_bekerja" value="1">
+                                                    <input type="checkbox" name="perilaku_posisi_saat_bekerja" value="1" {{ old('perilaku_posisi_saat_bekerja', $observasi->perilaku_posisi_saat_bekerja) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Menggunakan peralatan</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="perilaku_menggunakan_peralatan" value="1">
+                                                    <input type="checkbox" name="perilaku_menggunakan_peralatan" value="1" {{ old('perilaku_menggunakan_peralatan', $observasi->perilaku_menggunakan_peralatan) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Mengangkat barang</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="perilaku_mengangkat_barang" value="1">
+                                                    <input type="checkbox" name="perilaku_mengangkat_barang" value="1" {{ old('perilaku_mengangkat_barang', $observasi->perilaku_mengangkat_barang) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Mengemudi</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="perilaku_mengemudi" value="1">
+                                                    <input type="checkbox" name="perilaku_mengemudi" value="1" {{ old('perilaku_mengemudi', $observasi->perilaku_mengemudi) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Menaiki / Menuruni tangga</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="perilaku_menaiki_menuruni_tangga" value="1">
+                                                    <input type="checkbox" name="perilaku_menaiki_menuruni_tangga" value="1" {{ old('perilaku_menaiki_menuruni_tangga', $observasi->perilaku_menaiki_menuruni_tangga) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
 
@@ -195,12 +195,12 @@
                                             </tr>
                                             <tr id="perilaku_lain_row1" style="display:none;">
                                                 <td colspan="2">
-                                                    <input type="text" name="perilaku_lain_1" class="form-control form-control-sm" placeholder="Isi lainnya...">
+                                                    <input type="text" name="perilaku_lain_1" class="form-control form-control-sm" placeholder="Isi lainnya..." value="{{ old('perilaku_lain_1', $observasi->perilaku_lain_1) }}">
                                                 </td>
                                             </tr>
                                             <tr id="perilaku_lain_row2" style="display:none;">
                                                 <td colspan="2">
-                                                    <input type="text" name="perilaku_lain_2" class="form-control form-control-sm" placeholder="Tambahan lainnya...">
+                                                    <input type="text" name="perilaku_lain_2" class="form-control form-control-sm" placeholder="Tambahan lainnya..." value="{{ old('perilaku_lain_2', $observasi->perilaku_lain_2) }}">
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -223,55 +223,55 @@
                                             <tr>
                                                 <td>Pelindung kepala (Helmet)</td>
                                                 <td class="text-center" style="width:60px;">
-                                                    <input type="checkbox" name="apd_pelindung_kepala" value="1">
+                                                    <input type="checkbox" name="apd_pelindung_kepala" value="1" {{ old('apd_pelindung_kepala', $observasi->apd_pelindung_kepala) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Pelindung mata (Kaca Mata)</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="apd_pelindung_mata" value="1">
+                                                    <input type="checkbox" name="apd_pelindung_mata" value="1" {{ old('apd_pelindung_mata', $observasi->apd_pelindung_mata) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Pelindung telinga (Earplug/ Muff)</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="apd_pelindung_telinga" value="1">
+                                                    <input type="checkbox" name="apd_pelindung_telinga" value="1" {{ old('apd_pelindung_telinga', $observasi->apd_pelindung_telinga) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Pelindung pernafasan (Masker)</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="apd_pelindung_pernafasan" value="1">
+                                                    <input type="checkbox" name="apd_pelindung_pernafasan" value="1" {{ old('apd_pelindung_pernafasan', $observasi->apd_pelindung_pernafasan) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Pelindung tangan (Sarung Tangan)</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="apd_pelindung_tangan" value="1">
+                                                    <input type="checkbox" name="apd_pelindung_tangan" value="1" {{ old('apd_pelindung_tangan', $observasi->apd_pelindung_tangan) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Pelindung kaki (Safety Shoes)</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="apd_pelindung_kaki" value="1">
+                                                    <input type="checkbox" name="apd_pelindung_kaki" value="1" {{ old('apd_pelindung_kaki', $observasi->apd_pelindung_kaki) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Pelindung tenggelam (Life Jacket)</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="apd_pelindung_tenggelam" value="1">
+                                                    <input type="checkbox" name="apd_pelindung_tenggelam" value="1" {{ old('apd_pelindung_tenggelam', $observasi->apd_pelindung_tenggelam) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>LOTO</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="apd_loto" value="1">
+                                                    <input type="checkbox" name="apd_loto" value="1" {{ old('apd_loto', $observasi->apd_loto) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Sabuk Pengaman / Set Belt</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="apd_sabuk_pengaman" value="1">
+                                                    <input type="checkbox" name="apd_sabuk_pengaman" value="1" {{ old('apd_sabuk_pengaman', $observasi->apd_sabuk_pengaman) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
 
@@ -283,12 +283,12 @@
                                             </tr>
                                             <tr id="apd_lain_row1" style="display:none;">
                                                 <td colspan="2">
-                                                    <input type="text" name="apd_lain_1" class="form-control form-control-sm" placeholder="Isi lainnya...">
+                                                    <input type="text" name="apd_lain_1" class="form-control form-control-sm" placeholder="Isi lainnya..." value="{{ old('apd_lain_1', $observasi->apd_lain_1) }}">
                                                 </td>
                                             </tr>
                                             <tr id="apd_lain_row2" style="display:none;">
                                                 <td colspan="2">
-                                                    <input type="text" name="apd_lain_2" class="form-control form-control-sm" placeholder="Tambahan lainnya...">
+                                                    <input type="text" name="apd_lain_2" class="form-control form-control-sm" placeholder="Tambahan lainnya..." value="{{ old('apd_lain_2', $observasi->apd_lain_2) }}">
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -311,55 +311,55 @@
                                             <tr>
                                                 <td>Menabrak / ditabrak</td>
                                                 <td class="text-center" style="width:60px;">
-                                                    <input type="checkbox" name="risiko_menabrak" value="1">
+                                                    <input type="checkbox" name="risiko_menabrak" value="1" {{ old('risiko_menabrak', $observasi->risiko_menabrak) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Terjepit</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="risiko_terjepit" value="1">
+                                                    <input type="checkbox" name="risiko_terjepit" value="1" {{ old('risiko_terjepit', $observasi->risiko_terjepit) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Terpukul / terbentur</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="risiko_terpukul" value="1">
+                                                    <input type="checkbox" name="risiko_terpukul" value="1" {{ old('risiko_terpukul', $observasi->risiko_terpukul) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Terpeleset / terguling / terjatuh</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="risiko_terpeleset" value="1">
+                                                    <input type="checkbox" name="risiko_terpeleset" value="1" {{ old('risiko_terpeleset', $observasi->risiko_terpeleset) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Sengatan / gigitan binatang</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="risiko_sengatan" value="1">
+                                                    <input type="checkbox" name="risiko_sengatan" value="1" {{ old('risiko_sengatan', $observasi->risiko_sengatan) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Gangguan kesehatan</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="risiko_gangguan_kesehatan" value="1">
+                                                    <input type="checkbox" name="risiko_gangguan_kesehatan" value="1" {{ old('risiko_gangguan_kesehatan', $observasi->risiko_gangguan_kesehatan) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Pencemaran Lingkungan</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="risiko_pencemaran_lingkungan" value="1">
+                                                    <input type="checkbox" name="risiko_pencemaran_lingkungan" value="1" {{ old('risiko_pencemaran_lingkungan', $observasi->risiko_pencemaran_lingkungan) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Terhirup / terpapar debu / bahan kimia</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="risiko_terhirup" value="1">
+                                                    <input type="checkbox" name="risiko_terhirup" value="1" {{ old('risiko_terhirup', $observasi->risiko_terhirup) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Kontak dengan panas / listrik</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="risiko_kontak" value="1">
+                                                    <input type="checkbox" name="risiko_kontak" value="1" {{ old('risiko_kontak', $observasi->risiko_kontak) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
 
@@ -372,12 +372,12 @@
                                             </tr>
                                             <tr id="risiko_lain_row1" style="display:none;">
                                                 <td colspan="2">
-                                                    <input type="text" name="risiko_lain_1" class="form-control form-control-sm" placeholder="Isi lainnya...">
+                                                    <input type="text" name="risiko_lain_1" class="form-control form-control-sm" placeholder="Isi lainnya..." value="{{ old('risiko_lain_1', $observasi->risiko_lain_1) }}">
                                                 </td>
                                             </tr>
                                             <tr id="risiko_lain_row2" style="display:none;">
                                                 <td colspan="2">
-                                                    <input type="text" name="risiko_lain_2" class="form-control form-control-sm" placeholder="Tambahan lainnya...">
+                                                    <input type="text" name="risiko_lain_2" class="form-control form-control-sm" placeholder="Tambahan lainnya..." value="{{ old('risiko_lain_2', $observasi->risiko_lain_2) }}">
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -400,31 +400,31 @@
                                             <tr>
                                                 <td>Sesuai untuk pekerjaan</td>
                                                 <td class="text-center" style="width:60px;">
-                                                    <input type="checkbox" name="peralatan_sesuai" value="1">
+                                                    <input type="checkbox" name="peralatan_sesuai" value="1" {{ old('peralatan_sesuai', $observasi->peralatan_sesuai) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Benar dalam menggunakan</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="peralatan_benar" value="1">
+                                                    <input type="checkbox" name="peralatan_benar" value="1" {{ old('peralatan_benar', $observasi->peralatan_benar) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Kondisi baik dan layak operasi</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="peralatan_kondisi" value="1">
+                                                    <input type="checkbox" name="peralatan_kondisi" value="1" {{ old('peralatan_kondisi', $observasi->peralatan_kondisi) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Taging / KIP ada / telah dilakukan pengecekan</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="peralatan_taging" value="1">
+                                                    <input type="checkbox" name="peralatan_taging" value="1" {{ old('peralatan_taging', $observasi->peralatan_taging) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Pelindung dan pengaman</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="peralatan_pelindung" value="1">
+                                                    <input type="checkbox" name="peralatan_pelindung" value="1" {{ old('peralatan_pelindung', $observasi->peralatan_pelindung) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
 
@@ -437,12 +437,12 @@
                                             </tr>
                                             <tr id="peralatan_lain_row1" style="display:none;">
                                                 <td colspan="2">
-                                                    <input type="text" name="peralatan_lain_1" class="form-control form-control-sm" placeholder="Isi lainnya...">
+                                                    <input type="text" name="peralatan_lain_1" class="form-control form-control-sm" placeholder="Isi lainnya..." value="{{ old('peralatan_lain_1', $observasi->peralatan_lain_1) }}">
                                                 </td>
                                             </tr>
                                             <tr id="peralatan_lain_row2" style="display:none;">
                                                 <td colspan="2">
-                                                    <input type="text" name="peralatan_lain_2" class="form-control form-control-sm" placeholder="Tambahan lainnya...">
+                                                    <input type="text" name="peralatan_lain_2" class="form-control form-control-sm" placeholder="Tambahan lainnya..." value="{{ old('peralatan_lain_2', $observasi->peralatan_lain_2) }}">
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -465,31 +465,31 @@
                                             <tr>
                                                 <td>Tersedia / Ada</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="prosedur_tersedia" value="1">
+                                                    <input type="checkbox" name="prosedur_tersedia" value="1" {{ old('prosedur_tersedia', $observasi->prosedur_tersedia) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Diketahui / Dimengerti</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="prosedur_diketahui" value="1">
+                                                    <input type="checkbox" name="prosedur_diketahui" value="1" {{ old('prosedur_diketahui', $observasi->prosedur_diketahui) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Dijalankan / dilaksanakan</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="prosedur_dijalankan" value="1">
+                                                    <input type="checkbox" name="prosedur_dijalankan" value="1" {{ old('prosedur_dijalankan', $observasi->prosedur_dijalankan) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Permit / Izin Kerja</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="prosedur_permit" value="1">
+                                                    <input type="checkbox" name="prosedur_permit" value="1" {{ old('prosedur_permit', $observasi->prosedur_permit) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>P2H</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="prosedur_p2h" value="1">
+                                                    <input type="checkbox" name="prosedur_p2h" value="1" {{ old('prosedur_p2h', $observasi->prosedur_p2h) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -500,12 +500,12 @@
                                             </tr>
                                             <tr id="prosedur_kerja_lain_row" style="display:none;">
                                                 <td colspan="2">
-                                                    <input type="text" name="prosedur_kerja_lain" class="form-control form-control-sm" placeholder="Isi lainnya">
+                                                    <input type="text" name="prosedur_kerja_lain" class="form-control form-control-sm" placeholder="Isi lainnya" value="{{ old('prosedur_kerja_lain', $observasi->prosedur_kerja_lain) }}">
                                                 </td>
                                             </tr>
                                             <tr id="prosedur_kerja_lain_row2" style="display:none;">
                                                 <td colspan="2">
-                                                    <input type="text" name="prosedur_kerja_lain_2" class="form-control form-control-sm" placeholder="Isi tambahan lainnya">
+                                                    <input type="text" name="prosedur_kerja_lain_2" class="form-control form-control-sm" placeholder="Isi tambahan lainnya" value="{{ old('prosedur_kerja_lain_2', $observasi->prosedur_kerja_lain_2) }}">
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -528,49 +528,49 @@
                                             <tr>
                                                 <td>Kebersihan / Kerapian</td>
                                                 <td class="text-center" style="width: 60px;">
-                                                    <input type="checkbox" name="kondisi_area_kebersihan" value="1">
+                                                    <input type="checkbox" name="kondisi_area_kebersihan" value="1" {{ old('kondisi_area_kebersihan', $observasi->kondisi_area_kebersihan) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Rambu / Demarkasi</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="kondisi_area_rambu" value="1">
+                                                    <input type="checkbox" name="kondisi_area_rambu" value="1" {{ old('kondisi_area_rambu', $observasi->kondisi_area_rambu) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Akses / jalan</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="kondisi_area_akses" value="1">
+                                                    <input type="checkbox" name="kondisi_area_akses" value="1" {{ old('kondisi_area_akses', $observasi->kondisi_area_akses) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Penyimpanan barang</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="kondisi_area_penyimpanan" value="1">
+                                                    <input type="checkbox" name="kondisi_area_penyimpanan" value="1" {{ old('kondisi_area_penyimpanan', $observasi->kondisi_area_penyimpanan) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Suhu</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="kondisi_area_suhu" value="1">
+                                                    <input type="checkbox" name="kondisi_area_suhu" value="1" {{ old('kondisi_area_suhu', $observasi->kondisi_area_suhu) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Pencahayaan</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="kondisi_area_pencahayaan" value="1">
+                                                    <input type="checkbox" name="kondisi_area_pencahayaan" value="1" {{ old('kondisi_area_pencahayaan', $observasi->kondisi_area_pencahayaan) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Kebisingan</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="kondisi_area_kebisingan" value="1">
+                                                    <input type="checkbox" name="kondisi_area_kebisingan" value="1" {{ old('kondisi_area_kebisingan', $observasi->kondisi_area_kebisingan) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Cuaca</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="kondisi_area_cuaca" value="1">
+                                                    <input type="checkbox" name="kondisi_area_cuaca" value="1" {{ old('kondisi_area_cuaca', $observasi->kondisi_area_cuaca) ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -581,12 +581,12 @@
                                             </tr>
                                             <tr id="kondisi_area_lain_row" style="display:none;">
                                                 <td colspan="2">
-                                                    <input type="text" name="kondisi_area_lain" class="form-control form-control-sm" placeholder="Isi lainnya">
+                                                    <input type="text" name="kondisi_area_lain" class="form-control form-control-sm" placeholder="Isi lainnya" value="{{ old('kondisi_area_lain', $observasi->kondisi_area_lain) }}">
                                                 </td>
                                             </tr>
                                             <tr id="kondisi_area_lain_row2" style="display:none;">
                                                 <td colspan="2">
-                                                    <input type="text" name="kondisi_area_lain_2" class="form-control form-control-sm" placeholder="Isi tambahan lainnya">
+                                                    <input type="text" name="kondisi_area_lain_2" class="form-control form-control-sm" placeholder="Isi tambahan lainnya" value="{{ old('kondisi_area_lain_2', $observasi->kondisi_area_lain_2) }}">
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -602,7 +602,7 @@
                                         <tbody>
                                             <tr>
                                                 <td class="text-center" style="width: 60px;">
-                                                   <textarea id="perilaku_aman_yang_diamati" name="perilaku_aman_yang_diamati" class="form-control form-control-sm pb-2" rows="3" placeholder="Tambahkan komentar..."></textarea>
+                                                   <textarea id="perilaku_aman_yang_diamati" name="perilaku_aman_yang_diamati" class="form-control form-control-sm pb-2" rows="3" placeholder="Tambahkan komentar...">{{ old('perilaku_aman_yang_diamati', $observasi->perilaku_aman_yang_diamati) }}</textarea>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -618,7 +618,7 @@
                                         <tbody>
                                             <tr>
                                                 <td class="text-center" style="width: 60px;">
-                                                   <textarea id="perilaku_tidak_aman_yang_diamati" name="perilaku_tidak_aman_yang_diamati" class="form-control form-control-sm pb-2" rows="3" placeholder="Tambahkan komentar..."></textarea>
+                                                   <textarea id="perilaku_tidak_aman_yang_diamati" name="perilaku_tidak_aman_yang_diamati" class="form-control form-control-sm pb-2" rows="3" placeholder="Tambahkan komentar...">{{ old('perilaku_tidak_aman_yang_diamati', $observasi->perilaku_tidak_aman_yang_diamati) }}</textarea>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -636,19 +636,19 @@
                                     <tbody>
                                         <tr>
                                             <td class="check-col">
-                                                <input type="checkbox" name="tindakan_kegiatan" value="1">
+                                                <input type="checkbox" name="tindakan_kegiatan" value="1" {{ old('tindakan_kegiatan', $observasi->tindakan_kegiatan) ? 'checked' : '' }}>
                                             </td>
                                             <td>Kegiatan di Hentikan</td>
                                         </tr>
                                         <tr>
                                             <td class="check-col">
-                                                <input type="checkbox" name="tindakan_perbaikan_langsung" value="1">
+                                                <input type="checkbox" name="tindakan_perbaikan_langsung" value="1" {{ old('tindakan_perbaikan_langsung', $observasi->tindakan_perbaikan_langsung) ? 'checked' : '' }}>
                                             </td>
                                             <td>Perbaikan Langsung di Tempat</td>
                                         </tr>
                                         <tr>
                                             <td class="check-col">
-                                                <input type="checkbox" name="tindakan_perbaikan_lanjutan" value="1" id="tindakan_lanjutan_check">
+                                                <input type="checkbox" name="tindakan_perbaikan_lanjutan" value="1" id="tindakan_lanjutan_check" {{ old('tindakan_perbaikan_lanjutan', $observasi->tindakan_perbaikan_lanjutan) ? 'checked' : '' }}>
                                             </td>
                                             <td>Perbaikan Lanjutan</td>
                                         </tr>
@@ -666,42 +666,42 @@
                                     <tbody id="tindakan_lanjutan_body">
                                         <tr>
                                             <td>
-                                                <input type="text" name="tindakan_lanjutan_1" class="form-control form-control-sm border-0 shadow-none" placeholder="">
+                                                <input type="text" name="tindakan_lanjutan_1" class="form-control form-control-sm border-0 shadow-none" placeholder="" value="{{ old('tindakan_lanjutan_1', $observasi->tindakan_lanjutan_1) }}">
                                             </td>
                                             <td>
-                                                <input type="date" name="tindakan_lanjutan_due_1" class="form-control form-control-sm border-0 shadow-none">
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <input type="text" name="tindakan_lanjutan_2" class="form-control form-control-sm border-0 shadow-none" placeholder="">
-                                            </td>
-                                            <td>
-                                                <input type="date" name="tindakan_lanjutan_due_2" class="form-control form-control-sm border-0 shadow-none">
+                                                <input type="date" name="tindakan_lanjutan_due_1" class="form-control form-control-sm border-0 shadow-none" value="{{ old('tindakan_lanjutan_due_1', $observasi->tindakan_lanjutan_due_1 ? \Illuminate\Support\Carbon::parse($observasi->tindakan_lanjutan_due_1)->format('Y-m-d') : '') }}">
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
-                                                <input type="text" name="tindakan_lanjutan_3" class="form-control form-control-sm border-0 shadow-none" placeholder="">
+                                                <input type="text" name="tindakan_lanjutan_2" class="form-control form-control-sm border-0 shadow-none" placeholder="" value="{{ old('tindakan_lanjutan_2', $observasi->tindakan_lanjutan_2) }}">
                                             </td>
                                             <td>
-                                                <input type="date" name="tindakan_lanjutan_due_3" class="form-control form-control-sm border-0 shadow-none">
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <input type="text" name="tindakan_lanjutan_4" class="form-control form-control-sm border-0 shadow-none" placeholder="">
-                                            </td>
-                                            <td>
-                                                <input type="date" name="tindakan_lanjutan_due_4" class="form-control form-control-sm border-0 shadow-none">
+                                                <input type="date" name="tindakan_lanjutan_due_2" class="form-control form-control-sm border-0 shadow-none" value="{{ old('tindakan_lanjutan_due_2', $observasi->tindakan_lanjutan_due_2 ? \Illuminate\Support\Carbon::parse($observasi->tindakan_lanjutan_due_2)->format('Y-m-d') : '') }}">
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
-                                                <input type="text" name="tindakan_lanjutan_5" class="form-control form-control-sm border-0 shadow-none" placeholder="">
+                                                <input type="text" name="tindakan_lanjutan_3" class="form-control form-control-sm border-0 shadow-none" placeholder="" value="{{ old('tindakan_lanjutan_3', $observasi->tindakan_lanjutan_3) }}">
                                             </td>
                                             <td>
-                                                <input type="date" name="tindakan_lanjutan_due_5" class="form-control form-control-sm border-0 shadow-none">
+                                                <input type="date" name="tindakan_lanjutan_due_3" class="form-control form-control-sm border-0 shadow-none" value="{{ old('tindakan_lanjutan_due_3', $observasi->tindakan_lanjutan_due_3 ? \Illuminate\Support\Carbon::parse($observasi->tindakan_lanjutan_due_3)->format('Y-m-d') : '') }}">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input type="text" name="tindakan_lanjutan_4" class="form-control form-control-sm border-0 shadow-none" placeholder="" value="{{ old('tindakan_lanjutan_4', $observasi->tindakan_lanjutan_4) }}">
+                                            </td>
+                                            <td>
+                                                <input type="date" name="tindakan_lanjutan_due_4" class="form-control form-control-sm border-0 shadow-none" value="{{ old('tindakan_lanjutan_due_4', $observasi->tindakan_lanjutan_due_4 ? \Illuminate\Support\Carbon::parse($observasi->tindakan_lanjutan_due_4)->format('Y-m-d') : '') }}">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input type="text" name="tindakan_lanjutan_5" class="form-control form-control-sm border-0 shadow-none" placeholder="" value="{{ old('tindakan_lanjutan_5', $observasi->tindakan_lanjutan_5) }}">
+                                            </td>
+                                            <td>
+                                                <input type="date" name="tindakan_lanjutan_due_5" class="form-control form-control-sm border-0 shadow-none" value="{{ old('tindakan_lanjutan_due_5', $observasi->tindakan_lanjutan_due_5 ? \Illuminate\Support\Carbon::parse($observasi->tindakan_lanjutan_due_5)->format('Y-m-d') : '') }}">
                                             </td>
                                         </tr>
                                     </tbody>
@@ -717,85 +717,37 @@
                                 <div class="form-group mt-3">
                                     <label for="notes">Catatan Khusus:</label>
                                     <textarea id="notes" name="additional_notes" class="form-control form-control-sm pb-2" rows="3"
-                                        placeholder="Tambahkan catatan..."></textarea>
+                                        placeholder="Tambahkan catatan...">{{ old('additional_notes', $observasi->additional_notes) }}</textarea>
                                 </div>
 
                                 <hr>
                                 <div class="row mb-3">
                                     <h5>X. Petugas / Observer</h5>
-
-                                    {{-- PATUGAS 1 --}}
-                                    <div class="col-md-12 col-12 px-2 py-2">
-                                        <label>Petugas / Observer 1</label>
-                                        <select class="form-control form-control-sm" name="petugas1" data-trigger>
-                                            <option value="{{ Auth::user()->name }}"
-                                                {{ $oldPengawasValue == $defaultPengawasValue ? 'selected' : '' }}>
-                                                {{ Auth::user()->name }} ({{ Auth::user()->nik }})
-                                            </option>
-                                            @foreach ($users['petugas'] as $petugas)
-                                                <option value="{{ $petugas->nik }}"
-                                                    {{ old('petugas1') == $petugas->nik ? 'selected' : '' }}>
-                                                    {{ $petugas->name }} ({{ $petugas->nik }})
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    {{-- PATUGAS 2 --}}
-                                    <div class="col-md-12 col-12 px-2 py-2">
-                                        <label>Petugas / Observer 2</label>
-                                        <select class="form-control form-control-sm" name="petugas2" data-trigger>
-                                            <option value="" disabled selected></option>
-                                            @foreach ($users['petugas'] as $petugas)
-                                                <option value="{{ $petugas->nik }}"
-                                                    {{ old('petugas2') == $petugas->nik ? 'selected' : '' }}>
-                                                    {{ $petugas->name }} ({{ $petugas->nik }})
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    {{-- PATUGAS 3 --}}
-                                    <div class="col-md-12 col-12 px-2 py-2">
-                                        <label>Petugas / Observer 3</label>
-                                        <select class="form-control form-control-sm" name="petugas3" data-trigger>
-                                            <option value="" disabled selected></option>
-                                            @foreach ($users['petugas'] as $petugas)
-                                                <option value="{{ $petugas->nik }}"
-                                                    {{ old('petugas3') == $petugas->nik ? 'selected' : '' }}>
-                                                    {{ $petugas->name }} ({{ $petugas->nik }})
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    {{-- PATUGAS 4 --}}
-                                    <div class="col-md-12 col-12 px-2 py-2">
-                                        <label>Petugas / Observer 4</label>
-                                        <select class="form-control form-control-sm" name="petugas4" data-trigger>
-                                            <option value="" disabled selected></option>
-                                            @foreach ($users['petugas'] as $petugas)
-                                                <option value="{{ $petugas->nik }}"
-                                                    {{ old('petugas4') == $petugas->nik ? 'selected' : '' }}>
-                                                    {{ $petugas->name }} ({{ $petugas->nik }})
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    <div class="col-md-12 col-12 px-2 py-2">
-                                        <label>Petugas / Observer 5</label>
-                                        <select class="form-control form-control-sm" name="petugas5" data-trigger>
-                                            <option value="" disabled selected></option>
-                                            @foreach ($users['petugas'] as $petugas)
-                                                <option value="{{ $petugas->nik }}"
-                                                    {{ old('petugas5') == $petugas->nik ? 'selected' : '' }}>
-                                                    {{ $petugas->name }} ({{ $petugas->nik }})
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @php
+                                            $fieldPetugas = 'petugas' . $i;
+                                            $nilaiPetugas = old($fieldPetugas, $observasi->{$fieldPetugas});
+                                            $petugasTerdaftar = $users['petugas']->contains(function ($petugas) use ($nilaiPetugas) {
+                                                return (string) $petugas->nik === (string) $nilaiPetugas
+                                                    || (string) $petugas->name === (string) $nilaiPetugas;
+                                            });
+                                        @endphp
+                                        <div class="col-md-12 col-12 px-2 py-2">
+                                            <label>Petugas / Observer {{ $i }}</label>
+                                            <select class="form-control form-control-sm" name="{{ $fieldPetugas }}" data-trigger>
+                                                <option value="">Pilih Petugas</option>
+                                                @if(filled($nilaiPetugas) && !$petugasTerdaftar)
+                                                    <option value="{{ $nilaiPetugas }}" selected>{{ $nilaiPetugas }} (Data tersimpan)</option>
+                                                @endif
+                                                @foreach ($users['petugas'] as $petugas)
+                                                    <option value="{{ $petugas->nik }}"
+                                                        {{ (string) $nilaiPetugas === (string) $petugas->nik || (string) $nilaiPetugas === (string) $petugas->name ? 'selected' : '' }}>
+                                                        {{ $petugas->name }} ({{ $petugas->nik }})
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    @endfor
                                 </div>
                                 <hr>
                                 <div class="row mb-3">
@@ -804,31 +756,31 @@
                                     {{-- PATUGAS 1 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Pekerja 1</label>
-                                        <input type="text" class="form-control form-control-sm" name="pekerja1">
+                                        <input type="text" class="form-control form-control-sm" name="pekerja1" value="{{ old('pekerja1', $observasi->pekerja1) }}">
                                     </div>
 
                                     {{-- PATUGAS 2 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Pekerja 2</label>
-                                        <input type="text" class="form-control form-control-sm" name="pekerja2">
+                                        <input type="text" class="form-control form-control-sm" name="pekerja2" value="{{ old('pekerja2', $observasi->pekerja2) }}">
                                     </div>
 
                                     {{-- PATUGAS 3 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Pekerja 3</label>
-                                        <input type="text" class="form-control form-control-sm" name="pekerja3">
+                                        <input type="text" class="form-control form-control-sm" name="pekerja3" value="{{ old('pekerja3', $observasi->pekerja3) }}">
                                     </div>
 
                                     {{-- PATUGAS 4 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Pekerja 4</label>
-                                        <input type="text" class="form-control form-control-sm" name="pekerja4">
+                                        <input type="text" class="form-control form-control-sm" name="pekerja4" value="{{ old('pekerja4', $observasi->pekerja4) }}">
                                     </div>
 
                                     {{-- PATUGAS 5 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Pekerja 5</label>
-                                        <input type="text" class="form-control form-control-sm" name="pekerja5">
+                                        <input type="text" class="form-control form-control-sm" name="pekerja5" value="{{ old('pekerja5', $observasi->pekerja5) }}">
                                     </div>
 
                                 </div>
@@ -955,46 +907,26 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const data = @json($observasi->toArray());
-    const previous = @json(session()->getOldInput());
-    const values = Object.assign({}, data, previous);
-    const form = document.getElementById('submitformObservasiBank');
-
-    for (const el of form.querySelectorAll('[name]')) {
-        const name = el.name;
-        if (!(name in values) || values[name] === null || el.type === 'file' || el.type === 'hidden') continue;
-        if (el.type === 'checkbox') {
-            el.checked = String(values[name]) === '1';
-        } else if (el.type !== 'radio' && name !== 'pengawas1_auto' && name !== 'nama_pengawas1_manual') {
-            let value = values[name];
-            if (el.type === 'date' && typeof value === 'string') value = value.substring(0, 10);
-            if (el.type === 'time' && typeof value === 'string') value = value.substring(0, 5);
-            el.value = value;
-        }
-    }
-
-    // Supervisor values and mode are handled by Blade's selected/checked values.
-    const department = form.querySelector('[name="departemen_id"]');
-    if (department && values.departemen_id != null) department.value = String(values.departemen_id);
-
-    for (const prefix of ['perilaku', 'apd', 'risiko', 'peralatan', 'prosedur_kerja', 'kondisi_area']) {
-        const fields = prefix === 'prosedur_kerja' ? ['prosedur_kerja_lain', 'prosedur_kerja_lain_2']
-            : prefix === 'kondisi_area' ? ['kondisi_area_lain', 'kondisi_area_lain_2']
-            : [prefix + '_lain_1', prefix + '_lain_2'];
-        const toggle = document.getElementById(prefix + '_lain_check');
+    const groups = [
+        ['perilaku_lain_check', 'perilaku_lain_1', 'perilaku_lain_2'],
+        ['apd_lain_check', 'apd_lain_1', 'apd_lain_2'],
+        ['risiko_lain_check', 'risiko_lain_1', 'risiko_lain_2'],
+        ['peralatan_lain_check', 'peralatan_lain_1', 'peralatan_lain_2'],
+        ['prosedur_kerja_lain_check', 'prosedur_kerja_lain', 'prosedur_kerja_lain_2'],
+        ['kondisi_area_lain_check', 'kondisi_area_lain', 'kondisi_area_lain_2']
+    ];
+    for (const [id, ...fields] of groups) {
+        const toggle = document.getElementById(id);
+        const inputs = fields.map(name => document.querySelector('input[name="' + name + '"]'));
         if (!toggle) continue;
-        toggle.checked = fields.some(key => Boolean(values[key]));
-        for (const key of fields) {
-            const input = form.querySelector('[name="' + key + '"]');
-            if (input) {
-                const row = input.closest('tr');
+        toggle.checked = inputs.some(el => el && el.value.trim() !== '');
+        for (const el of inputs) {
+            if (el) {
+                const row = el.closest('tr');
                 if (row) row.style.display = toggle.checked ? '' : 'none';
             }
         }
     }
-
-    // Unchecked checkbox fields must be cleared on update, even when they were 1 before.
-    // Hidden fields are added once and the controller defaults absent checkboxes to 0.
 });
 </script>
 

@@ -164,7 +164,7 @@
                 </div>
                 <div class="col-md-4">
                     <div class="d-flex gap-2">
-                        <a href="{{ url()->previous() }}"
+                        <a href="javascript:history.back()"
                            class="btn btn-outline-secondary d-flex align-items-center gap-2 px-3 py-2 rounded">
                             <i class="fas fa-arrow-left"></i>
                             Kembali
