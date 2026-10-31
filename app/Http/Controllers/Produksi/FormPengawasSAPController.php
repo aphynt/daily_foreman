@@ -428,7 +428,7 @@ MSG;
             'departemen' => $departemen,
         ];
 
-        return view('form-sap.cetak', compact('data'));
+        return view('form-sap.image', compact('data'));
     }
 
     public function delete($uuid)
