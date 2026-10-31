@@ -439,13 +439,18 @@
                             <div class="topbar-logo">
                                 <img src="{{ asset('dashboard/assets/images/logo-full.png') }}" alt="Logo">
                             </div>
-
                             <div class="topbar-actions">
-                                <a href="{{ route('form-pengawas-sap.show') }}" class="back-btn">← Kembali</a>
-                                {{-- @if (Auth::user()->id == 3) --}}
-
-                                <a href="{{ route('form-pengawas-sap.open', $report->uuid) }}" class="back-btn">🔍 Open</a>
-                                {{-- @endif --}}
+                                <a href="{{ route('form-pengawas-sap.show') }}" class="back-btn">
+                                    <i class="fas fa-arrow-left me-1"></i> Kembali
+                                </a>
+                                <a href="{{ route('form-pengawas-sap.open', $report->uuid) }}" class="back-btn">
+                                    <i class="fas fa-search me-1"></i> Open
+                                </a>
+                                <a href="{{ route('form-pengawas-sap.cetak', $report->uuid) }}"
+                                target="_blank"
+                                class="back-btn">
+                                    <i class="fas fa-print me-1"></i> Cetak/Download
+                                </a>
                             </div>
                         </div>
 

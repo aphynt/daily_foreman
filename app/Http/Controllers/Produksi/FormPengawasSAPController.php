@@ -401,6 +401,36 @@ MSG;
         }
     }
 
+    public function cetak($uuid)
+    {
+        $report = DB::table('prd_sap_report as sr')
+        ->leftJoin('users as us', 'sr.foreman_id', 'us.id')
+        ->leftJoin('ref_departemen as dep', 'sr.departemen_pic', 'dep.id')
+        ->leftJoin('ref_shift as sh', 'sr.shift', 'sh.id')
+        ->select(
+            'sr.*',
+            'sh.keterangan as shift',
+            'us.nik as nik_pembuat',
+            'us.name as pembuat',
+            'dep.keterangan as nama_pic',
+        )
+        ->where('sr.statusenabled', true)
+        ->where('sr.uuid', $uuid)->first();
+
+        $departemen = Departemen::where('statusenabled', true)->get();
+
+        if($report == null){
+            return redirect()->back()->with('info', 'Maaf, SAP tidak ditemukan');
+        }
+
+        $data = [
+            'report' => $report,
+            'departemen' => $departemen,
+        ];
+
+        return view('form-sap.cetak', compact('data'));
+    }
+
     public function delete($uuid)
     {
         try {

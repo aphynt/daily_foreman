@@ -223,6 +223,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/form-pengawas-sap/rincian/{uuid}', [FormPengawasSAPController::class, 'rincian'])->name('form-pengawas-sap.rincian');
     Route::get('/form-pengawas-sap/open/{uuid}', [FormPengawasSAPController::class, 'open'])->name('form-pengawas-sap.open');
     Route::post('/form-pengawas-sap/update/{uuid}', [FormPengawasSAPController::class, 'update'])->name('form-pengawas-sap.update');
+    Route::get('/form-pengawas-sap/cetak/{uuid}', [FormPengawasSAPController::class, 'cetak'])->name('form-pengawas-sap.cetak');
 
     //Hazard Report
     Route::get('/hazard-report/index', [HazardReportController::class, 'index'])->name('hazard-report.index')->middleware('canAccess');
