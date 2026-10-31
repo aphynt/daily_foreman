@@ -731,6 +731,7 @@
                                                 {{ $oldPengawasValue == $defaultPengawasValue ? 'selected' : '' }}>
                                                 {{ Auth::user()->name }} ({{ Auth::user()->nik }})
                                             </option>
+                                            <option value="">-</option>
                                             @foreach ($users['petugas'] as $petugas)
                                                 <option value="{{ $petugas->nik }}"
                                                     {{ old('petugas1') == $petugas->nik ? 'selected' : '' }}>
@@ -744,7 +745,7 @@
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Petugas / Observer 2</label>
                                         <select class="form-control form-control-sm" name="petugas2" data-trigger>
-                                            <option value="" disabled selected></option>
+                                            <option value="" selected>-</option>
                                             @foreach ($users['petugas'] as $petugas)
                                                 <option value="{{ $petugas->nik }}"
                                                     {{ old('petugas2') == $petugas->nik ? 'selected' : '' }}>
@@ -758,7 +759,7 @@
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Petugas / Observer 3</label>
                                         <select class="form-control form-control-sm" name="petugas3" data-trigger>
-                                            <option value="" disabled selected></option>
+                                            <option value="" disabled selected>-</option>
                                             @foreach ($users['petugas'] as $petugas)
                                                 <option value="{{ $petugas->nik }}"
                                                     {{ old('petugas3') == $petugas->nik ? 'selected' : '' }}>
@@ -772,7 +773,7 @@
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Petugas / Observer 4</label>
                                         <select class="form-control form-control-sm" name="petugas4" data-trigger>
-                                            <option value="" disabled selected></option>
+                                            <option value="" disabled selected>-</option>
                                             @foreach ($users['petugas'] as $petugas)
                                                 <option value="{{ $petugas->nik }}"
                                                     {{ old('petugas4') == $petugas->nik ? 'selected' : '' }}>
@@ -785,7 +786,7 @@
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Petugas / Observer 5</label>
                                         <select class="form-control form-control-sm" name="petugas5" data-trigger>
-                                            <option value="" disabled selected></option>
+                                            <option value="" disabled selected>-</option>
                                             @foreach ($users['petugas'] as $petugas)
                                                 <option value="{{ $petugas->nik }}"
                                                     {{ old('petugas5') == $petugas->nik ? 'selected' : '' }}>

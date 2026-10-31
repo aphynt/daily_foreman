@@ -206,7 +206,6 @@ class KLKHITController extends Controller
 
     public function delete($id)
     {
-        dd($id);
         try {
             KLKHIT::where('id', $id)->update([
                 'statusenabled' => false,

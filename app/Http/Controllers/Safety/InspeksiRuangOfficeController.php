@@ -118,7 +118,20 @@ class InspeksiRuangOfficeController extends Controller
     public function post(Request $request)
     {
         try {
+            $dokumentasi = [];
+            for ($i = 1; $i <= 3; $i++) {
+                $field = "dokumentasi_{$i}";
+                $dokumentasi[$field] = null;
 
+                if ($request->hasFile($field)) {
+                    $file = $request->file($field);
+                    $fileName = time() . '_' . $i . '_' . $file->getClientOriginalName();
+                    $path = "inspeksi/ruangoffice/{$field}";
+
+                    Storage::disk('production_public')->putFileAs($path, $file, $fileName);
+                    $dokumentasi[$field] = rtrim(config('app.url'), '/') . "/storage/{$path}/{$fileName}";
+                }
+            }
             $data = $request->all();
             // dd($data);
 
@@ -347,6 +360,8 @@ class InspeksiRuangOfficeController extends Controller
                 'verified_inspektor3' => $data['inspektor3'] ?? null,
                 'inspektor4' => $data['inspektor4'] ?? null,
                 'verified_inspektor4' => $data['inspektor4'] ?? null,
+                'dokumentasi_1' => $dokumentasi['dokumentasi_1'],
+                'dokumentasi_2' => $dokumentasi['dokumentasi_2'],
 
             ];
 

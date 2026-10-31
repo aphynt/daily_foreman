@@ -38,6 +38,7 @@ use App\Http\Controllers\IT\KLKHITController;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Dewatering\KLKHDewateringController;
 use App\Http\Controllers\HazardReportController;
 use App\Http\Controllers\InspeksiTidakTerencanaController;
 use App\Http\Controllers\LogController;
@@ -76,6 +77,13 @@ use App\Http\Controllers\SOPController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifiedController;
 use App\Http\Controllers\EmployeeAvatarController;
+use App\Http\Controllers\Workshop\KLKHKantorWorkshopController;
+use App\Http\Controllers\Workshop\KLKHWorkshopLVSupportController;
+use App\Http\Controllers\Workshop\KLKHWorkshopRebuildController;
+use App\Http\Controllers\Workshop\KLKHWorkshopTyreController;
+use App\Http\Controllers\Workshop\KLKHWorkshopElectricController;
+use App\Http\Controllers\Workshop\KLKHWorkshopHEController;
+use App\Http\Controllers\Dewatering\KLKHAreaBlastingController;
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\isAdmin;
 use App\Models\SOP;
@@ -91,7 +99,7 @@ use Illuminate\Support\Facades\Http;
 //     return redirect('/');
 // });
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index')->middleware('auth');
-Route::get('/employee-avatar/{filename}', [EmployeeAvatarController::class, 'show'])->name('employee.avatar');
+Route::get('/employee-avatar/{filename}', [EmployeeAvatarController::class, 'show'])->middleware('auth')->name('employee.avatar');
 
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::get('/privacy-policy', [AuthController::class, 'privacyPolicy'])->name('privacy.policy');
@@ -459,6 +467,112 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/klkh/it/verified/all/{uuid}', [KLKHITController::class, 'verifiedAll'])->name('klkh.it.verified.all');
     Route::post('/klkh/it/verified/pengawas/{uuid}', [KLKHITController::class, 'verifiedPengawas'])->name('klkh.it.verified.pengawas');
     Route::post('/klkh/it/verified/diketahui/{uuid}', [KLKHITController::class, 'verifiedDiketahui'])->name('klkh.it.verified.diketahui');
+
+    //KLKH Kantor Workshop
+    Route::get('/klkh/kantorworkshop', [KLKHKantorWorkshopController::class, 'index'])->name('klkh.kantorworkshop');
+    Route::get('/klkh/kantorworkshop/insert', [KLKHKantorWorkshopController::class, 'insert'])->name('klkh.kantorworkshop.insert')->middleware('canAccess');
+    Route::post('/klkh/kantorworkshop/post', [KLKHKantorWorkshopController::class, 'post'])->name('klkh.kantorworkshop.post');
+    Route::get('/klkh/kantorworkshop/delete/{id}', [KLKHKantorWorkshopController::class, 'delete'])->name('klkh.kantorworkshop.delete');
+    Route::get('/klkh/kantorworkshop/preview/{uuid}', [KLKHKantorWorkshopController::class, 'preview'])->name('klkh.kantorworkshop.preview');
+    Route::get('/klkh/kantorworkshop/bundlepdf', [KLKHKantorWorkshopController::class, 'bundlepdf'])->name('klkh.kantorworkshop.bundlepdf');
+    Route::get('/klkh/kantorworkshop/cetak/{uuid}', [KLKHKantorWorkshopController::class, 'cetak'])->name('klkh.kantorworkshop.cetak');
+    Route::get('/klkh/kantorworkshop/download/{uuid}', [KLKHKantorWorkshopController::class, 'download'])->name('klkh.kantorworkshop.download');
+    Route::post('/klkh/kantorworkshop/verified/all/{uuid}', [KLKHKantorWorkshopController::class, 'verifiedAll'])->name('klkh.kantorworkshop.verified.all');
+    Route::post('/klkh/kantorworkshop/verified/pengawas/{uuid}', [KLKHKantorWorkshopController::class, 'verifiedPengawas'])->name('klkh.kantorworkshop.verified.pengawas');
+    Route::post('/klkh/kantorworkshop/verified/diketahui/{uuid}', [KLKHKantorWorkshopController::class, 'verifiedDiketahui'])->name('klkh.kantorworkshop.verified.diketahui');
+
+    //KLKH Workshop LV & Support
+    Route::get('/klkh/workshoplvsupport', [KLKHWorkshopLVSupportController::class, 'index'])->name('klkh.workshoplvsupport');
+    Route::get('/klkh/workshoplvsupport/insert', [KLKHWorkshopLVSupportController::class, 'insert'])->name('klkh.workshoplvsupport.insert')->middleware('canAccess');
+    Route::post('/klkh/workshoplvsupport/post', [KLKHWorkshopLVSupportController::class, 'post'])->name('klkh.workshoplvsupport.post');
+    Route::get('/klkh/workshoplvsupport/delete/{id}', [KLKHWorkshopLVSupportController::class, 'delete'])->name('klkh.workshoplvsupport.delete');
+    Route::get('/klkh/workshoplvsupport/preview/{uuid}', [KLKHWorkshopLVSupportController::class, 'preview'])->name('klkh.workshoplvsupport.preview');
+    Route::get('/klkh/workshoplvsupport/bundlepdf', [KLKHWorkshopLVSupportController::class, 'bundlepdf'])->name('klkh.workshoplvsupport.bundlepdf');
+    Route::get('/klkh/workshoplvsupport/cetak/{uuid}', [KLKHWorkshopLVSupportController::class, 'cetak'])->name('klkh.workshoplvsupport.cetak');
+    Route::get('/klkh/workshoplvsupport/download/{uuid}', [KLKHWorkshopLVSupportController::class, 'download'])->name('klkh.workshoplvsupport.download');
+    Route::post('/klkh/workshoplvsupport/verified/all/{uuid}', [KLKHWorkshopLVSupportController::class, 'verifiedAll'])->name('klkh.workshoplvsupport.verified.all');
+    Route::post('/klkh/workshoplvsupport/verified/pengawas/{uuid}', [KLKHWorkshopLVSupportController::class, 'verifiedPengawas'])->name('klkh.workshoplvsupport.verified.pengawas');
+    Route::post('/klkh/workshoplvsupport/verified/diketahui/{uuid}', [KLKHWorkshopLVSupportController::class, 'verifiedDiketahui'])->name('klkh.workshoplvsupport.verified.diketahui');
+
+    //KLKH Workshop Rebuild
+    Route::get('/klkh/workshoprebuild', [KLKHWorkshopRebuildController::class, 'index'])->name('klkh.workshoprebuild');
+    Route::get('/klkh/workshoprebuild/insert', [KLKHWorkshopRebuildController::class, 'insert'])->name('klkh.workshoprebuild.insert')->middleware('canAccess');
+    Route::post('/klkh/workshoprebuild/post', [KLKHWorkshopRebuildController::class, 'post'])->name('klkh.workshoprebuild.post');
+    Route::get('/klkh/workshoprebuild/delete/{id}', [KLKHWorkshopRebuildController::class, 'delete'])->name('klkh.workshoprebuild.delete');
+    Route::get('/klkh/workshoprebuild/preview/{uuid}', [KLKHWorkshopRebuildController::class, 'preview'])->name('klkh.workshoprebuild.preview');
+    Route::get('/klkh/workshoprebuild/bundlepdf', [KLKHWorkshopRebuildController::class, 'bundlepdf'])->name('klkh.workshoprebuild.bundlepdf');
+    Route::get('/klkh/workshoprebuild/cetak/{uuid}', [KLKHWorkshopRebuildController::class, 'cetak'])->name('klkh.workshoprebuild.cetak');
+    Route::get('/klkh/workshoprebuild/download/{uuid}', [KLKHWorkshopRebuildController::class, 'download'])->name('klkh.workshoprebuild.download');
+    Route::post('/klkh/workshoprebuild/verified/all/{uuid}', [KLKHWorkshopRebuildController::class, 'verifiedAll'])->name('klkh.workshoprebuild.verified.all');
+    Route::post('/klkh/workshoprebuild/verified/pengawas/{uuid}', [KLKHWorkshopRebuildController::class, 'verifiedPengawas'])->name('klkh.workshoprebuild.verified.pengawas');
+    Route::post('/klkh/workshoprebuild/verified/diketahui/{uuid}', [KLKHWorkshopRebuildController::class, 'verifiedDiketahui'])->name('klkh.workshoprebuild.verified.diketahui');
+
+    //KLKH Workshop Tyre
+    Route::get('/klkh/workshoptyre', [KLKHWorkshopTyreController::class, 'index'])->name('klkh.workshoptyre');
+    Route::get('/klkh/workshoptyre/insert', [KLKHWorkshopTyreController::class, 'insert'])->name('klkh.workshoptyre.insert')->middleware('canAccess');
+    Route::post('/klkh/workshoptyre/post', [KLKHWorkshopTyreController::class, 'post'])->name('klkh.workshoptyre.post');
+    Route::get('/klkh/workshoptyre/delete/{id}', [KLKHWorkshopTyreController::class, 'delete'])->name('klkh.workshoptyre.delete');
+    Route::get('/klkh/workshoptyre/preview/{uuid}', [KLKHWorkshopTyreController::class, 'preview'])->name('klkh.workshoptyre.preview');
+    Route::get('/klkh/workshoptyre/bundlepdf', [KLKHWorkshopTyreController::class, 'bundlepdf'])->name('klkh.workshoptyre.bundlepdf');
+    Route::get('/klkh/workshoptyre/cetak/{uuid}', [KLKHWorkshopTyreController::class, 'cetak'])->name('klkh.workshoptyre.cetak');
+    Route::get('/klkh/workshoptyre/download/{uuid}', [KLKHWorkshopTyreController::class, 'download'])->name('klkh.workshoptyre.download');
+    Route::post('/klkh/workshoptyre/verified/all/{uuid}', [KLKHWorkshopTyreController::class, 'verifiedAll'])->name('klkh.workshoptyre.verified.all');
+    Route::post('/klkh/workshoptyre/verified/pengawas/{uuid}', [KLKHWorkshopTyreController::class, 'verifiedPengawas'])->name('klkh.workshoptyre.verified.pengawas');
+    Route::post('/klkh/workshoptyre/verified/diketahui/{uuid}', [KLKHWorkshopTyreController::class, 'verifiedDiketahui'])->name('klkh.workshoptyre.verified.diketahui');
+
+    //KLKH Workshop Electric
+    Route::get('/klkh/workshopelectric', [KLKHWorkshopElectricController::class, 'index'])->name('klkh.workshopelectric');
+    Route::get('/klkh/workshopelectric/insert', [KLKHWorkshopElectricController::class, 'insert'])->name('klkh.workshopelectric.insert')->middleware('canAccess');
+    Route::post('/klkh/workshopelectric/post', [KLKHWorkshopElectricController::class, 'post'])->name('klkh.workshopelectric.post');
+    Route::get('/klkh/workshopelectric/delete/{id}', [KLKHWorkshopElectricController::class, 'delete'])->name('klkh.workshopelectric.delete');
+    Route::get('/klkh/workshopelectric/preview/{uuid}', [KLKHWorkshopElectricController::class, 'preview'])->name('klkh.workshopelectric.preview');
+    Route::get('/klkh/workshopelectric/bundlepdf', [KLKHWorkshopElectricController::class, 'bundlepdf'])->name('klkh.workshopelectric.bundlepdf');
+    Route::get('/klkh/workshopelectric/cetak/{uuid}', [KLKHWorkshopElectricController::class, 'cetak'])->name('klkh.workshopelectric.cetak');
+    Route::get('/klkh/workshopelectric/download/{uuid}', [KLKHWorkshopElectricController::class, 'download'])->name('klkh.workshopelectric.download');
+    Route::post('/klkh/workshopelectric/verified/all/{uuid}', [KLKHWorkshopElectricController::class, 'verifiedAll'])->name('klkh.workshopelectric.verified.all');
+    Route::post('/klkh/workshopelectric/verified/pengawas/{uuid}', [KLKHWorkshopElectricController::class, 'verifiedPengawas'])->name('klkh.workshopelectric.verified.pengawas');
+    Route::post('/klkh/workshopelectric/verified/diketahui/{uuid}', [KLKHWorkshopElectricController::class, 'verifiedDiketahui'])->name('klkh.workshopelectric.verified.diketahui');
+
+    //KLKH Workshop Electric
+    Route::get('/klkh/workshophe', [KLKHWorkshopHEController::class, 'index'])->name('klkh.workshophe');
+    Route::get('/klkh/workshophe/insert', [KLKHWorkshopHEController::class, 'insert'])->name('klkh.workshophe.insert')->middleware('canAccess');
+    Route::post('/klkh/workshophe/post', [KLKHWorkshopHEController::class, 'post'])->name('klkh.workshophe.post');
+    Route::get('/klkh/workshophe/delete/{id}', [KLKHWorkshopHEController::class, 'delete'])->name('klkh.workshophe.delete');
+    Route::get('/klkh/workshophe/preview/{uuid}', [KLKHWorkshopHEController::class, 'preview'])->name('klkh.workshophe.preview');
+    Route::get('/klkh/workshophe/bundlepdf', [KLKHWorkshopHEController::class, 'bundlepdf'])->name('klkh.workshophe.bundlepdf');
+    Route::get('/klkh/workshophe/cetak/{uuid}', [KLKHWorkshopHEController::class, 'cetak'])->name('klkh.workshophe.cetak');
+    Route::get('/klkh/workshophe/download/{uuid}', [KLKHWorkshopHEController::class, 'download'])->name('klkh.workshophe.download');
+    Route::post('/klkh/workshophe/verified/all/{uuid}', [KLKHWorkshopHEController::class, 'verifiedAll'])->name('klkh.workshophe.verified.all');
+    Route::post('/klkh/workshophe/verified/pengawas/{uuid}', [KLKHWorkshopHEController::class, 'verifiedPengawas'])->name('klkh.workshophe.verified.pengawas');
+    Route::post('/klkh/workshophe/verified/diketahui/{uuid}', [KLKHWorkshopHEController::class, 'verifiedDiketahui'])->name('klkh.workshophe.verified.diketahui');
+
+    //KLKH Area Blasting
+    Route::get('/klkh/areablasting', [KLKHAreaBlastingController::class, 'index'])->name('klkh.areablasting');
+    Route::get('/klkh/areablasting/insert', [KLKHAreaBlastingController::class, 'insert'])->name('klkh.areablasting.insert')->middleware('canAccess');
+    Route::post('/klkh/areablasting/post', [KLKHAreaBlastingController::class, 'post'])->name('klkh.areablasting.post');
+    Route::get('/klkh/areablasting/delete/{id}', [KLKHAreaBlastingController::class, 'delete'])->name('klkh.areablasting.delete');
+    Route::get('/klkh/areablasting/preview/{uuid}', [KLKHAreaBlastingController::class, 'preview'])->name('klkh.areablasting.preview');
+    Route::get('/klkh/areablasting/bundlepdf', [KLKHAreaBlastingController::class, 'bundlepdf'])->name('klkh.areablasting.bundlepdf');
+    Route::get('/klkh/areablasting/cetak/{uuid}', [KLKHAreaBlastingController::class, 'cetak'])->name('klkh.areablasting.cetak');
+    Route::get('/klkh/areablasting/download/{uuid}', [KLKHAreaBlastingController::class, 'download'])->name('klkh.areablasting.download');
+    Route::post('/klkh/areablasting/verified/all/{uuid}', [KLKHAreaBlastingController::class, 'verifiedAll'])->name('klkh.areablasting.verified.all');
+    Route::post('/klkh/areablasting/verified/pengawas/{uuid}', [KLKHAreaBlastingController::class, 'verifiedPengawas'])->name('klkh.areablasting.verified.pengawas');
+    Route::post('/klkh/areablasting/verified/diketahui/{uuid}', [KLKHAreaBlastingController::class, 'verifiedDiketahui'])->name('klkh.areablasting.verified.diketahui');
+    Route::post('/klkh/areablasting/verified/disetujui/{uuid}', [KLKHAreaBlastingController::class, 'verifiedDisetujui'])->name('klkh.areablasting.verified.disetujui');
+
+    //KLKH Dewatering
+    Route::get('/klkh/dewatering', [KLKHDewateringController::class, 'index'])->name('klkh.dewatering');
+    Route::get('/klkh/dewatering/insert', [KLKHDewateringController::class, 'insert'])->name('klkh.dewatering.insert')->middleware('canAccess');
+    Route::post('/klkh/dewatering/post', [KLKHDewateringController::class, 'post'])->name('klkh.dewatering.post');
+    Route::get('/klkh/dewatering/delete/{id}', [KLKHDewateringController::class, 'delete'])->name('klkh.dewatering.delete');
+    Route::get('/klkh/dewatering/preview/{uuid}', [KLKHDewateringController::class, 'preview'])->name('klkh.dewatering.preview');
+    Route::get('/klkh/dewatering/bundlepdf', [KLKHDewateringController::class, 'bundlepdf'])->name('klkh.dewatering.bundlepdf');
+    Route::get('/klkh/dewatering/cetak/{uuid}', [KLKHDewateringController::class, 'cetak'])->name('klkh.dewatering.cetak');
+    Route::get('/klkh/dewatering/download/{uuid}', [KLKHDewateringController::class, 'download'])->name('klkh.dewatering.download');
+    Route::post('/klkh/dewatering/verified/all/{uuid}', [KLKHDewateringController::class, 'verifiedAll'])->name('klkh.dewatering.verified.all');
+    Route::post('/klkh/dewatering/verified/pengawas/{uuid}', [KLKHDewateringController::class, 'verifiedPengawas'])->name('klkh.dewatering.verified.pengawas');
+    Route::post('/klkh/dewatering/verified/diketahui/{uuid}', [KLKHDewateringController::class, 'verifiedDiketahui'])->name('klkh.dewatering.verified.diketahui');
+    Route::post('/klkh/dewatering/verified/disetujui/{uuid}', [KLKHDewateringController::class, 'verifiedDisetujui'])->name('klkh.dewatering.verified.disetujui');
 
     //Inspeksi Tambang - Jalan Tambang
     Route::get('/inspeksi/jalantambang', [InspeksiJalanTambangController::class, 'index'])->name('inspeksi.jalantambang');

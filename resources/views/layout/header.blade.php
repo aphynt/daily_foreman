@@ -114,9 +114,10 @@
                             <div class="profile-notification-scroll position-relative"
                                 style="max-height: calc(100vh - 225px)">
                                 <div class="d-flex mb-1">
-                                    <div class="flex-shrink-0"><img src="{{ Auth::user()->avatar ? 'https://hrlink.ptsims.co.id/asset/foto/karyawan/' . Auth::user()->avatar : asset('dashboard/assets/images/user/avatar-1.png') }}"
-                                    alt="user-image"
-                                    class="user-avtar wid-35"></div>
+                                    <div class="flex-shrink-0"><img src="{{ Auth::user()->avatar ? route('employee.avatar', ['filename' => Auth::user()->avatar]) : asset('dashboard/assets/images/user/avatar-1.png') }}"
+                                        alt="user-image"
+                                        class="user-avtar wid-35"
+                                        onerror="this.onerror=null;this.src='{{ asset('dashboard/assets/images/user/avatar-1.png') }}';"></div>
                                     <div class="flex-grow-1 ms-3">
                                         <h6 class="mb-1">{{ Auth::user()->name }}</h6><span class="header-profile-nik">{{ Auth::user()->nik }}</span>
                                     </div>

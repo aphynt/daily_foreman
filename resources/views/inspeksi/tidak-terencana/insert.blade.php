@@ -588,8 +588,6 @@
 
         toggleSearchSection();
         toggleLainnyaInput();
-
-        // delay kecil supaya kalau data-trigger inisialisasi plugin, value select sudah sinkron
         setTimeout(() => {
             syncNikToFinal();
         }, 200);

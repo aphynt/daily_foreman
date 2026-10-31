@@ -869,7 +869,7 @@
                                 <div class="text-center mt-3">
                                     <button type="submit"
                                         class="btn btn-primary btn-lg px-5 py-2"
-                                        id="submitformInspeksiFrontLoading">
+                                        id="submitButtonInspeksiFrontLoading">
                                         Submit
                                     </button>
                                 </div>

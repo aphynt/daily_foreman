@@ -109,7 +109,20 @@ class InspeksiTPSLimbahB3Controller extends Controller
     public function post(Request $request)
     {
         try {
+            $dokumentasi = [];
+            for ($i = 1; $i <= 3; $i++) {
+                $field = "dokumentasi_{$i}";
+                $dokumentasi[$field] = null;
 
+                if ($request->hasFile($field)) {
+                    $file = $request->file($field);
+                    $fileName = time() . '_' . $i . '_' . $file->getClientOriginalName();
+                    $path = "inspeksi/tpslimbahb3/{$field}";
+
+                    Storage::disk('production_public')->putFileAs($path, $file, $fileName);
+                    $dokumentasi[$field] = rtrim(config('app.url'), '/') . "/storage/{$path}/{$fileName}";
+                }
+            }
             $data = $request->all();
             // dd($data);
 
@@ -459,7 +472,8 @@ class InspeksiTPSLimbahB3Controller extends Controller
                 'verified_diperiksa'           => $data['verified_diperiksa'] ?? null,
                 'catatan_verified_diperiksa'   => $data['catatan_verified_diperiksa'] ?? null,
                 'date_verified_diperiksa'      => $data['date_verified_diperiksa'] ?? null,
-
+                'dokumentasi_1' => $dokumentasi['dokumentasi_1'],
+                'dokumentasi_2' => $dokumentasi['dokumentasi_2'],
             ];
 
             InspeksiTPSLimbahB3::create($dataToInsert);
