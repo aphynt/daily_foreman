@@ -487,10 +487,16 @@
                                 <div class="topbar-logo">
                                     <img src="{{ asset('dashboard/assets/images/logo-full.png') }}" alt="Logo">
                                 </div>
-                                <a href="{{ route('form-pengawas-sap.show') }}" class="back-btn">← Kembali</a>
-                                <a href="{{ route('form-pengawas-sap.cetak', $report->uuid) }}" target="_blank" class="back-btn">
-                                    <i class="fas fa-print me-1"></i> Cetak/Download
-                                </a>
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="{{ route('form-pengawas-sap.show') }}" class="back-btn">
+                                        <i class="fas fa-arrow-left me-1"></i> Kembali
+                                    </a>
+                                    <a href="{{ route('form-pengawas-sap.cetak', $report->uuid) }}"
+                                    target="_blank"
+                                    class="back-btn">
+                                        <i class="fas fa-print me-1"></i> Cetak/Download
+                                    </a>
+                                </div>
                             </div>
 
                             <div class="hero-box">
