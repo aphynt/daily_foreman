@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="{{ asset('dashboard/assets/images/icon512.png') }}">
     <title>Cetak Laporan Inspeksi</title>
     <style>
         @page {
             size: A4 portrait;
-            margin: 12mm 13mm 13mm;
+            margin: 8mm;
         }
         * {
             box-sizing: border-box;
@@ -17,7 +16,7 @@
             margin: 0;
             font-family: Arial, Helvetica, sans-serif;
             color: #172033;
-            font-size: 11pt;
+            font-size: 12.5px;
             line-height: 1.55;
         }
         .toolbar {
@@ -55,7 +54,8 @@
             margin-bottom: 10px;
         }
         .logo {
-            width: 200px;
+            width: 140px;
+            max-height: 52px;
             object-fit: contain;
             object-position: left center;
         }
@@ -83,7 +83,7 @@
             border: 1px solid #bdcadd;
             border-radius: 4px;
             padding: 4px 8px;
-            font-size: 12pt;
+            font-size: 11.5px;
         }
         .tag strong {
             color: #163d68;
@@ -131,7 +131,7 @@
         .text-label {
             font-weight: 700;
             margin: 10px 0 5px;
-            font-size: 11pt;
+            font-size: 12.5px;
         }
         .section-start,
         .field-group {
@@ -212,6 +212,70 @@
                 margin: 0;
                 padding: 0;
                 max-width: none;
+                width: var(--print-width, 194mm);
+                zoom: var(--print-scale, 1);
+            }
+            body {
+                font-size: 10px;
+                line-height: 1.3;
+            }
+            .header {
+                padding-bottom: 5px;
+                margin-bottom: 5px;
+            }
+            .logo {
+                width: 105px;
+                max-height: 38px;
+            }
+            h1 {
+                font-size: 16px;
+            }
+            .summary {
+                margin: 5px 0;
+                gap: 4px;
+            }
+            .tag {
+                font-size: 9px;
+                padding: 2px 5px;
+            }
+            .section {
+                margin-top: 6px;
+            }
+            .section h2 {
+                font-size: 11px;
+                padding: 3px 6px;
+                margin-bottom: 3px;
+            }
+            td,
+            th {
+                padding: 3px 5px;
+            }
+            .text-label {
+                font-size: 10px;
+                margin: 4px 0 2px;
+            }
+            .text-box {
+                padding: 4px 6px;
+                min-height: 0;
+            }
+            .photos {
+                gap: 4px;
+                margin-top: 3px;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+            .photo {
+                padding: 3px;
+            }
+            .photo img {
+                height: 31mm;
+            }
+            .photo figcaption {
+                font-size: 8px;
+                padding-top: 2px;
+            }
+            .footer {
+                margin-top: 6px;
+                font-size: 8px;
             }
             .section h2 {
                 background: #eaf0f7 !important;
@@ -420,7 +484,36 @@
     <footer class="footer">Dicetak pada {{ now()->timezone('Asia/Makassar')->format('d-m-Y H:i') }} WITA</footer>
 </main>
 <script>
+    function fitPrintToOnePage() {
+        const sheet = document.querySelector('.sheet');
+        if (!sheet) {
+            return;
+        }
+        sheet.style.removeProperty('--print-scale');
+        sheet.style.removeProperty('--print-width');
+        const ruler = document.createElement('div');
+        ruler.style.cssText = 'position:absolute;visibility:hidden;width:194mm;height:277mm;pointer-events:none';
+        document.body.appendChild(ruler);
+        const pageHeight = ruler.getBoundingClientRect().height;
+        ruler.remove();
+        const measure = sheet.cloneNode(true);
+        measure.style.cssText = 'position:absolute;visibility:hidden;left:-99999px;top:0;width:194mm;max-width:none;margin:0;padding:0;box-shadow:none;zoom:1';
+        const computed = document.createElement('style');
+        computed.textContent = '.print-measure{font-size:10px;line-height:1.3}.print-measure .photo img{height:31mm}.print-measure .photos{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}.print-measure .section{margin-top:6px}.print-measure .text-box{padding:4px 6px;min-height:0}.print-measure .text-label{margin:4px 0 2px}.print-measure td{padding:3px 5px}';
+        measure.classList.add('print-measure');
+        document.head.appendChild(computed);
+        document.body.appendChild(measure);
+        const naturalHeight = measure.getBoundingClientRect().height;
+        measure.remove();
+        computed.remove();
+        const scale = Math.min(1, pageHeight / Math.max(naturalHeight, 1)) * 0.97;
+        sheet.style.setProperty('--print-scale', scale.toFixed(4));
+        sheet.style.setProperty('--print-width', (194 / scale).toFixed(3) + 'mm');
+    }
+    window.addEventListener('beforeprint', fitPrintToOnePage);
+    window.addEventListener('load', fitPrintToOnePage);
     window.print();
 </script>
+
 </body>
 </html>
