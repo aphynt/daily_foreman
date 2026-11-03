@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -90,6 +91,11 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
 
     public function map($item): array
     {
+        $user = Auth::user();
+
+        $showPelapor = !is_null($user->departemen_id)
+            && (string) $item->departemen_id_pelapor === (string) $user->departemen_id;
+
         $fotoTemuan = ($item->dokumentasi_1 ?? null)
             ?: ($item->dokumentasi_2 ?? null);
 
@@ -98,36 +104,27 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
 
         return [
             $item->no_inspeksi ?? '-',
-            $this->getPerusahaanByNik($item->nik_pelapor ?? null),
-            $item->nama_pelapor ?? '-',
-            $item->nik_pelapor ?? '-',
-            $item->departemen_pelapor ?? '-',
+            $showPelapor ? $this->getPerusahaanByNik($item->nik_pelapor ?? null) : '-',
+            $showPelapor ? ($item->nama_pelapor ?? '-') : '-',
+            $showPelapor ? ($item->nik_pelapor ?? '-') : '-',
+            $showPelapor ? ($item->departemen_pelapor ?? '-') : '-',
             $item->perusahaan ?? '-',
             $item->nama_departemen ?? '-',
-
             $item->lokasi ?? '-',
             $this->formatDate($item->tanggal_pelaporan ?? null),
             $item->bahaya ?? '-',
             $item->risiko ?? '-',
             strtoupper((string) ($item->tingkat_risiko ?? '-')),
-
             $fotoTemuan,
-
             $item->tindakan_perbaikan ?? '-',
             $item->pengendalian_awal ?? '-',
-
             $fotoPerbaikan,
-
             $this->normalizeStatus(
                 $item->status ?? null,
                 $item->verified_scc ?? null,
                 $item->verified_penerima ?? null
             ),
-
-            // Kolom R: KATEGORI (KTA / TTA)
             strtoupper(trim((string) ($item->kategori_bahaya ?? '-'))),
-
-            // Kolom S: DETAIL TEMUAN
             $this->formatDetailTemuan($item->detail_temuan ?? null),
         ];
     }

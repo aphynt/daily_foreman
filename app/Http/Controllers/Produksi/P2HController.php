@@ -2308,7 +2308,7 @@ class P2HController extends Controller
 
         $data->transform(function ($item) use ($shift, $users, $checklistItems, $appLogin) {
 
-            $item->MTR_HOURMETER = $appLogin->LGN_HOURMETER ?? null;
+            $item->MTR_HOURMETER = isset($appLogin->LGN_HOURMETER) ? round((float) $appLogin->LGN_HOURMETER, 1) : null;
             $item->SHIFTDESC = $shift[$item->OPR_SHIFTNO]->SHIFTDESC ?? null;
             $operatorNik = $item->VERIFIED_OPERATOR;
             if (preg_match('/^\d{4}[A-Z]1$/', $operatorNik)) {
@@ -2473,7 +2473,7 @@ class P2HController extends Controller
         });
 
         $data->transform(function ($item) use ($shift, $users, $checklistItems) {
-            $item->MTR_HOURMETER = $appLogin->LGN_HOURMETER ?? null;
+            $item->MTR_HOURMETER = isset($appLogin->LGN_HOURMETER) ? round((float) $appLogin->LGN_HOURMETER, 1) : null;
             $item->SHIFTDESC = $shift[$item->OPR_SHIFTNO]->SHIFTDESC ?? null;
             $operatorNik = $item->VERIFIED_OPERATOR;
             if (preg_match('/^\d{4}[A-Z]1$/', $operatorNik)) {

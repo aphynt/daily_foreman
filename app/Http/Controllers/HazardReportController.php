@@ -51,7 +51,7 @@ class HazardReportController extends Controller
         ->leftJoin('users as us4', 'hz.penerima', 'us4.nik')
         ->leftJoin('ref_shift as sh', 'hz.shift', 'sh.id')
         ->leftJoin('ref_departemen as dep', 'hz.departemen', 'dep.id')
-        ->leftJoin('ref_departemen as dep2', 'us1.departemen_id', 'dep2.id')
+        ->leftJoin('ref_departemen as dep2', 'us2.departemen_id', 'dep2.id')
         ->select(
             'hz.id',
             'hz.uuid',
@@ -62,6 +62,7 @@ class HazardReportController extends Controller
             'dep.id as id_departemen',
             'dep.keterangan as nama_departemen',
             'dep2.keterangan as departemen_pelapor',
+            'us2.departemen_id as departemen_id_pelapor',
             'hz.tanggal_pelaporan',
             'hz.perusahaan',
             'hz.lokasi',
@@ -92,25 +93,31 @@ class HazardReportController extends Controller
         ->whereBetween(DB::raw('CONVERT(varchar, hz.tanggal_pelaporan, 23)'), [$startTimeFormatted, $endTimeFormatted])
         ->where('hz.statusenabled', true);
 
-        if (!in_array(Auth::user()->id, [1, 3])) {
-            $hazard->where(function ($query) {
-                $query
-                // ->where('hz.departemen', Auth::user()->departemen_id)
-                    ->where('hz.verified_scc', 'accept')
-                    ->orWhere('hz.pic', Auth::user()->id)
-                    ;
-            });
+        $user = Auth::user();
+
+        $configSR = DB::table('ref_config')
+            ->where('id', 37)
+            ->where('statusenabled', true)
+            ->value('value');
+
+        $listNikSR = json_decode($configSR ?? '[]', true);
+
+        if (!is_array($listNikSR)) {
+            $listNikSR = [];
         }
 
-        // if (!in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT'])) {
-        //     $hazard->where(function ($query) {
-        //         $query
-        //         // ->where('hz.departemen', Auth::user()->departemen_id)
-        //             ->where('hz.verified_scc', 'accept')
-        //             ->orWhere('hz.pic', Auth::user()->id)
-        //             ;
-        //     });
-        // }
+        $isSR = in_array((string) $user->nik, array_map('strval', $listNikSR), true);
+
+        if (!in_array(Auth::user()->id, [1, 3]) && !in_array(Auth::user()->role, ['MANAGEMENT'])) {
+            if ($isSR && !is_null($user->departemen_id)) {
+                $hazard->where(function ($query) use ($user) {
+                    $query->where('us2.departemen_id', $user->departemen_id)
+                        ->orWhere('hz.departemen', $user->departemen_id);
+                });
+            } else {
+                $hazard->where('hz.pelapor', $user->nik);
+            }
+        }
 
         if ($request->filled('status')) {
             $hazard->where('status', $request->status);
@@ -498,7 +505,6 @@ class HazardReportController extends Controller
 
         try {
             $data = HazardReport::where('uuid', $uuid)->firstOrFail();
-
             if ($data->verified_penerima || $data->status == 2) {
                 return redirect()->back()->with('info', 'Hazard Report tidak bisa diedit karena sudah diproses departemen.');
             }
@@ -585,6 +591,83 @@ class HazardReportController extends Controller
                 $updateData['catatan_verified_scc'] = $request->catatan_verified_scc;
                 $updateData['scc'] = Auth::user()->nik;
                 $updateData['verified_datetime_scc'] = Carbon::now();
+
+                //Wa Gateway
+                $waController = new WhatsAppController();
+
+                $tanggalPelaporan = Carbon::parse($request->tanggal_pelaporan . ' ' . $request->jam_pelaporan)->locale('id');
+                $departemen = Departemen::where('id', $request->departemen)->value('keterangan');
+                $hariTanggal = $tanggalPelaporan->translatedFormat('l d F Y');
+                $jam = $tanggalPelaporan->format('H:i') . ' Wita';
+
+
+                $formatBulletList = function ($text) {
+                    $lines = preg_split('/\r\n|\r|\n/', trim((string) $text));
+                    $lines = array_filter(array_map('trim', $lines));
+
+                    return count($lines) ? "- " . implode("\n- ", $lines) : "-";
+                };
+
+                $risikoText = $formatBulletList($request->risiko);
+                $pengendalianAwalText = $formatBulletList($request->pengendalian_awal);
+                $tindakanPerbaikanText = $formatBulletList($request->tindakan_perbaikan);
+
+                $hazardReportMessage = <<<MSG
+                《HAZARD REPORT》
+
+                No. $data->no_inspeksi
+
+                - Kepada        : {$request->kepada}
+                - Prush/Dept.   : {$request->perusahaan} / {$departemen}
+                - Hari/tgl.     : $hariTanggal
+                - Jam           : $jam
+                - Lokasi        : {$request->lokasi}
+
+                *# HAZARD/ BAHAYA*
+                - {$request->bahaya}
+
+                *# RISIKO*
+                $risikoText
+
+                *# PENGENDALIAN AWAL*
+                $pengendalianAwalText
+
+                *# TINDAKAN PERBAIKAN YANG HARUS DI LAKUKAN*
+                $tindakanPerbaikanText
+
+                Mohon bantuannya untuk melakukan pengecekan dan verifikasi laporan tersebut di aplikasi Daily Foreman
+                _Pesan ini dikirim secara otomatis. Mohon tidak membalas pesan ini._
+                MSG;
+
+                if($request->departemen == 2){
+                    $verificationNumber = RefConf::where('id', 14)->value('value');
+                }else if($request->departemen == 3){
+                    $verificationNumber = RefConf::where('id', 20)->value('value');
+                }else if($request->departemen == 4){
+                    $verificationNumber = RefConf::where('id', 18)->value('value');
+                }else if($request->departemen == 5){
+                    $verificationNumber = RefConf::where('id', 19)->value('value');
+                }else if($request->departemen == 6){
+                    $verificationNumber = RefConf::where('id', 16)->value('value');
+                }else if($request->departemen == 7){
+                    $verificationNumber = RefConf::where('id', 17)->value('value');
+                }else if($request->departemen == 8){
+                    $verificationNumber = RefConf::where('id', 13)->value('value');
+                }else if($request->departemen == 10){
+                    $verificationNumber = RefConf::where('id', 23)->value('value');
+                }else if($request->departemen == 11){
+                    $verificationNumber = RefConf::where('id', 21)->value('value');
+                }else if($request->departemen == 17){
+                    $verificationNumber = RefConf::where('id', 22)->value('value');
+                }else if($request->departemen == 9){
+                    $verificationNumber = RefConf::where('id', 24)->value('value');
+                }
+                $verificationWaResult = $waController->sendMessageImage($verificationNumber, $hazardReportMessage, $dokumentasi_1);
+
+                FacadesLog::info('WA Send Result Verification', [
+                    'number' => $verificationNumber,
+                    'result' => $verificationWaResult
+                ]);
 
 
             }

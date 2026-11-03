@@ -465,7 +465,7 @@
                                         <th>Waktu</th>
                                         <th>Shift</th>
                                         <th>Perusahaan</th>
-                                        <th>Departemen</th>
+                                        <th>Departemen Tujuan</th>
                                         <th>Lokasi</th>
                                         <th>Bahaya</th>
                                         <th>Status SCC</th>
