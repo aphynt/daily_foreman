@@ -810,7 +810,7 @@
                                     {{-- INSPEKTOR 1 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Inspektor 1</label>
-                                        <select class="form-control form-control-sm" name="inspektor1" required>
+                                        <select class="form-control form-control-sm" name="inspektor1" data-trigger required>
                                             <option value="{{ Auth::user()->nik }}" selected>{{ Auth::user()->name }} ({{ Auth::user()->nik }})</option>
                                             @foreach ($users['inspektor'] as $inspektor)
                                                 <option value="{{ $inspektor->nik }}"
@@ -824,8 +824,8 @@
                                     {{-- INSPEKTOR 2 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Inspektor 2</label>
-                                        <select class="form-control form-control-sm" name="inspektor2">
-                                            <option value="" disabled selected></option>
+                                        <select class="form-control form-control-sm" name="inspektor2" data-trigger>
+                                            <option value="" selected></option>
                                             @foreach ($users['inspektor'] as $inspektor)
                                                 <option value="{{ $inspektor->nik }}"
                                                     {{ old('inspektor2') == $inspektor->nik ? 'selected' : '' }}>
@@ -838,8 +838,8 @@
                                     {{-- INSPEKTOR 3 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Inspektor 3</label>
-                                        <select class="form-control form-control-sm" name="inspektor3">
-                                            <option value="" disabled selected></option>
+                                        <select class="form-control form-control-sm" name="inspektor3" data-trigger>
+                                            <option value="" selected></option>
                                             @foreach ($users['inspektor'] as $inspektor)
                                                 <option value="{{ $inspektor->nik }}"
                                                     {{ old('inspektor3') == $inspektor->nik ? 'selected' : '' }}>
@@ -852,8 +852,8 @@
                                     {{-- INSPEKTOR 4 --}}
                                     <div class="col-md-12 col-12 px-2 py-2">
                                         <label>Inspektor 4</label>
-                                        <select class="form-control form-control-sm" name="inspektor4">
-                                            <option value="" disabled selected></option>
+                                        <select class="form-control form-control-sm" name="inspektor4" data-trigger>
+                                            <option value="" selected></option>
                                             @foreach ($users['inspektor'] as $inspektor)
                                                 <option value="{{ $inspektor->nik }}"
                                                     {{ old('inspektor4') == $inspektor->nik ? 'selected' : '' }}>

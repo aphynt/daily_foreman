@@ -38,7 +38,7 @@ use App\Http\Controllers\IT\KLKHITController;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Dewatering\KLKHDewateringController;
+
 use App\Http\Controllers\HazardReportController;
 use App\Http\Controllers\InspeksiTidakTerencanaController;
 use App\Http\Controllers\LogController;
@@ -48,8 +48,10 @@ use App\Http\Controllers\OprAssigntmentController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Produksi\JobPendingProduksiController;
 use App\Http\Controllers\Produksi\RosterKerjaProduksiController;
+
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReferenceController;
+
 use App\Http\Controllers\Safety\ERTController;
 use App\Http\Controllers\Safety\PatrolController;
 use App\Http\Controllers\Safety\InspeksiDisposalController;
@@ -63,6 +65,7 @@ use App\Http\Controllers\Safety\InspeksiRuangOfficeController;
 use App\Http\Controllers\Safety\InspeksiFuelSkidController;
 use App\Http\Controllers\Safety\InspeksiTPSLimbahB3Controller;
 use App\Http\Controllers\Safety\InspeksiGudangB3Controller;
+use App\Http\Controllers\Safety\InspeksiTempatBBCController;
 use App\Http\Controllers\Safety\InspeksiSumpController;
 use App\Http\Controllers\Safety\InspeksiPenilaianTerhadapKantin;
 use App\Http\Controllers\Safety\DashboardSafetyController;
@@ -72,18 +75,27 @@ use App\Http\Controllers\Safety\JobPendingSafetyController;
 use App\Http\Controllers\Safety\ObservasiBankController;
 use App\Http\Controllers\Safety\RosterKerjaSafetyController;
 use App\Http\Controllers\Safety\SOPSafetyController;
+
 use App\Http\Controllers\SAPController;
 use App\Http\Controllers\SOPController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifiedController;
 use App\Http\Controllers\EmployeeAvatarController;
+
 use App\Http\Controllers\Workshop\KLKHKantorWorkshopController;
 use App\Http\Controllers\Workshop\KLKHWorkshopLVSupportController;
 use App\Http\Controllers\Workshop\KLKHWorkshopRebuildController;
 use App\Http\Controllers\Workshop\KLKHWorkshopTyreController;
 use App\Http\Controllers\Workshop\KLKHWorkshopElectricController;
 use App\Http\Controllers\Workshop\KLKHWorkshopHEController;
-use App\Http\Controllers\Dewatering\KLKHAreaBlastingController;
+use App\Http\Controllers\Workshop\KLKHWashingBayController;
+
+use App\Http\Controllers\Engineering\KLKHAreaBlastingController;
+use App\Http\Controllers\Engineering\KLKHPekerjaanGeneralController;
+
+use App\Http\Controllers\Dewatering\KLKHDewateringController;
+use App\Http\Controllers\Dewatering\InspeksiInternalAreaSumpController;
+use App\Http\Controllers\Dewatering\InspeksiInternalAreaTandemController;
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\isAdmin;
 use App\Models\SOP;
@@ -561,6 +573,34 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/klkh/areablasting/verified/diketahui/{uuid}', [KLKHAreaBlastingController::class, 'verifiedDiketahui'])->name('klkh.areablasting.verified.diketahui');
     Route::post('/klkh/areablasting/verified/disetujui/{uuid}', [KLKHAreaBlastingController::class, 'verifiedDisetujui'])->name('klkh.areablasting.verified.disetujui');
 
+    //KLKH Washing Bay
+    Route::get('/klkh/washingbay', [KLKHWashingBayController::class, 'index'])->name('klkh.washingbay');
+    Route::get('/klkh/washingbay/insert', [KLKHWashingBayController::class, 'insert'])->name('klkh.washingbay.insert')->middleware('canAccess');
+    Route::post('/klkh/washingbay/post', [KLKHWashingBayController::class, 'post'])->name('klkh.washingbay.post');
+    Route::get('/klkh/washingbay/delete/{id}', [KLKHWashingBayController::class, 'delete'])->name('klkh.washingbay.delete');
+    Route::get('/klkh/washingbay/preview/{uuid}', [KLKHWashingBayController::class, 'preview'])->name('klkh.washingbay.preview');
+    Route::get('/klkh/washingbay/bundlepdf', [KLKHWashingBayController::class, 'bundlepdf'])->name('klkh.washingbay.bundlepdf');
+    Route::get('/klkh/washingbay/cetak/{uuid}', [KLKHWashingBayController::class, 'cetak'])->name('klkh.washingbay.cetak');
+    Route::get('/klkh/washingbay/download/{uuid}', [KLKHWashingBayController::class, 'download'])->name('klkh.washingbay.download');
+    Route::post('/klkh/washingbay/verified/all/{uuid}', [KLKHWashingBayController::class, 'verifiedAll'])->name('klkh.washingbay.verified.all');
+    Route::post('/klkh/washingbay/verified/pengawas/{uuid}', [KLKHWashingBayController::class, 'verifiedPengawas'])->name('klkh.washingbay.verified.pengawas');
+    Route::post('/klkh/washingbay/verified/diketahui/{uuid}', [KLKHWashingBayController::class, 'verifiedDiketahui'])->name('klkh.washingbay.verified.diketahui');
+    Route::post('/klkh/washingbay/verified/disetujui/{uuid}', [KLKHWashingBayController::class, 'verifiedDisetujui'])->name('klkh.washingbay.verified.disetujui');
+
+    //KLKH Washing Bay
+    Route::get('/klkh/pekerjaangeneral', [KLKHPekerjaanGeneralController::class, 'index'])->name('klkh.pekerjaangeneral');
+    Route::get('/klkh/pekerjaangeneral/insert', [KLKHPekerjaanGeneralController::class, 'insert'])->name('klkh.pekerjaangeneral.insert')->middleware('canAccess');
+    Route::post('/klkh/pekerjaangeneral/post', [KLKHPekerjaanGeneralController::class, 'post'])->name('klkh.pekerjaangeneral.post');
+    Route::get('/klkh/pekerjaangeneral/delete/{id}', [KLKHPekerjaanGeneralController::class, 'delete'])->name('klkh.pekerjaangeneral.delete');
+    Route::get('/klkh/pekerjaangeneral/preview/{uuid}', [KLKHPekerjaanGeneralController::class, 'preview'])->name('klkh.pekerjaangeneral.preview');
+    Route::get('/klkh/pekerjaangeneral/bundlepdf', [KLKHPekerjaanGeneralController::class, 'bundlepdf'])->name('klkh.pekerjaangeneral.bundlepdf');
+    Route::get('/klkh/pekerjaangeneral/cetak/{uuid}', [KLKHPekerjaanGeneralController::class, 'cetak'])->name('klkh.pekerjaangeneral.cetak');
+    Route::get('/klkh/pekerjaangeneral/download/{uuid}', [KLKHPekerjaanGeneralController::class, 'download'])->name('klkh.pekerjaangeneral.download');
+    Route::post('/klkh/pekerjaangeneral/verified/all/{uuid}', [KLKHPekerjaanGeneralController::class, 'verifiedAll'])->name('klkh.pekerjaangeneral.verified.all');
+    Route::post('/klkh/pekerjaangeneral/verified/pengawas/{uuid}', [KLKHPekerjaanGeneralController::class, 'verifiedPengawas'])->name('klkh.pekerjaangeneral.verified.pengawas');
+    Route::post('/klkh/pekerjaangeneral/verified/diketahui/{uuid}', [KLKHPekerjaanGeneralController::class, 'verifiedDiketahui'])->name('klkh.pekerjaangeneral.verified.diketahui');
+    Route::post('/klkh/pekerjaangeneral/verified/disetujui/{uuid}', [KLKHPekerjaanGeneralController::class, 'verifiedDisetujui'])->name('klkh.pekerjaangeneral.verified.disetujui');
+
     //KLKH Dewatering
     Route::get('/klkh/dewatering', [KLKHDewateringController::class, 'index'])->name('klkh.dewatering');
     Route::get('/klkh/dewatering/insert', [KLKHDewateringController::class, 'insert'])->name('klkh.dewatering.insert')->middleware('canAccess');
@@ -695,6 +735,36 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/inspeksi/gudangb3/bundlepdf', [InspeksiGudangB3Controller::class, 'bundlepdf'])->name('inspeksi.gudangb3.bundlepdf');
     Route::get('/inspeksi/gudangb3/cetak/{uuid}', [InspeksiGudangB3Controller::class, 'cetak'])->name('inspeksi.gudangb3.cetak');
     Route::get('/inspeksi/gudangb3/download/{uuid}', [InspeksiGudangB3Controller::class, 'download'])->name('inspeksi.gudangb3.download');
+
+    //Inspeksi Internal Area Sump
+    Route::get('/inspeksi/internalareasump', [InspeksiInternalAreaSumpController::class, 'index'])->name('inspeksi.internalareasump');
+    Route::get('/inspeksi/internalareasump/insert', [InspeksiInternalAreaSumpController::class, 'insert'])->name('inspeksi.internalareasump.insert')->middleware('canAccess');
+    Route::post('/inspeksi/internalareasump/post', [InspeksiInternalAreaSumpController::class, 'post'])->name('inspeksi.internalareasump.post');
+    Route::get('/inspeksi/internalareasump/delete/{uuid}', [InspeksiInternalAreaSumpController::class, 'delete'])->name('inspeksi.internalareasump.delete');
+    Route::get('/inspeksi/internalareasump/preview/{uuid}', [InspeksiInternalAreaSumpController::class, 'preview'])->name('inspeksi.internalareasump.preview');
+    Route::get('/inspeksi/internalareasump/bundlepdf', [InspeksiInternalAreaSumpController::class, 'bundlepdf'])->name('inspeksi.internalareasump.bundlepdf');
+    Route::get('/inspeksi/internalareasump/cetak/{uuid}', [InspeksiInternalAreaSumpController::class, 'cetak'])->name('inspeksi.internalareasump.cetak');
+    Route::get('/inspeksi/internalareasump/download/{uuid}', [InspeksiInternalAreaSumpController::class, 'download'])->name('inspeksi.internalareasump.download');
+
+    //Inspeksi Internal Area Tandem
+    Route::get('/inspeksi/internalareatandem', [InspeksiInternalAreaTandemController::class, 'index'])->name('inspeksi.internalareatandem');
+    Route::get('/inspeksi/internalareatandem/insert', [InspeksiInternalAreaTandemController::class, 'insert'])->name('inspeksi.internalareatandem.insert')->middleware('canAccess');
+    Route::post('/inspeksi/internalareatandem/post', [InspeksiInternalAreaTandemController::class, 'post'])->name('inspeksi.internalareatandem.post');
+    Route::get('/inspeksi/internalareatandem/delete/{uuid}', [InspeksiInternalAreaTandemController::class, 'delete'])->name('inspeksi.internalareatandem.delete');
+    Route::get('/inspeksi/internalareatandem/preview/{uuid}', [InspeksiInternalAreaTandemController::class, 'preview'])->name('inspeksi.internalareatandem.preview');
+    Route::get('/inspeksi/internalareatandem/bundlepdf', [InspeksiInternalAreaTandemController::class, 'bundlepdf'])->name('inspeksi.internalareatandem.bundlepdf');
+    Route::get('/inspeksi/internalareatandem/cetak/{uuid}', [InspeksiInternalAreaTandemController::class, 'cetak'])->name('inspeksi.internalareatandem.cetak');
+    Route::get('/inspeksi/internalareatandem/download/{uuid}', [InspeksiInternalAreaTandemController::class, 'download'])->name('inspeksi.internalareatandem.download');
+
+    //Inspeksi Tempat BBC
+    Route::get('/inspeksi/tempatbbc', [InspeksiTempatBBCController::class, 'index'])->name('inspeksi.tempatbbc');
+    Route::get('/inspeksi/tempatbbc/insert', [InspeksiTempatBBCController::class, 'insert'])->name('inspeksi.tempatbbc.insert')->middleware('canAccess');
+    Route::post('/inspeksi/tempatbbc/post', [InspeksiTempatBBCController::class, 'post'])->name('inspeksi.tempatbbc.post');
+    Route::get('/inspeksi/tempatbbc/delete/{uuid}', [InspeksiTempatBBCController::class, 'delete'])->name('inspeksi.tempatbbc.delete');
+    Route::get('/inspeksi/tempatbbc/preview/{uuid}', [InspeksiTempatBBCController::class, 'preview'])->name('inspeksi.tempatbbc.preview');
+    Route::get('/inspeksi/tempatbbc/bundlepdf', [InspeksiTempatBBCController::class, 'bundlepdf'])->name('inspeksi.tempatbbc.bundlepdf');
+    Route::get('/inspeksi/tempatbbc/cetak/{uuid}', [InspeksiTempatBBCController::class, 'cetak'])->name('inspeksi.tempatbbc.cetak');
+    Route::get('/inspeksi/tempatbbc/download/{uuid}', [InspeksiTempatBBCController::class, 'download'])->name('inspeksi.tempatbbc.download');
 
     //Inspeksi Sump
     // Route::get('/inspeksi/sump', [InspeksiSumpController::class, 'index'])->name('inspeksi.sump');

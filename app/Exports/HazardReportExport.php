@@ -93,8 +93,7 @@ class HazardReportExport implements FromCollection, WithHeadings, WithMapping, W
     {
         $user = Auth::user();
 
-        $showPelapor = !is_null($user->departemen_id)
-            && (string) $item->departemen_id_pelapor === (string) $user->departemen_id;
+        $showPelapor = $user->id == 3 || (!is_null($user->departemen_id) && (string) $item->departemen_id_pelapor === (string) $user->departemen_id);
 
         $fotoTemuan = ($item->dokumentasi_1 ?? null)
             ?: ($item->dokumentasi_2 ?? null);

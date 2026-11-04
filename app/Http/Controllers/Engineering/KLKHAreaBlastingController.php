@@ -361,7 +361,7 @@ class KLKHAreaBlastingController extends Controller
             return redirect()->route('klkh.areablasting')->with('info', nl2br('KLKH gagal diverifikasi..\n' . $th->getMessage()));
         }
     }
-    
+
     public function verifiedDisetujui(Request $request, $uuid)
     {
         $klkh =  KLKHAreaBlasting::where('uuid', $uuid)->first();
