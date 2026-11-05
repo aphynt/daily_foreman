@@ -973,9 +973,17 @@
         const total = passes.reduce((sum,item) => sum + Number(item.digging_time),0);
         const average = total / passes.length;
         document.getElementById('averageTime').textContent = average.toFixed(2);
-        let category;
-        if (average <= 12.59) category = 'MATERIAL BAGUS';
-        else category = 'MATERIAL KERAS';
+        const material = document.getElementById('jenis_material').value.trim().toLowerCase();
+        const area = document.getElementById('keterangan_area').value.trim().toLowerCase();
+        const batasArea = {
+            'sisi highwall': 14.00,
+            'sisi tengah': 12.50,
+            'sisi freeface': 13.50
+        };
+        const batas = material === 'free dig' ? 15.99 : batasArea[area];
+        const category = batas === undefined
+            ? 'PILIH JENIS MATERIAL DAN SISI AREA'
+            : Number(average.toFixed(2)) <= batas ? 'MATERIAL BAGUS' : 'MATERIAL KERAS';
         document.getElementById('categoryDisplay').textContent = category;
     }
 

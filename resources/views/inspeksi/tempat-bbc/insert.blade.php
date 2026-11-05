@@ -18,7 +18,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="container mt-3">
-                            <form action="{{ route('inspeksi.tempatbbc.post') }}" method="POST" id="submitformInspeksiSlurryPump" enctype="multipart/form-data">
+                            <form action="{{ route('inspeksi.tempatbbc.post') }}" method="POST" id="submitformInspeksiTempatBBC" enctype="multipart/form-data">
                                 @csrf
                                 <div class="row mb-3">
                                     <div class="col-md-6 col-12 px-2 py-2">
@@ -1609,7 +1609,7 @@
                                     </div>
                                 </div>
                                 <div class="text-center mt-3">
-                                    <button type="submit" class="btn btn-primary btn-lg px-5 py-2" id="submitButtonInspeksiSlurryPump">Submit</button>
+                                    <button type="submit" class="btn btn-primary btn-lg px-5 py-2" id="submitButtonInspeksiTempatBBC">Submit</button>
                                 </div>
                             </form>
                         </div>
@@ -1624,16 +1624,16 @@
 
 <script>
 
-    const formInspeksiSlurryPump = document.getElementById('submitformInspeksiSlurryPump');
-    const submitButtonInspeksiSlurryPump = document.getElementById('submitButtonInspeksiSlurryPump');
+    const formInspeksiTempatBBC = document.getElementById('submitformInspeksiTempatBBC');
+    const submitButtonInspeksiTempatBBC = document.getElementById('submitButtonInspeksiTempatBBC');
 
-    formInspeksiSlurryPump.addEventListener('submit', function() {
+    formInspeksiTempatBBC.addEventListener('submit', function() {
         // Nonaktifkan tombol submit ketika form sedang diproses
-        submitButtonInspeksiSlurryPump.disabled = true;
-        submitButtonInspeksiSlurryPump.innerText = 'Processing...';
+        submitButtonInspeksiTempatBBC.disabled = true;
+        submitButtonInspeksiTempatBBC.innerText = 'Processing...';
         setTimeout(function() {
-            submitButtonInspeksiSlurryPump.disabled = false;
-            submitButtonInspeksiSlurryPump.innerText = 'Submit';
+            submitButtonInspeksiTempatBBC.disabled = false;
+            submitButtonInspeksiTempatBBC.innerText = 'Submit';
         }, 7000);
     });
 </script>

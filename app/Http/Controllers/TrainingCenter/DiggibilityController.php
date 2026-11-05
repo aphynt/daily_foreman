@@ -20,8 +20,38 @@ use App\Http\Controllers\WhatsAppController;
 
 class DiggibilityController extends Controller
 {
+    private function kategoriMaterial($area, $jenisMaterial, $average, $kategoriLama = null)
+    {
+        // Free Dig menggunakan batas tersendiri, terlepas dari sisi area.
+        $batas = strcasecmp(trim((string) $jenisMaterial), 'Free Dig') === 0
+            ? 15.99
+            : (['sisi highwall' => 14.00, 'sisi tengah' => 12.50, 'sisi freeface' => 13.50][strtolower(trim((string) $area))] ?? null);
+
+        if ($batas === null || $average === null || $average === '') {
+            return $kategoriLama;
+        }
+
+        return round((float) $average, 2) <= $batas ? 'MATERIAL BAGUS' : 'MATERIAL KERAS';
+    }
+
+    private function perbaruiKategori($item)
+    {
+        $item->kategori = $this->kategoriMaterial(
+            $item->keterangan_area,
+            $item->jenis_material,
+            $item->average_digging_time,
+            $item->kategori
+        );
+        return $item;
+    }
+
     public function index(Request $request)
     {
+        $request->validate([
+            'tanggal_mulai' => 'nullable|date',
+            'tanggal_sampai' => 'nullable|date|after_or_equal:tanggal_mulai',
+        ]);
+
         $query = DiggibilityTimeSession::query()
             ->leftJoin('users', 'users.id', '=', 'tc_diggibility_timesession.pic')
             ->where('tc_diggibility_timesession.statusenabled', 1)
@@ -45,18 +75,57 @@ class DiggibilityController extends Controller
         $tanggalMulai = $request->input('tanggal_mulai') ?: now()->toDateString();
         $tanggalSampai = $request->input('tanggal_sampai') ?: now()->toDateString();
 
-        $laporan = (clone $query)
+        if ($tanggalMulai > $tanggalSampai) {
+            return back()->withErrors(['tanggal_sampai' => 'Tanggal sampai harus sama atau setelah tanggal mulai.']);
+        }
+
+        if ($request->input('export') === 'raw') {
+            return $this->exportRawData(clone $query, $tanggalMulai, $tanggalSampai);
+        }
+
+        // Hanya tren yang memakai 30 hari kalender terakhir, termasuk hari ini.
+        // Rekap dihitung langsung oleh SQL Server tanpa memuat seluruh laporan.
+        $trendMulai = now()->startOfDay()->subDays(29);
+        $trendSampai = now()->startOfDay()->addDay();
+        $kategoriSql = "CASE
+            WHEN UPPER(LTRIM(RTRIM(tc_diggibility_timesession.jenis_material))) = 'FREE DIG' THEN 15.99
+            WHEN UPPER(LTRIM(RTRIM(tc_diggibility_timesession.keterangan_area))) = 'SISI HIGHWALL' THEN 14.00
+            WHEN UPPER(LTRIM(RTRIM(tc_diggibility_timesession.keterangan_area))) = 'SISI TENGAH' THEN 12.50
+            WHEN UPPER(LTRIM(RTRIM(tc_diggibility_timesession.keterangan_area))) = 'SISI FREEFACE' THEN 13.50
+            ELSE NULL END";
+
+        $trend = (clone $query)
+            ->select(DB::raw("CAST(tc_diggibility_timesession.tanggal AS date) AS tanggal,
+                COUNT(*) AS total,
+                SUM(CASE WHEN {$kategoriSql} IS NOT NULL
+                    AND ROUND(tc_diggibility_timesession.average_digging_time, 2) <= {$kategoriSql}
+                    THEN 1 ELSE 0 END) AS bagus,
+                SUM(CASE WHEN {$kategoriSql} IS NOT NULL
+                    AND ROUND(tc_diggibility_timesession.average_digging_time, 2) > {$kategoriSql}
+                    THEN 1 ELSE 0 END) AS keras"))
+            ->where('tc_diggibility_timesession.tanggal', '>=', $trendMulai)
+            ->where('tc_diggibility_timesession.tanggal', '<', $trendSampai)
+            ->groupByRaw('CAST(tc_diggibility_timesession.tanggal AS date)')
+            ->orderBy('tanggal')
+            ->get()
+            ->mapWithKeys(fn ($item) => [
+                \Carbon\Carbon::parse($item->tanggal)->format('Y-m-d') => [
+                    'total' => (int) $item->total,
+                    'bagus' => (int) $item->bagus,
+                    'keras' => (int) $item->keras,
+                ],
+            ]);
+
+        $data = $query
             ->whereDate('tc_diggibility_timesession.tanggal', '>=', $tanggalMulai)
             ->whereDate('tc_diggibility_timesession.tanggal', '<=', $tanggalSampai)
             ->with('passes')
             ->orderByDesc('tc_diggibility_timesession.tanggal')
             ->orderByDesc('tc_diggibility_timesession.id')
-            ->get();
+            ->get()
+            ->map(fn ($item) => $this->perbaruiKategori($item));
 
-        $data = $query
-            ->with('passes')
-            ->orderByDesc('tc_diggibility_timesession.id')
-            ->get();
+        $laporan = $data;
 
         $totalLaporan = $data->count();
 
@@ -116,26 +185,6 @@ class DiggibilityController extends Controller
                 ];
             });
 
-        $trend = $data
-            ->groupBy(function ($item) {
-                return \Carbon\Carbon::parse($item->tanggal)
-                    ->format('Y-m-d');
-            })
-            ->map(function ($items) {
-                return [
-                    'total' => $items->count(),
-
-                    'bagus' => $items
-                        ->where('kategori', 'MATERIAL BAGUS')
-                        ->count(),
-
-                    'keras' => $items
-                        ->where('kategori', 'MATERIAL KERAS')
-                        ->count(),
-                ];
-            })
-            ->sortKeys();
-
         $pengawas = DiggibilityTimeSession::where('statusenabled', 1)
             ->whereNotNull('nama_pengawas')
             ->distinct()
@@ -170,6 +219,68 @@ class DiggibilityController extends Controller
             'lokasiList',
             'materialList'
         ));
+    }
+
+    private function exportRawData($query, $tanggalMulai, $tanggalSampai)
+    {
+        $namaFile = "diggibility_raw_{$tanggalMulai}_sd_{$tanggalSampai}.csv";
+
+        return response()->streamDownload(function () use ($query, $tanggalMulai, $tanggalSampai) {
+            $output = fopen('php://output', 'w');
+            fwrite($output, "\xEF\xBB\xBF"); // UTF-8 BOM agar terbaca baik di Excel.
+
+            fputcsv($output, [
+                'ID Laporan', 'UUID Laporan', 'Tanggal', 'Jam', 'No Unit',
+                'Tinggi Jenjang', 'Lokasi', 'Titik Koordinat', 'Jenis Material',
+                'Keterangan Area', 'NIK Operator', 'Nama Operator',
+                'NIK Pengawas', 'Nama Pengawas', 'PIC', 'Passes Bucket',
+                'Operator Fit', 'Kinerja Operator Rendah', 'Keterangan Tambahan',
+                'Total Passes', 'Total Digging Time (detik)',
+                'Average Digging Time (detik)', 'Kategori', 'Status',
+                'Pass No', 'Digging Time Pass (detik)', 'UUID Pass', 'Dibuat Pada',
+            ]);
+
+            $query->whereDate('tc_diggibility_timesession.tanggal', '>=', $tanggalMulai)
+                ->whereDate('tc_diggibility_timesession.tanggal', '<=', $tanggalSampai)
+                ->with(['passes' => function ($q) {
+                    $q->orderBy('pass_no');
+                }])
+                ->orderBy('tc_diggibility_timesession.id')
+                ->chunk(500, function ($sessions) use ($output) {
+                    foreach ($sessions as $session) {
+                        $this->perbaruiKategori($session);
+                        // Tetap keluarkan laporan meskipun tidak mempunyai detail pass.
+                        $passes = $session->passes->isEmpty() ? [null] : $session->passes;
+                        foreach ($passes as $pass) {
+                            $values = [
+                                $session->id, $session->uuid, $session->tanggal,
+                                $session->jam, $session->no_unit, $session->tinggi_jenjang,
+                                $session->lokasi, $session->titik_koordinat,
+                                $session->jenis_material, $session->keterangan_area,
+                                $session->nik_operator, $session->nama_operator,
+                                $session->nik_pengawas, $session->nama_pengawas,
+                                $session->nama_pic, $session->passes_bucket,
+                                $session->operator_fit, $session->kinerja_operator_rendah,
+                                $session->keterangan_tambahan, $session->total_passes,
+                                $session->total_digging_time, $session->average_digging_time,
+                                $session->kategori, $session->status,
+                                $pass?->pass_no, $pass?->digging_time, $pass?->uuid,
+                                $session->created_at,
+                            ];
+                            // Cegah formula CSV dijalankan ketika file dibuka di Excel.
+                            $values = array_map(function ($value) {
+                                if (is_string($value) && preg_match('/^[\s]*[=+@\-]/u', $value)) {
+                                    return "'" . $value;
+                                }
+                                return $value;
+                            }, $values);
+                            fputcsv($output, $values);
+                        }
+                    }
+                    fflush($output);
+                });
+            fclose($output);
+        }, $namaFile, ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
 
     public function insert()
@@ -227,10 +338,16 @@ class DiggibilityController extends Controller
             $totalDiggingTime = $passes->sum(fn($pass) => (float) $pass['digging_time']);
             $average = $totalPasses > 0 ? round($totalDiggingTime / $totalPasses, 2) : 0;
 
-            if ($average <= 12.59) {
-                $kategori = 'MATERIAL BAGUS';
-            } else {
-                $kategori = 'MATERIAL KERAS';
+            $kategori = $this->kategoriMaterial(
+                $validated['keterangan_area'] ?? null,
+                $validated['jenis_material'] ?? null,
+                $average
+            );
+            if ($kategori === null) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Jenis material atau sisi area tidak valid.',
+                ], 422);
             }
 
             $userId = Auth::id();
@@ -319,6 +436,8 @@ class DiggibilityController extends Controller
             ->with('passes')
             ->firstOrFail();
 
+        $this->perbaruiKategori($data);
+
         return response()->json([
             'success' => true,
             'data' => $data,
@@ -337,6 +456,8 @@ class DiggibilityController extends Controller
             )
             ->with('passes')
             ->firstOrFail();
+
+        $this->perbaruiKategori($data);
 
         // dd($data);
 
@@ -358,6 +479,8 @@ class DiggibilityController extends Controller
             ->with('passes')
             ->firstOrFail();
 
+        $this->perbaruiKategori($data);
+
         return view('diggibility.download', compact('data'));
     }
 
@@ -378,6 +501,8 @@ class DiggibilityController extends Controller
             )
             ->with('passes')
             ->firstOrFail();
+
+        $this->perbaruiKategori($data);
 
         $rawNumber = trim($data->no_hp ?? '');
         if ($rawNumber === '') {

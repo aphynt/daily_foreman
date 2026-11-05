@@ -1119,7 +1119,7 @@
                                         <select class="form-control form-control-sm" id="inspektor5" name="inspektor5" data-trigger>
                                             <option value="" selected></option>
                                             @foreach ($users['inspektor'] as $inspektor)
-                                                <option value="{{ $inspektor->nik }}" {{ old('inspektor4') == $inspektor->nik ? 'selected' : '' }}>
+                                                <option value="{{ $inspektor->nik }}" {{ old('inspektor5') == $inspektor->nik ? 'selected' : '' }}>
                                                     {{ $inspektor->name }} ({{ $inspektor->nik }})
                                                 </option>
                                             @endforeach
@@ -1130,7 +1130,7 @@
                                         <select class="form-control form-control-sm" id="inspektor6" name="inspektor6" data-trigger>
                                             <option value="" selected></option>
                                             @foreach ($users['inspektor'] as $inspektor)
-                                                <option value="{{ $inspektor->nik }}" {{ old('inspektor4') == $inspektor->nik ? 'selected' : '' }}>
+                                                <option value="{{ $inspektor->nik }}" {{ old('inspektor6') == $inspektor->nik ? 'selected' : '' }}>
                                                     {{ $inspektor->name }} ({{ $inspektor->nik }})
                                                 </option>
                                             @endforeach
@@ -1141,7 +1141,7 @@
                                         <select class="form-control form-control-sm" id="inspektor7" name="inspektor7" data-trigger>
                                             <option value="" selected></option>
                                             @foreach ($users['inspektor'] as $inspektor)
-                                                <option value="{{ $inspektor->nik }}" {{ old('inspektor4') == $inspektor->nik ? 'selected' : '' }}>
+                                                <option value="{{ $inspektor->nik }}" {{ old('inspektor7') == $inspektor->nik ? 'selected' : '' }}>
                                                     {{ $inspektor->name }} ({{ $inspektor->nik }})
                                                 </option>
                                             @endforeach

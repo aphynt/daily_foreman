@@ -966,15 +966,16 @@
 
                     <div>
                         <label>DARI TANGGAL</label>
-                        <input type="date" name="tanggal_mulai" value="{{ request('tanggal_mulai', now()->toDateString()) }}">
+                        <input type="date" name="tanggal_mulai" value="{{ request('tanggal_mulai') ?: now()->toDateString() }}">
                     </div>
 
                     <div>
                         <label>SAMPAI TANGGAL</label>
-                        <input type="date" name="tanggal_sampai" value="{{ request('tanggal_sampai', now()->toDateString()) }}">
+                        <input type="date" name="tanggal_sampai" value="{{ request('tanggal_sampai') ?: now()->toDateString() }}">
                     </div>
 
                     <button type="submit">TERAPKAN</button>
+                    <button type="submit" name="export" value="raw" style="background:#dddddd;">⬇ DOWNLOAD RAW DATA (CSV)</button>
                 </form>
             </div>
 
@@ -1047,7 +1048,7 @@
 
                 <div class="dig-section">
                     <div class="dig-label">PERUBAHAN PERIODIK</div>
-                    <div class="dig-section-title">TREND KUALITAS HARIAN</div>
+                    <div class="dig-section-title">TREND KUALITAS HARIAN (30 HARI TERAKHIR)</div>
 
                     <div class="dig-table-scroll">
                         <table class="dig-table">

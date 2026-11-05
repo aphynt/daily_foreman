@@ -66,6 +66,9 @@ use App\Http\Controllers\Safety\InspeksiFuelSkidController;
 use App\Http\Controllers\Safety\InspeksiTPSLimbahB3Controller;
 use App\Http\Controllers\Safety\InspeksiGudangB3Controller;
 use App\Http\Controllers\Safety\InspeksiTempatBBCController;
+use App\Http\Controllers\Safety\InspeksiPitStopController;
+use App\Http\Controllers\Safety\InspeksiPengangkutanLumpurController;
+use App\Http\Controllers\Safety\InspeksiPenimbunanDiKolamLumpurController;
 use App\Http\Controllers\Safety\InspeksiSumpController;
 use App\Http\Controllers\Safety\InspeksiPenilaianTerhadapKantin;
 use App\Http\Controllers\Safety\DashboardSafetyController;
@@ -765,6 +768,36 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/inspeksi/tempatbbc/bundlepdf', [InspeksiTempatBBCController::class, 'bundlepdf'])->name('inspeksi.tempatbbc.bundlepdf');
     Route::get('/inspeksi/tempatbbc/cetak/{uuid}', [InspeksiTempatBBCController::class, 'cetak'])->name('inspeksi.tempatbbc.cetak');
     Route::get('/inspeksi/tempatbbc/download/{uuid}', [InspeksiTempatBBCController::class, 'download'])->name('inspeksi.tempatbbc.download');
+
+    //Inspeksi Pit Stop
+    Route::get('/inspeksi/pitstop', [InspeksiPitStopController::class, 'index'])->name('inspeksi.pitstop');
+    Route::get('/inspeksi/pitstop/insert', [InspeksiPitStopController::class, 'insert'])->name('inspeksi.pitstop.insert')->middleware('canAccess');
+    Route::post('/inspeksi/pitstop/post', [InspeksiPitStopController::class, 'post'])->name('inspeksi.pitstop.post');
+    Route::get('/inspeksi/pitstop/delete/{uuid}', [InspeksiPitStopController::class, 'delete'])->name('inspeksi.pitstop.delete');
+    Route::get('/inspeksi/pitstop/preview/{uuid}', [InspeksiPitStopController::class, 'preview'])->name('inspeksi.pitstop.preview');
+    Route::get('/inspeksi/pitstop/bundlepdf', [InspeksiPitStopController::class, 'bundlepdf'])->name('inspeksi.pitstop.bundlepdf');
+    Route::get('/inspeksi/pitstop/cetak/{uuid}', [InspeksiPitStopController::class, 'cetak'])->name('inspeksi.pitstop.cetak');
+    Route::get('/inspeksi/pitstop/download/{uuid}', [InspeksiPitStopController::class, 'download'])->name('inspeksi.pitstop.download');
+
+    //Inspeksi Pengangkutan Lumpur
+    Route::get('/inspeksi/pengangkutanlumpur', [InspeksiPengangkutanLumpurController::class, 'index'])->name('inspeksi.pengangkutanlumpur');
+    Route::get('/inspeksi/pengangkutanlumpur/insert', [InspeksiPengangkutanLumpurController::class, 'insert'])->name('inspeksi.pengangkutanlumpur.insert')->middleware('canAccess');
+    Route::post('/inspeksi/pengangkutanlumpur/post', [InspeksiPengangkutanLumpurController::class, 'post'])->name('inspeksi.pengangkutanlumpur.post');
+    Route::get('/inspeksi/pengangkutanlumpur/delete/{uuid}', [InspeksiPengangkutanLumpurController::class, 'delete'])->name('inspeksi.pengangkutanlumpur.delete');
+    Route::get('/inspeksi/pengangkutanlumpur/preview/{uuid}', [InspeksiPengangkutanLumpurController::class, 'preview'])->name('inspeksi.pengangkutanlumpur.preview');
+    Route::get('/inspeksi/pengangkutanlumpur/bundlepdf', [InspeksiPengangkutanLumpurController::class, 'bundlepdf'])->name('inspeksi.pengangkutanlumpur.bundlepdf');
+    Route::get('/inspeksi/pengangkutanlumpur/cetak/{uuid}', [InspeksiPengangkutanLumpurController::class, 'cetak'])->name('inspeksi.pengangkutanlumpur.cetak');
+    Route::get('/inspeksi/pengangkutanlumpur/download/{uuid}', [InspeksiPengangkutanLumpurController::class, 'download'])->name('inspeksi.pengangkutanlumpur.download');
+
+    //Inspeksi Penimbunan di Kolam Lumpur
+    Route::get('/inspeksi/penimbunandikolamlumpur', [InspeksiPenimbunanDiKolamLumpurController::class, 'index'])->name('inspeksi.penimbunandikolamlumpur');
+    Route::get('/inspeksi/penimbunandikolamlumpur/insert', [InspeksiPenimbunanDiKolamLumpurController::class, 'insert'])->name('inspeksi.penimbunandikolamlumpur.insert')->middleware('canAccess');
+    Route::post('/inspeksi/penimbunandikolamlumpur/post', [InspeksiPenimbunanDiKolamLumpurController::class, 'post'])->name('inspeksi.penimbunandikolamlumpur.post');
+    Route::get('/inspeksi/penimbunandikolamlumpur/delete/{uuid}', [InspeksiPenimbunanDiKolamLumpurController::class, 'delete'])->name('inspeksi.penimbunandikolamlumpur.delete');
+    Route::get('/inspeksi/penimbunandikolamlumpur/preview/{uuid}', [InspeksiPenimbunanDiKolamLumpurController::class, 'preview'])->name('inspeksi.penimbunandikolamlumpur.preview');
+    Route::get('/inspeksi/penimbunandikolamlumpur/bundlepdf', [InspeksiPenimbunanDiKolamLumpurController::class, 'bundlepdf'])->name('inspeksi.penimbunandikolamlumpur.bundlepdf');
+    Route::get('/inspeksi/penimbunandikolamlumpur/cetak/{uuid}', [InspeksiPenimbunanDiKolamLumpurController::class, 'cetak'])->name('inspeksi.penimbunandikolamlumpur.cetak');
+    Route::get('/inspeksi/penimbunandikolamlumpur/download/{uuid}', [InspeksiPenimbunanDiKolamLumpurController::class, 'download'])->name('inspeksi.penimbunandikolamlumpur.download');
 
     //Inspeksi Sump
     // Route::get('/inspeksi/sump', [InspeksiSumpController::class, 'index'])->name('inspeksi.sump');
