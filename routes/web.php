@@ -69,6 +69,11 @@ use App\Http\Controllers\Safety\InspeksiTempatBBCController;
 use App\Http\Controllers\Safety\InspeksiPitStopController;
 use App\Http\Controllers\Safety\InspeksiPengangkutanLumpurController;
 use App\Http\Controllers\Safety\InspeksiPenimbunanDiKolamLumpurController;
+use App\Http\Controllers\Safety\InspeksiAreaOfficeController;
+use App\Http\Controllers\Safety\InspeksiAreaMessController;
+use App\Http\Controllers\Safety\InspeksiAreaKantinController;
+use App\Http\Controllers\Safety\InspeksiAreaLimbahB3Controller;
+use App\Http\Controllers\Safety\InspeksiDTHDController;
 use App\Http\Controllers\Safety\InspeksiSumpController;
 use App\Http\Controllers\Safety\InspeksiPenilaianTerhadapKantin;
 use App\Http\Controllers\Safety\DashboardSafetyController;
@@ -92,6 +97,7 @@ use App\Http\Controllers\Workshop\KLKHWorkshopTyreController;
 use App\Http\Controllers\Workshop\KLKHWorkshopElectricController;
 use App\Http\Controllers\Workshop\KLKHWorkshopHEController;
 use App\Http\Controllers\Workshop\KLKHWashingBayController;
+use App\Http\Controllers\Workshop\KLKHPITController;
 
 use App\Http\Controllers\Engineering\KLKHAreaBlastingController;
 use App\Http\Controllers\Engineering\KLKHPekerjaanGeneralController;
@@ -590,6 +596,18 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/klkh/washingbay/verified/diketahui/{uuid}', [KLKHWashingBayController::class, 'verifiedDiketahui'])->name('klkh.washingbay.verified.diketahui');
     Route::post('/klkh/washingbay/verified/disetujui/{uuid}', [KLKHWashingBayController::class, 'verifiedDisetujui'])->name('klkh.washingbay.verified.disetujui');
 
+    Route::get('/klkh/pit', [KLKHPITController::class, 'index'])->name('klkh.pit');
+    Route::get('/klkh/pit/insert', [KLKHPITController::class, 'insert'])->name('klkh.pit.insert')->middleware('canAccess');
+    Route::post('/klkh/pit/post', [KLKHPITController::class, 'post'])->name('klkh.pit.post');
+    Route::get('/klkh/pit/delete/{id}', [KLKHPITController::class, 'delete'])->name('klkh.pit.delete');
+    Route::get('/klkh/pit/preview/{uuid}', [KLKHPITController::class, 'preview'])->name('klkh.pit.preview');
+    Route::get('/klkh/pit/bundlepdf', [KLKHPITController::class, 'bundlepdf'])->name('klkh.pit.bundlepdf');
+    Route::get('/klkh/pit/cetak/{uuid}', [KLKHPITController::class, 'cetak'])->name('klkh.pit.cetak');
+    Route::get('/klkh/pit/download/{uuid}', [KLKHPITController::class, 'download'])->name('klkh.pit.download');
+    Route::post('/klkh/pit/verified/all/{uuid}', [KLKHPITController::class, 'verifiedAll'])->name('klkh.pit.verified.all');
+    Route::post('/klkh/pit/verified/pengawas/{uuid}', [KLKHPITController::class, 'verifiedPengawas'])->name('klkh.pit.verified.pengawas');
+    Route::post('/klkh/pit/verified/diketahui/{uuid}', [KLKHPITController::class, 'verifiedDiketahui'])->name('klkh.pit.verified.diketahui');
+
     //KLKH Washing Bay
     Route::get('/klkh/pekerjaangeneral', [KLKHPekerjaanGeneralController::class, 'index'])->name('klkh.pekerjaangeneral');
     Route::get('/klkh/pekerjaangeneral/insert', [KLKHPekerjaanGeneralController::class, 'insert'])->name('klkh.pekerjaangeneral.insert')->middleware('canAccess');
@@ -798,6 +816,57 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/inspeksi/penimbunandikolamlumpur/bundlepdf', [InspeksiPenimbunanDiKolamLumpurController::class, 'bundlepdf'])->name('inspeksi.penimbunandikolamlumpur.bundlepdf');
     Route::get('/inspeksi/penimbunandikolamlumpur/cetak/{uuid}', [InspeksiPenimbunanDiKolamLumpurController::class, 'cetak'])->name('inspeksi.penimbunandikolamlumpur.cetak');
     Route::get('/inspeksi/penimbunandikolamlumpur/download/{uuid}', [InspeksiPenimbunanDiKolamLumpurController::class, 'download'])->name('inspeksi.penimbunandikolamlumpur.download');
+
+    //Inspeksi Area Office / Perkantoran
+    Route::get('/inspeksi/areaoffice', [InspeksiAreaOfficeController::class, 'index'])->name('inspeksi.areaoffice');
+    Route::get('/inspeksi/areaoffice/insert', [InspeksiAreaOfficeController::class, 'insert'])->name('inspeksi.areaoffice.insert')->middleware('canAccess');
+    Route::post('/inspeksi/areaoffice/post', [InspeksiAreaOfficeController::class, 'post'])->name('inspeksi.areaoffice.post');
+    Route::get('/inspeksi/areaoffice/delete/{uuid}', [InspeksiAreaOfficeController::class, 'delete'])->name('inspeksi.areaoffice.delete');
+    Route::get('/inspeksi/areaoffice/preview/{uuid}', [InspeksiAreaOfficeController::class, 'preview'])->name('inspeksi.areaoffice.preview');
+    Route::get('/inspeksi/areaoffice/bundlepdf', [InspeksiAreaOfficeController::class, 'bundlepdf'])->name('inspeksi.areaoffice.bundlepdf');
+    Route::get('/inspeksi/areaoffice/cetak/{uuid}', [InspeksiAreaOfficeController::class, 'cetak'])->name('inspeksi.areaoffice.cetak');
+    Route::get('/inspeksi/areaoffice/download/{uuid}', [InspeksiAreaOfficeController::class, 'download'])->name('inspeksi.areaoffice.download');
+
+    //Inspeksi Area Mess / Basecamp
+    Route::get('/inspeksi/areamess', [InspeksiAreaMessController::class, 'index'])->name('inspeksi.areamess');
+    Route::get('/inspeksi/areamess/insert', [InspeksiAreaMessController::class, 'insert'])->name('inspeksi.areamess.insert')->middleware('canAccess');
+    Route::post('/inspeksi/areamess/post', [InspeksiAreaMessController::class, 'post'])->name('inspeksi.areamess.post');
+    Route::get('/inspeksi/areamess/delete/{uuid}', [InspeksiAreaMessController::class, 'delete'])->name('inspeksi.areamess.delete');
+    Route::get('/inspeksi/areamess/preview/{uuid}', [InspeksiAreaMessController::class, 'preview'])->name('inspeksi.areamess.preview');
+    Route::get('/inspeksi/areamess/bundlepdf', [InspeksiAreaMessController::class, 'bundlepdf'])->name('inspeksi.areamess.bundlepdf');
+    Route::get('/inspeksi/areamess/cetak/{uuid}', [InspeksiAreaMessController::class, 'cetak'])->name('inspeksi.areamess.cetak');
+    Route::get('/inspeksi/areamess/download/{uuid}', [InspeksiAreaMessController::class, 'download'])->name('inspeksi.areamess.download');
+
+    //Inspeksi Area Kantin dan Laundry
+    Route::get('/inspeksi/areakantin', [InspeksiAreaKantinController::class, 'index'])->name('inspeksi.areakantin');
+    Route::get('/inspeksi/areakantin/insert', [InspeksiAreaKantinController::class, 'insert'])->name('inspeksi.areakantin.insert')->middleware('canAccess');
+    Route::post('/inspeksi/areakantin/post', [InspeksiAreaKantinController::class, 'post'])->name('inspeksi.areakantin.post');
+    Route::get('/inspeksi/areakantin/delete/{uuid}', [InspeksiAreaKantinController::class, 'delete'])->name('inspeksi.areakantin.delete');
+    Route::get('/inspeksi/areakantin/preview/{uuid}', [InspeksiAreaKantinController::class, 'preview'])->name('inspeksi.areakantin.preview');
+    Route::get('/inspeksi/areakantin/bundlepdf', [InspeksiAreaKantinController::class, 'bundlepdf'])->name('inspeksi.areakantin.bundlepdf');
+    Route::get('/inspeksi/areakantin/cetak/{uuid}', [InspeksiAreaKantinController::class, 'cetak'])->name('inspeksi.areakantin.cetak');
+    Route::get('/inspeksi/areakantin/download/{uuid}', [InspeksiAreaKantinController::class, 'download'])->name('inspeksi.areakantin.download');
+
+    //Inspeksi Area Kantin dan Laundry
+    Route::get('/inspeksi/arealimbahb3', [InspeksiAreaLimbahB3Controller::class, 'index'])->name('inspeksi.arealimbahb3');
+    Route::get('/inspeksi/arealimbahb3/insert', [InspeksiAreaLimbahB3Controller::class, 'insert'])->name('inspeksi.arealimbahb3.insert')->middleware('canAccess');
+    Route::post('/inspeksi/arealimbahb3/post', [InspeksiAreaLimbahB3Controller::class, 'post'])->name('inspeksi.arealimbahb3.post');
+    Route::get('/inspeksi/arealimbahb3/delete/{uuid}', [InspeksiAreaLimbahB3Controller::class, 'delete'])->name('inspeksi.arealimbahb3.delete');
+    Route::get('/inspeksi/arealimbahb3/preview/{uuid}', [InspeksiAreaLimbahB3Controller::class, 'preview'])->name('inspeksi.arealimbahb3.preview');
+    Route::get('/inspeksi/arealimbahb3/bundlepdf', [InspeksiAreaLimbahB3Controller::class, 'bundlepdf'])->name('inspeksi.arealimbahb3.bundlepdf');
+    Route::get('/inspeksi/arealimbahb3/cetak/{uuid}', [InspeksiAreaLimbahB3Controller::class, 'cetak'])->name('inspeksi.arealimbahb3.cetak');
+    Route::get('/inspeksi/arealimbahb3/download/{uuid}', [InspeksiAreaLimbahB3Controller::class, 'download'])->name('inspeksi.arealimbahb3.download');
+
+    //Inspeksi DT & HD
+    Route::get('/inspeksi/dthd', [InspeksiDTHDController::class, 'index'])->name('inspeksi.dthd');
+    Route::get('/inspeksi/dthd/insert', [InspeksiDTHDController::class, 'insert'])->name('inspeksi.dthd.insert')->middleware('canAccess');
+    Route::post('/inspeksi/dthd/post', [InspeksiDTHDController::class, 'post'])->name('inspeksi.dthd.post');
+    Route::get('/inspeksi/dthd/delete/{uuid}', [InspeksiDTHDController::class, 'delete'])->name('inspeksi.dthd.delete');
+    Route::get('/inspeksi/dthd/preview/{uuid}', [InspeksiDTHDController::class, 'preview'])->name('inspeksi.dthd.preview');
+    Route::get('/inspeksi/dthd/bundlepdf', [InspeksiDTHDController::class, 'bundlepdf'])->name('inspeksi.dthd.bundlepdf');
+    Route::get('/inspeksi/dthd/cetak/{uuid}', [InspeksiDTHDController::class, 'cetak'])->name('inspeksi.dthd.cetak');
+    Route::get('/inspeksi/dthd/download/{uuid}', [InspeksiDTHDController::class, 'download'])->name('inspeksi.dthd.download');
+
 
     //Inspeksi Sump
     // Route::get('/inspeksi/sump', [InspeksiSumpController::class, 'index'])->name('inspeksi.sump');

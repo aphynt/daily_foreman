@@ -1096,6 +1096,32 @@
             font-size: 11px;
         }
     }
+    /* Form SAP: daftar operasional ringkas */
+    .sap-wrapper { border-radius: 8px; box-shadow: none; margin-top: 8px; }
+    .sap-header { padding: 18px 20px; background: var(--dash-card); }
+    .sap-title { font-size: 17px; letter-spacing: 0; }
+    .sap-content { padding: 16px 20px 20px; }
+    .sap-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 14px; border-bottom: 1px solid var(--dash-border); scrollbar-width: thin; }
+    .sap-tab { flex-shrink: 0; border: 1px solid transparent; border-radius: 5px; background: transparent; color: var(--dash-muted); padding: 8px 11px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .sap-tab span { margin-left: 4px; font-size: 11px; opacity: .75; }
+    .sap-tab.active { color: var(--dash-primary); border-color: var(--dash-border); background: var(--dash-primary-soft); }
+    .sap-section { margin: 0 0 18px; }
+    .sap-section-header { margin: 0 0 8px; }
+    .sap-section-title { font-size: 13px; font-weight: 700; }
+    .sap-count { width: auto; height: auto; border: 0; background: transparent; font-weight: 500; }
+    .sap-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0 16px; }
+    .sap-menu-item { min-height: 50px; border: 0; border-bottom: 1px solid var(--dash-border); border-radius: 0; padding: 8px 4px; gap: 12px; box-shadow: none; }
+    .sap-menu-item:hover { transform: none; box-shadow: none; background: var(--dash-bg-soft); }
+    .sap-menu-icon { width: 25px; height: 25px; flex: 0 0 25px; border-radius: 4px; background: var(--dash-bg-soft); color: var(--dash-muted); font-size: 11px; font-weight: 600; }
+    .sap-menu-title { margin: 0; font-size: 13px; font-weight: 500; line-height: 1.35; }
+    .sap-menu-arrow { width: 20px; height: 20px; flex: 0 0 20px; font-size: 15px; }
+    .sap-menu-item[hidden], .sap-section[hidden] { display: none !important; }
+    @media (max-width: 767.98px) {
+        .sap-header { flex-direction: column; align-items: stretch; padding: 15px; }
+        .sap-search-wrapper { width: 100%; }
+        .sap-content { padding: 12px 15px; }
+        .sap-grid { grid-template-columns: 1fr; }
+    }
 </style>
 
 <div class="pc-container">
@@ -1463,350 +1489,159 @@
         </div>
 
         {{-- FORM SAP LIST --}}
-
         @if (Auth::user()->role != 'WORKER')
-
-            @if (
-                canAccess('form-pengawas-sap.index') ||
-                canAccess('klkh.loading-point') ||
-                canAccess('klkh.haul-road') ||
-                canAccess('klkh.disposal') ||
-                canAccess('klkh.lumpur') ||
-                canAccess('klkh.ogs') ||
-                canAccess('klkh.batubara') ||
-                canAccess('klkh.simpangempat') ||
-                canAccess('klkh.it') ||
-                canAccess('inspeksi.jalantambang') ||
-                canAccess('inspeksi.disposal') ||
-                canAccess('inspeksi.frontloading') ||
-                canAccess('inspeksi.ogs') ||
-                canAccess('inspeksi.slurrypump') ||
-                canAccess('inspeksi.workshop') ||
-                canAccess('inspeksi.tidakterencana') ||
-                canAccess('observasibank')
-            )
-
             @php
-                $sapMenus = [
-                    [
-                        'title' => 'Form Pengawas',
-                        'subtitle' => 'Form inspeksi dan pengawasan',
-                        'code' => 'SAP',
-                        'class' => 'blue',
-                        'items' => [
-                            [
-                                'name' => 'Inspeksi',
-                                'description' => 'Form inspeksi SAP',
-                                'route' => 'form-pengawas-sap.index',
-                                'access' => 'form-pengawas-sap.index'
-                            ],
-                        ]
-                    ],
-                    [
-                        'title' => 'KLKH',
-                        'subtitle' => 'Keselamatan, kesehatan dan lingkungan kerja',
-                        'code' => 'KLKH',
-                        'class' => 'green',
-                        'items' => [
-                            [
-                                'name' => 'KLKH Loading Point',
-                                'description' => 'Pemeriksaan area loading point',
-                                'route' => 'klkh.loading-point',
-                                'access' => 'klkh.loading-point'
-                            ],
-
-                            [
-                                'name' => 'KLKH Haul Road',
-                                'description' => 'Pemeriksaan kondisi jalan angkut',
-                                'route' => 'klkh.haul-road',
-                                'access' => 'klkh.haul-road'
-                            ],
-
-                            [
-                                'name' => 'KLKH Disposal / Dumping Point',
-                                'description' => 'Pemeriksaan area disposal',
-                                'route' => 'klkh.disposal',
-                                'access' => 'klkh.disposal'
-                            ],
-
-                            [
-                                'name' => 'KLKH Dumping di Kolam Air/Lumpur',
-                                'description' => 'Pemeriksaan aktivitas dumping',
-                                'route' => 'klkh.lumpur',
-                                'access' => 'klkh.lumpur'
-                            ],
-
-                            [
-                                'name' => 'KLKH OGS',
-                                'description' => 'Pemeriksaan area OGS',
-                                'route' => 'klkh.ogs',
-                                'access' => 'klkh.ogs'
-                            ],
-
-                            [
-                                'name' => 'KLKH Batubara',
-                                'description' => 'Pemeriksaan aktivitas batubara',
-                                'route' => 'klkh.batubara',
-                                'access' => 'klkh.batubara'
-                            ],
-
-                            [
-                                'name' => 'KLKH Intersection',
-                                'description' => 'Pemeriksaan area simpang empat',
-                                'route' => 'klkh.simpangempat',
-                                'access' => 'klkh.simpangempat'
-                            ],
-
-                            [
-                                'name' => 'KLKH Troubleshooting IT',
-                                'description' => 'Form pemeriksaan troubleshooting IT',
-                                'route' => 'klkh.it',
-                                'access' => 'klkh.it'
-                            ],
-
-                        ]
-
-                    ],
-
-                    [
-                        'title' => 'Inspeksi Tambang',
-                        'subtitle' => 'Inspeksi area dan aktivitas operasional',
-                        'code' => 'INS',
-                        'class' => 'orange',
-                        'items' => [
-                            [
-                                'name' => 'Jalan Tambang',
-                                'description' => 'Inspeksi kondisi jalan tambang',
-                                'route' => 'inspeksi.jalantambang',
-                                'access' => 'inspeksi.jalantambang'
-                            ],
-                            [
-                                'name' => 'Disposal',
-                                'description' => 'Inspeksi area disposal',
-                                'route' => 'inspeksi.disposal',
-                                'access' => 'inspeksi.disposal'
-                            ],
-                            [
-                                'name' => 'Front Loading',
-                                'description' => 'Inspeksi area front loading',
-                                'route' => 'inspeksi.frontloading',
-                                'access' => 'inspeksi.frontloading'
-                            ],
-                            [
-                                'name' => 'Area OGS',
-                                'description' => 'Inspeksi kondisi area OGS',
-                                'route' => 'inspeksi.ogs',
-                                'access' => 'inspeksi.ogs'
-                            ],
-                            [
-                                'name' => 'Sump',
-                                'description' => 'Inspeksi area sump',
-                                'route' => 'inspeksi.slurrypump',
-                                'access' => 'inspeksi.slurrypump'
-                            ],
-                            [
-                                'name' => 'Workshop',
-                                'description' => 'Inspeksi area workshop',
-                                'route' => 'inspeksi.workshop',
-                                'access' => 'inspeksi.workshop'
-                            ],
-                        ]
-                    ],
-                    [
-                        'title' => 'Checklist & Kepatuhan',
-                        'subtitle' => 'Form checklist, lingkungan dan kepatuhan',
-                        'code' => 'SE',
-                        'class' => 'purple',
-                        'items' => [
-                            [
-                                'name' => 'Inspeksi Tidak Terencana',
-                                'description' => 'Kepatuhan terhadap Golden Rules',
-                                'route' => 'inspeksi.tidakterencana',
-                                'access' => 'inspeksi.tidakterencana'
-                            ],
-                            [
-                                'name' => 'Checklist Inspeksi Fuel Skid',
-                                'description' => 'Pemeriksaan fasilitas fuel skid',
-                                'route' => 'inspeksi.fuelskid',
-                                'access' => 'inspeksi.fuelskid'
-                            ],
-                            [
-                                'name' => 'Checklist TPS Limbah B3',
-                                'description' => 'Pemeriksaan TPS limbah B3',
-                                'route' => 'inspeksi.tpslimbahb3',
-                                'access' => 'inspeksi.tpslimbahb3'
-                            ],
-                            [
-                                'name' => 'Checklist Inspeksi Gudang B3',
-                                'description' => 'Pemeriksaan gudang B3',
-                                'route' => 'inspeksi.gudangb3',
-                                'access' => 'inspeksi.gudangb3'
-                            ],
-                            [
-                                'name' => 'Penilaian Terhadap Kantin',
-                                'description' => 'Elemen penilaian fasilitas kantin',
-                                'route' => 'inspeksi.penilaianterhadapkantin',
-                                'access' => 'inspeksi.penilaianterhadapkantin'
-                            ],
-                        ]
-                    ],
-                    [
-                        'title' => 'Observasi',
-                        'subtitle' => 'Form observasi lapangan',
-                        'code' => 'OBS',
-                        'class' => 'cyan',
-                        'items' => [
-                            [
-                                'name' => 'Observasi Bank',
-                                'description' => 'Form observasi dan pencatatan lapangan',
-                                'route' => 'observasibank',
-                                'access' => 'observasibank'
-                            ],
-                        ]
-                    ],
+                // Semua form SAP, termasuk yang statusenabled = 0.
+                $sapGroups = [
+                    ['title' => 'Pengawasan', 'items' => [
+                        ['name' => 'Inspeksi PICA', 'route' => 'form-pengawas-sap.index'],
+                    ]],
+                    ['title' => 'KLKH Operasional', 'items' => [
+                        ['name' => 'KLKH Loading Point', 'route' => 'klkh.loading-point'],
+                        ['name' => 'KLKH Haul Road', 'route' => 'klkh.haul-road'],
+                        ['name' => 'KLKH Disposal/Dumping Point', 'route' => 'klkh.disposal'],
+                        ['name' => 'KLKH Dumping di Kolam Air/Lumpur', 'route' => 'klkh.lumpur'],
+                        ['name' => 'KLKH OGS', 'route' => 'klkh.ogs'],
+                        ['name' => 'KLKH Batu Bara', 'route' => 'klkh.batubara'],
+                        ['name' => 'KLKH Intersection (Simpang Empat)', 'route' => 'klkh.simpangempat'],
+                        ['name' => 'KLKH Area Blasting', 'route' => 'klkh.areablasting'],
+                        ['name' => 'KLKH Dewatering', 'route' => 'klkh.dewatering'],
+                        ['name' => 'KLKH Pekerjaan General', 'route' => 'klkh.pekerjaangeneral'],
+                    ]],
+                    ['title' => 'KLKH Workshop & IT', 'items' => [
+                        ['name' => 'KLKH Troubleshooting IT', 'route' => 'klkh.it'],
+                        ['name' => 'KLKH Kantor Workshop', 'route' => 'klkh.kantorworkshop'],
+                        ['name' => 'KLKH Workshop LV & Support', 'route' => 'klkh.workshoplvsupport'],
+                        ['name' => 'KLKH Workshop Rebuild', 'route' => 'klkh.workshoprebuild'],
+                        ['name' => 'KLKH Workshop Tyre', 'route' => 'klkh.workshoptyre'],
+                        ['name' => 'KLKH Workshop Electric', 'route' => 'klkh.workshopelectric'],
+                        ['name' => 'KLKH Workshop HE (Wheel/Track)', 'route' => 'klkh.workshophe'],
+                        ['name' => 'KLKH Washing Bay', 'route' => 'klkh.washingbay'],
+                        ['name' => 'KLKH PIT', 'route' => 'klkh.pit'],
+                    ]],
+                    ['title' => 'Inspeksi Tambang', 'items' => [
+                        ['name' => 'Inspeksi Tambang - Jalan Tambang', 'route' => 'inspeksi.jalantambang'],
+                        ['name' => 'Inspeksi Tambang - Disposal', 'route' => 'inspeksi.disposal'],
+                        ['name' => 'Inspeksi Tambang - Front Loading', 'route' => 'inspeksi.frontloading'],
+                        ['name' => 'Inspeksi Area OGS', 'route' => 'inspeksi.ogs'],
+                        ['name' => 'Inspeksi Area Sump', 'route' => 'inspeksi.slurrypump'],
+                        ['name' => 'Inspeksi Internal Area Sump', 'route' => 'inspeksi.internalareasump'],
+                        ['name' => 'Inspeksi Internal Area Tandem', 'route' => 'inspeksi.internalareatandem'],
+                        ['name' => 'Inspeksi Pit Stop', 'route' => 'inspeksi.pitstop'],
+                        ['name' => 'Inspeksi Pembuatan - Pengangkutan Lumpur', 'route' => 'inspeksi.pengangkutanlumpur'],
+                        ['name' => 'Inspeksi Penimbunan Material di Kolam Lumpur', 'route' => 'inspeksi.penimbunandikolamlumpur'],
+                    ]],
+                    ['title' => 'Fasilitas & Lingkungan', 'items' => [
+                        ['name' => 'Inspeksi Area Workshop', 'route' => 'inspeksi.workshop'],
+                        ['name' => 'Inspeksi Mess Malam', 'route' => 'inspeksi.messmalam'],
+                        ['name' => 'Inspeksi Ruang Office', 'route' => 'inspeksi.ruangoffice'],
+                        ['name' => 'Checklist Inspeksi Fuel Skid', 'route' => 'inspeksi.fuelskid'],
+                        ['name' => 'Checklist TPS Limbah B3', 'route' => 'inspeksi.tpslimbahb3'],
+                        ['name' => 'Checklist Inspeksi Gudang B3', 'route' => 'inspeksi.gudangb3'],
+                        ['name' => 'Element Penilaian Terhadap Kantin', 'route' => 'inspeksi.penilaianterhadapkantin'],
+                        ['name' => 'Inspeksi Tempat Bahan Bakar Cair (BBC)', 'route' => 'inspeksi.tempatbbc'],
+                        ['name' => 'Inspeksi Area Office / Perkantoran', 'route' => 'inspeksi.areaoffice'],
+                        ['name' => 'Inspeksi Area Mess / Basecamp', 'route' => 'inspeksi.areamess'],
+                        ['name' => 'Inspeksi Area Kantin dan Laundry', 'route' => 'inspeksi.areakantin'],
+                        ['name' => 'Inspeksi Tempat Penyimpanan Sementara Limbah B3 (TPS LB3)', 'route' => 'inspeksi.arealimbahb3'],
+                    ]],
+                    ['title' => 'Observasi & Kepatuhan', 'items' => [
+                        ['name' => 'Observasi Bank', 'route' => 'observasibank'],
+                        ['name' => 'Inspeksi Tidak Terencana dan Kepatuhan Golden Rules', 'route' => 'inspeksi.tidakterencana'],
+                    ]],
                 ];
+                $sapGroups = collect($sapGroups)->map(function ($group) {
+                    $group['items'] = collect($group['items'])->filter(fn ($item) =>
+                        canAccess($item['route']) && \Illuminate\Support\Facades\Route::has($item['route'])
+                    )->values();
+                    return $group;
+                })->filter(fn ($group) => $group['items']->isNotEmpty())->values();
+                $sapTotal = $sapGroups->sum(fn ($group) => $group['items']->count());
             @endphp
-            <div class="col-12">
-                <div class="sap-wrapper">
-                    {{-- HEADER --}}
-                    <div class="sap-header">
-                        <div class="sap-header-left">
-                            <div class="sap-main-icon">
-                                <img src="{{ asset('dashboard/assets/images/widget/to-do-list.png') }}" alt="SAP">
-                            </div>
+            @if ($sapTotal > 0)
+                <div class="col-12">
+                    <section class="sap-wrapper" aria-label="Daftar Form SAP">
+                        <div class="sap-header">
                             <div>
-                                <h4 class="sap-title">Form SAP</h4>
-                                <p class="sap-subtitle">Pilih form inspeksi atau checklist yang ingin digunakan</p>
+                                <h4 class="sap-title">Daftar Form SAP</h4>
+                                <p class="sap-subtitle">{{ $sapTotal }} form tersedia sesuai akses akun Anda</p>
                             </div>
-                        </div>
-                        <div class="sap-search-wrapper">
-                            <div class="sap-search">
-                                <svg width="18" height="18"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2">
-                                    <circle cx="11" cy="11" r="8"></circle>
-                                    <path d="m21 21-4.35-4.35"></path>
-                                </svg>
-                                <input type="text" id="sapSearch" placeholder="Cari form..." autocomplete="off">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="sap-content">
-                        @foreach ($sapMenus as $group)
-                            @php
-                                $accessibleItems = collect($group['items'])->filter(fn($item) => canAccess($item['access']));
-                            @endphp
-                            @if ($accessibleItems->count() > 0)
-                                <div class="sap-section">
-                                    <div class="sap-section-header">
-                                        <div>
-                                            <h6 class="sap-section-title">
-                                                {{ $group['title'] }}
-                                            </h6>
-                                            <div class="sap-section-description">
-                                                {{ $group['subtitle'] }}
-                                            </div>
-                                        </div>
-                                        <span class="sap-count">
-                                            {{ $accessibleItems->count() }}
-                                        </span>
-                                    </div>
-                                    <div class="sap-grid">
-                                        @foreach ($accessibleItems as $item)
-                                            <a href="{{ route($item['route']) }}" class="sap-menu-item" data-search="{{ strtolower($item['name'].' '.$item['description'].' '.$group['title']) }}">
-                                                <div class="sap-menu-icon {{ $group['class'] }}">
-                                                    {{ $group['code'] }}
-                                                </div>
-                                                <div class="sap-menu-content">
-                                                    <div class="sap-menu-title">
-                                                        {{ $item['name'] }}
-                                                    </div>
-                                                    <div class="sap-menu-description">
-                                                        {{ $item['description'] }}
-                                                    </div>
-                                                </div>
-                                                <div class="sap-menu-arrow">
-                                                    <svg width="18" height="18"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        stroke-width="2">
-                                                        <path d="m9 18 6-6-6-6"/>
-                                                    </svg>
-                                                </div>
-                                            </a>
-                                        @endforeach
-                                    </div>
+                            <div class="sap-search-wrapper">
+                                <label for="sapSearch" class="visually-hidden">Cari form SAP</label>
+                                <div class="sap-search">
+                                    <i class="ti ti-search" aria-hidden="true"></i>
+                                    <input type="search" id="sapSearch" placeholder="Cari nama form..." autocomplete="off">
                                 </div>
-                            @endif
-                        @endforeach
-                        <div id="sapEmpty" class="sap-empty d-none">
-                            <div class="sap-empty-icon">
-                                <svg
-                                    width="30"
-                                    height="30"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="1.8">
-                                    <circle cx="11" cy="11" r="8"></circle>
-                                    <path d="m21 21-4.35-4.35"></path>
-                                </svg>
                             </div>
-                            <h6>Form tidak ditemukan</h6>
-                            <p>Coba gunakan kata kunci lainnya.</p>
                         </div>
-                    </div>
+                        <div class="sap-content">
+                            <div class="sap-tabs" id="sapTabs" role="group" aria-label="Kategori form">
+                                <button type="button" class="sap-tab active" data-category="all" aria-pressed="true">Semua <span>{{ $sapTotal }}</span></button>
+                                @foreach ($sapGroups as $index => $group)
+                                    <button type="button" class="sap-tab" data-category="{{ $index }}" aria-pressed="false">{{ $group['title'] }} <span>{{ $group['items']->count() }}</span></button>
+                                @endforeach
+                            </div>
+                            <div class="sap-list" id="sapList">
+                                @foreach ($sapGroups as $index => $group)
+                                    <div class="sap-section" data-category="{{ $index }}">
+                                        <div class="sap-section-header">
+                                            <h6 class="sap-section-title">{{ $group['title'] }}</h6>
+                                            <span class="sap-count">{{ $group['items']->count() }} form</span>
+                                        </div>
+                                        <div class="sap-grid">
+                                            @foreach ($group['items'] as $item)
+                                                <a href="{{ route($item['route']) }}" class="sap-menu-item" data-search="{{ mb_strtolower($item['name'].' '.$group['title']) }}">
+                                                    <span class="sap-menu-icon">{{ sprintf('%02d', $loop->iteration) }}</span>
+                                                    <span class="sap-menu-content"><span class="sap-menu-title">{{ $item['name'] }}</span></span>
+                                                    <i class="ti ti-chevron-right sap-menu-arrow" aria-hidden="true"></i>
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <div id="sapEmpty" class="sap-empty d-none"><h6>Form tidak ditemukan</h6><p>Coba kata kunci atau kategori lain.</p></div>
+                        </div>
+                    </section>
                 </div>
-            </div>
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const searchInput = document.getElementById('sapSearch');
-                    const menuItems   = document.querySelectorAll('.sap-menu-item');
-                    const sections    = document.querySelectorAll('.sap-section');
-                    const emptyState  = document.getElementById('sapEmpty');
-                    if (!searchInput) {
-                        return;
-                    }
-                    searchInput.addEventListener('input', function () {
-                        const keyword = this.value
-                            .toLowerCase()
-                            .trim();
-                        let totalVisible = 0;
-                        menuItems.forEach(function (item) {
-                            const searchText =
-                                item.dataset.search || '';
-                            const isMatch = searchText.includes(keyword);
-                            item.style.display =
-                                isMatch ? 'flex' : 'none';
-                            if (isMatch) {
-                                totalVisible++;
-                            }
-                        });
-
-                        sections.forEach(function (section) {
-                            const visibleItems =
-                                Array.from(
-                                    section.querySelectorAll('.sap-menu-item')
-                                ).filter(function (item) {
-                                    return item.style.display !== 'none';
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const search = document.getElementById('sapSearch');
+                        const tabs = document.querySelectorAll('#sapTabs .sap-tab');
+                        const sections = document.querySelectorAll('#sapList .sap-section');
+                        const empty = document.getElementById('sapEmpty');
+                        if (!search) return;
+                        let selected = 'all';
+                        function filterSap() {
+                            const keyword = search.value.toLocaleLowerCase('id').trim();
+                            let visible = 0;
+                            sections.forEach(function (section) {
+                                const categoryMatches = selected === 'all' || section.dataset.category === selected;
+                                let count = 0;
+                                section.querySelectorAll('.sap-menu-item').forEach(function (item) {
+                                    const matches = categoryMatches && (item.dataset.search || '').includes(keyword);
+                                    item.hidden = !matches;
+                                    if (matches) { count++; visible++; }
                                 });
-                            section.style.display =
-                                visibleItems.length > 0
-                                    ? 'block'
-                                    : 'none';
-                        });
-
-                        if (totalVisible === 0) {
-                            emptyState.classList.remove('d-none');
-                        } else {
-                            emptyState.classList.add('d-none');
+                                section.hidden = count === 0;
+                            });
+                            empty.classList.toggle('d-none', visible > 0);
                         }
+                        tabs.forEach(function (tab) {
+                            tab.addEventListener('click', function () {
+                                selected = tab.dataset.category;
+                                tabs.forEach(function (button) {
+                                    const active = button === tab;
+                                    button.classList.toggle('active', active);
+                                    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+                                });
+                                filterSap();
+                            });
+                        });
+                        search.addEventListener('input', filterSap);
+                        filterSap();
                     });
-                });
-            </script>
+                </script>
             @endif
         @endif
     </div>
