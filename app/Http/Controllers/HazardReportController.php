@@ -108,15 +108,16 @@ class HazardReportController extends Controller
 
         $isSR = in_array((string) $user->nik, array_map('strval', $listNikSR), true);
 
-        if (!in_array(Auth::user()->id, [1, 3]) && !in_array(Auth::user()->role, ['MANAGEMENT'])) {
-            if ($isSR && !is_null($user->departemen_id)) {
-                $hazard->where(function ($query) use ($user) {
-                    $query->where('us2.departemen_id', $user->departemen_id)
-                        ->orWhere('hz.departemen', $user->departemen_id);
-                });
-            } else {
-                $hazard->where('hz.pelapor', $user->nik);
-            }
+        if (!in_array($user->id, [1, 3]) && $user->role !== 'MANAGEMENT') {
+            $hazard->where(function ($query) use ($user, $isSR) {
+                $query->where('hz.pelapor', $user->nik);
+                if (!is_null($user->departemen_id)) {
+                    $query->orWhere('hz.departemen', $user->departemen_id);
+                    if ($isSR) {
+                        $query->orWhere('us2.departemen_id', $user->departemen_id);
+                    }
+                }
+            });
         }
 
         if ($request->filled('status')) {
