@@ -80,16 +80,23 @@ class InspeksiDisposalController extends Controller
         ->whereBetween(DB::raw('CONVERT(varchar, dp.tanggal_inspeksi, 23)'), [$startTimeFormatted, $endTimeFormatted]);
 
 
-        if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'])) {
-            $baseQuery->orWhere('pic', Auth::user()->id);
+        $user = Auth::user();
+
+        $nikBypass = array_merge(
+            getConfigArrayById(28),
+            getConfigArrayById(31)
+        );
+
+        if (!in_array($user->nik, $nikBypass)) {
+            $baseQuery->where(function ($query) use ($user) {
+                $query->where('dp.pic', $user->id)
+                    ->orWhere('dp.penanggungjawab', $user->nik)
+                    ->orWhere('dp.inspektor1', $user->nik)
+                    ->orWhere('dp.inspektor2', $user->nik)
+                    ->orWhere('dp.inspektor3', $user->nik)
+                    ->orWhere('dp.inspektor4', $user->nik);
+            });
         }
-
-        $baseQuery = $baseQuery->where(function($query) {
-            $query->where('dp.penanggungjawab', Auth::user()->nik)
-                    ->orWhere('dp.inspektor1', Auth::user()->nik);
-        });
-
-        $dp = $baseQuery->get();
 
 
         return view('inspeksi.disposal.index', compact('dp'));

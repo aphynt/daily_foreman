@@ -71,9 +71,13 @@ class InspeksiMessMalamController extends Controller
         ->whereBetween(DB::raw('CONVERT(varchar, mm.tanggal_inspeksi, 23)'), [$startTimeFormatted, $endTimeFormatted]);
 
         $user = Auth::user();
-        $safetyRoles = ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'];
 
-        if (!in_array($user->role, $safetyRoles)) {
+        $nikBypass = array_merge(
+            getConfigArrayById(28),
+            getConfigArrayById(31)
+        );
+
+        if (!in_array($user->nik, $nikBypass)) {
             $baseQuery->where(function ($query) use ($user) {
                 $query->where('mm.pic', $user->id)
                     ->orWhere('mm.inspektor', $user->nik)

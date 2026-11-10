@@ -528,6 +528,7 @@ MSG;
                 'sr.tingkat_risiko',
                 'sr.kategori_bahaya',
                 'sr.type_bahaya',
+                'sr.detail_temuan',
                 'sr.due_date',
                 'sr.tanggal_perbaikan',
                 'sr.pengendalian',

@@ -43,11 +43,11 @@
                                     </div>
 
                                     <div class="col-6 text-end">
-                                        <h6>FM-SE-04/00/03/02/26</h6>
+                                        <h6>FM-SE-03/01/23/09/26</h6>
                                     </div>
                                 </div>
                             </div>
-                            <h5 style="text-align: center;">DAFTAR PERIKSA INSPEKSI TAMBANG - DISPOSAL</h5>
+                            <h5 style="text-align: center;">DAFTAR PERIKSA INSPEKSI AREA OGS</h5>
                             <div class="col-sm-3">
                                 <div class="border rounded p-3">
                                     <h6 class="mb-0">Tanggal:</h6>
@@ -481,16 +481,16 @@
                                     </li>
 
                                     {{-- <li class="list-inline-item align-bottom me-2">
-                                        <a href="{{ route('klkh.loading-point.download', $ogs->uuid) }}" target="_blank" class="avtar avtar-s btn-link-secondary">
+                                        <a href="{{ route('inspeksi.ogs.download', $ogs->uuid) }}" target="_blank" class="avtar avtar-s btn-link-secondary">
                                             <i class="ph-duotone ph-download-simple f-22"></i>
                                         </a>
-                                    </li>
+                                    </li> --}}
 
                                     <li class="list-inline-item align-bottom me-2">
-                                        <a href="{{ route('klkh.loading-point.cetak', $ogs->uuid) }}" target="_blank" class="avtar avtar-s btn-link-secondary">
+                                        <a href="{{ route('inspeksi.ogs.cetak', $ogs->uuid) }}" target="_blank" class="avtar avtar-s btn-link-secondary">
                                             <i class="ph-duotone ph-printer f-22"></i>
                                         </a>
-                                    </li> --}}
+                                    </li> 
 
                                 </ul>
                             </div>

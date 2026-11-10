@@ -76,15 +76,23 @@ class InspeksiRuangOfficeController extends Controller
         ->whereBetween(DB::raw('CONVERT(varchar, ro.tanggal_inspeksi, 23)'), [$startTimeFormatted, $endTimeFormatted]);
 
         $user = Auth::user();
-        $safetyRoles = ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'];
 
-        if (!in_array($user->role, $safetyRoles)) {
+        $nikBypass = array_merge(
+            getConfigArrayById(28),
+            getConfigArrayById(31)
+        );
+
+        if (!in_array($user->nik, $nikBypass)) {
             $baseQuery->where(function ($query) use ($user) {
                 $query->where('ro.pic', $user->id)
-                    ->orWhere('ro.inspektor', $user->nik)
-                    ->orWhere('ro.pendamping', $user->nik);
+                    ->orWhere('ro.penanggungjawab', $user->nik)
+                    ->orWhere('ro.inspektor1', $user->nik)
+                    ->orWhere('ro.inspektor2', $user->nik)
+                    ->orWhere('ro.inspektor3', $user->nik)
+                    ->orWhere('ro.inspektor4', $user->nik);
             });
         }
+
         $ro = $baseQuery->get();
 
 

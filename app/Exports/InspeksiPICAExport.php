@@ -57,6 +57,7 @@ class InspeksiPICAExport implements
             'Dokumentasi Tindakan Perbaikan',
             'Status',
             'Level',
+            'Detail Temuan',
         ];
     }
 
@@ -131,7 +132,44 @@ class InspeksiPICAExport implements
             $isClose ? 'Close' : 'Open',
 
             $item->level,
+
+            $this->formatDetailTemuan($item->detail_temuan ?? null),
         ];
+    }
+
+    protected function formatDetailTemuan($value): string
+    {
+        if ($value === null || $value === '') {
+            return '-';
+        }
+
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $value = $decoded;
+            } else {
+                return trim($value) ?: '-';
+            }
+        }
+
+        if (!is_array($value)) {
+            return trim((string) $value) ?: '-';
+        }
+
+        $details = array_filter(
+            array_map(
+                fn ($detail) => is_scalar($detail)
+                    ? trim((string) $detail)
+                    : '',
+                $value
+            ),
+            fn ($detail) => $detail !== ''
+        );
+
+        return !empty($details)
+            ? implode("\n", $details)
+            : '-';
     }
 
     public function registerEvents(): array
@@ -160,7 +198,7 @@ class InspeksiPICAExport implements
                     $drawing->setWorksheet($sheet);
                 }
 
-                $sheet->mergeCells('A2:P2');
+                $sheet->mergeCells('A2:Q2');
                 $sheet->setCellValue('A2', 'PICA INSPEKSI KESELAMATAN PERTAMBANGAN');
 
                 $sheet->getStyle('A2')->applyFromArray([
@@ -191,7 +229,7 @@ class InspeksiPICAExport implements
 
                 $highestRow = $sheet->getHighestRow();
 
-                $sheet->getStyle("A4:P{$highestRow}")->applyFromArray([
+                $sheet->getStyle("A4:Q{$highestRow}")->applyFromArray([
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => Border::BORDER_THIN,
@@ -204,7 +242,7 @@ class InspeksiPICAExport implements
                     ],
                 ]);
 
-                $sheet->getStyle('A4:P4')->applyFromArray([
+                $sheet->getStyle('A4:Q4')->applyFromArray([
                     'font' => [
                         'bold' => true,
                         'size' => 11,
@@ -227,7 +265,19 @@ class InspeksiPICAExport implements
                 ]);
 
                 for ($row = 5; $row <= $highestRow; $row++) {
-                    $sheet->getRowDimension($row)->setRowHeight(85);
+                    $detailTemuan = (string) $sheet->getCell('Q' . $row)->getValue();
+
+                    $jumlahBaris = substr_count($detailTemuan, "\n") + 1;
+
+                    $tinggiBaris = max(85, $jumlahBaris * 18);
+
+                    $sheet->getRowDimension($row)->setRowHeight(
+                        min($tinggiBaris, 409)
+                    );
+
+                    $sheet->getStyle('Q' . $row)
+                        ->getAlignment()
+                        ->setWrapText(true);
 
                     $status = $sheet->getCell('O' . $row)->getValue();
                     $isClose = strtolower((string) $status) === 'close';
@@ -313,6 +363,7 @@ class InspeksiPICAExport implements
         $sheet->getColumnDimension('N')->setWidth(30);
         $sheet->getColumnDimension('O')->setWidth(10);
         $sheet->getColumnDimension('P')->setWidth(10);
+        $sheet->getColumnDimension('Q')->setWidth(55);
     }
 
     protected function addImageToSheet(

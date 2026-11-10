@@ -97,15 +97,15 @@ class InspeksiPenimbunanDiKolamLumpurController extends Controller
 
         if (!in_array($user->nik, $nikBypass)) {
             $baseQuery->where(function ($query) use ($user) {
-                $query->where('ab.pic', $user->id)
-                    ->orWhere('ab.penanggungjawab', $user->nik)
-                    ->orWhere('ab.inspektor1', $user->nik)
-                    ->orWhere('ab.inspektor2', $user->nik)
-                    ->orWhere('ab.inspektor3', $user->nik)
-                    ->orWhere('ab.inspektor4', $user->nik)
-                    ->orWhere('ab.inspektor5', $user->nik)
-                    ->orWhere('ab.inspektor6', $user->nik)
-                    ->orWhere('ab.inspektor7', $user->nik);
+                $query->where('sp.pic', $user->id)
+                    ->orWhere('sp.penanggungjawab', $user->nik)
+                    ->orWhere('sp.inspektor1', $user->nik)
+                    ->orWhere('sp.inspektor2', $user->nik)
+                    ->orWhere('sp.inspektor3', $user->nik)
+                    ->orWhere('sp.inspektor4', $user->nik)
+                    ->orWhere('sp.inspektor5', $user->nik)
+                    ->orWhere('sp.inspektor6', $user->nik)
+                    ->orWhere('sp.inspektor7', $user->nik);
             });
         }
 

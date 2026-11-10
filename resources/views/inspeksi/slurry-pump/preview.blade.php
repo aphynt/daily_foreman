@@ -1,4 +1,4 @@
-@include('layout.head', ['title' => 'Inspeksi Pump'])
+@include('layout.head', ['title' => 'Inspeksi Slurry Pump'])
 @include('layout.sidebar')
 @include('layout.header')
 @php
@@ -43,11 +43,11 @@
                                     </div>
 
                                     <div class="col-6 text-end">
-                                        <h6>FM-SE-18/00/05/02/26</h6>
+                                        <h6>FM-SE-03/01/23/09/26</h6>
                                     </div>
                                 </div>
                             </div>
-                            <h5 style="text-align: center;">DAFTAR PERIKSA INSPEKSI SUMP</h5>
+                            <h5 style="text-align: center;">DAFTAR PERIKSA INSPEKSI SLURRY PUMP</h5>
                             <div class="col-sm-3">
                                 <div class="border rounded p-3">
                                     <h6 class="mb-0">Tanggal:</h6>

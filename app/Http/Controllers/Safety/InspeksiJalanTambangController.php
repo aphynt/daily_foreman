@@ -79,16 +79,23 @@ class InspeksiJalanTambangController extends Controller
         ->where('jt.statusenabled', true)
         ->whereBetween(DB::raw('CONVERT(varchar, jt.tanggal_inspeksi, 23)'), [$startTimeFormatted, $endTimeFormatted]);
 
-        if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'])) {
-            $baseQuery->orWhere('pic', Auth::user()->id);
+        $user = Auth::user();
+
+        $nikBypass = array_merge(
+            getConfigArrayById(28),
+            getConfigArrayById(31)
+        );
+
+        if (!in_array($user->nik, $nikBypass)) {
+            $baseQuery->where(function ($query) use ($user) {
+                $query->where('jt.pic', $user->id)
+                    ->orWhere('jt.penanggungjawab', $user->nik)
+                    ->orWhere('jt.inspektor1', $user->nik)
+                    ->orWhere('jt.inspektor2', $user->nik)
+                    ->orWhere('jt.inspektor3', $user->nik)
+                    ->orWhere('jt.inspektor4', $user->nik);
+            });
         }
-
-        $baseQuery = $baseQuery->where(function($query) {
-            $query->where('jt.penanggungjawab', Auth::user()->nik)
-                    ->orWhere('jt.inspektor1', Auth::user()->nik);
-        });
-
-        $jt = $baseQuery->get();
 
 
         return view('inspeksi.jalan-tambang.index', compact('jt'));

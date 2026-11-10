@@ -72,9 +72,13 @@ class InspeksiFuelSkidController extends Controller
         ->whereBetween(DB::raw('CONVERT(varchar, fs.tanggal_inspeksi, 23)'), [$startTimeFormatted, $endTimeFormatted]);
 
         $user = Auth::user();
-        $safetyRoles = ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'];
 
-        if (!in_array($user->role, $safetyRoles)) {
+        $nikBypass = array_merge(
+            getConfigArrayById(28),
+            getConfigArrayById(31)
+        );
+
+        if (!in_array($user->nik, $nikBypass)) {
             $baseQuery->where(function ($query) use ($user) {
                 $query->where('fs.pic', $user->id)
                     ->orWhere('fs.inspektor', $user->nik)

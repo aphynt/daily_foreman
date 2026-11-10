@@ -88,7 +88,10 @@ class KLKHBatuBaraController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        $nikBypass = getConfigArrayById(28);
+        $nikBypass = array_merge(
+            getConfigArrayById(28),
+            getConfigArrayById(31)
+        );
 
         if (!in_array($user->nik, $nikBypass)) {
 

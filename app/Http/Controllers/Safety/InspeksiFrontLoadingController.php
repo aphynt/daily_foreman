@@ -79,17 +79,23 @@ class InspeksiFrontLoadingController extends Controller
         ->where('fl.statusenabled', true)
         ->whereBetween(DB::raw('CONVERT(varchar, fl.tanggal_inspeksi, 23)'), [$startTimeFormatted, $endTimeFormatted]);
 
+        $user = Auth::user();
 
-        if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'])) {
-            $baseQuery->orWhere('pic', Auth::user()->id);
+        $nikBypass = array_merge(
+            getConfigArrayById(28),
+            getConfigArrayById(31)
+        );
+
+        if (!in_array($user->nik, $nikBypass)) {
+            $baseQuery->where(function ($query) use ($user) {
+                $query->where('fl.pic', $user->id)
+                    ->orWhere('fl.penanggungjawab', $user->nik)
+                    ->orWhere('fl.inspektor1', $user->nik)
+                    ->orWhere('fl.inspektor2', $user->nik)
+                    ->orWhere('fl.inspektor3', $user->nik)
+                    ->orWhere('fl.inspektor4', $user->nik);
+            });
         }
-
-        $baseQuery = $baseQuery->where(function($query) {
-            $query->where('fl.penanggungjawab', Auth::user()->nik)
-                    ->orWhere('fl.inspektor1', Auth::user()->nik);
-        });
-
-        $fl = $baseQuery->get();
 
 
         return view('inspeksi.front-loading.index', compact('fl'));

@@ -70,9 +70,13 @@ class InspeksiTPSLimbahB3Controller extends Controller
         ->whereBetween(DB::raw('CONVERT(varchar, tps.tanggal_inspeksi, 23)'), [$startTimeFormatted, $endTimeFormatted]);
 
         $user = Auth::user();
-        $safetyRoles = ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'];
 
-        if (!in_array($user->role, $safetyRoles)) {
+        $nikBypass = array_merge(
+            getConfigArrayById(28),
+            getConfigArrayById(31)
+        );
+
+        if (!in_array($user->nik, $nikBypass)) {
             $baseQuery->where(function ($query) use ($user) {
                 $query->where('tps.pic', $user->id)
                     ->orWhere('tps.inspektor', $user->nik)

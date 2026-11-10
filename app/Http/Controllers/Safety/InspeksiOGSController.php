@@ -79,14 +79,23 @@ class InspeksiOGSController extends Controller
         ->where('ogs.statusenabled', true)
         ->whereBetween(DB::raw('CONVERT(varchar, ogs.tanggal_inspeksi, 23)'), [$startTimeFormatted, $endTimeFormatted]);
 
-        if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'])) {
-            $baseQuery->orWhere('pic', Auth::user()->id);
-        }
+        $user = Auth::user();
 
-        $baseQuery = $baseQuery->where(function($query) {
-            $query->where('ogs.penanggungjawab', Auth::user()->nik)
-                    ->orWhere('ogs.inspektor1', Auth::user()->nik);
-        });
+        $nikBypass = array_merge(
+            getConfigArrayById(28),
+            getConfigArrayById(31)
+        );
+
+        if (!in_array($user->nik, $nikBypass)) {
+            $baseQuery->where(function ($query) use ($user) {
+                $query->where('ogs.pic', $user->id)
+                    ->orWhere('ogs.penanggungjawab', $user->nik)
+                    ->orWhere('ogs.inspektor1', $user->nik)
+                    ->orWhere('ogs.inspektor2', $user->nik)
+                    ->orWhere('ogs.inspektor3', $user->nik)
+                    ->orWhere('ogs.inspektor4', $user->nik);
+            });
+        }
 
         $ogs = $baseQuery->get();
 
@@ -459,5 +468,115 @@ class InspeksiOGSController extends Controller
         }
 
         return view('inspeksi.ogs.preview', compact('ogs'));
+    }
+
+    public function cetak($uuid)
+    {
+        $ogs = DB::table('se_inspeksi_ogs as ogs')
+        ->leftJoin('users as us', 'ogs.pic', '=', 'us.id')
+        ->leftJoin('ref_region as ar', 'ogs.pit', '=', 'ar.id')
+        ->leftJoin('users as us1', 'ogs.inspektor1', '=', 'us1.nik')
+        ->leftJoin('users as us2', 'ogs.inspektor2', '=', 'us2.nik')
+        ->leftJoin('users as us3', 'ogs.inspektor3', '=', 'us3.nik')
+        ->leftJoin('users as us4', 'ogs.inspektor4', '=', 'us4.nik')
+        ->leftJoin('users as us6', 'ogs.penanggungjawab', '=', 'us6.nik')
+
+        ->select(
+            'ogs.*',
+            'ar.keterangan as pit',
+            'us.name as nama_pic',
+            'ar.keterangan as pit',
+            'ogs.inspektor1 as nik_inspektor1',
+            'us1.name as nama_inspektor1',
+            'us1.position as jabatan_inspektor1',
+            'ogs.inspektor2 as nik_inspektor2',
+            'us2.name as nama_inspektor2',
+            'us2.position as jabatan_inspektor2',
+            'ogs.inspektor3 as nik_inspektor3',
+            'us3.name as nama_inspektor3',
+            'us3.position as jabatan_inspektor3',
+            'ogs.inspektor4 as nik_inspektor4',
+            'us4.name as nama_inspektor4',
+            'ogs.inspektor5',
+            'us4.position as jabatan_inspektor4',
+            'ogs.penanggungjawab as nik_penanggungjawab',
+            'us6.name as nama_penanggungjawab',
+            )
+        ->where('ogs.statusenabled', true)
+        ->where('ogs.uuid', $uuid)->first();
+
+        if($ogs == null){
+            return redirect()->back()->with('info', 'Maaf, data tidak ditemukan');
+        }else {
+            $item = $ogs;
+
+            $qrTempFolder = storage_path('app/public/qr-temp');
+            if (!File::exists($qrTempFolder)) {
+                File::makeDirectory($qrTempFolder, 0755, true);
+            }
+
+            if ($item->verified_inspektor1 != null) {
+                $fileName = 'verified_inspektor1' . $item->uuid . '.png';
+                $filePath = $qrTempFolder . DIRECTORY_SEPARATOR . $fileName;
+
+                QrCode::size(150)
+                    ->format('png')
+                    ->generate(route('verified.index', ['encodedNik' => base64_encode($item->verified_inspektor1)]), $filePath);
+
+                $item->verified_inspektor1 = asset('storage/qr-temp/' . $fileName);
+            } else {
+                $item->verified_inspektor1 = null;
+            }
+            if ($item->verified_inspektor2 != null) {
+                $fileName = 'verified_inspektor2' . $item->uuid . '.png';
+                $filePath = $qrTempFolder . DIRECTORY_SEPARATOR . $fileName;
+
+                QrCode::size(250)
+                    ->format('png')
+                    ->generate(route('verified.index', ['encodedNik' => base64_encode($item->verified_inspektor2)]), $filePath);
+
+                $item->verified_inspektor2 = asset('storage/qr-temp/' . $fileName);
+            } else {
+                $item->verified_inspektor2 = null;
+            }
+            if ($item->verified_inspektor3 != null) {
+                $fileName = 'verified_inspektor3' . $item->uuid . '.png';
+                $filePath = $qrTempFolder . DIRECTORY_SEPARATOR . $fileName;
+
+                QrCode::size(350)
+                    ->format('png')
+                    ->generate(route('verified.index', ['encodedNik' => base64_encode($item->verified_inspektor3)]), $filePath);
+
+                $item->verified_inspektor3 = asset('storage/qr-temp/' . $fileName);
+            } else {
+                $item->verified_inspektor3 = null;
+            }
+            if ($item->verified_inspektor4 != null) {
+                $fileName = 'verified_inspektor4' . $item->uuid . '.png';
+                $filePath = $qrTempFolder . DIRECTORY_SEPARATOR . $fileName;
+
+                QrCode::size(450)
+                    ->format('png')
+                    ->generate(route('verified.index', ['encodedNik' => base64_encode($item->verified_inspektor4)]), $filePath);
+
+                $item->verified_inspektor4 = asset('storage/qr-temp/' . $fileName);
+            } else {
+                $item->verified_inspektor4 = null;
+            }
+            if ($item->verified_inspektor5 != null) {
+                $fileName = 'verified_inspektor5' . $item->uuid . '.png';
+                $filePath = $qrTempFolder . DIRECTORY_SEPARATOR . $fileName;
+
+                QrCode::size(550)
+                    ->format('png')
+                    ->generate(route('verified.index', ['encodedNik' => base64_encode($item->verified_inspektor5)]), $filePath);
+
+                $item->verified_inspektor5 = asset('storage/qr-temp/' . $fileName);
+            } else {
+                $item->verified_inspektor5 = null;
+            }
+        }
+
+        return view('inspeksi.ogs.cetak', compact('ogs'));
     }
 }

@@ -79,17 +79,23 @@ class InspeksiSlurryPumpController extends Controller
         ->where('sp.statusenabled', true)
         ->whereBetween(DB::raw('CONVERT(varchar, sp.tanggal_inspeksi, 23)'), [$startTimeFormatted, $endTimeFormatted]);
 
-        if (in_array(Auth::user()->role, ['ADMIN', 'MANAGEMENT', 'SUPERINTENDENT SAFETY', 'SUPERVISOR SAFETY', 'FOREMAN SAFETY', 'PIT CONTROL'])) {
-            $baseQuery->orWhere('pic', Auth::user()->id);
-        }
+        $user = Auth::user();
 
-        $baseQuery = $baseQuery->where(function($query) {
-            $query->where('sp.penanggungjawab', Auth::user()->nik)
-                    ->orWhere('sp.inspektor1', Auth::user()->nik)
-                    ->orWhere('sp.inspektor2', Auth::user()->nik)
-                    ->orWhere('sp.inspektor3', Auth::user()->nik)
-                    ->orWhere('sp.inspektor4', Auth::user()->nik);
-        });
+        $nikBypass = array_merge(
+            getConfigArrayById(28),
+            getConfigArrayById(31)
+        );
+
+        if (!in_array($user->nik, $nikBypass)) {
+            $baseQuery->where(function ($query) use ($user) {
+                $query->where('sp.pic', $user->id)
+                    ->orWhere('sp.penanggungjawab', $user->nik)
+                    ->orWhere('sp.inspektor1', $user->nik)
+                    ->orWhere('sp.inspektor2', $user->nik)
+                    ->orWhere('sp.inspektor3', $user->nik)
+                    ->orWhere('sp.inspektor4', $user->nik);
+            });
+        }
 
         $sp = $baseQuery->get();
 

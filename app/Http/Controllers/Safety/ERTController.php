@@ -292,22 +292,31 @@ class ERTController extends Controller
                 $subKegiatan = json_decode($request->subKegiatan, true);
 
                 foreach ($subKegiatan as $value) {
+
+                    $uuid = $value['uuid'] ?? Uuid::uuid4()->toString();
                     $fotoKegiatanPath = $value['existing_foto_kegiatan'] ?? null;
 
-                    if ($request->hasFile('kegiatan_files.' . $value['uuid'])) {
-                        $fileKegiatan = $request->file('kegiatan_files.' . $value['uuid']);
-                        $destinationPath = public_path('foto_kegiatan');
-                        $fileNameKegiatan = time() . '_' . $value['uuid'] . '_' . $fileKegiatan->getClientOriginalName();
-                        $fileKegiatan->move($destinationPath, $fileNameKegiatan);
-                        $fotoKegiatanPath = url('foto_kegiatan/' . $fileNameKegiatan);
+                    if ($request->hasFile('kegiatan_files.' . $uuid)) {
+                        $fileKegiatan = $request->file('kegiatan_files.' . $uuid);
+
+                        $fileNameKegiatan = time() . '_' . $uuid . '_' . $fileKegiatan->getClientOriginalName();
+
+                        Storage::disk('production_public')
+                            ->putFileAs(
+                                'ert/foto_kegiatan',
+                                $fileKegiatan,
+                                $fileNameKegiatan
+                            );
+
+                        $fotoKegiatanPath = rtrim(config('app.url'), '/') . '/storage/ert/foto_kegiatan/' . $fileNameKegiatan;
                     }
 
                     ERTSubKegiatan::updateOrCreate(
                         [
-                            'uuid' => $value['uuid'],
+                            'uuid' => $uuid,
                         ],
                         [
-                            'uuid' => $value['uuid'] ?? Uuid::uuid4()->toString(),
+                            'uuid' => $uuid,
                             'ert_uuid' => $dailyReport->uuid,
                             'ert_id' => $dailyReport->id,
                             'statusenabled' => true,
@@ -328,24 +337,31 @@ class ERTController extends Controller
                 $temuanTindakLanjut = json_decode($request->temuanTindakLanjut, true);
 
                 foreach ($temuanTindakLanjut as $value) {
+
+                    $uuid = $value['uuid'] ?? Uuid::uuid4()->toString();
                     $fotoTemuanPath = $value['existing_foto_temuan'] ?? null;
 
-                    if ($request->hasFile('temuan_files.' . $value['uuid'])) {
-                        $fileTemuan = $request->file('temuan_files.' . $value['uuid']);
-                        $destinationPath = public_path('foto_temuan');
-                        $fileNameTemuan = time() . '_temuan_' . $value['uuid'] . '_' . $fileTemuan->getClientOriginalName();
+                    if ($request->hasFile('temuan_files.' . $uuid)) {
+                        $fileTemuan = $request->file('temuan_files.' . $uuid);
 
-                        $fileTemuan->move($destinationPath, $fileNameTemuan);
+                        $fileNameTemuan = time() . '_temuan_' . $uuid . '_' . $fileTemuan->getClientOriginalName();
 
-                        $fotoTemuanPath = url('foto_temuan/' . $fileNameTemuan);
+                        Storage::disk('production_public')
+                            ->putFileAs(
+                                'ert/foto_temuan',
+                                $fileTemuan,
+                                $fileNameTemuan
+                            );
+
+                        $fotoTemuanPath = rtrim(config('app.url'), '/') . '/storage/ert/foto_temuan/' . $fileNameTemuan;
                     }
 
                     ERTTemuanTindakLanjut::updateOrCreate(
                         [
-                            'uuid' => $value['uuid'],
+                            'uuid' => $uuid,
                         ],
                         [
-                            'uuid' => $value['uuid'] ?? Uuid::uuid4()->toString(),
+                            'uuid' => $uuid,
                             'ert_uuid' => $dailyReport->uuid,
                             'ert_id' => $dailyReport->id,
                             'statusenabled' => true,
@@ -363,23 +379,31 @@ class ERTController extends Controller
                 $jobPending = json_decode($request->jobPending, true);
 
                 foreach ($jobPending as $value) {
+
+                    $uuid = $value['uuid'] ?? Uuid::uuid4()->toString();
                     $fotoPendingPath = $value['existing_foto_pending'] ?? null;
 
-                    if ($request->hasFile('job_pending_files.' . $value['uuid'])) {
-                        $filePending = $request->file('job_pending_files.' . $value['uuid']);
-                        $destinationPath = public_path('foto_pending');
-                        $fileNamePending = time() . '_pending_' . $value['uuid'] . '_' . $filePending->getClientOriginalName();
+                    if ($request->hasFile('job_pending_files.' . $uuid)) {
+                        $filePending = $request->file('job_pending_files.' . $uuid);
 
-                        $filePending->move($destinationPath, $fileNamePending);
+                        $fileNamePending = time() . '_pending_' . $uuid . '_' . $filePending->getClientOriginalName();
 
-                        $fotoPendingPath = url('foto_pending/' . $fileNamePending);
+                        Storage::disk('production_public')
+                            ->putFileAs(
+                                'ert/foto_pending',
+                                $filePending,
+                                $fileNamePending
+                            );
+
+                        $fotoPendingPath = rtrim(config('app.url'), '/') . '/storage/ert/foto_pending/' . $fileNamePending;
                     }
+
                     ERTJobPending::updateOrCreate(
                         [
-                            'uuid' => $value['uuid'],
+                            'uuid' => $uuid,
                         ],
                         [
-                            'uuid' => $value['uuid'] ?? Uuid::uuid4()->toString(),
+                            'uuid' => $uuid,
                             'ert_uuid' => $dailyReport->uuid,
                             'ert_id' => $dailyReport->id,
                             'statusenabled' => true,
