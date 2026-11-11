@@ -663,7 +663,6 @@
                                         <option value="Free Dig">Free Dig</option>
                                         <option value="Blasting Layer 1">Blasting Layer 1</option>
                                         <option value="Blasting Layer 2">Blasting Layer 2</option>
-                                        <option value="Hard Material">Hard Material</option>
                                         <option value="Lainnya">Lainnya</option>
                                     </select>
                                 </div>

@@ -199,6 +199,7 @@ class DiggibilityController extends Controller
 
         $materialList = DiggibilityTimeSession::where('statusenabled', 1)
             ->whereNotNull('jenis_material')
+            ->where('jenis_material', '!=', 'Hard Material')
             ->distinct()
             ->orderBy('jenis_material')
             ->pluck('jenis_material');
