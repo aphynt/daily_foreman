@@ -88,10 +88,10 @@ class KLKHDewateringController extends Controller
 
     public function insert()
     {
-        $diketahui = User::where('departemen_id', 2)
+        $diketahui = User::where('departemen_id', 23)
         ->whereIn('role', ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'])->where('statusenabled', true)->get();
 
-        $disetujui = User::where('departemen_id', 2)
+        $disetujui = User::where('departemen_id', 23)
         ->whereIn('role', ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'])->where('statusenabled', true)->get();
 
         $users = [
