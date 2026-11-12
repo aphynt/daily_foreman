@@ -697,7 +697,6 @@
                                         <span class="badge bg-success" style="font-size:14px">Verifikasi Diketahui</span>
                                     </a>
                                 @endif
-
                                 @include('klkh.workshop-he.modal.verifiedAll')
                                 @include('klkh.workshop-he.modal.verifiedPengawas')
                                 @include('klkh.workshop-he.modal.verifiedDiketahui')

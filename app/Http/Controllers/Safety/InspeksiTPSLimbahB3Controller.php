@@ -79,8 +79,8 @@ class InspeksiTPSLimbahB3Controller extends Controller
         if (!in_array($user->nik, $nikBypass)) {
             $baseQuery->where(function ($query) use ($user) {
                 $query->where('tps.pic', $user->id)
-                    ->orWhere('tps.inspektor', $user->nik)
-                    ->orWhere('tps.pendamping', $user->nik);
+                    ->orWhere('tps.dibuat', $user->nik)
+                    ->orWhere('tps.diperiksa', $user->nik);
             });
         }
         $tps = $baseQuery->get();

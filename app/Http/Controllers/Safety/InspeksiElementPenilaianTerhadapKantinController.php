@@ -83,8 +83,9 @@ class InspeksiElementPenilaianTerhadapKantinController extends Controller
         if (!in_array($user->nik, $nikBypass)) {
             $baseQuery->where(function ($query) use ($user) {
                 $query->where('b3.pic', $user->id)
-                    ->orWhere('b3.inspektor', $user->nik)
-                    ->orWhere('b3.pendamping', $user->nik);
+                    ->orWhere('b3.disiapkan', $user->nik)
+                    ->orWhere('b3.diperiksa', $user->nik)
+                    ->orWhere('b3.diketahui', $user->nik);
             });
         }
         $kantin = $baseQuery->get();

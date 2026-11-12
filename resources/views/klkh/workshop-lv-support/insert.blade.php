@@ -693,4 +693,29 @@
             alert("Silakan isi semua pilihan True/False/N/A sebelum mengirimkan form!");
         }
     });
+
+    document.getElementById('submitFormKLKHWorkshopLVSupport').addEventListener('submit', function(e) {
+        const diketahui = document.getElementById('diketahui');
+
+        if (!diketahui.value) {
+            e.preventDefault();
+
+            Swal.fire({
+                icon: 'info',
+                title: 'Informasi',
+                text: 'Silakan pilih PIC Diketahui terlebih dahulu.',
+                confirmButtonText: 'Mengerti',
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'sims-swal-popup',
+                    title: 'sims-swal-title',
+                    htmlContainer: 'sims-swal-html',
+                    confirmButton: 'sims-swal-confirm',
+                    icon: 'sims-swal-icon'
+                }
+            });
+
+            return;
+        }
+    });
 </script>

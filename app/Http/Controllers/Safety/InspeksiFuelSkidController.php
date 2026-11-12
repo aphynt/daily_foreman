@@ -81,8 +81,8 @@ class InspeksiFuelSkidController extends Controller
         if (!in_array($user->nik, $nikBypass)) {
             $baseQuery->where(function ($query) use ($user) {
                 $query->where('fs.pic', $user->id)
-                    ->orWhere('fs.inspektor', $user->nik)
-                    ->orWhere('fs.pendamping', $user->nik);
+                    ->orWhere('fs.dibuat', $user->nik)
+                    ->orWhere('fs.diperiksa', $user->nik);
             });
         }
         $fs = $baseQuery->get();

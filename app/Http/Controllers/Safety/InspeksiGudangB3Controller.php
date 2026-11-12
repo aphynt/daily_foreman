@@ -79,8 +79,8 @@ class InspeksiGudangB3Controller extends Controller
         if (!in_array($user->nik, $nikBypass)) {
             $baseQuery->where(function ($query) use ($user) {
                 $query->where('b3.pic', $user->id)
-                    ->orWhere('b3.inspektor', $user->nik)
-                    ->orWhere('b3.pendamping', $user->nik);
+                    ->orWhere('b3.dibuat', $user->nik)
+                    ->orWhere('b3.diperiksa', $user->nik);
             });
         }
         $b3 = $baseQuery->get();
