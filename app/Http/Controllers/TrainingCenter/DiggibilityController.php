@@ -17,12 +17,13 @@ use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\WhatsAppController;
+use App\Exports\DiggingTimeExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DiggibilityController extends Controller
 {
     private function kategoriMaterial($area, $jenisMaterial, $average, $kategoriLama = null)
     {
-        // Free Dig menggunakan batas tersendiri, terlepas dari sisi area.
         $batas = strcasecmp(trim((string) $jenisMaterial), 'Free Dig') === 0
             ? 15.99
             : (['sisi highwall' => 14.00, 'sisi tengah' => 12.50, 'sisi freeface' => 13.50][strtolower(trim((string) $area))] ?? null);
@@ -83,8 +84,21 @@ class DiggibilityController extends Controller
             return $this->exportRawData(clone $query, $tanggalMulai, $tanggalSampai);
         }
 
-        // Hanya tren yang memakai 30 hari kalender terakhir, termasuk hari ini.
-        // Rekap dihitung langsung oleh SQL Server tanpa memuat seluruh laporan.
+        if ($request->input('export') === 'blasting') {
+
+            return Excel::download(
+                new DiggingTimeExport(
+                    $tanggalMulai,
+                    $tanggalSampai,
+                    $request->pengawas,
+                    $request->lokasi,
+                    $request->jenis_material
+                ),
+                "Analisis Kualitas Material {$tanggalMulai} sd {$tanggalSampai}.xlsx"
+            );
+
+        }
+
         $trendMulai = now()->startOfDay()->subDays(29);
         $trendSampai = now()->startOfDay()->addDay();
         $kategoriSql = "CASE
@@ -228,7 +242,7 @@ class DiggibilityController extends Controller
 
         return response()->streamDownload(function () use ($query, $tanggalMulai, $tanggalSampai) {
             $output = fopen('php://output', 'w');
-            fwrite($output, "\xEF\xBB\xBF"); // UTF-8 BOM agar terbaca baik di Excel.
+            fwrite($output, "\xEF\xBB\xBF");
 
             fputcsv($output, [
                 'ID Laporan', 'UUID Laporan', 'Tanggal', 'Jam', 'No Unit',

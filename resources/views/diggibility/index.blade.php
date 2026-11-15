@@ -976,6 +976,13 @@
 
                     <button type="submit">TERAPKAN</button>
                     <button type="submit" name="export" value="raw" style="background:#dddddd;">⬇ DOWNLOAD RAW DATA (CSV)</button>
+                    <button type="submit"
+                            name="export"
+                            value="blasting"
+                            style="background:#198754;color:white;">
+                        <i class="fa fa-file-excel"></i>
+                        EXPORT EXCEL
+                    </button>
                 </form>
             </div>
 
