@@ -9,11 +9,11 @@
     margin: 0; /* Margin dipindahkan ke wrapper agar konsisten di PDF maupun Gambar */
     background-color: #ffffff;
   }
-  
+
   *, *::before, *::after {
     box-sizing: border-box;
   }
-  
+
   body {
     margin: 0;
     padding: 0;
@@ -41,31 +41,31 @@
     border-radius: 4px;
     margin-bottom: 14px;
   }
-  
+
   .header-table {
     width: 100%;
     border-collapse: collapse;
   }
-  
+
   .header-table td {
     vertical-align: middle;
   }
-  
+
   .header-left {
     width: 40%;
     text-align: left;
   }
-  
+
   .header-center {
     width: 35%;
     text-align: center;
   }
-  
+
   .header-right {
     width: 25%;
     text-align: right;
   }
-  
+
   .title-main {
     font-size: 11pt;
     font-weight: 700;
@@ -73,7 +73,7 @@
     margin-bottom: 8px;
     text-transform: uppercase;
   }
-  
+
   .company-badge {
     display: inline-block;
     background-color: #0d3663;
@@ -84,19 +84,19 @@
     font-weight: 600;
     letter-spacing: 0.3px;
   }
-  
+
   .unit-title {
     font-size: 21pt;
     font-weight: 800;
     letter-spacing: 0.5px;
     margin: 0 0 4px 0;
   }
-  
+
   .report-date {
     font-size: 8.5pt;
     color: #f1f5f9;
   }
-  
+
   .meta-id {
     font-size: 7.5pt;
     font-weight: 600;
@@ -104,7 +104,7 @@
     margin-bottom: 2px;
     opacity: 0.9;
   }
-  
+
   .location-code {
     font-size: 19pt;
     font-weight: 800;
@@ -121,7 +121,7 @@
     margin-bottom: 14px;
     border-radius: 2px;
   }
-  
+
   .kpi-title {
     font-size: 9.5pt;
     font-weight: 700;
@@ -130,7 +130,7 @@
     text-transform: uppercase;
     margin-bottom: 2px;
   }
-  
+
   .kpi-value {
     font-size: 36pt;
     font-weight: 800;
@@ -138,7 +138,7 @@
     line-height: 1.1;
     margin: 2px 0 6px 0;
   }
-  
+
   .kpi-desc {
     font-size: 9.5pt;
     font-weight: 700;
@@ -164,19 +164,19 @@
     border-collapse: collapse;
     margin-bottom: 14px;
   }
-  
+
   .meta-table td {
     width: 50%;
     border: 1px solid #cfd8dc;
     padding: 5px 8px;
     vertical-align: top;
   }
-  
+
   .meta-table td.empty-cell {
     border: none;
     background: transparent;
   }
-  
+
   .meta-label {
     font-size: 7pt;
     font-weight: 700;
@@ -184,7 +184,7 @@
     text-transform: uppercase;
     margin-bottom: 2px;
   }
-  
+
   .meta-val {
     font-size: 8.5pt;
     font-weight: 700;
@@ -214,7 +214,7 @@
     border-spacing: 2px 0;
     font-size: 8.5pt;
   }
-  
+
   .passes-table th {
     background-color: #154c86;
     color: #ffffff;
@@ -224,15 +224,15 @@
     font-size: 8pt;
     border: none;
   }
-  
+
   .passes-table th.col-pass {
     width: 20%;
   }
-  
+
   .passes-table th.col-detik {
     width: 30%;
   }
-  
+
   .passes-table td {
     padding: 5px 6px;
     text-align: center;
@@ -241,15 +241,15 @@
     border-right: 1px solid #dbeafe;
     color: #1e293b;
   }
-  
+
   .passes-table tr:nth-child(even) td {
     background-color: #f8fafc;
   }
-  
+
   .passes-table td.pass-num {
     font-weight: 600;
   }
-  
+
   .passes-table td.pass-time {
     font-weight: 700;
   }
@@ -342,7 +342,10 @@
           <div class="meta-label">PASSES BUCKET</div>
           <div class="meta-val">{{ $data->passes_bucket }}</div>
         </td>
-        <td class="empty-cell"></td>
+        <td>
+          <div class="meta-label">KETERANGAN</div>
+          <div class="meta-val">{{ $data->keterangan_tambahan }}</div>
+        </td>
       </tr>
     </table>
 

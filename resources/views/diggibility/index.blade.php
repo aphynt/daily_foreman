@@ -1252,6 +1252,10 @@
                     <span>TOTAL PASSES</span>
                     <b id="reportTotalPasses">-</b>
                 </div>
+                <div>
+                    <span>KETERANGAN</span>
+                    <b id="reportKeterangan">-</b>
+                </div>
 
             </div>
 
@@ -1335,6 +1339,7 @@
             document.getElementById('reportPengawas').textContent = `${d.nik_pengawas || '-'} - ${d.nama_pengawas || '-'}`;
             document.getElementById('reportPassesBucket').textContent = d.passes_bucket || '-';
             document.getElementById('reportTotalPasses').textContent = d.total_passes || 0;
+            document.getElementById('reportKeterangan').textContent = d.keterangan_tambahan || '-';
             document.getElementById('reportAverage').textContent = Number(d.average_digging_time || 0).toFixed(2);
 
             const reportKategori = document.getElementById('reportKategori');
