@@ -83,7 +83,7 @@ class KLKHWorkshopRebuildController extends Controller
 
     public function insert()
     {
-        $diketahui = User::where('departemen_id', 11)
+        $diketahui = User::where('departemen_id', 17)
         ->whereIn('role', ['FOREMAN', 'SUPERVISOR', 'SUPERINTENDENT'])->where('statusenabled', true)->get();
 
         $users = [
@@ -282,7 +282,7 @@ class KLKHWorkshopRebuildController extends Controller
                 // 22. Limbah B3
                 'limbah_b3_1_check' => $data['limbah_b3_1_check'] ?? null,
                 'limbah_b3_1_note' => $data['limbah_b3_1_note'] ?? null,
-                
+
                 // Informasi Tambahan
                 'additional_notes' => $data['additional_notes'] ?? null,
                 'pengawas' => Auth::user()->nik,
