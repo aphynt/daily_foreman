@@ -772,6 +772,9 @@
 @include('layout.footer')
 
 <script>
+    setTimeout(function () {
+        location.reload();
+    }, 300000);
 document.addEventListener('DOMContentLoaded', function () {
 
     const searchInput = document.getElementById('fleetSearch');
