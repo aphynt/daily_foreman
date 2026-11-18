@@ -105,6 +105,7 @@
                 <div class="card matching-card">
                     <div class="card-body">
                         <div class="matching-toolbar">
+
                             <div class="matching-search">
                                 <input type="text" id="fleetSearch" class="form-control" placeholder="Cari PIT atau Fleet...">
                             </div>
@@ -116,15 +117,21 @@
                                         <tr>
                                             <th rowspan="3">PIT</th>
                                             <th colspan="3">Loader</th>
-                                            <th rowspan="3">Need Dumptruck</th>
-                                            <th colspan="4">Hauler</th>
+                                            <th colspan="6">Hauler</th>
                                         </tr>
                                         <tr>
                                             <th rowspan="2">Fleet</th>
                                             <th rowspan="2">Productivity</th>
                                             <th rowspan="2">Loading Time</th>
+                                            <th colspan="2">Total Unit Assignment</th>
+                                            <th rowspan="2">Speed</th>
                                             <th rowspan="2">Distance</th>
+                                            <th rowspan="2">Cycle Time</th>
                                             <th rowspan="2">MF</th>
+                                        </tr>
+                                        <tr>
+                                            <th>HD</th>
+                                            <th>Need Dumptruck</th>
                                         </tr>
                                     </thead>
                                     @forelse($matchingFleet as $pit => $fleets)
@@ -137,8 +144,11 @@
                                                     <td class="fleet-cell">{{ $item['VHC_ID'] ?? '-' }}</td>
                                                     <td class="number-cell">{{ $formatValue($item['PDTY_LOADER'] ?? null, 1) }}</td>
                                                     <td class="number-cell">{{ $formatValue($item['LOADINGTIME'] ?? null) }}</td>
+                                                    <td class="number-cell">{{ $formatValue($item['NTRUCK_HD100TON'] ?? null, 0) }}</td>
                                                     <td class="number-cell">{{ $formatValue($item['NTRUCK_NEED'] ?? null, 1) }}</td>
+                                                    <td class="number-cell">{{ $formatValue($item['SPEED_HD100TON'] ?? null) }}</td>
                                                     <td class="number-cell">{{ $formatValue($item['AVG_RIT_CYCLEDISTANCE'] ?? null) }}</td>
+                                                    <td class="number-cell">{{ $formatValue($item['CTHD_100TON'] ?? null) }}</td>
                                                     <td class="number-cell">{{ $formatValue($item['MF'] ?? null) }}</td>
                                                 </tr>
                                             @endforeach
@@ -146,7 +156,7 @@
                                     @empty
                                         <tbody>
                                             <tr>
-                                                <td colspan="7" class="text-center py-5">Data Matching Fleet belum tersedia.</td>
+                                                <td colspan="10" class="text-center py-5">Data Matching Fleet belum tersedia.</td>
                                             </tr>
                                         </tbody>
                                     @endforelse
@@ -192,12 +202,24 @@
                                         <div class="mobile-section-title">Hauler</div>
                                         <div class="mobile-data-grid">
                                             <div class="mobile-data-item">
+                                                <small>HD Assignment</small>
+                                                <strong>{{ $formatValue($item['NTRUCK_HD100TON'] ?? null, 0) }}</strong>
+                                            </div>
+                                            <div class="mobile-data-item">
                                                 <small>Need Dumptruck</small>
                                                 <strong>{{ $formatValue($item['NTRUCK_NEED'] ?? null, 1) }}</strong>
                                             </div>
                                             <div class="mobile-data-item">
+                                                <small>Speed HD</small>
+                                                <strong>{{ $formatValue($item['SPEED_HD100TON'] ?? null) }}</strong>
+                                            </div>
+                                            <div class="mobile-data-item">
                                                 <small>Distance</small>
                                                 <strong>{{ $formatValue($item['AVG_RIT_CYCLEDISTANCE'] ?? null) }}</strong>
+                                            </div>
+                                            <div class="mobile-data-item">
+                                                <small>Cycle Time HD</small>
+                                                <strong>{{ $formatValue($item['CTHD_100TON'] ?? null) }}</strong>
                                             </div>
                                             <div class="mobile-data-item">
                                                 <small>Match Factor</small>
