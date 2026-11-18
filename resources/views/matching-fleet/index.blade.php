@@ -105,10 +105,6 @@
                 <div class="card matching-card">
                     <div class="card-body">
                         <div class="matching-toolbar">
-                            <div>
-                                <h5 class="matching-title">Matching Fleet Data</h5>
-                                <small class="matching-subtitle">Data dari FOCUS REPORTING</small>
-                            </div>
                             <div class="matching-search">
                                 <input type="text" id="fleetSearch" class="form-control" placeholder="Cari PIT atau Fleet...">
                             </div>
@@ -120,7 +116,7 @@
                                         <tr>
                                             <th rowspan="3">PIT</th>
                                             <th colspan="3">Loader</th>
-                                            <th colspan="8">Hauler</th>
+                                            <th colspan="6">Hauler</th>
                                         </tr>
                                         <tr>
                                             <th rowspan="2">Fleet</th>
@@ -130,14 +126,11 @@
                                             <th rowspan="2">Speed</th>
                                             <th rowspan="2">Distance</th>
                                             <th rowspan="2">Cycle Time</th>
-                                            <th colspan="2">Production per Hour</th>
                                             <th rowspan="2">MF</th>
                                         </tr>
                                         <tr>
                                             <th>HD 100 Ton</th>
                                             <th>Need Dumptruck</th>
-                                            <th>HD 100 Ton</th>
-                                            <th>Total</th>
                                         </tr>
                                     </thead>
                                     @forelse($matchingFleet as $pit => $fleets)
@@ -155,8 +148,6 @@
                                                     <td class="number-cell">{{ $formatValue($item['SPEED_HD100TON'] ?? null) }}</td>
                                                     <td class="number-cell">{{ $formatValue($item['AVG_RIT_CYCLEDISTANCE'] ?? null) }}</td>
                                                     <td class="number-cell">{{ $formatValue($item['CTHD_100TON'] ?? null) }}</td>
-                                                    <td class="number-cell">{{ $formatValue($item['PRODPERHOUR_HD100TON'] ?? null) }}</td>
-                                                    <td class="number-cell">{{ $formatValue($item['PRODPERHOUR_TOTAL'] ?? null) }}</td>
                                                     <td class="number-cell">{{ $formatValue($item['MF'] ?? null) }}</td>
                                                 </tr>
                                             @endforeach
@@ -164,7 +155,7 @@
                                     @empty
                                         <tbody>
                                             <tr>
-                                                <td colspan="12" class="text-center py-5">Data Matching Fleet belum tersedia.</td>
+                                                <td colspan="10" class="text-center py-5">Data Matching Fleet belum tersedia.</td>
                                             </tr>
                                         </tbody>
                                     @endforelse
@@ -228,14 +219,6 @@
                                             <div class="mobile-data-item">
                                                 <small>Cycle Time HD 100 Ton</small>
                                                 <strong>{{ $formatValue($item['CTHD_100TON'] ?? null) }}</strong>
-                                            </div>
-                                            <div class="mobile-data-item">
-                                                <small>Production HD 100 Ton</small>
-                                                <strong>{{ $formatValue($item['PRODPERHOUR_HD100TON'] ?? null) }}</strong>
-                                            </div>
-                                            <div class="mobile-data-item">
-                                                <small>Production Total</small>
-                                                <strong>{{ $formatValue($item['PRODPERHOUR_TOTAL'] ?? null) }}</strong>
                                             </div>
                                             <div class="mobile-data-item">
                                                 <small>Match Factor</small>
