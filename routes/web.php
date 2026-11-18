@@ -30,6 +30,8 @@ use App\Http\Controllers\Produksi\ProductionController;
 use App\Http\Controllers\Produksi\RosterKerjaController;
 use App\Http\Controllers\Produksi\SOPProduksiController;
 use App\Http\Controllers\Produksi\VerifikasiKLKHController;
+use App\Http\Controllers\Produksi\MatchingFleetController;
+
 
 use App\Http\Controllers\Engineering\StagingPlanController;
 use App\Http\Controllers\TrainingCenter\DiggibilityController;
@@ -1031,6 +1033,9 @@ Route::group(['middleware' => ['auth']], function(){
         );
 
     })->name('fileStagingPlan.show');
+
+    //Matching Fleet
+    Route::get('/matching-fleet', [MatchingFleetController::class, 'index'])->name('matchingfleet')->middleware('canAccess');
 
     //Diggibility
     Route::get('/diggibility', [DiggibilityController::class, 'index'])->name('diggibility')->middleware('canAccess');

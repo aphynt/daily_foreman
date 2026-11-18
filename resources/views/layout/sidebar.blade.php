@@ -67,6 +67,10 @@
                     <li class="pc-item"><a href="{{ route('production.ex') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/production-ex.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Produksi EX Per Jam</span></a></li>
                     @endif
 
+                    @if (canAccess('matchingfleet'))
+                    <li class="pc-item"><a href="{{ route('matchingfleet') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/matching-fleet.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Matching Fleet</span></a></li>
+                    @endif
+
                     @if (canAccess('stagingplan'))
                     <li class="pc-item"><a href="{{ route('stagingplan') }}" class="pc-link"><span class="pc-micon"><img class="pc-icon" src="{{ asset('dashboard/assets') }}/images/widget/blueprint.png" alt="" aria-hidden="true" loading="lazy" decoding="async"></span><span class="pc-mtext">Staging Plan</span></a></li>
                     @endif
