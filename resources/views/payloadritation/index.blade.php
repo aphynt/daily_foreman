@@ -152,10 +152,9 @@
 
 @include('layout.footer')
 <script>
-    // Memuat ulang halaman setiap 5 menit (300.000 milidetik)
     setTimeout(function() {
         location.reload();
-    }, 300000); // 300000 milidetik = 5 menit
+    }, 300000); 
 </script>
 
 <script>

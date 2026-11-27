@@ -60,6 +60,7 @@ class SendKkhVerificationReminder extends Command
             10 => ['nama' => 'Training Centre', 'ref_conf' => 23],
             11 => ['nama' => 'Workshop', 'ref_conf' => 21],
             17 => ['nama' => 'Rebuild', 'ref_conf' => 22],
+            23 => ['nama' => 'Dewatering', 'ref_conf' => 38],
         ];
 
         $this->info("Memeriksa KKH tanggal: {$tanggal}");

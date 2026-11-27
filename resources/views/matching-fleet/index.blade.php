@@ -89,7 +89,6 @@
                 <div class="row align-items-center">
                     <div class="col-12">
                         <h4 class="mb-2">Matching Fleet</h4>
-                        <p class="text-muted mb-0">Monitoring kesesuaian Loader dan Hauler</p>
                     </div>
                 </div>
             </div>
@@ -255,101 +254,105 @@
 </section>
 @include('layout.footer')
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('fleetSearch');
-    const desktopGroups = Array.from(document.querySelectorAll('#matching-table tbody.pit-group'));
-    const mobileCards = Array.from(document.querySelectorAll('#mobileFleet .fleet-mobile-card'));
-    const desktopPageSize = document.getElementById('desktopPageSize');
-    const mobilePageSize = document.getElementById('mobilePageSize');
-    const desktopPagination = document.getElementById('desktopPagination');
-    const mobilePagination = document.getElementById('mobilePagination');
-    const desktopInfo = document.getElementById('desktopInfo');
-    const mobileInfo = document.getElementById('mobileInfo');
-    const mobileFooter = document.querySelector('.mobile-footer');
-    let filteredGroups = [...desktopGroups];
-    let filteredCards = [...mobileCards];
-    let desktopPage = 1;
-    let mobilePage = 1;
-    function isMobile() {
-        return window.matchMedia('(max-width: 767.98px)').matches;
-    }
-    function updateLayout() {
-        mobileFooter.style.display = isMobile() ? 'flex' : 'none';
-    }
-    function createPagination(container, current, total, callback) {
-        container.innerHTML = '';
-        const prev = document.createElement('button');
-        prev.type = 'button';
-        prev.textContent = 'Prev';
-        prev.disabled = current <= 1;
-        prev.addEventListener('click', () => callback(current - 1));
-        container.appendChild(prev);
-        for (let i = 1; i <= total; i++) {
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.textContent = i;
-            if (i === current) button.classList.add('active');
-            button.addEventListener('click', () => callback(i));
-            container.appendChild(button);
+    setTimeout(function() {
+        location.reload();
+    }, 300000); 
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('fleetSearch');
+        const desktopGroups = Array.from(document.querySelectorAll('#matching-table tbody.pit-group'));
+        const mobileCards = Array.from(document.querySelectorAll('#mobileFleet .fleet-mobile-card'));
+        const desktopPageSize = document.getElementById('desktopPageSize');
+        const mobilePageSize = document.getElementById('mobilePageSize');
+        const desktopPagination = document.getElementById('desktopPagination');
+        const mobilePagination = document.getElementById('mobilePagination');
+        const desktopInfo = document.getElementById('desktopInfo');
+        const mobileInfo = document.getElementById('mobileInfo');
+        const mobileFooter = document.querySelector('.mobile-footer');
+        let filteredGroups = [...desktopGroups];
+        let filteredCards = [...mobileCards];
+        let desktopPage = 1;
+        let mobilePage = 1;
+        function isMobile() {
+            return window.matchMedia('(max-width: 767.98px)').matches;
         }
-        const next = document.createElement('button');
-        next.type = 'button';
-        next.textContent = 'Next';
-        next.disabled = current >= total;
-        next.addEventListener('click', () => callback(current + 1));
-        container.appendChild(next);
-    }
-    function renderDesktop() {
-        const pageSize = parseInt(desktopPageSize.value, 10);
-        const total = filteredGroups.length;
-        const totalPages = Math.max(1, Math.ceil(total / pageSize));
-        desktopPage = Math.min(desktopPage, totalPages);
-        const start = (desktopPage - 1) * pageSize;
-        const end = start + pageSize;
-        desktopGroups.forEach(group => group.style.display = 'none');
-        filteredGroups.slice(start, end).forEach(group => group.style.display = '');
-        desktopInfo.textContent = total === 0 ? 'Tidak ada data' : `Menampilkan PIT ${start + 1} - ${Math.min(end, total)} dari ${total} PIT`;
-        createPagination(desktopPagination, desktopPage, totalPages, function (page) {
-            desktopPage = page;
+        function updateLayout() {
+            mobileFooter.style.display = isMobile() ? 'flex' : 'none';
+        }
+        function createPagination(container, current, total, callback) {
+            container.innerHTML = '';
+            const prev = document.createElement('button');
+            prev.type = 'button';
+            prev.textContent = 'Prev';
+            prev.disabled = current <= 1;
+            prev.addEventListener('click', () => callback(current - 1));
+            container.appendChild(prev);
+            for (let i = 1; i <= total; i++) {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.textContent = i;
+                if (i === current) button.classList.add('active');
+                button.addEventListener('click', () => callback(i));
+                container.appendChild(button);
+            }
+            const next = document.createElement('button');
+            next.type = 'button';
+            next.textContent = 'Next';
+            next.disabled = current >= total;
+            next.addEventListener('click', () => callback(current + 1));
+            container.appendChild(next);
+        }
+        function renderDesktop() {
+            const pageSize = parseInt(desktopPageSize.value, 10);
+            const total = filteredGroups.length;
+            const totalPages = Math.max(1, Math.ceil(total / pageSize));
+            desktopPage = Math.min(desktopPage, totalPages);
+            const start = (desktopPage - 1) * pageSize;
+            const end = start + pageSize;
+            desktopGroups.forEach(group => group.style.display = 'none');
+            filteredGroups.slice(start, end).forEach(group => group.style.display = '');
+            desktopInfo.textContent = total === 0 ? 'Tidak ada data' : `Menampilkan PIT ${start + 1} - ${Math.min(end, total)} dari ${total} PIT`;
+            createPagination(desktopPagination, desktopPage, totalPages, function (page) {
+                desktopPage = page;
+                renderDesktop();
+            });
+        }
+        function renderMobile() {
+            const pageSize = parseInt(mobilePageSize.value, 10);
+            const total = filteredCards.length;
+            const totalPages = Math.max(1, Math.ceil(total / pageSize));
+            mobilePage = Math.min(mobilePage, totalPages);
+            const start = (mobilePage - 1) * pageSize;
+            const end = start + pageSize;
+            mobileCards.forEach(card => card.style.display = 'none');
+            filteredCards.slice(start, end).forEach(card => card.style.display = '');
+            mobileInfo.textContent = total === 0 ? 'Tidak ada data' : `Menampilkan ${start + 1} - ${Math.min(end, total)} dari ${total} Fleet`;
+            createPagination(mobilePagination, mobilePage, totalPages, function (page) {
+                mobilePage = page;
+                renderMobile();
+            });
+        }
+        function applySearch() {
+            const keyword = searchInput.value.toLowerCase().trim();
+            filteredGroups = desktopGroups.filter(group => group.textContent.toLowerCase().includes(keyword));
+            filteredCards = mobileCards.filter(card => card.textContent.toLowerCase().includes(keyword));
+            desktopPage = 1;
+            mobilePage = 1;
+            renderDesktop();
+            renderMobile();
+        }
+        searchInput.addEventListener('input', applySearch);
+        desktopPageSize.addEventListener('change', function () {
+            desktopPage = 1;
             renderDesktop();
         });
-    }
-    function renderMobile() {
-        const pageSize = parseInt(mobilePageSize.value, 10);
-        const total = filteredCards.length;
-        const totalPages = Math.max(1, Math.ceil(total / pageSize));
-        mobilePage = Math.min(mobilePage, totalPages);
-        const start = (mobilePage - 1) * pageSize;
-        const end = start + pageSize;
-        mobileCards.forEach(card => card.style.display = 'none');
-        filteredCards.slice(start, end).forEach(card => card.style.display = '');
-        mobileInfo.textContent = total === 0 ? 'Tidak ada data' : `Menampilkan ${start + 1} - ${Math.min(end, total)} dari ${total} Fleet`;
-        createPagination(mobilePagination, mobilePage, totalPages, function (page) {
-            mobilePage = page;
+        mobilePageSize.addEventListener('change', function () {
+            mobilePage = 1;
             renderMobile();
         });
-    }
-    function applySearch() {
-        const keyword = searchInput.value.toLowerCase().trim();
-        filteredGroups = desktopGroups.filter(group => group.textContent.toLowerCase().includes(keyword));
-        filteredCards = mobileCards.filter(card => card.textContent.toLowerCase().includes(keyword));
-        desktopPage = 1;
-        mobilePage = 1;
+        window.addEventListener('resize', updateLayout);
+        updateLayout();
         renderDesktop();
         renderMobile();
-    }
-    searchInput.addEventListener('input', applySearch);
-    desktopPageSize.addEventListener('change', function () {
-        desktopPage = 1;
-        renderDesktop();
     });
-    mobilePageSize.addEventListener('change', function () {
-        mobilePage = 1;
-        renderMobile();
-    });
-    window.addEventListener('resize', updateLayout);
-    updateLayout();
-    renderDesktop();
-    renderMobile();
-});
 </script>
